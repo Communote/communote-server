@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+    <description>A taglib to define custom tags.</description>
+    <tlib-version>1.0</tlib-version>
+    <short-name>KenmeiTagLib</short-name>
+    <uri>/KenmeiTagLibrary</uri>
+    <tag>
+        <description>
+			A tag to render a url with optional client id data
+		</description>
+        <name>url</name>
+        <tag-class>com.communote.server.web.commons.tags.KenmeiUrlTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>the URL path to render. If omitted the path to the start page will be rendered.</description>
+            <name>value</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>clientId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>renderSessionId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>absolute</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>secure</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>baseUrl</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>staticResource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>staticResourceByDispatcher</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>                
+    </tag>
+    <tag>
+        <description>
+			A tag which highlights all text parts of value attribute
+			that match a pattern
+		</description>
+        <name>highlight</name>
+        <tag-class>com.communote.server.web.commons.tags.HighlightMatchingTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>pattern</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>cssClass</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    <tag>
+        <description>
+			This tag renders out a user or client image path in a specific
+			size. If no parameter is set, the large client logo will be
+			parsed out. If only the userId is set, the small user
+			image path will be written.
+		</description>
+        <name>img</name>
+        <tag-class>com.communote.server.web.commons.tags.ImageKenmeiUrlTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>type</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>userId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Long</type>
+        </attribute>
+        <attribute>
+            <name>size</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>baseUrl</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useExternalImageApi</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>encodeQueryUrl</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>externalSystemId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>staticResource</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>staticResourceByDispatcher</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    <tag>
+        <description>This tag renders the tooltip.</description>
+        <name>tip</name>
+        <tag-class>com.communote.server.web.commons.tags.TipTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>Key of the message, which should be showed. The key for the title is key+".title".</description>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>Array of arguments that will be filled in for params within the message, or null if none.</description>
+            <name>args</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    <tag>
+        <description>Panel for administration area.</description>
+        <name>panel</name>
+        <tag-class>com.communote.server.web.commons.tags.menu.PanelTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <description>Name of this panel</description>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>Message key of this entry.</description>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>Set this if this panel is a sub panel.</description>
+            <name>subPanel</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>Set this if this is the last panel on the page.</description>
+            <name>isLast</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    <tag>
+        <description>Entry within a panel for administration area. The body will be used as the href attribute of the link.</description>
+        <name>entry</name>
+        <tag-class>com.communote.server.web.commons.tags.menu.EntryTag</tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <description>Name of this entry</description>
+            <name>name</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>Message key of this entry.</description>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+</taglib>
+

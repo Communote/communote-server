@@ -1,0 +1,60 @@
+## Classes for this template are: 
+##  com.communote.server.web.fe.portal.user.controller.ConfirmUserController
+#parse('/WEB-INF/vm/macros-cn-controls.vm')
+<form method="post" action="" class="cn-form-container">
+    <fieldset>
+        <div id="cn-container">
+            <input type="hidden" id="springcmd" name="springcmd" />
+            <input type="hidden" name="formSendMarker" value="$fieldTool.in('com.communote.server.web.fe.portal.user.forms.RegistrationForm').REGISTRATION_FORM_SEND" />
+            <input type="hidden" name="passwordFormat" value="$fieldTool.in('com.communote.server.web.commons.FeConstants').PASSWORD_FORMAT_PLAIN" />
+            <input type="hidden" name="securityCode" value="$escTool.nonWordChars($paramTool.get('securityCode'))" />
+            <div class="cn-headline">
+                <h1>#t('user.register.heading')</h1>
+            </div>
+            <div class="cn-line cn-teaser">#t('user.register.description')</div>
+            <div class="cn-headline">
+                <h2>#t('user.register.header.login.information')</h2>
+                #springShowErrors('' 'cn-error')
+            </div>
+            <div class="cn-line columns">
+                #@cnDiv('cn-field-50')
+                    #cnInputTextRO('email' "${command.user.email}" 'user.register.email' '')
+                #end
+                #@cnDiv('cn-field-50')
+                    #cnInputText('alias' "$!command.getAlias()" 'user.register.alias' true '' 'command.alias')
+                #end
+                #cnClear()
+                #cnInputPasswordSet('')
+                #cnClear()
+            </div>
+            <div class="cn-headline">
+                <h2>#t('user.register.header.commons.title')</h2>
+            </div>
+            <div class="cn-line columns">
+                #@cnDiv('cn-field-50')
+                    #cnInputText('firstName' "$!command.getFirstName()" 'user.register.firstname' true '' 'command.firstName')
+                #end
+                #@cnDiv('cn-field-50')
+                    #cnInputText('lastName' "$!command.getLastName()" 'user.register.lastname' true '' 'command.lastName')
+                #end
+                #cnClear()
+                #@cnDiv('cn-field-50')
+                    #cnSelect('languageCode' $communoteTool.getUsedLanguages() $command.languageCode 'user.register.language' true '' 'command.languageCode') 
+                #end
+                #@cnDiv('cn-field-50')
+                    #cnSelect('timeZoneId' $communoteTool.timeZones $command.timeZoneId 'client.registration.profile.timezone' true '' 'command.timeZoneId') 
+                #end
+                #cnClear()
+            </div>
+            <div class="cn-line cn-info cn-topspace40 cn-fieldset-info">#t('form.info.required.fields')</div>
+            <div class="cn-line">
+                <div class="cn-buttons">
+                    <input type="submit" class="cn-button main" name="_finish" value="#t('button.finish')" />
+    				<input type="button" name="_cancel" onclick="location.href='$urlTool.render('/')';return false;" class="cn-button" value="#t('button.cancel')" />
+                    <span class="cn-clear"><!-- --></span>
+                </div>
+                <span class="cn-clear"><!-- --></span>
+            </div>
+        </div>
+    </fieldset>
+</form>

@@ -1,0 +1,470 @@
+  In this chapter you find a simple example for {{{Getting_started_with_direct_access_by_HTTP_(S)}accessing resources direct by HTTP(S)}} and by {{{Getting_started_with_Communote_Client_for_Java}using the Communote Client for Java}}.
+
+{Getting started with direct access by HTTP(S)}
+  
+  Here is a full example to create, get, edit and delete a topic and to list topic resources. 
+  
+  <Please read {{{./gen/resources/usage.html}Usage of Resources}} for more information (e.g. attributes of responses). Also use the {{{./gen/resources/topic.html#Topic_Resource}Topic Resource}} documentation to find more information about the topic resource.>
+
+* Determining the API URL
+
+  The API URL varies depends on the usage of an Inhouse or the Public Installation with an Enterpise Account. The base path of the API for inhouse installation is by default: http://example.com/microblog/global/api/rest/2.4 Here replace example.com with the host Communote is running on.
+
+  For the SaaS installations running on http://www.communote.com/ the default base path has to be adapt by replacing clientId with the id of the Communote Enterprise Account to access: http://www.communote.com/microblog/clientId/api/rest/2.4
+
+  For secure access use HTTPS instead of HTTP. 
+  
+* Authentication
+
+  At the moment only Basic Access Authentication is allowed. Therefore you should always use and force HTTPS communication for production services.
+  
+  On the first request a cookie named <<<JSESSIONID>>> will be returned. The value of the session cookie <<<JSESSIONID>>> is the identifier of the session. If possible the session identifier should always be included in further request. Once a authentication has been successful within the session no further authentication is necessary. Hence the username and password needs only to be send one time, in the most use cases on the first request.
+  
+  <<<Set-Cookie: JSESSIONID=70C45F4845D861EFC8E44DB066C1DC09; Path=/>>>
+  
+  In case it is not possible to send cookies within a request the session identifier can be added to the request URL. The session identifier must be included directly before the '?' of the url or at the end if no query string is included in the URL:
+  
+  <<<http://example.com/microblog/global/api/rest/2.4/notes;jsessionid=70C45F4845D861EFC8E44DB066C1DC09?param=12>>>
+
+* Server Information
+
+  Providing the supported REST API versions plus information about the current user.
+
+  <<Request>>
+  
+*-----+------+
+ <<Request-Url>> | http://example.com/microblog/global/api/rest/information
+*-----+------+
+ <<Http-Method>> | GET
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+
+
+  <<Response>>
+
+  In the response you get information containing the supported REST-API versions. Furthermore, you can get information about the user when he is logged in.
+
+*-----+------+
+ <<Status Code>> | 200 OK
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+  
+  
++--
+{
+	"preferredVersion":"2.4",
+	"userFirstName":"John",
+	"userId":1,
+	"userLastName":"Doe",
+	"userAlias":"jdo",
+	"supportedVersions":["2.4","2.4","1.3"],
+	"license" : {
+	    "type": "OS", // one of  "OS" (Online Service) or "ST" (Standalone)
+	    "isStandard": true, // If set, you are using the free standard variant with a maximum of 10 users
+	    "isTest": true, // If set, you are within the test phase of Communote
+	    "isValid": true, // If true, the current license is valid and it is possible to write notes.
+	    "reason": "TOO_MANY_USERS" // A reason about the current license status.
+	                                      // This is one of "OKAY", "TOO_MANY_USERS","END_DATE_REACHED","NO_LICENSE_FOUND"
+	                                      // or "VERSION_NOT_SUPPORTED". Log into Communote to get a more descriptive message.
+	}
+}
++--
+  
+* Create Topic
+
+  This is an example to create a new topic by using the {{{./gen/resources/topic.html#Topic_Resource}Topic Resource}}.
+
+  <<Request>>
+  
+  Creates a topic resource with <<<title>>> "example" and <<<tag>>> "new".
+  
+  <More information about attributes and parameter of create (POST) topic under {{{./gen/resources/topic.html#POST_-_Topic_Resource}POST Topic Resource}}.>
+
+*-----+------+
+ <<Request-Url>> | http://example.com/microblog/global/api/rest/2.4/topics/
+*-----+------+
+ <<Http-Method>> | POST
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+
+
++--
+{
+	"title":"example", 
+	"tags":[ {"defaultName":"tag"} ]
+}
++--
+  
+  <<Response>>
+
+  As response you will receive a human readable <<<message>>> and a  <<<status>>> of the request and the actual <<<result>>> of your request. In this example the result will be the identifier of the just created topic.
+
+*-----+------+
+ <<Status Code>> | 200 OK
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+
+  
++--
+{
+	"message": "The topic was successfully created.",
+	"status": "OK",
+	"result": 1
+}
++--
+  
+* Get Topic  
+
+  This example shows hot to receive information about a topic using the topic reosurce.
+ 
+  <<Request>>
+
+  Get the topic resource with identifier "1".
+  
+  <More information about attributes and parameter of get topic under {{{./gen/resources/topic.html#GET_-_Topic_Resource}GET Topic Resource}}.>
+
+*-----+------+
+ <<Request-Url>> | http://example.com/microblog/global/api/rest/2.4/topics/1
+*-----+------+
+ <<Http-Method>> | GET
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+
+
+  <<Response>>
+
+  In the response you get a <<<message>>>, <<<status>>> of request and the identifier of topic in <<<result>>>.
+
+*-----+------+
+ <<Status Code>> | 200 OK
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+
+  
++--
+{
+	"status": "OK",
+	"result": 
+	{
+		"topicId": "1",
+		"lastModificationDate": 1331569395509,
+		"topicEmail": null,
+		"createSystemNotes": false,
+		"description": null,
+		"tags": [
+		{
+			"tagId": 1,
+			"tagStoreAlias": "DefaultBlogTagStore",
+			"tagStoreTagId": "new",
+			"tagStoreType": null,
+			"languageCode": "en",
+			"name": "new",
+			"description": null,
+			"defaultName": "new"
+		}
+		],
+		"alias": "example",
+		"title": "example",
+		"userRole": "MANAGER",
+		"isFollow": false,
+		"properties": null,
+		"allCanWrite": false,
+		"allCanRead": false
+	}
+}
+
+
++--  
+  
+* Edit Topic
+
+  This is an example to edit a topic.
+
+  <<Request>>
+  
+  Edit a topic resource to set the new title "new example" and assign a tag with the name "new tag".
+  
+  The request to edit a topic is tunneled over <<<POST>>> with the appendix parameter <<<_method=PUT>>> on url.\
+  Please read {{{./gen/resources/usage.html#Tunneling}Tunneling}} for more information.
+  
+  <More information about attributes and parameter of edit (PUT) topic under {{{./gen/resources/topic.html#PUT_-_Topic_Resource}LIST Topic Resource}}.> 
+
+*-----+------+
+ <<Request-Url>> | http://example.com/microblog/global/api/rest/2.4/topics/1?_method=PUT
+*-----+------+
+ <<Http-Method>> | POST 
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+
+
++--
+{
+	"title":"new example", 
+	"tags":[ {"defaultName":"new tag"} ]
+}
++--
+
+  <<Response>>
+
+  In the response you get a <<<message>>>, <<<status>>> of request and the identifier of topic in <<<result>>>.
+
+*-----+------+
+ <<Status Code>> | 200 OK
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+ 
+ 
++--
+{
+	"message": "The topic details have been updated
+	            successfully",
+	"status": "OK",
+	"result": 1
+}
++--
+
+* List Topics
+
+  This is an example to list topics.
+
+  <<Request>>
+  
+  List topics where the user is <<<MANAGER>>>. The <<<topicListType>>> parameter is mandatory. 
+  
+  <More information about attributes and parameter of list topic under {{{./gen/resources/topic.html#LIST_-_Topic_Resource}LIST Topic Resource}}.> 
+
+*-----+------+
+ <<Request-Url>> | http://example.com/microblog/global/api/rest/2.4/topics?topicListType=MANAGER
+*-----+------+
+ <<Http-Method>> | GET
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+
+
+  <<Response>>
+
+  In the response you get a <<<metaData>>> element containing the number of all found topics and the information if there are more topics that can be used for for paging. Furthermore, you find the <<<status>>> of the request and the topic resource in <<<result>>>.
+
+*-----+------+
+ <<Status Code>> | 200 OK
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+  
+  
++--
+{
+    "metaData": {
+        "numberOfElements": 100,
+        "moreElementsAvailable": true
+    },
+    "status": "OK",
+    "result": [
+    {
+        "topicId": "1",
+        "lastModificationDate": 1331569395509,
+        "topicEmail": null,
+        "createSystemNotes": false,
+        "description": null,
+        "tags": [
+        {
+        "tagId": 1,
+        "tagStoreAlias": "DefaultBlogTagStore",
+        "tagStoreTagId": "new tag",
+        "tagStoreType": null,
+        "languageCode": "en",
+        "name": "tag",
+        "description": null,
+        "defaultName": "tag"
+        }
+        ],
+        "alias": "example",
+        "title": "example",
+        "userRole": "MANAGER",
+        "isFollow": false,
+        "properties": null,
+        "allCanWrite": false,
+        "allCanRead": false
+    },
+     ...
+    ]
+}
++--
+
+
+* Delete Topic
+
+  This is an example to delete a topic.
+
+  <<Request>>
+
+  Delete the topic resource with identifier "1".
+
+  The request to edit a topic is tunneled over <<<POST>>> with the appendix parameter <<<_method=DELETE>>> on url.\
+  Please read {{{./gen/resources/usage.html#Tunneling}Tunneling}} for more information.
+  
+  <More information about attributes and parameter of delete topic under {{{./gen/resources/topic.html#DELETE_-_Topic_Resource}DELETE Topic Resource}}.>
+
+*-----+------+ 
+ <<Request-Url>> | http://example.com/microblog/global/api/rest/2.4/topics/1?_method=DELETE
+*-----+------+
+ <<Http-Method>> | POST 
+*-----+------+
+ <<Content-Type>> | application/json;charset=UTF-8
+*-----+------+
+  
+  <<Response>>
+
+  In the response you get a <<<message>>> and <<<status>>> of request.
+
+*-----+------+
+ Status Code | 200 OK
+*-----+------+
+ Content-Type | application/json;charset=UTF-8
+*-----+------+    
+  
++--
+{
+	"message": "The topic was deleted successfully.",
+	"status": "OK"
+}
++--
+
+{Getting started with Communote Client for Java}
+
+  This is the example for topic resource to getting started with the Communote Client for Java. For now we provide the Communote Client for Java on request. Please feel to contact us.\
+  You can find the full example in client sources in class TopicExample.java.
+
+  <<<com.communote.plugins.api.rest.client.example.TopicExample.java>>>
+
+  <<Dependency>>
+
+  <<<com.communote.plugins.api.rest.client.CommunoteClient;>>>
+
+  <<Source Code>>
+  
+  To get an instance of CommunoteClient you must set the <<<baseUrl>>>, <<<username>>> and <<<password>>>.
+  
++--
+String baseUrl = 
+    "https://localhost:8080/microblog/global/api/rest/2.4";
+String username = "kenmei";
+String password = "123456";
+
+CommunoteClient client = 
+    new CommunoteClient(baseUrl, username, password);
++--
+
+* Create Topic
+
+  This is an example to create a topic.
+
+  <<Dependencies>>
+
+  <<<com.communote.plugins.api.rest.client.resource.tag.TagResource;>>>
+  <<<com.communote.plugins.api.rest.client.resource.topic.CreateTopicParameter;>>>
+
+  <<Source Code>>
+
+  The title is mandatory to create a topic resource.
+
++--
+CreateTopicParameter createTopicParameter = 
+  new CreateTopicParameter();
+createTopicParameter.setTitle("example");
+TagResource tagResource = new TagResource();
+tagResource.setDefaultName("tag");
+createTopicParameter.setTags(new TagResource[] { tagResource });
+
+Long topicId = client.createTopic(createTopicParameter);
++--
+
+
+* Get Topic
+
+  This is an example to get a topic.
+
+  <<Dependency>>
+
+  <<<com.communote.plugins.api.rest.client.resource.topic.GetTopicParameter;>>>
+
+  <<Source Code>>
+
+  The topic identifier is a string because it can also be a alias. You must set the parameter <<<topicIdentifier=ALIAS>>> if the topic id is the alias of topic.
+
++--
+GetTopicParameter getTopicParameter = new GetTopicParameter();
+// Is String because topic identifier can also be a alias
+// only in combination with the parameter topicIdentifier=ALIAS
+getTopicParameter.setTopicId(String.valueOf(topicId));
+
+TopicResource topicResource = client.getTopic(getTopicParameter);
++--
+
+* Edit Topic
+
+  This is an example to edit a topic.
+
+  <<Dependencies>>
+
+  <<<com.communote.plugins.api.rest.client.resource.tag.TagResource;>>>
+  <<<com.communote.plugins.api.rest.client.resource.topic.EditTopicParameter;>>>
+
+  <<Source Code>>
+  
+  The topic identifier is a string because it can also be a alias. You must set the parameter <<<topicIdentifier=ALIAS>>> if the topic id is the alias of topic.
+
++--
+EditTopicParameter editTopicParameter = new EditTopicParameter();
+editTopicParameter.setTopicId(String.valueOf(topicId));
+editTopicParameter.setTitle("new example");
+TagResource newTagResource = new TagResource();
+newTagResource.setDefaultName("new tag");
+
+topicId = client.editTopic(editTopicParameter);
++--
+
+
+* List Topics
+
+  This is an example to get a list of topics.
+
+  <<Dependencies>>
+
+  <<<com.communote.plugins.api.rest.client.resource.topic.ETopicListType;>>>
+  <<<com.communote.plugins.api.rest.client.resource.topic.GetCollectionTopicParameter;>>>
+  <<<com.communote.plugins.api.rest.client.resource.topic.TopicResource;>>>
+
+  <<Source Code>>
+
+  The <<<topicListType>>> is mandatory.
+
++--
+GetCollectionTopicParameter getCollectionTopicParameter = 
+    new GetCollectionTopicParameter();
+getCollectionTopicParameter.setTopicListType(
+    ETopicListType.MANAGER);
+
+List<TopicResource> topicResources = 
+    client.getCollectionTopic(getCollectionTopicParameter);
++--
+
+
+* Delete Topic
+
+  This is an example to delete a topic.
+
+  <<Dependency>>
+
+  <<<com.communote.plugins.api.rest.client.resource.topic.DeleteTopicParameter;>>>
+
+  <<Source Code>>
+  
+  The topic identifier is a string because it can also be a alias. You must set the parameter <<<topicIdentifier=ALIAS>>> if the topic id is the alias of topic.
+
++--
+DeleteTopicParameter deleteTopicParameter = 
+    new DeleteTopicParameter();
+deleteTopicParameter.setTopicId(String.valueOf(topicId));
+
+client.deleteTopic(deleteTopicParameter);
++--  

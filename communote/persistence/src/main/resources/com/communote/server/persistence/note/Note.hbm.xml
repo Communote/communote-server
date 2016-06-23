@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.note.Note" table="core_note" dynamic-insert="false" dynamic-update="false">
+        <cache usage="read-write" />
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">core_note_seq</param>
+                                                           </generator>
+        </id>
+        <property name="creationDate" type="java.sql.Timestamp">
+            <column name="creation_date" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="lastModificationDate" type="java.sql.Timestamp">
+            <column name="last_modification_date" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="lastDiscussionNoteCreationDate" type="java.sql.Timestamp">
+            <column name="last_discussion_creation_date" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="crawlLastModificationDate" type="java.sql.Timestamp">
+            <column name="crawl_last_modification_date" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="creationSource" type="com.communote.server.persistence.note.NoteCreationSourceEnum">
+            <column name="creation_source" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="direct" type="boolean">
+            <column name="direct" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="status" type="com.communote.server.persistence.note.NoteStatusEnum">
+            <column name="status" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="version" type="java.lang.Long">
+            <column name="version" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="discussionPath" type="java.lang.String">
+            <column name="discussion_path" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="discussionId" type="java.lang.Long">
+            <column name="discussion_id" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="mentionTopicReaders" type="boolean">
+            <column name="mention_topic_readers" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="mentionTopicAuthors" type="boolean">
+            <column name="mention_topic_authors" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="mentionTopicManagers" type="boolean">
+            <column name="mention_topic_managers" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="mentionDiscussionAuthors" type="boolean">
+            <column name="mention_discussion_authors" 
+                     not-null="true" unique="false"/>
+        </property>
+        <many-to-one name="globalId" class="com.communote.server.model.global.GlobalIdImpl" foreign-key="core_note_GLOBAL_ID_FKC" cascade="delete" lazy="proxy" fetch="select">
+            <column name="GLOBAL_ID_FK" not-null="false" unique="true"/>
+        </many-to-one>
+        <many-to-one name="blog" class="com.communote.server.model.blog.Blog" foreign-key="core_note_BLOG_FKC" cascade="none" lazy="proxy" fetch="select">
+            <column name="BLOG_FK" not-null="true" unique="true"/>
+        </many-to-one>
+        <set name="favoriteUsers" table="core_users2favorite_notes" order-by="FAVORITE_USERS_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <key foreign-key="user_user_FAVORITE_NOTES_FKC">
+                <column name="FAVORITE_NOTES_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.user.User" foreign-key="core_note_FAVORITE_USERS_FKC">
+                <column name="FAVORITE_USERS_FK"/>
+            </many-to-many>
+        </set>
+        <set name="children" order-by="PARENT_FK" lazy="true" fetch="select" inverse="true" cascade="delete">
+            <key foreign-key="core_note_PARENT_FKC">
+                <column name="PARENT_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.note.Note"/>
+        </set>
+        <many-to-one name="parent" class="com.communote.server.model.note.Note" cascade="none" foreign-key="core_note_PARENT_FKC" lazy="proxy" fetch="select">
+            <column name="PARENT_FK" not-null="false"/>
+        </many-to-one>
+        <set name="versionOf" order-by="ORIGIN_FK" lazy="true" fetch="select" inverse="true" cascade="delete">
+            <key foreign-key="core_note_ORIGIN_FKC">
+                <column name="ORIGIN_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.note.Note"/>
+        </set>
+        <many-to-one name="origin" class="com.communote.server.model.note.Note" cascade="none" foreign-key="core_note_ORIGIN_FKC" lazy="proxy" fetch="select">
+            <column name="ORIGIN_FK" not-null="false"/>
+        </many-to-one>
+        <set name="crosspostBlogs" table="core_notes2crossblogs" order-by="CROSSPOST_BLOGS_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <key foreign-key="core_blog_NOTES_FKC">
+                <column name="NOTES_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.blog.Blog" foreign-key="core_note_CROSSPOST_BLOGS_FKC">
+                <column name="CROSSPOST_BLOGS_FK"/>
+            </many-to-many>
+        </set>
+        <set name="followableItems" table="core_note2followable" order-by="FOLLOWABLE_ITEMS_FK" lazy="true" fetch="select" inverse="false" cascade="none">
+            <key foreign-key="core_global_id_NOTES_FKC">
+                <column name="NOTES_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.global.GlobalIdImpl" foreign-key="core_note_FOLLOWABLE_ITEMS_FKC">
+                <column name="FOLLOWABLE_ITEMS_FK"/>
+            </many-to-many>
+        </set>
+        <set name="properties" order-by="NOTE_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <cache usage="read-write" />
+            <key foreign-key="core_note_property_NOTE_FKC">
+                <column name="NOTE_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.note.NoteProperty"/>
+        </set>
+        <set name="directUsers" table="core_note2direct_user" order-by="DIRECT_USERS_FK" lazy="true" fetch="select" inverse="false" cascade="none">
+            <key foreign-key="user_user_DIRECT_NOTES_FKC">
+                <column name="DIRECT_NOTES_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.user.User" foreign-key="core_note_DIRECT_USERS_FKC">
+                <column name="DIRECT_USERS_FK"/>
+            </many-to-many>
+        </set>
+        <many-to-one name="user" class="com.communote.server.model.user.User" foreign-key="core_note_USER_FKC" lazy="proxy" fetch="select">
+            <column name="USER_FK" not-null="true"/>
+        </many-to-one>
+        <set name="tags" table="core_notes2tag" order-by="TAGS_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <cache usage="read-write" />
+            <key foreign-key="core_tag_NOTES_FKC">
+                <column name="NOTES_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.tag.TagImpl" foreign-key="core_note_TAGS_FKC">
+                <column name="TAGS_FK"/>
+            </many-to-many>
+        </set>
+        <set name="usersToBeNotified" table="core_notes2user_to_notify" order-by="USERS_TO_BE_NOTIFIED_FK" lazy="true" fetch="select" inverse="false">
+            <cache usage="read-write" />
+            <key foreign-key="user_user_NOTES_FKC">
+                <column name="NOTES_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.user.User" foreign-key="core_note_USERS_TO_BE_NOTIFIEC">
+                <column name="USERS_TO_BE_NOTIFIED_FK"/>
+            </many-to-many>
+        </set>
+        <set name="attachments" order-by="NOTE_FK" lazy="true" fetch="select" inverse="true" cascade="delete">
+            <cache usage="read-write" />
+            <key foreign-key="core_attachment_NOTE_FKC">
+                <column name="NOTE_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.attachment.Attachment"/>
+        </set>
+        <many-to-one name="content" class="com.communote.server.model.note.Content" foreign-key="core_note_CONTENT_FKC" cascade="delete" lazy="proxy" fetch="select">
+            <column name="CONTENT_FK" not-null="true" unique="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

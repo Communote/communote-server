@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+#set($themeName = 'core')
+#set($currentLocale = $communoteTool.getCurrentUserLocale($request)) 
+#set($isAdminArea = true)
+#set($page = 'administration')
+#set($menuEntry = $administrationTool.getCurrentMenuEntry($request))
+##set default CSS and JavaScript category for medium page
+#if(!$cssCategories)
+    #set($cssCategories = ['admin'])
+#end
+#if(!$javaScriptCategories)
+    #set($javaScriptCategories = ['communote-core', 'admin'])
+#end
+<head>
+	#parse( '/WEB-INF/vm/layout/administration/main_head.html.vm' )
+</head>
+<body id="cn-admin"#if($cssClasses)class="$cssClasses"#end>
+	<div id="communote">
+		#parse( '/WEB-INF/vm/layout/administration/main_header.html.vm' )
+		<div id="admin-main">
+			<div id="admin-main-left">
+                #parse('/WEB-INF/vm/layout/administration/navigation.html.vm')
+            </div>
+			<div id="admin-main-right">
+				<div class="$administrationTool.getCssClassForPageContent($menuEntry.getEntry())">
+					<div class="panel">
+						<h4>${menuEntry.getCategory().getLocalizedLabel($currentLocale)} &gt; <span>${menuEntry.getEntry().getLocalizedLabel($currentLocale)}</span></h4>
+					</div>
+					<div class="wrapper last">
+						<div class="layer">
+							#if($contentTemplate)#parse($contentTemplate)#end</div>
+					</div>
+				</div>
+			</div>
+			<span class="clear">
+				<!-- Empty. -->
+			</span>
+		</div>
+        #parse($renderTool.getVelocityTemplateLocation('core.layout.administration.footer'))
+	</div>
+</body>
+</html>

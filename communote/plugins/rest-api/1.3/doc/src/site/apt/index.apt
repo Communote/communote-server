@@ -1,0 +1,14 @@
+  This documentation describes in detail the Communote REST API Version 1.3. The Communote REST API Version 1.3 is supported by Communote 2.1.x 
+  
+  The resources of this API can be accessed directly by HTTP or HTTPS depending on the configuration of the Communote Installation to be used. 
+  
+  There exists also a Java Client that eases the access to the Communote REST API. This Java based CommunoteClient is provided on request. 
+  
+  In the first Chapter {{{./getting_started.html}Getting Started}} the usage of the API is demonstrated by simple examples.
+  
+  The chapter {{{./gen/resources/usage.html}Usage of Resources}} describes in detail the resources that can be used to access Communote or perform certain actions. 
+  
+  Furthermore you find chapters for every resource provides by the Communote REST API Version 1.3. The chapter {{{./gen/resources/overview.html}Available Resources}} gives you an overview of all resources.
+  
+  The last chapter {{{./gen/client/index.html}Usage of CommunoteClient}} gives you informations about important classes and available methods of CommunoteClient for Java.
+    

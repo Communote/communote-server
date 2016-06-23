@@ -1,0 +1,113 @@
+module de.communardo.restws.server
+
+import org.eclipse.emf.mwe.utils.*
+
+var selectedAPIVersion = "v2_2"
+var targetDirServer
+var targetDirClientJava
+var targetDirDoc
+var fileEncoding = "UTF-8"
+var modelPath = "src/main/models"
+var serverPackage = "com/communote/plugins/api/rest/v22"
+var clientJavaPackage = "com/communote/plugins/api/rest/client"
+var exampleBaseUrl = "http://www.communote.com/microblog/global/api/rest/2.2"
+
+Workflow {
+
+//cleans up all the generator directories
+    component = org.eclipse.emf.mwe.utils.DirectoryCleaner {
+        directory = targetDirServer //clean up server dir
+    }
+
+    component = org.eclipse.emf.mwe.utils.DirectoryCleaner {
+        directory = targetDirDoc //clean up documentation dir
+    }
+
+    component = org.eclipse.emf.mwe.utils.DirectoryCleaner {
+        directory = targetDirClientJava //clean up client-java dir
+    }
+
+    component = org.eclipse.xtext.mwe.Reader {
+        path = modelPath
+        register = de.communardo.restws.RestWebserviceStandaloneSetup {}
+        load = {
+            slot = "restWebservice"
+            type = "RestWebservice"
+        }
+    }
+
+    //does a Model-2-Model transformation to transform the input maodel to a model that can better transformed to text
+    component = org.eclipse.xtend.XtendComponent {
+        metaModel = org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel {}
+        invoke = "m2m::M2MExtensions::main(restWebservice)"
+        outputSlot = "webserviceMod"//is the manipulated model that will be used for code generation
+        globalVar = {
+            name = "selectedAPIVersion"
+            value = selectedAPIVersion
+        }
+    }
+
+    //starts the Model-2-Text transformation for documentation
+    component = org.eclipse.xpand2.Generator {
+        metaModel = org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel {}
+        //defines a global variable that can be used within the generator templates
+        globalVar = {
+            name = "selectedAPIVersion"//variable name
+            value = selectedAPIVersion //variable content
+        }        
+		
+		globalVar = {
+            name = "exampleBaseUrl"
+            value = exampleBaseUrl
+        }
+        //calling the entry point with the manipulated model to start doc generation 
+        expand = "templates::doc::apt::Doc::docmain FOREACH webserviceMod"
+        outlet = {
+            path = targetDirDoc //use the doc output path defined above
+        }
+        fileEncoding = fileEncoding
+    }
+
+    //starts the Model-2-Text transformation for server
+    component = org.eclipse.xpand2.Generator {
+        metaModel = org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel {}
+        globalVar = {
+            name = "selectedAPIVersion"
+            value = selectedAPIVersion
+        }
+        //defines a global variable for the server templates, that uses the package path defined above
+        globalVar = {
+            name = "serverPackage"
+            value = serverPackage
+        }
+        //call the entry point of server code generation
+        expand = "templates::java::server::Server::servermain FOREACH webserviceMod"
+        outlet = {
+            path = targetDirServer
+            postprocessor = org.eclipse.xpand2.output.JavaBeautifier {}
+        }
+        fileEncoding = fileEncoding
+		//beautifier = org.eclipse.xpand2.output.JavaBeautifier {}
+    }
+
+    //starts the Model-2-Text transformation for the java client
+    component = org.eclipse.xpand2.Generator {
+        metaModel = org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel {}
+        globalVar = {
+            name = "selectedAPIVersion"
+            value = selectedAPIVersion
+        }
+        //defines a global variable for the java client templates, that uses the package path defined above
+        globalVar = {
+            name = "clientJavaPackage"
+            value = clientJavaPackage
+        }
+        expand = "templates::java::client::ClientJava::clientjavamain FOREACH webserviceMod"
+        outlet = {
+            path = targetDirClientJava
+			postprocessor = org.eclipse.xpand2.output.JavaBeautifier {}
+        }
+        fileEncoding = fileEncoding
+		//beautifier = org.eclipse.xpand2.output.JavaBeautifier {}
+    }
+}

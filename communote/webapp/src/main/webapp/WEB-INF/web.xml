@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+    <context-param>
+        <param-name>communoteWebContextConfigLocation</param-name>
+        <param-value>/WEB-INF/config/communote-web-context.xml</param-value>
+        </context-param>
+    <context-param>    
+        <param-name>communoteServletUrlPattern</param-name>
+        <param-value>/microblog/*</param-value>
+    </context-param>
+
+
+    <filter>
+        <filter-name>Encoding Filter</filter-name>
+        <filter-class>com.communote.server.web.commons.filter.EncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    
+    <filter>
+        <filter-name>Communote Language Filter</filter-name>
+        <filter-class>com.communote.server.web.commons.filter.LanguageFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>ExposeLocaleToErrorPageFilter</filter-name>
+        <filter-class>com.communote.server.web.commons.filter.ExposeLocaleToErrorPageFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>Installation Filter</filter-name>
+        <filter-class>com.communote.server.web.fe.installer.servlet.InstallationForwardFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>Initialization Filter</filter-name>
+        <filter-class>com.communote.server.web.commons.filter.InitializationFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>Bypass Session Timeout Filter</filter-name>
+        <filter-class>com.communote.server.web.commons.filter.BypassSessionTimeoutFilter</filter-class>
+        <init-param>
+            <param-name>requestParameterName</param-name>
+            <param-value>bypassSession</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>Client Context Processing Filter</filter-name>
+        <filter-class>com.communote.server.web.commons.filter.ClientContextProcessingFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>Kenmei Forward Filter</filter-name>
+        <filter-class>com.communote.server.web.commons.filter.KenmeiForwardFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>Communote Restlet Forward Filter</filter-name>
+        <filter-class>com.communote.server.web.commons.filter.CommunoteRestletForwardFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>Communote Internal Filter</filter-name>
+        <filter-class>com.communote.server.web.commons.filter.CommunoteInternalFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>targetClass</param-name>
+            <param-value>org.springframework.security.web.FilterChainProxy</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Encoding Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>Communote Internal Filter</filter-name>
+        <url-pattern>/internal/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Installation Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Kenmei Forward Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Initialization Filter</filter-name>
+        <url-pattern>/microblog/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Bypass Session Timeout Filter</filter-name>
+        <url-pattern>/microblog/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Client Context Processing Filter</filter-name>
+        <url-pattern>/microblog/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- must be included after the URL Filter because there the session is made client aware. -->
+    <filter-mapping>
+        <filter-name>Communote Language Filter</filter-name>
+        <url-pattern>/microblog/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/microblog/*</url-pattern>
+    </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>ExposeLocaleToErrorPageFilter</filter-name>
+        <url-pattern>/microblog/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>Communote Restlet Forward Filter</filter-name>
+        <url-pattern>/microblog/*</url-pattern>
+    </filter-mapping>
+
+    <!-- TinyMCE gzip servlet -->
+    <servlet>
+        <servlet-name>tinyMCE</servlet-name>
+        <jsp-file>/javascript/editors/tiny_mce/tiny_mce_gzip.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>tinyMCE</servlet-name>
+        <url-pattern>/javascript/editors/tiny_mce/tinyMCE_gzipped</url-pattern>
+    </servlet-mapping>
+    
+
+    <welcome-file-list>
+        <welcome-file>/index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- RESTLET -->
+    <servlet>
+        <servlet-name>CommunoteRestletServlet</servlet-name>
+        <servlet-class>com.communote.server.web.commons.servlet.CommunoteRestletServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CommunoteRestletServlet</servlet-name>
+        <url-pattern>/internal/rest-api/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>CommunoteRestletCrawlerServlet</servlet-name>
+        <servlet-class>com.communote.server.web.commons.servlet.CommunoteRestletCrawlerServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CommunoteRestletCrawlerServlet</servlet-name>
+        <url-pattern>/internal/rest-crawl-api/*</url-pattern>
+    </servlet-mapping>
+
+    <error-page>
+        <error-code>400</error-code>
+        <location><![CDATA[/error-page.jsp?code=400]]></location>
+    </error-page>
+    <error-page>
+        <error-code>403</error-code>
+        <location><![CDATA[/error-page.jsp?code=403]]></location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location><![CDATA[/error-page.jsp?code=404&resource=true]]></location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location><![CDATA[/error-page.jsp?code=500&exception=true]]></location>
+    </error-page>
+    <error-page>
+        <error-code>503</error-code>
+        <location><![CDATA[/error-page.jsp?code=503]]></location>
+    </error-page>
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location><![CDATA[/error-page.jsp?code=exception&exception=true]]></location>
+    </error-page>
+
+    <session-config>
+        <session-timeout>240</session-timeout>
+    </session-config>
+
+    <mime-mapping>
+        <extension>air</extension>
+        <mime-type>application/vnd.adobe.air-application-installer-package+zip</mime-type>
+    </mime-mapping>
+
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+        </jsp-property-group>
+    </jsp-config>
+
+</web-app>

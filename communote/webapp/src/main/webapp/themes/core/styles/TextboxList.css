@@ -1,0 +1,84 @@
+.textboxlist {
+    cursor: text;
+    line-height: 37px;
+    list-style-type: none;
+    margin-bottom: 0;
+    margin-top: 0;
+    min-height: 37px;
+    overflow: hidden;
+    padding: 0;
+}
+
+.textboxlist-classic-look .textboxlist-item-content {
+    color: #005599;
+    display: block;
+    float: left;
+    height: 25px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.textboxlist-input-look input {
+    border: 0 none;
+    outline: 0 none;
+}
+
+.textboxlist-input input {
+    font-size: 12px;
+    height: 100%;
+    padding: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.textboxlist li {
+    float: left;
+}
+
+.textboxlist-item {
+    cursor: pointer;
+}
+
+.textboxlist-item.textboxlist-classic-look {
+    background: url("../images/main/button-background-1.png?t=${build.timestamp}") repeat-x scroll center bottom #F3F3F3;
+    border: 1px solid #E2E2E2;
+    border-radius: 3px 3px 3px 3px;
+    box-shadow: 0 0 2px 1px #FAFAFA;
+    color: #005599;
+    display: block;
+    float: left;
+    font-size: 12px;
+    height: 25px;
+    line-height: 24px;
+    margin: 5px;
+    min-width: 50px;
+    padding: 0 5px 0 10px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-position 0.1s ease 0s;
+}
+
+.textboxlist .textboxlist-item.textboxlist-classic-look .textboxlist-item-remove {
+    background-position: -167px -295px;
+    float: right;
+    height: 18px;
+    margin-left: 2px;
+    margin-right: 0;
+    margin-top: 2px;
+    width: 18px;
+}
+
+.textboxlist .textboxlist-item.textboxlist-classic-look:hover .textboxlist-item-remove,
+.textboxlist .textboxlist-item-focused.textboxlist-classic-look .textboxlist-item-remove {
+    background-position: -167px -327px;
+}
+
+.textboxlist .textboxlist-item.textboxlist-classic-look .textboxlist-item-remove:hover {
+   background-position: -167px -359px;
+}
+
+.textboxlist-item-focused.textboxlist-classic-look {
+    border-color: #6DA1BC;
+}

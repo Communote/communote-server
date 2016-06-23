@@ -1,0 +1,129 @@
+<div class="cn-form-container">
+    <form id="something_unique" action="#" method="post">
+        <input type="hidden" name="timeZoneOffset" class="control-timeZoneOffset" value="$!command.TimeZoneOffset" />
+        ## user feedback to point out that there are field errors
+        #springBind( "command" )
+        #cnRenderMessages($status.Errors)
+        <fieldset>
+            #cnInputText_Short('salutation' $!escTool.xmlSimple($!command.userProfile.salutation) 'user.profile.salutation' false '' 'command.userProfile.salutation')
+            <span class="cn-clear"><!-- ie --></span>
+            <div class="cn-field-50">
+                #if(${command.fixedProfileFields.contains('FIRSTNAME')})
+                    #cnInputTextRO('firstName' $!escTool.xmlSimple($!command.userProfile.firstName) 'user.profile.first.name' '')
+                #else
+                    #cnInputText('firstName' $!escTool.xmlSimple($!command.userProfile.firstName) 'user.profile.first.name' true '' 'command.userProfile.firstName')
+                #end
+                </div>
+            <div class="cn-field-50 cn-last">
+                #if(${command.fixedProfileFields.contains('LASTNAME')})
+                    #cnInputTextRO('lastName' $!escTool.xmlSimple($!command.userProfile.lastName) 'user.profile.last.name' '')
+                #else
+                    #cnInputText('lastName' $!escTool.xmlSimple($!command.userProfile.lastName) 'user.profile.last.name' true '' 'command.userProfile.lastName')
+                #end
+                </div>
+            <span class="cn-clear"><!-- ie --></span>
+            <div class="cn-field-50">
+                #cnInputText('company' $!escTool.xmlSimple($!command.userProfile.company) 'user.profile.company' false '' 'command.userProfile.company')
+            </div>
+            <div class="cn-field-50 cn-last">
+                #cnInputText('companyPosition' $!escTool.xmlSimple($!command.userProfile.position) 'user.profile.position' false '' 'command.userProfile.position')
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+            #cnInputText_Long('street' $!escTool.xmlSimple($!command.userProfile.street) 'user.profile.street' false '' 'command.userProfile.street')
+            <span class="cn-clear"><!-- ie --></span>
+            <div class="cn-field-50">
+                #cnInputText('zip' $!escTool.xmlSimple($!command.userProfile.zip) 'user.profile.zip' false '' 'command.userProfile.zip')
+            </div>
+            <div class="cn-field-50 cn-last">
+                #cnInputText('city' $!escTool.xmlSimple($!command.userProfile.city) 'user.profile.city' false '' 'command.userProfile.city')
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+    
+            <div class="cn-field-50">
+                #cnLabel('phone.countryCode' 'user.profile.phone' false '')
+                #cnErrorMessage('command.phone')
+                <div class="cn-input multi-input">
+                    #springBind( "command.phone" )
+                    <span>+</span><input type="text" id="phone.countryCode" class="cn-inputTxt countryCode" maxlength="7"
+                        name="phone.countryCode" value="$!escTool.xmlSimple($!command.Phone.CountryCode)" /><span>(</span><input type="text" class="cn-inputTxt areaCode" maxlength="20"
+                        name="phone.areaCode" value="$!escTool.xmlSimple($!command.Phone.AreaCode)" /><span>)</span><input type="text" class="cn-inputTxt phoneNumber" maxlength="50"
+                        name="phone.phoneNumber" value="$!escTool.xmlSimple($!command.Phone.PhoneNumber)" />
+                </div>
+            </div>
+            <div class="cn-field-50 cn-last">
+                <div class="cn-line">
+                    #cnLabel('fax.countryCode' 'user.profile.fax' false '')
+                    #cnErrorMessage('command.fax')
+                    <div class="cn-input multi-input">
+                        #springBind( "command.fax" )
+                        <span>+</span><input type="text" id="fax.countryCode" class="cn-inputTxt countryCode" maxlength="7"
+                            name="fax.countryCode" value="$!escTool.xmlSimple($!command.Fax.CountryCode)" /><span>(</span><input type="text" class="cn-inputTxt areaCode" maxlength="20"
+                            name="fax.areaCode" value="$!escTool.xmlSimple($!command.Fax.AreaCode)" /><span>)</span><input type="text" class="cn-inputTxt phoneNumber" maxlength="50"
+                            name="fax.phoneNumber" value="$!escTool.xmlSimple($!command.Fax.PhoneNumber)" />
+                    </div>
+                </div>
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+            <div class="cn-field-50">
+                <label class="cn-label" for="$id">
+                    #t('user.register.language')#cnTooltip('user.register.language.explanation.short')
+                    #if(!$isUserLanguageUsed)
+                        <span class="tooltip-wrapper"><a class="tooltip" rel="#t('user.register.language.not-available.description')">[#t('user.register.language.not-available.title')]</a></span>
+                    #end
+                </label>
+                #cnErrorMessage('command.languageCode')
+                <div class="cn-input">
+                    #springBind( "command.languageCode" )
+                    <select id="languageCode" name="${status.expression}" class="cn-select control-languageCode">
+                        #set( $languagesList = $communoteTool.UsedLanguages )
+                        #set( $statusValue = $!status.value)
+                        #foreach( $item in $languagesList )
+                            <option value="$item.LanguageCode"#if($item.LanguageCode == $statusValue.toLowerCase()) selected="selected"#end>$item.Name</option>
+                        #end
+                    </select>
+                </div>
+            </div>
+            <div class="cn-field-50 cn-last">
+                <div class="cn-line">
+                    #cnLabel('countryCode' 'user.profile.country' false '')
+                    #cnErrorMessage('command.countryCode')
+                    <div class="cn-input">
+                        #springBind( "command.countryCode" )
+                        <select id="countryCode" name="${status.expression}" class="cn-select">
+                            #if("$!command.CountryCode" == "" )
+                                <option value="">$fmtTool.message("user.profile.country.empty")</option>
+                            #end
+                            #set( $countryList = $communoteTool.getCountries($request) ) 
+                            #foreach( $item in $countryList )
+                                <option value="$item.CountryCode"#if($item.CountryCode == $!status.value )selected="selected"#end>$item.Name</option>
+                            #end
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+            <div class="cn-field-100 cn-long">
+                #set($includeEmpty = true)
+                #cnSelect('timeZoneId' $communoteTool.TimeZones $!command.userProfile.timeZoneId 'user.profile.timezone' false '' 'command.timeZoneId')
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+            <div class="cn-field-100 cn-long">
+                #set($userTagList = $escTool.nonWordChars($paramTool.get('widgetId')) + '_tag-textbox-list')
+                <div class="cn-smallline">
+                    #cnLabel($userTagList 'user.profile.tags.edit' false '')
+                    <input type="text" id="$userTagList" name="$userTagList" placeholder="#t('add.resource.tags.hint')" />
+                    <span class="cn-clear"><!-- --></span>
+                </div>
+            </div>
+            #cnInputText_Long('tags' $!escTool.xmlSimple($command.Tags) '' false '' 'command.tags' false '' false 'hidden')
+            #cnRequiredNote()
+        </fieldset>
+        <div class="cn-actions">
+            <div class="cn-buttons">
+                <input class="cn-button main" type="submit" value="$fmtTool.message('user.profile.update.profile')" />
+                <input class="cn-button cn-hidden" type="button" value="$fmtTool.message('button.cancel')" onclick="location.href='$urlTool.currentUser()'" />
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+        </div>
+    </form>
+</div>

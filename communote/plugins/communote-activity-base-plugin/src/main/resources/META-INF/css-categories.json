@@ -1,0 +1,7 @@
+{
+    "extensions": {
+        "admin": ["styles/admin-configuration.css"],
+        "portal": ["styles/portal-extension.css"],
+        "cnt-embed": ["styles/portal-extension.css"]
+    }
+}

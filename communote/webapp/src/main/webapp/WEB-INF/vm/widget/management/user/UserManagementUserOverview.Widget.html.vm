@@ -1,0 +1,117 @@
+#cnRenderMessages()
+
+#set($userSignatureLong = "#if($userFirstName)$userFirstName #end#if($userLastName)$userLastName #end#if($userAlias)($userAlias)#end")
+#set($userSignatureLongEscaped = $escTool.javascriptInline($userSignatureLong))
+
+#if(!${userStatusEditable})
+        #set($fieldDisabled = 'disabled="disabled"')
+        #set($fieldReadonly = 'readonly="readonly"')
+#end
+<form method="POST">
+    <input type="hidden" name="userId" value="${userId}" />
+    <div id="userprofile-overview" class="cn-form-container">
+        <fieldset>
+            <h5>#t('widget.user.management.profile.generaluseroverview')</h5>
+            <div class="profile-img">
+                <img id="userImage" src="$urlTool.userImage(${userId}, $fieldTool.get('com.communote.server.model.user.ImageSizeType.MEDIUM'))" width="50" height="50" alt="" />
+                <span class="clear"><!-- Empty for IE --></span>
+            </div>
+            <dl>
+                <dt>#t('widget.user.management.profile.alias'):</dt>
+                <dd>#cnInputText('userAlias' $userAlias '' true)</dd>
+                <dt>#t('widget.user.management.profile.email'): #cnTooltip('widget.user.management.profile.mailto.hint.external')</dt>
+                #if($isCrawlUser)
+                <dd><span>$userEmail</span></dd>
+                #else
+                <dd>#cnInputText('userEmail' $userEmail '' true)</dd>
+                #end
+                <dt>#t('widget.user.management.profile.status'):</dt>
+                <dd>
+                    <span>
+                        <select $!fieldDisabled $!fieldReadonly name="$fieldTool.get('com.communote.server.web.fe.widgets.management.user.UserManagementUserOverviewWidget.PARAMETER_STATUS')">
+                            #foreach($item in $widget.userStatusLiterals)
+                            	#if($item == $userStatus)
+                                    <option value="${item}" selected="selected">#t("client.user.status.${item.toLowerCase()}")</option>
+                                #elseif($item == 'ACTIVE' || $item == 'TEMPORARILY_DISABLED')
+                                    <option value="${item}">#t("client.user.status.${item.toLowerCase()}")</option>
+	                            #end
+                            #end
+                        </select>
+                    </span> 
+                    <span class="clear"><!-- ie --></span>
+                </dd>
+                <dt>#t('widget.user.management.profile.role'):</dt>
+                <dd>
+                    #if($isSystemUser)
+                            <span>#t('widget.user.management.list.content.system.user')</span>
+                    #elseif($isCrawlUser)
+                            <span>#t('widget.user.management.list.content.crawl.user')</span>
+                    #else
+                            <input id="adminRole" name="$fieldTool.get('com.communote.server.web.fe.widgets.management.user.UserManagementUserOverviewWidget.PARAMETER_IS_ADMINISTRATOR')" 
+                                class="check" type="checkbox" $!fieldDisabled
+                                #if($isClientManager)checked="checked"#end />
+                            <label for="adminRole">#t('widget.user.management.profile.is.manager')</label>
+                    #end
+                </dd>
+                <dt>#t('widget.user.management.profile.groups'):</dt>
+                <dd>
+                	#if($userGroupList.isEmpty())
+                        #t('widget.user.management.profile.nogroup')
+                    #else
+                        <ul class="entityGroup-list">
+                        	#foreach($entityGroup in $userGroupList)
+                                <li><span class="delete"> 
+                                	#if($entityGroup.isExternal)
+    	                                ${entityGroup.group.name}#if(!$foreach.last), #end
+                                    #else
+                                        <span title="#t('client.user.management.remove.user.from.group.title')"
+                                            onclick="widgetController.getWidget('${widget.widgetId}').removeUserFromGroupEntity(${userId}, ${entityGroup.group.id})"
+                                            class="icon-remove" onmouseover="mOverAddHoverClass(this);"
+                                            onmouseout="mOutRemoveHoverClass(this);">${entityGroup.group.name}#if(!$foreach.last), #end</span>
+                                    #end
+                                </span></li>
+                            #end
+                        </ul>
+                    #end
+                </dd>
+                #if(!$externalUserAuthorisations.isEmpty())
+                    <dt>#t('widget.user.management.profile.external'):</dt>
+                    <dd><ul>
+                    	#foreach($externalUserAuthorisation in $externalUserAuthorisations)
+                            <li>${externalUserAuthorisation.systemId}#if(!$foreach.last), #end</li>
+                        #end
+                    </ul></dd>
+                #end
+            </dl>
+            <span class="clear">
+                <!-- ie -->
+            </span>
+        </fieldset>
+        <input type="hidden" id="${widget.widgetId}_form_action"
+            name="$fieldTool.get('com.communote.server.web.fe.widgets.management.user.UserManagementUserOverviewWidget.PARAMETER_ACTION')"
+            value="$fieldTool.get('com.communote.server.web.fe.widgets.management.user.UserManagementUserOverviewWidget.ACTION_UPDATE')" />
+        <div class="actionbar actionbar-general">
+        	#if($userStatus == 'PERMANENTLY_DISABLED')
+                <div class="button-gray main">
+                    <input type="button"
+                        value="#t('widget.user.management.profile.action.anonymize.short')"
+                        onclick="return widgetController.getWidget('UserManagementList').doShowAnonymizeDialog('#t('client.user.management.delete.user.data.title')', ${userId}, '${userSignatureLongEscaped}');" />
+                </div>
+            #else
+                <div class="button-gray main">
+                    <input type="submit" name="$fieldTool.get('com.communote.server.web.fe.widgets.management.user.UserManagementUserOverviewWidget.PARAMETER_SUBMIT')"
+                        value="#t('client.iprange.save.button.text')"
+                        onclick="document.getElementById('${widget.widgetId}_form_action').value='$fieldTool.get('com.communote.server.web.fe.widgets.management.user.UserManagementUserOverviewWidget.ACTION_UPDATE')';" />
+                </div>
+                <div class="button-gray">
+                    <input type="button" value="#t('client.iprange.delete.button.text')"
+                        onclick="return widgetController.getWidget('UserManagementList').doShowDeleteDialog('#t('client.user.management.delete.user.data.title')', ${userId}, '${userSignatureLongEscaped}');" />
+                </div>
+	        #end
+            <span class="clear">
+                <!-- ie -->
+            </span>
+        </div>
+    </div>
+</form>
+

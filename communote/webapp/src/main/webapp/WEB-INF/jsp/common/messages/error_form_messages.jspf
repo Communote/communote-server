@@ -1,0 +1,6 @@
+<%@ include file="/WEB-INF/jsp/common/include.jsp"%>
+<c:if test="${not empty errorMessages}"><dl class="error">
+<c:forEach var="msg" items="${errorMessages}"><dt class="error"><span class="error">${msg}</span></dt></c:forEach>
+</dl>
+<span class="clear">&shy;</span>
+</c:if>

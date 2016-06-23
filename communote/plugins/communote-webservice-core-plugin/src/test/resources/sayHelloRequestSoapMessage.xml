@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:hel="http://www.examples.com/wsdl/HelloService.wsdl">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <hel:sayHello>
+         <!--Optional:-->
+         <arg0>HELLO_NAME</arg0>
+      </hel:sayHello>
+   </soapenv:Body>
+</soapenv:Envelope>

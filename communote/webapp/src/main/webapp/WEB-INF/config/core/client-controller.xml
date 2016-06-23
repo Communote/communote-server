@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    <bean id="clientController" class="com.communote.server.web.fe.portal.user.client.controller.ClientOverviewController">
+        <property name="view">
+            <value>main.microblog.client</value>
+        </property>
+    </bean>
+
+    <bean id="ipRangeManagementController" class="com.communote.server.web.fe.portal.user.client.controller.IPRangeManagementController">
+        <property name="formView">
+            <value>main.microblog.client.ip.range</value>
+        </property>
+    </bean>
+
+    <bean id="ipRangeCreateManagementController" class="com.communote.server.web.fe.portal.user.client.controller.IPRangeManagementController">
+        <property name="formView">
+            <value>main.microblog.client.ip.range.create</value>
+        </property>
+    </bean>
+
+    <bean id="forceSslController" class="com.communote.server.web.fe.portal.user.client.controller.SslChannelConfigurationController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>sslConfigurationCommand</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.forms.SslChannelConfigurationForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.security.ssl</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.security.ssl</value>
+        </property>
+    </bean>
+
+    <bean id="clientGeneralSettingsController" class="com.communote.server.web.fe.portal.user.client.controller.ClientGeneralSettingsController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.forms.ClientGeneralSettingsForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.general.settings</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.general.settings</value>
+        </property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.client.validator.ClientGeneralSettingsValidator" />
+        </property>
+    </bean>
+
+    <bean id="clientProfileLogoController" class="com.communote.server.web.fe.portal.user.client.controller.ClientProfileController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.forms.ClientProfileLogoForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.profile.logos</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.profile.logos</value>
+        </property>
+        <property name="initBinderRequired">
+            <value>true</value>
+        </property>
+        <property name="action">
+            <value>LOGO</value>
+        </property>
+    </bean>
+
+    <bean id="clientProfileEmailController" class="com.communote.server.web.fe.portal.user.client.controller.ClientProfileController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.forms.ClientProfileEmailForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.profile.email</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.profile.email</value>
+        </property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.client.validator.ClientProfileEmailValidator" />
+        </property>
+        <property name="action">
+            <value>EMAIL</value>
+        </property>
+    </bean>
+
+    <bean id="clientProfileNotificationsController" class="com.communote.server.web.fe.portal.user.client.controller.ClientProfileNotificationController">
+<!--         <property name="sessionForm"> -->
+<!--             <value>false</value> -->
+<!--         </property> -->
+<!--         <property name="commandClass"> -->
+<!--             <value>com.communote.server.web.fe.portal.user.client.forms.ClientProfileNotificationsForm</value> -->
+<!--         </property> -->
+<!--         <property name="formView"> -->
+<!--             <value>main.microblog.client.profile.notifications</value> -->
+<!--         </property> -->
+<!--         <property name="successView"> -->
+<!--             <value>main.microblog.client.profile.notifications</value> -->
+<!--         </property> -->
+<!--         <property name="action"> -->
+<!--             <value>NOTIFICATIONS</value> -->
+<!--         </property> -->
+    </bean>
+
+    <bean id="clientIntegrationOverviewController" class="com.communote.server.web.fe.portal.user.client.controller.integration.IntegrationOverviewController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.controller.integration.IntegrationOverviewForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.integration.overview</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.integration.overview</value>
+        </property>
+    </bean>
+
+    <bean id="clientLdapAuthenticationController" class="com.communote.server.web.fe.portal.user.client.controller.ClientLdapAuthenticationController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.forms.LdapConfigurationForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.authentication.ldap</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.authentication.ldap</value>
+        </property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.client.validator.LdapConfigurationValidator" />
+        </property>
+    </bean>
+
+    <bean id="clientConfluenceAuthenticationController" class="com.communote.server.web.fe.portal.user.client.controller.ClientConfluenceAuthConfigController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>clientConfluenceAuthenticationCommand</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.forms.ConfluenceAuthConfigurationForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.authentication.confluence</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.authentication.confluence</value>
+        </property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.client.validator.ConfluenceAuthConfigurationValidator" />
+        </property>
+    </bean>
+
+    <bean id="clientUserGroupManagementViewController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view">
+            <value>main.microblog.client.user.group.management</value>
+        </property>
+    </bean>
+
+    <bean id="clientUserManagementViewController" class="com.communote.server.web.fe.portal.user.client.controller.ClientUserManagementViewController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>inviteUserToClientCommand</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.persistence.user.InviteUserForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.user.management</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.user.management</value>
+        </property>
+    </bean>
+
+    <bean id="clientUserManagementController" class="com.communote.server.web.fe.portal.user.client.controller.ClientUserManagementController">
+    </bean>
+
+    <bean id="clientUserGroupManagementController" class="com.communote.server.web.fe.portal.user.client.controller.ClientUserGroupManagementController">
+    </bean>
+
+    <bean id="clientUsersSettingsController" class="com.communote.server.web.fe.portal.user.client.controller.ClientUserManagementSettingsController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>clientUserManagementSettingsCommand</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.forms.ClientUserManagementSettingsForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.user.management.settings</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.user.management.settings</value>
+        </property>
+    </bean>
+
+    <bean id="clientCustomizeImprintController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view">
+            <value>main.microblog.client.customize.imprint</value>
+        </property>
+    </bean>
+    <bean id="clientCustomizeTermsOfUseController" class="com.communote.server.web.fe.portal.user.client.controller.CustomizeTermsOfUseController" />
+
+    <bean id="clientDeleteUserController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view">
+            <value>main.microblog.client.user.management.delete</value>
+        </property>
+    </bean>
+
+    <bean id="clientPermissionsController" class="com.communote.server.web.fe.portal.user.client.controller.ClientPermissionsController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>clientPermissionsCommand</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.forms.ClientPermissionsForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.security.permissions</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.security.permissions</value>
+        </property>
+    </bean>
+
+    <bean id="authenticationController" class="com.communote.server.web.fe.portal.user.client.controller.security.AuthenticationController">
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.client.controller.security.AuthenticationForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.client.management.security.authentication</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.client.management.security.authentication</value>
+        </property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.client.controller.security.AuthenticationValidator" />
+        </property>
+    </bean>
+
+    <bean id="imageDownloadController" class="com.communote.server.web.commons.imagecache.controller.ImageDownloadController">
+    </bean>
+
+    <bean id="clientHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true" />
+        <property name="mappings">
+            <props>
+                <!-- .do endings are old, some cannot be removed because they are used in (sent) emails -->
+                <prop key="/*/*/admin/client/usermanagementview.do">clientUserManagementViewController</prop>
+
+                <prop key="/*/*/image/*.do">imageDownloadController</prop>
+
+                <!-- the new mappings -->
+                <prop key="/*/*/admin/client/welcome">clientController</prop>
+                <prop key="/*/*/admin/client/iprange">ipRangeManagementController</prop>
+                <prop key="/*/*/admin/client/iprange.create">ipRangeCreateManagementController</prop>
+                <prop key="/*/*/admin/client/sslConfiguration">forceSslController</prop>
+                <prop key="/*/*/admin/client/permissions">clientPermissionsController</prop>
+                <prop key="/*/*/admin/client/integration/overview">clientIntegrationOverviewController</prop>
+                <prop key="/*/*/admin/client/ldapAuthentication">clientLdapAuthenticationController</prop>
+                <prop key="/*/*/admin/client/confluenceAuthentication">clientConfluenceAuthenticationController</prop>
+                <prop key="/*/*/admin/client/profile/general-settings">clientGeneralSettingsController</prop>
+                <prop key="/*/*/admin/client/profile/email">clientProfileEmailController</prop>
+                <prop key="/*/*/admin/client/profile/logo">clientProfileLogoController</prop>
+                <prop key="/*/*/admin/client/profile/notifications">clientProfileNotificationsController</prop>
+                <prop key="/*/*/admin/client/customize/imprint">clientCustomizeImprintController</prop>
+                <prop key="/*/*/admin/client/customize/termsofuse/**">clientCustomizeTermsOfUseController</prop>
+                <prop key="/*/*/admin/client/usermanagementview">clientUserManagementViewController</prop>
+                <prop key="/*/*/admin/client/users/settings">clientUsersSettingsController</prop>
+                <prop key="/*/*/admin/client/deleteUser">clientDeleteUserController</prop>
+                <prop key="/*/*/admin/client/usermanagement/**">clientUserManagementController</prop>
+                <prop key="/*/*/admin/client/usergroupmanagement/**">clientUserGroupManagementController</prop>
+                <prop key="/*/*/admin/client/usergroupmanagement">clientUserGroupManagementViewController</prop>
+                <prop key="/*/*/admin/client/security/authentication">authenticationController</prop>
+
+                <prop key="/*/*/image/*.jpg">imageDownloadController</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

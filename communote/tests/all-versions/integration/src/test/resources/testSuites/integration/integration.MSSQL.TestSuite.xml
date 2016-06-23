@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Integration Test Suite PostgreSQL" verbose="1">
+    <suite-files>
+        <suite-file path="integration.TestSuite.xml">
+            <parameter name="dbTypeIdentifier" value="MSSQL" />
+            <parameter name="tempDbName" value="" />
+            <!-- TagFilterTest fails with more threads -->
+            <parameter name="numberOfThreads" value="1" />
+        </suite-file>
+    </suite-files>
+</suite>

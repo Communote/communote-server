@@ -1,0 +1,31 @@
+{
+   "identityContext":{
+      "@class":"com.communote.plugins.mq.message.base.data.security.UserIdentityContext",
+      "identity":{
+         "identity":"@@TOPIC_MANAGER@@",
+         "identityType":"@@IDENTITY_TYPE@@"
+      }
+   },
+   "authentication" : {
+    "@class" : "com.communote.plugins.mq.message.base.data.security.UsernamePasswordAuthentication",
+    "identity" : {
+      "identity" : "@@CNT_AUTHENTICATION_USERNAME@@"
+    },
+    "password" : "@@CNT_AUTHENTICATION_PASSWORD@@"
+   },   
+   "replyType":"FULL",
+   "externalSystemId":"DefaultSharepoint",
+   "topic":{
+      "topicId":@@TOPIC_ID@@
+   },
+   "roles":[
+     {
+        "externalObjectId":"@@EXTERNAL_OBJECT_ID@@",
+        "topicRole":"member",
+        "entity":{
+           "isGroup":false,
+           "entityAlias":"@@COMMUNOTE_USER@@"
+        }
+     }
+   ]
+}

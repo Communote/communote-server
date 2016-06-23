@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sec="http://www.springframework.org/schema/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/security 
+                        http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+    <bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
+        <constructor-arg>
+            <list>
+                <sec:filter-chain pattern="/*/*/error-page" filters="none" />
+                <sec:filter-chain pattern="/*/*/message-page" filters="none" />
+                <sec:filter-chain pattern="/*/*/version/version.txt" filters="none" />
+                <!-- send request for localized messages through chain to consider locale of current user, ignoring force SSL-->
+                <sec:filter-chain pattern="/*/*/resources/i18n/**" filters="
+                    httpSessionContextIntegrationFilter,
+                    userStatusFilter,
+                    publicAccessProcessingFilter,
+                    confluenceAuthenticationProcessingFilter,
+                    apiBasicAuthenticationProcessingFilter,
+                    apiParameterAuthenticationProcessingFilter,
+                    pluginAuthenticationFilter,
+                    anonymousProcessingFilter,
+                    securityContextHolderAwareRequestFilter,
+                    filterInvocationInterceptor" 
+                  />
+                <!-- all other resources (javascript/css files) are not user specific and globally available -->
+                <sec:filter-chain pattern="/*/*/resources/**" filters="none" />
+                <sec:filter-chain pattern="/*/*/plugins/**" filters="none" />
+                <sec:filter-chain pattern="/*/*/javascript/editors/**" filters="none" />
+                <sec:filter-chain pattern="/*/*/portal/initializationstatus.json" filters="none" />
+                <sec:filter-chain pattern="/*/*/installer/*" filters="hideInstallerAfterInstallationFilter" />
+                <sec:filter-chain pattern="/*/*/images/installer/**" filters="none" />
+                <sec:filter-chain pattern="/*/*/portal/starting" filters="none" />
+                <!-- API URLs -->
+                <sec:filter-chain pattern="/*/*/api/*/local/xmpp" filters="
+               		xmppIPRangeChannelFilter,
+               		forceSslFilter,
+               		xmppAuthenticationProcessingFilter" 
+                />
+                <sec:filter-chain pattern="/*/*/api/*/local/xmpp.do" filters="
+                	xmppIPRangeChannelFilter,
+                	forceSslFilter,
+                	xmppAuthenticationProcessingFilter" 
+                />
+                <sec:filter-chain pattern="/*/*/api/rest/information" filters="
+                   	apiIPRangeChannelFilter,
+                   	forceSslFilter,
+                   	httpSessionContextIntegrationFilter,
+                   	userStatusFilter,
+                   	publicAccessProcessingFilter,
+                   	confluenceAuthenticationProcessingFilter,
+                   	apiBasicAuthenticationProcessingFilter,
+                   	apiParameterAuthenticationProcessingFilter,
+                   	pluginAuthenticationFilter,
+                   	anonymousProcessingFilter,
+                    sessionFixationProtectionFilter,
+                   	securityContextHolderAwareRequestFilter,
+                   	filterInvocationInterceptor" 
+                  />
+                <sec:filter-chain pattern="/*/*/api/*/login*" filters="
+                	apiIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	userStatusFilter,
+                	apiParameterAuthenticationProcessingFilter,
+                	apiBasicAuthenticationProcessingFilter,
+                	anonymousProcessingFilter,
+                    sessionFixationProtectionFilter,
+                	securityContextHolderAwareRequestFilter,
+                	filterInvocationInterceptor" 
+                />
+                <!-- new REST API -->
+                <sec:filter-chain pattern="/*/*/api/rest/*/logins" filters="
+                    apiIPRangeChannelFilter,
+                    forceSslFilter,
+                    httpSessionContextIntegrationFilter,
+                    userStatusFilter,
+                    apiParameterAuthenticationProcessingFilter,
+                    apiBasicAuthenticationProcessingFilter,
+                    anonymousProcessingFilter,
+                    sessionFixationProtectionFilter,
+                    securityContextHolderAwareRequestFilter,
+                    filterInvocationInterceptor" 
+                />
+                <sec:filter-chain pattern="/*/*/api/rest/*/logout" filters="
+                	apiIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	rememberMeProcessingFilter,
+                	userStatusFilter,
+                	anonymousProcessingFilter,
+                	restApiLogoutFilter,
+                	formAuthenticationProcessingFilter,
+                	securityContextHolderAwareRequestFilter,
+                	filterInvocationInterceptor" 
+                />
+                <sec:filter-chain pattern="/*/*/api/rest/**" filters="
+                   	apiIPRangeChannelFilter,
+                   	forceSslFilter,
+                   	httpSessionContextIntegrationFilter,
+                   	userStatusFilter,
+                   	publicAccessProcessingFilter,
+                   	confluenceAuthenticationProcessingFilter,
+                   	apiBasicAuthenticationProcessingFilter,
+                   	pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                   	securityContextHolderAwareRequestFilter,
+                   	basicExceptionTranslationFilter,
+                   	filterInvocationInterceptor" 
+                />
+                <sec:filter-chain pattern="/*/*/api/rest-crawl/**" filters="
+                    apiIPRangeChannelFilter,
+                    forceSslFilter,
+                    httpSessionContextIntegrationFilter,
+                    userStatusFilter,
+                    publicAccessProcessingFilter,
+                    apiBasicAuthenticationProcessingFilter,
+                    pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                    securityContextHolderAwareRequestFilter,
+                    basicExceptionTranslationFilter,
+                    filterInvocationInterceptor" 
+                />
+                <sec:filter-chain pattern="/*/*/web/rest/**"	filters="
+                	webIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	userStatusFilter,
+                	publicAccessProcessingFilter,
+                	confluenceAuthenticationProcessingFilter,
+                	apiBasicAuthenticationProcessingFilter,
+                	pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                	securityContextHolderAwareRequestFilter,
+                	basicExceptionTranslationFilter,
+                	filterInvocationInterceptor" 
+				/>
+                <!-- old REST API -->
+                <sec:filter-chain pattern="/*/*/api/**" filters="
+                    apiIPRangeChannelFilter,
+                    forceSslFilter,
+                    httpSessionContextIntegrationFilter,
+                    userStatusFilter,
+                    confluenceAuthenticationProcessingFilter,
+                    apiBasicAuthenticationProcessingFilter,
+                    pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                    securityContextHolderAwareRequestFilter,
+                    basicExceptionTranslationFilter,
+                    filterInvocationInterceptor" 
+                />    
+                <!-- RSS URLs -->
+                <sec:filter-chain pattern="/*/*/rss/**" filters="
+                	rssIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	userStatusFilter,
+                	rssParameterAuthenticationProcessingFilter,
+                	confluenceAuthenticationProcessingFilter,
+                	basicAuthenticationProcessingFilter,
+                	pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                	securityContextHolderAwareRequestFilter,
+                	basicExceptionTranslationFilter,
+                	filterInvocationInterceptor"
+                />
+                <sec:filter-chain pattern="/*/*/rsswidgets/**" filters="
+                	rssIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	userStatusFilter,
+                	rssParameterAuthenticationProcessingFilter,
+                	confluenceAuthenticationProcessingFilter,
+                	basicAuthenticationProcessingFilter,
+                	pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                	securityContextHolderAwareRequestFilter,
+                	basicExceptionTranslationFilter,
+                	filterInvocationInterceptor" 
+                />
+                <!--  Admin URLs -->
+                <sec:filter-chain pattern="/*/*/admin/application/**" filters="
+                	webIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	webAuthenticationSuccessFailureFilter,
+                	rememberMeProcessingFilter,
+                	userStatusFilter,
+                	anonymousProcessingFilter,
+                	logoutFilter,
+                	formAuthenticationProcessingFilter,
+                	confluenceAuthenticationProcessingFilter,
+                	pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                	securityContextHolderAwareRequestFilter,
+                	exceptionTranslationFilter,
+                	filterInvocationInterceptor" 
+                />
+                <sec:filter-chain pattern="/*/*/admin/**" filters="
+                	webIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	webAuthenticationSuccessFailureFilter,
+                	rememberMeProcessingFilter,
+                	userStatusFilter,
+                	anonymousProcessingFilter,
+                	logoutFilter,
+                	formAuthenticationProcessingFilter,
+                	confluenceAuthenticationProcessingFilter,
+                	pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                	securityContextHolderAwareRequestFilter,
+                	exceptionTranslationFilter,
+                	filterInvocationInterceptor" 
+                />
+                <!-- Image URLs -->
+                <sec:filter-chain pattern="/*/*/image/**" filters="
+                	webIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	webAuthenticationSuccessFailureFilter,
+                	rememberMeProcessingFilter,
+                	userStatusFilter,
+                	anonymousProcessingFilter,
+                	logoutFilter,
+                	publicAccessProcessingFilter,
+                	formAuthenticationProcessingFilter,
+                	confluenceAuthenticationProcessingFilter,
+                	pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                	securityContextHolderAwareRequestFilter,
+                	exceptionTranslationFilter,
+                	filterInvocationInterceptor" 
+                />
+                <!-- Everything else -->
+                <sec:filter-chain pattern="/**" filters="
+                	webIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	webAuthenticationSuccessFailureFilter,
+                	rememberMeProcessingFilter,
+                	userStatusFilter,
+                	anonymousProcessingFilter,
+                	logoutFilter,
+                	formAuthenticationProcessingFilter,
+                	confluenceAuthenticationProcessingFilter,
+                	pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                	securityContextHolderAwareRequestFilter,
+                	exceptionTranslationFilter,
+                	filterInvocationInterceptor" 
+                />
+                <!-- The following patterns are deprecated and should be avoided. -->
+                <sec:filter-chain pattern="/*/*/user/client/**" filters="
+                	webIPRangeChannelFilter,
+                	forceSslFilter,
+                	httpSessionContextIntegrationFilter,
+                	webAuthenticationSuccessFailureFilter,
+                	rememberMeProcessingFilter,
+                	userStatusFilter,
+                	anonymousProcessingFilter,
+                	logoutFilter,
+                	formAuthenticationProcessingFilter,
+                	confluenceAuthenticationProcessingFilter,
+                	pluginAuthenticationFilter,
+                    sessionFixationProtectionFilter,
+                	securityContextHolderAwareRequestFilter,
+                	exceptionTranslationFilter,
+                	filterInvocationInterceptor"
+                />
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="hideInstallerAfterInstallationFilter" class="com.communote.server.web.external.spring.security.HideInstallerAfterInstallationFilter" />
+
+    <!-- IPRangeChannelFilter per channel type -->
+    <bean id="apiIPRangeChannelFilter" class="com.communote.server.web.commons.filter.IpRangeChannelFilter">
+        <property name="channelName" value="API" />
+        <property name="httpErrorCode" value="403" />
+        <property name="httpErrorMessageKey" value="error.ip.blocked.http.message" />
+    </bean>
+
+    <bean id="xmppIPRangeChannelFilter" class="com.communote.server.web.commons.filter.IpRangeChannelFilter">
+        <property name="channelName" value="XMPP" />
+        <property name="httpErrorCode" value="403" />
+        <property name="httpErrorMessageKey" value="error.ip.blocked.http.message" />
+    </bean>
+
+    <bean id="rssIPRangeChannelFilter" class="com.communote.server.web.commons.filter.IpRangeChannelFilter">
+        <property name="channelName" value="RSS" />
+        <property name="httpErrorCode" value="403" />
+        <property name="httpErrorMessageKey" value="error.ip.blocked.http.message" />
+    </bean>
+
+    <bean id="webIPRangeChannelFilter" class="com.communote.server.web.commons.filter.IpRangeChannelFilter">
+        <property name="channelName" value="WEB" />
+        <property name="httpErrorCode" value="403" />
+        <property name="httpErrorMessageKey" value="error.ip.blocked.http.message" />
+        <property name="errorPage" value="/error-page-ip-blocked.jsp" />
+    </bean>
+    
+    <!-- Persist authentication between requests -->
+    <bean id="sessionSecurityContextRepo" class="org.springframework.security.web.context.HttpSessionSecurityContextRepository" />
+    <bean id="httpSessionContextIntegrationFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+        <constructor-arg ref="sessionSecurityContextRepo"></constructor-arg>
+    </bean>
+   
+    <!-- force SSL if the current channel needs it -->
+    <bean id="forceSslFilter" class="com.communote.server.web.commons.filter.ForceSslChannelFilter">
+    </bean>
+    
+    <!-- Filter to general handle failures and success on authentication issues -->
+    <bean id="webAuthenticationSuccessFailureFilter" class="com.communote.server.web.external.spring.security.AuthenticationSuccessFailureFilter">
+        <property name="successHandler" ref="communoteAuthenticationSuccessHandler"></property>
+        <property name="failureHandler" ref="communoteAuthenticationFailureHandler"></property>
+    </bean>
+
+    <bean id="communoteAuthenticationSuccessHandler" class="com.communote.server.web.external.spring.security.CommunoteAuthenticationSuccessHandler">
+        <property name="redirectionTargets">
+            <list>
+                <value>/portal</value>
+                <value>/admin</value>
+            </list>
+        </property>
+        <property name="targetUrlParameter" value="targetUrl" />
+        <property name="useReferer" value="false" />
+    </bean>
+    
+    <bean id="communoteAuthenticationFailureHandler" class="com.communote.server.web.external.spring.security.CommunoteAuthenticationFailureHandler">
+        <constructor-arg>
+            <value>/portal/authenticate?authenticationFailed=true</value>
+        </constructor-arg>
+        <property name="exceptionMappings">
+            <props>
+                <prop key="com.communote.server.core.security.TermsOfUseNotAcceptedException">/user/termsConditions</prop>
+                <prop key="org.springframework.security.authentication.LockedException">/portal/authenticate?userLocked=true</prop>
+                <prop key="com.communote.server.external.acegi.UserAccountPermanentlyLockedException">/portal/authenticate?userPermLocked=true</prop>
+                <prop key="com.communote.server.external.acegi.UserAccountTemporarilyLockedException">/portal/authenticate?userTempLocked=true</prop>
+                <prop key="com.communote.server.external.acegi.UserAccountTemporarilyDisabledException">/portal/authenticate?userTempDisabled=true</prop>
+                <prop key="com.communote.server.external.acegi.UserAccountNotActivatedException">/portal/authenticate?userMailNotActivated=true</prop>
+            </props>
+        </property>
+        <property name="targetUrlParameter" value="targetUrl" />
+    </bean>
+    
+    <!-- Avoid session fixation -->
+    <bean id="sessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy" />
+    <bean id="sessionFixationProtectionFilter" class="org.springframework.security.web.session.SessionManagementFilter">
+        <constructor-arg ref="sessionSecurityContextRepo" />
+        <constructor-arg ref="sessionAuthenticationStrategy" />
+    </bean>
+
+    <!-- Authenticator which takes the username and password out of requests parameters -->
+    <bean id="apiParameterAuthenticationProcessingFilter" class="com.communote.server.web.external.spring.security.RequestParameterAuthenticationProcessingFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="paramUsername" value="loginId" />
+        <property name="paramPassword" value="password" />
+        <!-- continue chain to force a json response from the login method -->
+        <property name="continueChainOnAuthenticationFailure" value="true" />
+    </bean>
+
+    <!-- Authenticator for xmpp users -->
+    <bean id="xmppAuthenticationProcessingFilter" class="com.communote.server.web.external.spring.security.XMPPAuthenticationProcessingFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="paramUsername" value="username" />
+        <property name="paramPassword" value="password" />
+    </bean>
+
+    <!-- Authenticator which takes the username and password out of the parameters -->
+    <bean id="rssParameterAuthenticationProcessingFilter" class="com.communote.server.web.external.spring.security.RequestParameterAuthenticationProcessingFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <!-- Use default <property name="paramUsername" value="loginId"/> <property name="paramPassword" value="password"/> -->
+    </bean>
+
+    <!-- Basic Authentication -->
+    <bean id="basicAuthenticationProcessingFilter" class="com.communote.server.web.external.spring.security.CommunoteBasicAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="authenticationEntryPoint" ref="basicProcessingFilterEntryPoint" />
+    </bean>
+
+    <bean id="basicProcessingFilterEntryPoint" class="com.communote.server.web.external.spring.security.CommunoteBasicAuthenticationEntryPoint">
+        <property name="realmName" value="Communote Authentication" />
+    </bean>
+
+    <!-- The api Basic Authentication ignores failure since the login method provides specific result object -->
+    <bean id="apiBasicAuthenticationProcessingFilter" class="com.communote.server.web.external.spring.security.CommunoteBasicAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="authenticationEntryPoint" ref="basicProcessingFilterEntryPoint" />
+        <property name="ignoreFailure" value="true" />
+    </bean>
+
+    <bean id="basicExceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+        <constructor-arg>
+            <ref local="basicProcessingFilterEntryPoint" />
+        </constructor-arg>
+        <property name="accessDeniedHandler">
+            <bean class="org.springframework.security.web.access.AccessDeniedHandlerImpl" />
+        </property>
+    </bean>
+
+    <!-- Token factory for confluence tokens -->
+    <bean id="confluenceTokenFactory" class="com.communote.server.core.security.authentication.confluence.ConfluenceTokenFactory">
+    </bean>
+
+    <!-- Authenticator which checks for a request parameter named confluence_token and tries to authenticate then -->
+    <bean id="confluenceAuthenticationProcessingFilter" class="com.communote.server.web.external.spring.security.CommunoteTokenAuthenticationProcessingFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="tokenFactory" ref="confluenceTokenFactory" />
+        <property name="extractTokenFromRequestParameter" value="true" />
+    </bean>
+
+    <!-- Tests whether a previously authenticated user still has status ACTIVE (client manager might have changed it) -->
+    <bean id="userStatusFilter" class="com.communote.server.web.external.spring.security.UserStatusFilter" />
+
+    <!-- Logs the principal out -->
+    <bean id="logoutFilter" class="com.communote.server.web.external.spring.security.CommunoteLogoutFilter">
+        <constructor-arg value="/portal/authenticate?logout=done" />
+        <constructor-arg>
+            <list>
+                <ref local="rememberMeServices" />
+                <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+            </list>
+        </constructor-arg>
+        <property name="filterProcessesUrl">
+            <value>/logout</value>
+        </property>
+    </bean>
+    <!-- Logs the principal out (REST-API) -->
+    <bean id="restApiLogoutFilter" class="com.communote.server.web.external.spring.security.ApiLogoutFilter">
+        <constructor-arg>
+            <list>
+                <ref local="rememberMeServices" />
+                <bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+            </list>
+        </constructor-arg>
+        <property name="filterProcessesUrl">
+            <value>/api/rest/1.3/logout</value>
+        </property>
+    </bean>
+
+    <bean id="securityContextHolderAwareRequestFilter" class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter" />
+
+    <!-- Handles any AccessDeniedException and AuthenticationException thrown within the filter chain. -->
+    <bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+        <constructor-arg>
+            <ref local="authenticationEntryPoint" />
+        </constructor-arg>
+        <property name="accessDeniedHandler">
+            <bean class="com.communote.server.web.external.spring.security.CommunoteAccessDeniedHandler">
+                <property name="errorPage" value="/portal/authenticate" />
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="authenticationSuccessRequestSaverFilter" class="com.communote.server.web.external.spring.security.AuthenticationSuccessRequestSaverHandler" />
+    <bean id="authenticationFailureRethrowHandler" class="com.communote.server.web.external.spring.security.AuthenticationFailureRethrowHandler" />
+
+    <bean id="formAuthenticationProcessingFilter" class="com.communote.server.web.external.spring.security.UsernamePasswordFormAuthenticationProcessingFilter">
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="authenticationSuccessHandler" ref="authenticationSuccessRequestSaverFilter" />
+        <property name="authenticationFailureHandler" ref="authenticationFailureRethrowHandler" />
+        <property name="filterProcessesUrl" value="/check_credentials" />
+        <property name="rememberMeServices" ref="rememberMeServices" />
+        <property name="postOnly" value="true" />
+        <property name="sessionAuthenticationStrategy" ref="sessionAuthenticationStrategy" />
+    </bean>
+
+    <bean id="authenticationEntryPoint" class="com.communote.server.web.external.spring.security.CommunoteAuthenticationProcessingFilterEntryPoint">
+        <constructor-arg>
+            <value>/portal/authenticate</value>
+        </constructor-arg>
+        <property name="forceHttps" value="false" />
+        <property name="targetUrlParameter" value="targetUrl" />
+    </bean>
+
+    <bean id="authenticationManager" class="org.springframework.security.authentication.ProviderManager">
+        <constructor-arg>
+            <list>
+                <ref local="ldapAuthenticationProvider" />
+                <bean class="com.communote.server.web.security.PluginAuthenticationProvider" />
+                <ref local="confluenceAuthenticationProvider" />
+                <ref local="databaseAuthenticationProvider" />
+                <bean class="org.springframework.security.authentication.AnonymousAuthenticationProvider">
+                    <constructor-arg>
+                        <value>anonymousKey</value>
+                    </constructor-arg>
+                </bean>
+                <ref local="rememberMeAuthenticationProvider" />
+            </list>
+        </constructor-arg>
+        <property name="authenticationEventPublisher">
+            <bean class="com.communote.server.core.security.authentication.AuthenticationFailedEventPublisher"/>
+        </property>
+    </bean>
+
+    <bean id="ldapAuthenticationProvider" class="com.communote.server.core.security.authentication.ldap.LdapAuthenticationProvider" />
+    <bean id="confluenceAuthenticationProvider" class="com.communote.server.core.security.authentication.confluence.ConfluenceAuthenticationProvider" />
+    <bean id="databaseAuthenticationProvider" class="com.communote.server.core.security.authentication.database.DatabaseAuthenticationProvider" />
+
+    <bean id="anonymousProcessingFilter" class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
+        <constructor-arg>
+            <value>anonymousKey</value>
+        </constructor-arg>
+        <property name="userAttribute">
+            <value>anonymousUser,ROLE_ANONYMOUS</value>
+        </property>
+    </bean>
+
+    <!-- Handles any AccessDeniedException and AuthenticationException thrown within the filter chain. -->
+
+    <!-- remember me processing filter -->
+    <bean id="rememberMeProcessingFilter" class="com.communote.server.web.external.spring.security.CommunoteRememberMeProcessingFilter">
+        <property name="rememberMeServices" ref="rememberMeServices" />
+        <property name="authenticationManager" ref="authenticationManager" />
+    </bean>
+    <bean id="rememberMeServices" class="com.communote.server.web.security.CommunoteRememberMeServices">
+        <constructor-arg index="0" value="rememberedTaggingToken" />
+        <constructor-arg index="1">
+            <bean class="com.communote.server.web.security.CommunoteRememberMeUserDetailsService" />
+        </constructor-arg>
+        <property name="key" value="rememberedTaggingToken" />
+        <property name="cookieName" value="COMMUNOTE_REMEMBER_ME" />
+        <property name="parameter" value="communote_rockz" />
+    </bean>
+    <bean id="kenmeiUserDetailsService" class="com.communote.server.web.security.CommunoteRememberMeUserDetailsService" />
+    <bean id="rememberMeAuthenticationProvider" class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
+        <constructor-arg value="rememberedTaggingToken" />
+    </bean>
+    <!-- end of remember me processing filter -->
+
+    <bean id="publicAccessProcessingFilter" class="com.communote.server.web.commons.filter.PublicAccessProcessingFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+    </bean>
+
+    <bean id="pluginAuthenticationFilter" class="com.communote.server.web.filter.PluginAuthenticationFilter" />
+
+</beans>

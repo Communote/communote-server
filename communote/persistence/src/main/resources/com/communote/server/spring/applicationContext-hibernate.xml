@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <!-- Hibernate SessionFactory -->
+    <bean id="sessionFactory" class="com.communote.server.core.database.spring.CommunoteSessionFactoryBean">
+        <property name="mappingResources">
+            <list>
+                <value>com/communote/server/persistence/task/TaskExecution.hbm.xml</value>
+                <value>com/communote/server/persistence/task/Task.hbm.xml</value>
+                <value>com/communote/server/persistence/task/TaskProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/blog/Blog.hbm.xml</value>
+                <value>com/communote/server/persistence/blog/BlogMember.hbm.xml</value>
+                <value>com/communote/server/persistence/blog/UserToBlogRoleMapping.hbm.xml</value>
+                <value>com/communote/server/persistence/blog/BlogProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/blog/ResolvedTopicToTopic.hbm.xml</value>
+                <value>com/communote/server/persistence/note/Note.hbm.xml</value>
+                <value>com/communote/server/persistence/note/NoteProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/note/Content.hbm.xml</value>
+                <value>com/communote/server/persistence/note/ProcessedMailNote.hbm.xml</value>
+                <value>com/communote/server/persistence/global/GlobalId.hbm.xml</value>
+                <value>com/communote/server/persistence/tag/Tag.hbm.xml</value>
+                <value>com/communote/server/persistence/tag/AbstractTagCategory.hbm.xml</value>
+                <value>com/communote/server/persistence/attachment/Attachment.hbm.xml</value>
+                <value>com/communote/server/persistence/attachment/AttachmentProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/user/UserImage.hbm.xml</value>
+                <value>com/communote/server/persistence/user/NotificationConfig.hbm.xml</value>
+                <value>com/communote/server/persistence/user/Language.hbm.xml</value>
+                <value>com/communote/server/persistence/user/ExternalUserAuthentication.hbm.xml</value>
+                <value>com/communote/server/persistence/user/CommunoteEntity.hbm.xml</value>
+                <value>com/communote/server/persistence/user/security/AuthenticationFailedStatus.hbm.xml</value>
+                <value>com/communote/server/persistence/user/Country.hbm.xml</value>
+                <value>com/communote/server/persistence/user/UserProfile.hbm.xml</value>
+                <value>com/communote/server/persistence/user/Contact.hbm.xml</value>
+                <value>com/communote/server/persistence/user/group/UserOfGroup.hbm.xml</value>
+                <value>com/communote/server/persistence/user/group/GroupProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/user/UserAuthority.hbm.xml</value>
+                <value>com/communote/server/persistence/user/UserProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/user/UserNoteProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/user/note/UserNoteEntity.hbm.xml</value>
+                <value>com/communote/server/persistence/user/NavigationItem.hbm.xml</value>
+                <value>com/communote/server/persistence/security/SecurityCode.hbm.xml</value>
+                <value>com/communote/server/persistence/i18n/Message.hbm.xml</value>
+                <value>com/communote/server/persistence/config/Setting.hbm.xml</value>
+                <value>com/communote/server/persistence/config/Configuration.hbm.xml</value>
+                <value>com/communote/server/persistence/config/ClientConfiguration.hbm.xml</value>
+                <value>com/communote/server/persistence/config/ExternalSystemConfiguration.hbm.xml</value>
+                <value>com/communote/server/persistence/config/ApplicationConfigurationSetting.hbm.xml</value>
+                <value>com/communote/server/persistence/config/LdapSearchConfiguration.hbm.xml</value>
+                <value>com/communote/server/persistence/config/LdapGroupSyncConfiguration.hbm.xml</value>
+                <value>com/communote/server/persistence/config/LdapSearchBaseDefinition.hbm.xml</value>
+                <value>com/communote/server/persistence/external/ExternalObject.hbm.xml</value>
+                <value>com/communote/server/persistence/external/ExternalObjectProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/property/BinaryProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/property/GlobalProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/property/PluginProperty.hbm.xml</value>
+                <value>com/communote/server/persistence/security/ChannelConfiguration.hbm.xml</value>
+                <value>com/communote/server/persistence/security/IpRange.hbm.xml</value>
+                <value>com/communote/server/persistence/security/IpRangeChannel.hbm.xml</value>
+                <value>com/communote/server/persistence/security/IpRangeFilter.hbm.xml</value>
+                <value>com/communote/server/persistence/client/ClientStatistic.hbm.xml</value>
+                <value>com/communote/server/persistence/client/Client.hbm.xml</value>
+                <value>com/communote/server/persistence/messaging/MessagerConnectorConfig.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.hbm2ddl.auto"></prop>
+                <prop key="hibernate.cache.use_second_level_cache">true</prop>
+                <prop key="hibernate.cache.provider_class">com.communote.server.external.hibernate.SingletonEhCacheProvider</prop>
+                <prop key="hibernate.cache.query_cache_factory">org.hibernate.cache.StandardQueryCacheFactory</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

@@ -1,0 +1,6 @@
+{
+    "extensions": {
+        "portal": ["styles/portal-extension.css"],
+        "cnt-embed": ["styles/portal-extension.css"]
+    }
+}

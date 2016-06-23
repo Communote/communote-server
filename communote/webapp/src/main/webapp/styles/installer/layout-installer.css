@@ -1,0 +1,336 @@
+@charset "utf-8";
+
+#communote #main {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    background-color: #F8F6F0;
+    background-image: url("../../themes/core/images/misc/background_white.png");
+    background-attachment: scroll;
+    background-repeat: repeat;
+    background-position: 0 0;
+}
+
+#communote #installer-sidebar {
+    float: left;
+    margin-left: 7px;
+    width: 276px;
+}
+
+#communote #installer-content {
+    float: left;
+    margin-left: 292px;
+    margin-left: 10px;
+    width: 699px;
+}
+
+#communote #installer-content h2 {
+    font-size: 107.69%;
+}
+
+#communote .panel-head {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #CCCCCC;
+    height: 28px;
+    line-height: 25px;
+    background-color: #FFFFFF;
+    background-image: url("../../themes/core/images/misc/gradient_filter.png");
+    background-repeat: repeat-x;
+    background-attachment: scroll;
+    background-position: 0 -20px;
+}
+
+#communote #installer-content .panel-head h1 {
+    float: left;
+    margin: 0;
+    padding: 1px 0 0 11px;
+}
+
+#communote .panel-body {
+    padding: 12px 5px;
+    border-width: 0 1px 1px 1px;
+    border-style: solid;
+    border-color: #CCCCCC;
+    background-color: #FFFFFF;
+    background-image: url("../../themes/core/images/misc/gradient_gray-white-vertical.png");
+    background-repeat: repeat-x;
+    background-attachment: scroll;
+    background-position: 0 0;
+}
+
+/* ************************************************************************** */
+
+#communote .installer-progressbar {
+    margin-top: 60px;
+    margin-left: 25px;
+    font-size: 81.25%;
+}
+
+#communote .installer-progressbar * {
+    font-size: 100.001%;
+}
+
+#communote .installer-progressbar span.progress-bullet {
+    padding-right: 20px;
+    font-weight: bold; 
+}
+
+#communote .installer-progressbar a ,
+#communote .installer-progressbar span.active ,
+#communote .installer-progressbar span.disabled ,
+#communote .installer-progressbar span.done {
+    display: block;
+    margin-bottom: 14px;
+    color: #888888;
+}
+
+#communote .installer-progressbar a.done ,
+#communote .installer-progressbar span.done {
+    color: #083B7D;
+}
+
+#communote .installer-progressbar a:hover {
+    color: #FA8502;
+}
+
+#communote .installer-progressbar span.active {
+    color: #FA8502;
+}
+
+#communote .installer-progressbar span.active ,
+#communote .installer-progressbar span.disabled ,
+#communote .installer-progressbar span.done {
+    cursor: default;
+}
+    
+/* ************************************************************************** */
+
+#communote .pwd-strength-indicator{
+    float:left;
+    margin-left: 4px;
+    padding-top: 4px;    
+}
+    
+#communote .pwd-strength-label {
+    float: left;
+    font-size: 68.75%;
+    padding: 0 2px;
+}
+
+#communote .pwd-strength-bar {
+    float: left;
+    position: relative;
+    background-image: url(../../themes/core/images/main/bg_strength_gradient.jpg);
+    background-repeat: no-repeat;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #DDDDDD;
+    height: 11px;
+    width: 50px;
+}
+
+#communote .pwd-strength-arrow {
+    float: left;
+    position: absolute;
+    left: 0px;
+    top: -3px;
+    width: 1px;
+    height: 16px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #000000;
+}
+
+/* ************************************************************************** */
+
+#communote .form-container input.text ,
+#communote .form-container input.password {
+    width: 283px;
+}
+
+#communote .form-container div.checkbox {
+    width: 289px;
+}
+
+#communote .form-container select {
+    width: 289px;
+}
+
+#communote .form-container textarea {
+    width: 283px;
+    height: 50px;
+}
+
+#communote .form-container.terms div.radio{
+    width: 100%;
+}
+
+#communote .spacer {
+    height: 10px;
+    line-height: 10px;
+    font-size: 0px;
+}
+
+/* ************************************************************************** */
+
+#communote .type-italic {
+    font-style: italic;
+}
+
+#communote #database-setup-progress {
+    margin-top: 50px;
+}
+
+#communote #database-setup-progress .row {
+    margin-bottom: 10px;
+}
+
+#communote #database-setup-progress .col {
+    float: left;
+    color: #888888;
+    line-height: 24px;
+}
+
+#communote #database-setup-progress .col.active {
+    color: #000000;
+}
+
+#communote #database-setup-progress .col img {
+    vertical-align: bottom;
+}
+#communote #database-setup-progress .col img.loading {
+    margin-bottom:4px;
+    margin-left:2px;
+}
+#communote #database-setup-progress .col280 {
+    width: 280px;
+}
+
+#communote #database-setup-progress .col60 {
+    width: 60px;
+}
+
+#communote div.loading {
+    margin:30px 0;
+    text-align: center;
+}
+
+#communote #reports {
+    margin: 25px 20px 0px 0px;
+}
+
+#communote #reports .error-report ,
+#communote #reports .warning-report ,
+#communote #reports .success-report {
+    padding: 15px 15px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 9px 12px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -khtml-border-radius: 6px;
+    -ms-border-radius: 6px; 
+}
+
+#communote #reports .error-report {
+    color: #DD3333;
+    border-color: #A31B02;
+    background-image: url("../../themes/core/images/misc/error.png");
+}
+
+#communote #reports .error-report * {
+    color: #DD3333;
+}
+
+#communote #reports .warning-report {
+    color: #FA8502;
+    border-color: #FA8502;
+    background-image: url("../../themes/core/images/misc/warning.png");
+}
+
+#communote #reports .success-report {
+    color: #2F6310;
+    border-color: #579830;
+    background-image: url("../../themes/core/images/misc/success.png");
+}
+
+#communote #reports h3 {
+    margin-top: 0;
+    padding-top: 4px;  
+}
+
+#communote #reports .error-report pre ,
+#communote #reports .warning-report pre ,
+#communote #reports .success-report pre {
+    margin-top: 20px;
+    margin-bottom: 0px;
+    padding: 1em;
+    min-height: 68px;
+    color: black;
+    background-color:#FFFFFF;
+    border: 1px dashed #083B7D;
+    line-height: 1.3em;
+    white-space: pre-wrap;
+}
+
+#communote #reports .error-report pre *,
+#communote #reports .warning-report pre *,
+#communote #reports .success-report pre * {
+    color: black;
+}
+
+/* ************************************************************************** */
+
+#communote .installer-imprint {
+    position: relative;
+    padding: 10px 10px 10px 15px;
+    font-size: 81.25%;
+}
+
+#communote .installer-imprint * {
+    font-size: 100.001%;
+}
+
+#communote #installer-content .installer-imprint h2 {
+    margin: 7px 0px 50px 0px;
+}
+
+#communote .installer-imprint img.imprint-logo {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+#communote .installer-imprint table tbody th {
+    color: #333333;
+    font-weight: bold;
+    padding-right: 20px;
+}
+
+#communote .installer-imprint table tbody tr.spacer th , 
+#communote .installer-imprint table tbody tr.spacer td {
+    padding: 0px;
+    height: 5px;
+    font-size: 0px;
+    line-height: 0px;
+}
+
+/* ************************************************************************** */
+
+#communote .terms-of-use-box {
+    padding: 15px 0;
+    border-top: solid 1px #888888;
+    border-bottom: solid 1px #888888;
+}
+
+#communote .terms-of-use-box ol.lower-alpha {
+    list-style: lower-alpha;
+}
+
+#communote .terms-of-use-box p.validity {
+    font-size: 84.62%;
+    text-align: right;
+    font-style: italic;
+}

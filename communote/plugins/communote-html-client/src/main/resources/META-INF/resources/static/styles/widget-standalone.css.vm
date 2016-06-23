@@ -1,0 +1,24 @@
+.cntwStandaloneHeader{
+    color: #AAA; 
+	font-family: verdana,sans-serif;
+    font-size: 12px;
+    margin: 6px 8px;
+    overflow: hidden;
+    text-align: right;
+}
+.cntwStandaloneHeader a { 
+    color: #059; 
+    text-decoration: none
+}
+.cntwStandaloneHeader a:hover { 
+    color: #e66914;
+}
+
+.cntwStandaloneHeaderLeft {
+    float: left;
+}
+
+.cntwStandaloneHeaderRight {
+    float: right;
+    text-align: left;
+}

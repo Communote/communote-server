@@ -1,0 +1,31 @@
+/* _filterAuthors.css */
+
+.cn-filter-authors .cn-content {
+    clear: both;
+}
+
+.cn-filter-authors .cn-filter-authors-list a {
+    display: block;
+    float: left;
+    margin: 0 5px 5px 0;
+}
+
+.cn-filter-authors .cn-filter-authors-list a img {
+    display: block;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #FFFFFF;
+    width: 35px;
+    height: 35px;
+}
+
+.cn-filter-authors .cn-filter-authors-list a img.cn-selected {
+    border-color: #e66914;
+}
+
+.cn-filter-authors .cn-filter-authors-list a.cn-link {
+    margin-top: 27px;
+    margin-right: 0;
+    border-right: none;
+    padding-right: 0;
+}

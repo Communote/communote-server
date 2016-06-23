@@ -1,0 +1,3 @@
+#set( $tabWidgetActiveTab = 'control-blog-notes' )
+#set( $tabWidgetHiddenTabs = '' )
+#parse('/WEB-INF/vm/pages/feeds-content.html.vm')

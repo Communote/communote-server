@@ -1,0 +1,121 @@
+{
+    "extensions": {
+        "communote-core": [
+            "javascript/portal/rewriteLinks.js"
+        ],
+        "login": [
+            "javascript/embed/embedMessengerClient.js",
+            "javascript/embed/embedMessengerClientBuiltins.js",
+            "javascript/embed/embedViewAutoHeight.js"
+        ],
+        "portal": [
+            "javascript/portal/embedPopup.js"
+        ]
+    },
+    
+    "definitions": [    
+        {
+            "categoryName": "cnt-load-embed",
+            "coreResources": [],
+            "pluginResources": [
+                "javascript/embed/embedMessengerHost.js",
+				"javascript/embed/embedCommunote.js"
+			]
+        },
+        {
+            "categoryName": "cnt-embed-messenger",
+            "coreResources": [
+                "/javascript/frameworks/mootools/mootools-core-1.5.0.js",
+                "/javascript/frameworks/mootools/mootools-more-1.5.0.js",
+                "/javascript/frameworks/mootools/mootols-communote-extensions.js",
+                "/javascript/init/Namespace.js",
+                "/javascript/utils/i18n.js",
+                "/javascript/commons.js",
+                "/javascript/utils/helper.js",
+                "/javascript/init/ApplicationInitializer.js",
+                "/javascript/utils/Cache.js",
+                "/javascript/utils/RestApiAccessor.js",
+                "/javascript/utils/NoteUtils.js",
+                "/javascript/utils/UserUtils.js",
+                "/javascript/utils/TopicUtils.js",
+                "/javascript/utils/NoteTagUtils.js",
+                "/javascript/init/CommunoteStarter.js"
+            ],
+            "pluginResources": [
+                "javascript/embed/embedMessengerClient.js",
+                "javascript/embed/embedMessengerClientBuiltins.js"
+            ]
+        },
+        {
+            "categoryName": "cnt-embed",
+            "coreResources": [
+    			"/javascript/controls/ViewManager.js",
+                "/javascript/frameworks/mediabox/mediaboxAdv-1.5.4-communote.js",
+                "/javascript/widget/ConfigFactory.js",
+                "/javascript/widget/WidgetScrollToTopHandler.js",
+                "/javascript/FollowUtils.js",
+                "/javascript/ExpandingTextarea.js",
+                "/javascript/utils/Cache.js",
+                "/javascript/utils/AttributeMatcher.js",
+                "/javascript/utils/matchMediaPolyfill.js",
+                "/javascript/utils/ScrollObserver.js",
+                "/javascript/utils/LoadMoreSupport.js",
+                "/javascript/utils/RestApiAccessor.js",
+                "/javascript/utils/NavigationUtils.js",
+                "/javascript/utils/PropertyUtils.js",
+                "/javascript/utils/NoteUtils.js",
+                "/javascript/utils/UserUtils.js",
+                "/javascript/utils/TopicUtils.js",
+                "/javascript/utils/NoteTagUtils.js",
+                "/javascript/utils/LazyTips.js",
+                "/javascript/utils/AutoRefresher.js",
+                "/javascript/linkhandler/LinkHandler.js",
+                "/javascript/linkhandler/ApplicationLinkHandler.js",
+                "/javascript/linkhandler/ActivateContextLinkHandler.js",
+                "/javascript/hovercard/HoverCardManager.js",
+                "/javascript/hovercard/HoverCard.js",
+                "/javascript/hovercard/UserHoverCard.js",
+                "/javascript/hovercard/TopicHoverCard.js",
+                "/javascript/hovercard/TagHoverCard.js",
+                "/javascript/autocompleter/AutocompleterFactory.js",
+                "/javascript/textboxlist/TextboxList.js",
+                "/javascript/controls/Toolbar.js",
+                "/javascript/MainPageContextManager.js",
+                "/javascript/blog/NotesFilterEventHandler.js",
+                "/javascript/widget/navigation/MainPageHorizontalNavigation.Widget.js",
+                "/javascript/widget/note/NoteRefererTooltipsManager.js",
+                "/javascript/widget/note/ChronologicalPostListAutoRefresher.js",
+                "/javascript/widget/note/NoteActionHandler.js",
+                "/javascript/widget/note/NoteInteractionControlRenderer.js",
+                "/javascript/blog/ChronologicalPostList.js",
+                "/javascript/blog/ChronologicalPostList_DefaultImpl.js",
+                "/javascript/widget/note/editor/TopicAccessEvaluator.js",
+                "/javascript/widget/note/editor/NoteTextEditors.js",
+                "/javascript/blog/CreateNote.js",
+                "/javascript/blog/CreateNote_DefaultImpl.js",
+                "/javascript/widget/search/SearchBox.Widget",
+                "/javascript/blog/FilteredBy.Widget.js",
+                "/javascript/blog/BlogList",
+                "/javascript/clouds/TagCloud.Widget.js",
+                "/javascript/widget/filter/AuthorFilter.Widget.js",
+                "/javascript/frameworks/mootools/datepicker/Locale.de-DE.DatePicker.js",
+                "/javascript/frameworks/mootools/datepicker/Locale.en-US.DatePicker.js",
+                "/javascript/frameworks/mootools/datepicker/Picker.js",
+                "/javascript/frameworks/mootools/datepicker/Picker.Attach.js",
+                "/javascript/frameworks/mootools/datepicker/Picker.Date.js",
+                "/javascript/blog/BlogPostFilterPeriod.js",
+                "/javascript/type/ContentType.Widget.js",
+                "/javascript/message/DateFormatter.js",
+                "/javascript/init/CommunoteStarter.js",
+                "/javascript/controls/HorizontalNavigationToolProvider.js"
+            ],
+            "pluginResources": [
+                "javascript/embed/embedMessengerClient.js",
+                "javascript/embed/embedMessengerClientBuiltins.js",
+                "javascript/embed/embedViewAutoHeight.js",
+                "javascript/embed/embedViewResponsiveUtils.js"
+            ]
+        }
+    ]
+}
+

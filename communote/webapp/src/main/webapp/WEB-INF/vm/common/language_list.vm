@@ -1,0 +1,7 @@
+<select class="cn-select" name="$languageSelectName" id="$languageSelectName">
+#foreach($language in $communoteTool.languages)
+    <option value="$language.languageCode" #if($language.languageCode.equals($selectedLanguageCode))selected="selected"#end>
+        $language.name
+    </option>
+#end
+</select>

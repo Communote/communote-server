@@ -1,0 +1,19 @@
+#if($richMediaDescription)
+    ## set values
+    #if( "$!richMediaTitle" == "" )
+        #set( $richMediaTitle = $fmtTool.message("richmedialinkparser.title.youtube") )
+    #end
+    #if( "$!richMediaCssClass" == "" )
+        #set( $richMediaCssClass = "cono-youtube-player" )
+    #end
+    
+    #set( $richMediaId = $richMediaDescription.MediaId )
+    #set( $richMediaType = $richMediaDescription.MediaTypeId )
+    
+    ## render HTML of the rich media source
+    <span title="$richMediaTitle" class="richmedia-source $richMediaType $richMediaCssClass#if($richMediaDescription.useHttps) https#end">${richMediaId}</span>
+    
+    ## reset values
+    #set( $richMediaTitle = "" )
+    #set( $richMediaCssClass = "" )
+#end

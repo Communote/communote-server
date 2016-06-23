@@ -1,0 +1,38 @@
+#if ($pageTitle)
+<title>${pageTitle}</title>
+#else
+<title>$fmtTool.message('blog.main.page.title') &ndash; $escTool.xmlSimple($communoteTool.CurrentClientName)</title>
+#end
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+## actually not required because IE uses the highest available standard mode if there is a valid
+## doctype, but an embedded iframe would use quirks mode emulation in IE10 and IE11 if edge is not
+## set, thats how I understand http://msdn.microsoft.com/en-us/library/ff955402(v=vs.85).aspx
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="language" content="en" />
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no" />
+<link rel="shortcut icon" type="image/x-icon" href="$urlTool.render('/favicon.ico', false, false, true)" />
+#parse('/WEB-INF/vm/common/styles.html.vm')
+## insert javascripts
+#set($jsMessagesCategory='portal')
+#parse('/WEB-INF/vm/common/scripts.html.vm')
+<script type="text/javascript">
+## cannot be in global_js_vars because it requires source code contained in javascript list
+    #if($communoteTool.blogs.isDefaultBlogEnabled(true, true))
+        #set($defaultBlog=$communoteTool.blogs.getDefaultBlog())
+        ## implicitly declare defaultBlog variable so it can be removed from global scope 
+        var defaultBlog = {
+            id: '$defaultBlog.Id',
+            title: '$escTool.javascriptInline($defaultBlog.Title)',
+            alias: '$defaultBlog.NameIdentifier',
+            role: '$communoteTool.blogs.getDefaultBlogRole()'
+        };
+    #end
+    #if(${initialFiltersJson})
+    communote.initialFilterParameters = $escTool.jsonInline(${initialFiltersJson});
+    #end
+    if (window.C_DateFormatter) {
+        var localizedDateFormatter = new C_DateFormatter({
+            days: [$fmtTool.message("javascript.dateformatter.days")], months: [$fmtTool.message("javascript.dateformatter.months")],
+            pattern: '$fmtTool.message("javascript.autosave.dateformatter.pattern")' });
+    }
+</script>

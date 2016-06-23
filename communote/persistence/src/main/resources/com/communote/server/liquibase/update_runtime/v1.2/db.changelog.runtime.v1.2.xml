@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update_runtime/v1.2/db.changelog.runtime.v1.2.xml">
+         
+    <changeSet author="unknown" id="KENMEI_1941_Follow_BE_Add_Followable_Items" context="client">
+        <comment>add followable items to all existing notes</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_2.AddFollowableItemsToNotes"></customChange>
+    </changeSet>
+</databaseChangeLog>

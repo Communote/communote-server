@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update_2nd_pass/v3.x/db.changelog.v3.1.xml">
+                   
+    <changeSet author="Communote" id="KENMEI-1264_Offline-Autosave_TaskHandler_3" context="client">
+        <comment>Add DeleteOrphanedAttachmentsTaskHandler to tasks</comment>
+        <customChange class="de.communardo.kenmei.database.update.v3_1.AddDeleteOrphanedAttachmentsTaskHandlerToDB"></customChange>
+    </changeSet>
+</databaseChangeLog>

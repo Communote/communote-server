@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE tiles-definitions PUBLIC
+ "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+ "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+
+    <definition name="main.microblog.client" path="/WEB-INF/jsp/portal/blog/client/blog_client_main.jsp">
+        <put name="title" type="string" value="blog.client.admin.page.title" />
+        <put name="navigation" value="/WEB-INF/jsp/user/client/client_navigation.jsp" />
+        <put name="header"  value="/WEB-INF/jsp/portal/blog/common/blog_portal_header.jsp" />
+        <put name="footer"  value="/WEB-INF/jsp/portal/blog/common/blog_portal_footer.jsp" />
+        <put name="content" value="/WEB-INF/jsp/user/client/client_welcome.jsp" />
+        <put name="portalSection" type="string" value="administration" />
+    </definition>
+
+    <definition name="main.microblog.client.wrapper" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/portal/blog/client/blog_client_main.wrapper.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.ip.range" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/ip_range.jsp" />
+    </definition>
+
+    <!-- ..:: Channel Security Configuration ::.. -->
+    <definition name="main.microblog.client.security.ssl" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/ssl_configuration.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.security.permissions" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/client_security_permissions.jsp" />
+    </definition>
+    
+    <definition name="main.microblog.client.user.group.management" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/client_user_group_management.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.user.management" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/client_user_management_complete.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.integration.overview" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/integration/integration-overview.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.authentication.ldap" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/integration/integration-ldap.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.authentication.confluence" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/integration/integration-confluence.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.profile" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/client_profile.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.customize.imprint" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/customize/imprint.jsp" />
+    </definition>
+    <definition name="main.microblog.client.customize.termsofuse" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/customize/termsofuse.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.profile.email" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/client_profile_email.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.module" extends="main.microblog.client">
+        <put name="content" value="/WEB-INF/jsp/user/client/client_module.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.user.management.delete" path="/WEB-INF/jsp/user/client/client_delete_user_popup.jsp" />
+
+    <definition name="main.microblog.client.management.security.authentication" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/client/security/authentication.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.management.system.application.file.upload" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/content/file.upload.jsp" />
+    </definition>
+
+
+</tiles-definitions>

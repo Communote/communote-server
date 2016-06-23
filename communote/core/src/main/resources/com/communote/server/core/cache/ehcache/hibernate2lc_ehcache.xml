@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+    updateCheck="false" monitoring="off">
+   
+   <!-- will be overridden at runtime --> 
+   <diskStore path="java.io.tmpdir" />
+   
+   <cacheManagerEventListenerFactory class="" properties="" />
+   
+   <!-- must add a placeholder because the cache manager creation that respects clustering is
+    created after spring setup and this configuration is parsed during spring setup while hibernate's
+    session factory is initialized -->
+   <cacheManagerPeerProviderFactory
+            class="com.communote.server.core.common.caching.eh.PlaceHolderCacheManagerPeerProviderFactory"
+            properties="scheme=RMI" />
+    <cacheManagerPeerListenerFactory 
+            class="com.communote.server.core.common.caching.eh.PlaceHolderCacheManagerPeerListenerFactory"
+            properties="scheme=RMI" />
+   
+   <defaultCache maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="120" timeToLiveSeconds="120"
+        overflowToDisk="true" diskSpoolBufferSizeMB="30" maxElementsOnDisk="10000000" diskPersistent="false"
+        diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU" />
+   
+   <!-- Cache definitions for Hibernate 2nd level caching, depends on the com.communote.server.external.hibernate.SingletonEhCacheProvider -->
+   
+   <!-- Cache for note data
+        * Note entity
+        * Content entity
+        * NoteProperty entity
+        * Note.tags association
+        * Note.usersToBeNotified association
+        * Note.properties association
+        * Note.attachments association
+        Size estimation: 8000 notes, 8000 contents, 8000 tag associations, 8000 usersToBeNotified associations, 
+            8000 property associations, 8000 attachment associations, 24000 note properties (3 per note) => 72000 elements in memory
+        Note: The 24000 properties could be expensive in terms of memory consumption since the values are CLOBs!
+    -->
+   <cache
+        name="NoteCache"
+        maxElementsInMemory="72000"
+        eternal="false"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="3600"
+        overflowToDisk="true">
+        <cacheExtensionFactory class="com.communote.server.core.common.caching.eh.DistributionSupportCacheExtensionFactory"
+            properties="scheme=RMI, settings=replicateAsynchronously=true; replicatePuts=false;
+                            replicateUpdates=true; replicateUpdatesViaCopy=false; replicateRemovals=true" />
+    </cache>
+    
+     <!-- Cache for attachment data
+        * Attachment entity
+        * AttachmentProperty entity
+        * Attachment.properties association
+        Size estimation: 6000 attachments, 6000 property associations, 
+            18000 attachment properties (3 per note) => 30000 elements in memory
+        Note: The 30000 properties could be expensive in terms of memory consumption since the values are CLOBs!
+    -->
+    <cache
+        name="AttachmentCache"
+        maxElementsInMemory="30000"
+        eternal="false"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="3600"
+        overflowToDisk="true">
+        <cacheExtensionFactory class="com.communote.server.core.common.caching.eh.DistributionSupportCacheExtensionFactory"
+            properties="scheme=RMI, settings=replicateAsynchronously=true; replicatePuts=false;
+                            replicateUpdates=true; replicateUpdatesViaCopy=false; replicateRemovals=true" />
+    </cache>
+    
+    <!-- Cache for blog data:
+        * Blog entity
+        * BlogProperty entity
+        * ExternalObject entity
+        * Blog.tags association
+        * Blog.properties association
+        * Blog.externalObjects association
+        Size estimation: 800 blogs, 500 external objects (0,625 per blog), 3*800 for the 3 associations, 
+            2400 properties (3 per blog) => 6100 elements in memory
+        Note: The 2400 properties could be expensive in terms of memory consumption since the values are CLOBs!
+     -->
+    <cache
+        name="BlogCache"
+        maxElementsInMemory="6100"
+        eternal="false"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="3600"
+        overflowToDisk="true">
+        <cacheExtensionFactory class="com.communote.server.core.common.caching.eh.DistributionSupportCacheExtensionFactory"
+            properties="scheme=RMI, settings=replicateAsynchronously=true; replicatePuts=false;
+                            replicateUpdates=true; replicateUpdatesViaCopy=false; replicateRemovals=true" />
+    </cache>
+    <!-- Cache for data of users and groups:
+        * Entity entity
+        * KenmeiUser entity
+        * UserProfile entity
+        * Contact entity
+        * UserGroup entity
+        * ExternalUserAuthentication entity
+        * UserProperty entity
+        * collection CommunoteEntity.tags
+        * collection User.externalAuthentications
+        * collection User.properties
+        Size estimation: 1000 users, 1000 profiles, 1000 contacts, 1000 external auths associations,
+            1000 properties associations, 200 groups, 1200 tag associations, 5000 properties (5 per user),
+            2000 external auths (2 per user) => 13400 elements in memory
+        Note: The 5000 properties could be expensive in terms of memory consumption since the values are CLOBs!
+     -->
+    <cache
+        name="UserGroupCache"
+        maxElementsInMemory="13400"
+        eternal="false"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="3600"
+        overflowToDisk="true">
+        <cacheExtensionFactory class="com.communote.server.core.common.caching.eh.DistributionSupportCacheExtensionFactory"
+            properties="scheme=RMI, settings=replicateAsynchronously=true; replicatePuts=false;
+                            replicateUpdates=true; replicateUpdatesViaCopy=false; replicateRemovals=true" />
+    </cache>
+     
+    <!-- Cache for localizations
+        * Language entity
+        * Message entity
+        Size estimation: 20 languages, 2000 messages => 2020 elements in memory
+        Note: The 2000 messages could be expensive in terms of memory consumption since the values are CLOBs!
+    -->
+    <cache
+        name="LocalizationCache"
+        maxElementsInMemory="2020"
+        eternal="true"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="3600"
+        overflowToDisk="false">
+        <cacheExtensionFactory class="com.communote.server.core.common.caching.eh.DistributionSupportCacheExtensionFactory"
+            properties="scheme=RMI, settings=replicateAsynchronously=true; replicatePuts=false;
+                            replicateUpdates=true; replicateUpdatesViaCopy=false; replicateRemovals=true" />
+    </cache>
+    <!-- Cache for tag data
+        * Tag entity
+        * TagImpl.names association
+        * TagImpl.descriptions association
+        Size estimation: 3000 tags => 9000 elements in memory (collection caches must have equal size) 
+    -->
+    <cache
+        name="TagCache"
+        maxElementsInMemory="9000"
+        eternal="true"
+        timeToIdleSeconds="0"
+        timeToLiveSeconds="3600"
+        overflowToDisk="true">
+        <cacheExtensionFactory class="com.communote.server.core.common.caching.eh.DistributionSupportCacheExtensionFactory"
+            properties="scheme=RMI, settings=replicateAsynchronously=true; replicatePuts=false;
+                            replicateUpdates=true; replicateUpdatesViaCopy=false; replicateRemovals=true" />
+    </cache>
+
+</ehcache>

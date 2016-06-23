@@ -1,0 +1,41 @@
+#cnRenderMessages()
+<form method="post" enctype="multipart/form-data">
+                <fieldset class="profile">
+                    <div class="line">
+                        <div class="w100">
+                            <div class="label"><label for="clientName">#t('client.profile.client.name')<span class="required">*</span></label></div>
+                            <div class="input">
+                                <input name="clientName" class="text" value="$!escTool.xmlSimple($!{command.clientName})" />
+                            </div>
+                            #springBind('command.clientName')
+                            #if($status.errorMessages && !$status.errorMessages.isEmpty())
+                                  #springShowErrors('' 'error')
+                            #end
+                        </div>
+                        <span class="clear"><!-- --></span>
+                    </div> 
+                    <div class="line">
+                        <div class="w100">
+                            <div class="label"><label for="timeZoneId">#t('client.registration.profile.timezone')<span class="required">*</span></label></div>
+                            <div class="input">
+                                #set($includeEmpty = true)
+                                #set($timeZoneSelectName = 'timeZoneId')
+                                #set($selectedTimeZoneId = $command.timeZoneId)
+                                #parse('/WEB-INF/vm/common/timezone_list.vm')
+                            </div>
+                            #springBind('command.timeZoneId')
+                            #if($status.errorMessages && !$status.errorMessages.isEmpty())
+                                  #springShowErrors('' 'error')
+                            #end
+                        </div>
+                        <span class="clear"><!-- --></span>
+                    </div>
+                    <div class="info">#t("form.info.required.fields")</div>
+                </fieldset>
+                <div class="actionbar actionbar-general">
+                    <div class="button-gray main">
+                        <input type="submit" name="submit" value="#t('button.save')" />
+                    </div>
+                    <span class="clear"><!-- --></span>
+                </div>
+</form>

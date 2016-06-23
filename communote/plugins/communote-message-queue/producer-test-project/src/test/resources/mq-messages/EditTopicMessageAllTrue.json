@@ -1,0 +1,59 @@
+{
+   "identityContext":{
+      "@class":"com.communote.plugins.mq.message.base.data.security.UserIdentityContext",
+      "identity":{
+         "identity":"@@TOPIC_MANAGER@@",
+         "identityType":"@@IDENTITY_TYPE@@"
+      }
+   },
+   "authentication" : {
+    "@class" : "com.communote.plugins.mq.message.base.data.security.UsernamePasswordAuthentication",
+    "identity" : {
+      "identity" : "@@CNT_AUTHENTICATION_USERNAME@@"
+    },
+    "password" : "@@CNT_AUTHENTICATION_PASSWORD@@"
+   },   
+   "externalSystemId": "DefaultSharepoint",
+   "replyType":"FULL",
+   "topic":{
+      "topicId":@@TOPIC_ID@@,
+      "topicAlias":"@@TOPIC_ALIAS@@",
+      "title":"@@RANDOM@@",
+      "description":"MQ edited topic: @@RANDOM@@",
+      "tags":[
+         {
+            "tagStoreAlias":"DefaultBlogTagStore",
+            "name":"@@RANDOM@@",
+            "defaultName":"@@RANDOM@@"
+         }
+      ],
+      "topicRights":{
+         "allCanRead":true,
+         "allCanWrite":true
+      },
+      "properties":[
+         {
+            "group":"@@RANDOM@@",
+            "key":"@@RANDOM@@",
+            "value":"@@RANDOM@@"
+         }
+      ],
+      "externalObjects": [
+        {
+            "externalObjectId":"@@EXTERNAL_OBJECT_ID@@",
+            "externalObjectName":"contrieved external object"
+        }
+      ]
+   },
+   "setTags":true,
+   "mergeTags":true,
+   "deleteAllTags":true,
+   "mergeProperties":true,
+   "updateDescription":true,
+   "updateAlias":true,
+   "updateTopicRights":true,
+   "setExternalObjects":true,
+   "mergeExternalObjects":true,
+   "deleteAllExternalObjects":true,
+   "updateTitle":true
+}

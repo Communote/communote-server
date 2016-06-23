@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <bean id="acceptTermsController" class="com.communote.server.web.fe.portal.user.controller.AcceptTermsController">
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.forms.AcceptTermsForm</value>
+        </property>
+        <property name="formView">
+            <value>microblog.user.register.accept.terms</value>
+        </property>
+        <property name="startpageRegistry" ref="startpageRegistry" />
+        <property name="targetUrlParameter" value="targetUrl" />
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.validator.AcceptTermsValidator" />
+        </property>
+    </bean>
+
+    <bean id="confirmUserController" class="com.communote.server.web.fe.portal.user.controller.ConfirmUserController">
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.forms.RegistrationForm</value>
+        </property>
+        <property name="pages">
+            <list>
+                <value>microblog.user.registration</value>
+            </list>
+        </property>
+        <property name="cancelView">
+            <value>main.microblog.portal.home.welcome</value>
+        </property>
+        <property name="finishView">
+            <value>main.microblog.portal.message</value>
+        </property>
+        <property name="errorView">
+            <value>main.microblog.portal.message</value>
+        </property>
+    </bean>
+
+    <bean id="registerUserController" class="com.communote.server.web.fe.portal.user.controller.RegisterUserController">
+        <property name="view">
+            <value>main.microblog.portal.message</value>
+        </property>
+    </bean>
+
+    <bean id="termsViewController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view">
+            <value>microblog.user.view.terms</value>
+        </property>
+    </bean>
+
+    <bean id="aboutWelcomeController" class="com.communote.server.web.commons.controller.StaticPageVelocityViewController">
+        <property name="javaScriptCategories">
+            <array>
+                <value>communote-core</value>
+            </array>
+        </property>
+        <property name="cssCategories">
+            <array>
+                <value>layout-medium</value>
+            </array>
+        </property>
+        <property name="view" value="microblog.about.welcome"/>
+        <property name="contentTemplate" value=""/>
+        <property name="contentManager"><bean class="com.communote.server.web.fe.portal.about.AboutPageContentManagerFactory" /></property>
+        <property name="templateManager" ref="velocityTemplateManager" />
+    </bean>
+
+    <bean id="forgottenPWController" class="com.communote.server.web.fe.portal.user.controller.ForgottenPWController">
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.validator.ForgottenPWValidator" />
+        </property>
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>forgottenPWCommand</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.forms.ForgottenPWForm</value>
+        </property>
+        <property name="formView">
+            <value>main.microblog.portal.forgotten.password</value>
+        </property>
+        <property name="successView">
+            <value>main.microblog.portal.message</value>
+        </property>
+        <property name="refuseOnExternalAuthentication" value="false" />
+    </bean>
+
+    <bean id="userProfileActionController" class="com.communote.server.web.fe.portal.user.profile.controller.UserProfileActionController">
+    </bean>
+
+    <bean id="multipartResolver" class="com.communote.server.web.commons.resolver.CommunoteMultipartResolver" lazy-init="true">
+        <!-- is set dynamically to kenmei.attachment.max.upload.size + maxSizeOffset -->
+        <!--property name="maxUploadSize" value="5000000" / -->
+        <property name="maxSizeOffset" value="1000000" />
+        <property name="defaultEncoding" value="utf-8" />
+    </bean>
+
+    <bean id="uploadSizeExceededExceptionResolver" class="com.communote.server.web.commons.resolver.MaxUploadSizeExceededExceptionResolver">
+        <property name="nonAjaxUploadRequestMappings">
+            <map>
+                <!-- setting generic message page since the custom admin page for logo upload cannot be rendered because the controller is not called and thus the command won't be set -->
+                <entry key="/admin/client/profile/logo" value="core.message.page" />
+            </map>
+        </property>
+    </bean>
+
+    <bean id="securityCodeConfirmationController" class="com.communote.server.web.fe.portal.controller.SecurityCodeConfirmationController">
+        <property name="formView">
+            <value>main.microblog.portal.message</value>
+        </property>
+        <property name="loggedInView">
+            <value>main.microblog.portal.message</value>
+        </property>
+    </bean>
+
+    <bean id="userSearchController" class="com.communote.server.web.fe.portal.user.controller.UserSearchController">
+    </bean>
+
+    <bean id="userHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true" />
+        <property name="mappings">
+            <props>
+                <prop key="/*/*/user/profile/*.do">userProfileActionController</prop>
+                <prop key="/microblog/*/user/confirm.do">confirmUserController</prop>
+                <prop key="/microblog/*/user/registration.do">registerUserController</prop>
+                <prop key="/microblog/*/user/termsConditions">acceptTermsController</prop>
+                <prop key="/microblog/*/user/viewTermsConditions.do">termsViewController</prop>
+                <prop key="/microblog/*/user/about.do">aboutWelcomeController</prop>
+                <prop key="/microblog/*/user/confirmcode.do">securityCodeConfirmationController</prop>
+                <prop key="/microblog/*/user/sendforgottenpw.do">forgottenPWController</prop>
+                <prop key="/microblog/*/user/search/*.do">userSearchController</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

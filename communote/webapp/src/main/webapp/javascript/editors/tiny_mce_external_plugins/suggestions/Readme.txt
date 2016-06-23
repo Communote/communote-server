@@ -1,0 +1,1 @@
+Simplified version which handles input of certain trigger characters, similar to confluence's user suggestion.

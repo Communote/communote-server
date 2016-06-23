@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="Integration Test Suite PostgreSQL" verbose="1">
+	<!-- TODO this config refers to dev server of amo -->
+	
+	<!--<![CDATA[
+		There are the combinations to test: 1st TCP: url is tcp:// and mqLogin 
+		and mqPassword is set 2nd SSL: url is ssl:// and mqLogin and mqPassword is 
+		set 3rd SSL with cert: url is ssl:// and no mqLogin and no mqPassword is 
+		set 
+		
+		Therefore 3 modes are supported: 
+		<parameter name="mode" value="tcp" /> 
+		<parameter name="mode" value="ssl" /> 
+		<parameter name="mode" value="sslcert" /> 
+	
+	]]>-->
+
+	<parameter name="mode" value="tcp" />
+	<parameter name="url" value="tcp://localhost:61616" />
+	<parameter name="sslUrl" value="ssl://localhost:61617" />
+	<parameter name="mqLogin" value="kenmei" />
+	<parameter name="mqPassword" value="123456" />
+	<parameter name="cntManagerAlias" value="kenmei" />
+	<parameter name="cntManagerId" value="1" />
+	<parameter name="cntUserAlias" value="kenmei2" />
+	<parameter name="cntAuthenticationUsername" value="sharepoint.system" />
+	<parameter name="cntAuthenticationPassword" value="123456" />
+    <!-- identifier of a group in the external system. The group must be known in communote
+        or the automatic creation of external groups must be activated, the group must
+        exist in external system and the system must be activated. In case of strict mode
+        and primary external system beeing LDAP, group sync must be activated for LDAP.
+    -->
+    <parameter name="externalGroupId" value="testgroup1" />
+
+	<test name="Communote MQ Test">
+
+		<classes>
+			<class name="com.communote.plugins.mq.test.ProducerMessageQueueTest" />
+			<class name="com.communote.plugins.mq.test.StaticMessagesMessageQueueTest" />
+		</classes>
+
+	</test>
+</suite>

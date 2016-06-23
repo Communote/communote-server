@@ -1,0 +1,56 @@
+# After editing this file you have to restart Openfire.
+# /etc/init.d/openfire restart
+
+# The url the request goes to. 
+# Available placeholders:
+# - {HOST}: will be resolved via a pattern out of the username
+# - {POST}: will be resolved via a pattern out of the username
+# - {CLIENT}: will be resolved via a pattern out of the username
+
+url=https://$!{defaultHost}:$!{defaultPortHttps}$!{context}/microblog/{CLIENT}/api/v1.0/local/xmpp.do
+
+# url=http://$!{defaultHost}:$!{defaultPort}$!{context}/microblog/{CLIENT}/api/v1.0/local/xmpp.do
+# url=$!{internalProtocol}://$!{internalHost}:$!{internalPort}$!{context}/microblog/{CLIENT}/api/v1.0/local/xmpp.do
+
+# You can define a fallback authentication method, which will be used if http auth didn't worked.
+# Attention: To use a proper configured alternative, install Openfire with this before setting up
+# the HttpAuthProvider.
+
+# fallback.provider.auth.className=org.jivesoftware.openfire.ldap.LdapAuthProvider
+
+# the post parameter name for the login
+param.login=username
+# the post parameter name for the password
+param.password=password
+
+# Default parameter values
+host=$!{defaultHost}
+# host=$!{internalHost}
+port=$!{defaultPortHttps}
+# port=$!{defaultPort}
+# port=$!{internalPort}
+client=global
+
+# Patterns to be used to match the login to be used for http-auth or the fallback.
+
+# Matches usernames with letters and dots, i.e. adrian.moerchen@myHost.com
+pattern.login=[a-zA-Z.]+(@.*)?
+# Matches usersnames with letters only, i.e. adrian@myHost.com
+pattern.login.fallback=[a-zA-Z]+(@.*)?
+
+# Regular expression patterns to parse parameters from login. Password has no pattern.
+# The default pattern matches something like: adrian.myClient.localhost.8080@myHost.com
+pattern.host=[a-zA-Z0-9_\\-\\.]+\\.([a-zA-Z0-9_\\-]+)\\.[0-9]+
+pattern.port=[a-zA-Z0-9_\\-\\.]+\\.([0-9]+)
+pattern.client=[a-zA-Z0-9_\\-\\.]+\\.([a-zA-Z0-9_]+)\\.[a-zA-Z0-9_]+\\.[0-9]+
+
+# You can specify multiple users which will not be checked against the url.
+# Passwords must be sha-1 hashed.
+# Example: admin/123456
+# allowed_user[0].user=admin
+# allowed_user[0].password=7c4a8d09ca3762af61e59520943dc26494f8941b
+
+# You can specify a specific host for a user account
+# Example:
+# user_host[0].user=user@myHost.com
+# user_host[0].host=yourHost.com

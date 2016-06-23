@@ -1,0 +1,1 @@
+tinyMCE.addI18n('en.changesettings',{"settings_desc": "Change Settings"});

@@ -1,0 +1,9 @@
+span.suggestion-wrapper {
+    background-color: #ECECEC;
+    font-weight: bold;
+}
+
+span.suggestion-wrapper span.suggestion-search {
+    font-weight: normal;
+    margin-left: 1px;
+}

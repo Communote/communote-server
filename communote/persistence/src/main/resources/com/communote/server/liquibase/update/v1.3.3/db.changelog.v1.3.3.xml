@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.3.3/db.changelog.v1.3.3.xml">
+    <changeSet author="unknown" id="KENMEI-2608-Refactor MostUsedBlogs" context="client">
+        <dropTable tableName="core_blog_event" cascadeConstraints="false" />
+    </changeSet>
+
+    <changeSet author="unknown" id="kenmei-1988-ramconnector-entfernen" context="client">
+        <dropTable tableName="crc_ramconn_config" />
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-2629-Reset-Primary-Auth-on-deactivated-external-auth" context="client">
+        <update tableName="configuration_external_system">
+            <column name="PRIMARY_AUTHENTICATION" valueBoolean="false" />
+            <where>ALLOW_EXTERNAL_AUTHENTICATION=false</where>
+        </update>
+        <update tableName="user_user">
+            <column name="password" value="null" />
+            <where>id in (select kenmei_user_fk from user_external_auth where
+                system_id in (select system_id from configuration_external_system where
+                allow_external_authentication=TRUE and
+                primary_authentication=TRUE))</where>
+        </update>
+    </changeSet>
+    <changeSet author="unknown" id="KENMEI-3719_clean_postgresql" context="client" dbms="postgresql">
+       <sql><![CDATA[
+            CREATE TEMP TABLE user_note_property_temp (LIKE user_note_property);
+            ALTER TABLE user_note_property_temp DROP COLUMN id;
+            ALTER TABLE user_note_property_temp DROP COLUMN last_modification_date;
+            INSERT INTO user_note_property_temp (property_key, key_group, user_fk, note_fk, property_value) SELECT property_key, key_group, user_fk, note_fk, property_value FROM user_note_property GROUP BY property_key, key_group, user_fk, note_fk,property_value;
+            DELETE FROM user_note_property;
+            INSERT INTO user_note_property (id,property_key, key_group, user_fk, note_fk, property_value) SELECT nextval ('user_note_property_seq'),property_key, key_group, user_fk, note_fk, property_value FROM user_note_property_temp GROUP BY property_key, key_group, user_fk, note_fk,property_value;
+            DROP TABLE user_note_property_temp;
+       ]]></sql>
+    </changeSet>    
+    <changeSet author="unknown" id="KENMEI-3719_clean_mysql" context="client" dbms="mysql">
+       <sql><![CDATA[
+            CREATE TEMPORARY TABLE user_note_property_temp LIKE user_note_property;
+            INSERT INTO user_note_property_temp (property_key, key_group, user_fk, note_fk, property_value) 
+            SELECT property_key, key_group, user_fk, note_fk, property_value 
+            FROM user_note_property 
+            GROUP BY property_key, key_group, user_fk, note_fk,property_value;
+            DELETE FROM user_note_property;
+            INSERT INTO user_note_property (property_key, key_group, user_fk, note_fk, property_value) SELECT property_key, key_group, user_fk, note_fk, property_value FROM user_note_property_temp GROUP BY property_key, key_group, user_fk, note_fk,property_value;
+            DROP TABLE user_note_property_temp;
+       ]]></sql>
+    </changeSet>    
+    <changeSet author="unknown" id="KENMEI-3719_2" context="client">
+	<preConditions onFail="MARK_RAN">
+            <not>
+                 <changeSetExecuted id="KENMEI-3719" author="unknown" 
+                    changeLogFile="de/communardo/kenmei/database/update/v1.3.3/db.changelog.v1.3.3.xml"/>
+            </not>
+        </preConditions>      
+	<addUniqueConstraint tableName="user_note_property" columnNames="property_key,key_group,USER_FK,NOTE_FK" constraintName="us_no_prop_constr" />
+    </changeSet>
+    <changeSet author="unknown" id="KENMEI-3762-Drop-Unique-LANGUAGE_FK_2" context="client" dbms="mysql" failOnError="false"> 
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <not>   
+                    <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.3.3/db.changelog.v1.3.3.xml" 
+                        author="unknown" id="KENMEI-3762-Drop-Unique-LANGUAGE_FK"/>
+                </not>
+                <not>   
+                    <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml" 
+                        author="Communote" id="KENMEI-4488-Sprache an ext Tags nicht aktualisiert_mysql"/>
+                </not>
+            </and>
+        </preConditions>
+        <dropUniqueConstraint tableName="custom_messages" constraintName="LANGUAGE_FK" uniqueColumns="LANGUAGE_FK"/>
+    </changeSet>  
+</databaseChangeLog>

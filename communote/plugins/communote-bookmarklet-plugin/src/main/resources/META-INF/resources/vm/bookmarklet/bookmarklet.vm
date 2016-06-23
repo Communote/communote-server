@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>$pageTitle</title>
+        <link rel="shortcut icon" type="image/x-icon" href="$urlTool.render('/images/favicon.ico', false, false, true)" />
+        #parse('/WEB-INF/vm/common/styles.html.vm')
+        #parse('/WEB-INF/vm/common/scripts.html.vm')
+        <script type="text/javascript">
+        #if($communoteTool.blogs.isDefaultBlogEnabled(true, true))
+            #set($defaultBlog=$communoteTool.blogs.getDefaultBlog())
+            ## implicitly declare defaultBlog variable so it can be removed from global scope 
+            var defaultBlog = {
+                id: '$defaultBlog.Id',
+                title: '$escTool.javascriptInline($defaultBlog.Title)',
+                alias: '$defaultBlog.NameIdentifier',
+                role: '$communoteTool.blogs.getDefaultBlogRole()'
+            };
+        #end
+        (function(){
+            var eventHandler = {
+                closeOnRemove: true,
+                handleEvent: function(eventName, params) {
+                    if (eventName == 'onWidgetRemove') {
+                        if (this.closeOnRemove) {
+                            window.close();
+                        }
+                    } else {
+                        this.closeOnRemove = false;
+                        document.getElement('.showOnSuccess').removeClass('cn-hidden');
+                    }
+                }
+            };
+            communote.initializer.addWidgetFrameworkInitializedCallback(function(){
+                var widgetController = communote.widgetController;
+                widgetController.registerWidgetEventListener('onWidgetRemove', eventHandler);
+                widgetController.registerWidgetEventListener('onNotesChanged', eventHandler);
+            });
+        })();
+        </script>
+    </head>
+    #if($paramTool.get('u'))
+        #set($content = "<p>${paramTool.get('u')}</p>")
+    #end
+    #if($paramTool.get('t'))
+        #set($title = "<p>${paramTool.get('t')}</p>")
+    #end
+    #if($stringUtils.isNotBlank($paramTool.get('c')))
+        #set($text = "<p>${escTool.quote}$paramTool.get('c').replaceAll('\r\n','<br />').replaceAll('\n','<br />')${escTool.quote}</p>")
+    #end
+    #set($content = "$!title$!content$!text")
+    #if($content)
+        #set($content = $escTool.javascriptInline($content))
+    #end
+    <body>
+        <div id="cn-communote" class="bookmarklet">
+            <div id="cn-body-wrapper">
+                <div id="cn-overview" class="cn-body">
+                    <h2 class="cn-headline">$fmtTool.message('bookmarklet.title')</h2>
+                    <div class="disposeOnSuccess">
+                        #set($tagSuggestionsSearch = $communoteTool.tags.getNoteTagSuggestions(false, 'id', 'title', 'provider', $request))
+                        
+                        #set($widgetSettings = "{
+                        &quot;renderWidgetType&quot;:&quot;CreateNoteWidget&quot;,
+                        &quot;filterWidgetGroupId&quot;:&quot;createNoteFilterGroup&quot;,
+                        &quot;widgetListenerGroupId&quot;:&quot;post_create_group&quot;,
+                        &quot;action&quot;:&quot;$fieldTool.get('com.communote.server.web.commons.FormAction.CREATE')&quot;,
+                        &quot;cancelBehavior&quot;:{&quot;confirmReset&quot;: false, &quot;action&quot;: &quot;remove&quot;},
+                        &quot;publishSuccessBehavior&quot;:{&quot;action&quot;: &quot;remove&quot;},
+                        &quot;autosaveDisabled&quot;:true,
+                        &quot;tagAutocompleterCategories&quot;:$escTool.xmlSimple($tagSuggestionsSearch), 
+                        #if($blog)
+                        &quot;targetBlogId&quot;:$blog.getId(),
+                        &quot;targetBlogTitle&quot;:&quot;$escTool.javascriptInline($blog.getTitle())&quot,
+                        #end
+                        &quot;content&quot;:&quot;$!content&quot;}")
+                        <div class="TSWidget CreateNoteDefaultWidget" id="CreateNote_bookmarklet" data-cnt-widget-settings="$widgetSettings"></div>
+                    </div>
+                    <div class="showOnSuccess cn-hidden">
+                        <div class="notify-inline">
+                            <div class="notify-success">#t('notify.success.note.create.message')</div>
+                        </div>
+                        <div style="float: right; padding-top: 10px;">
+                            <input type="button" name="cono-message-submit" class="cn-button" onfocus="this.blur()" onclick="window.close()" tabindex="0" value="#t('button.close')" />
+                        </div>
+                    </div>
+                    <span class="cn-clear"><!-- Empty --></span>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

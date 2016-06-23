@@ -1,0 +1,30 @@
+#cnRenderMessages()
+#widgetMetadata(${widget.ResponseMetadata})
+#set( $widgetInstance = "#jsCurrentWidget()" )
+#if($isManager == 'true')
+    <div class="cn-form-container">
+        #if($isDefaultBlog == 'true')
+            <p>#t('blog.delete.confirmation.default.blog.hint')</p>
+        #else
+            <p>#t('blog.delete.confirmation.main')</p>
+            <div id="blog-delete-dialog-content">
+                <div class="cn-field-100 cn-long">
+                    <div class="cn-smallline">
+                        <label class="cn-label" for="${widget.WidgetId}_topic-textbox-list">#t('blog.delete.move.label')</label>
+                        <input type="text" id="${widget.WidgetId}_topic-textbox-list" name="${widget.WidgetId}_topic-textbox-list" placeholder="#t('blog.delete.choose.blog')" />
+                        <span class="cn-clear"><!-- --></span>
+                    </div>
+                </div>
+            </div>
+            <div class="cn-actions">
+                <div class="cn-buttons">
+                    #cnButton("delete-blog", 'blog.delete.button' '' "${widgetInstance}.deleteTopicButtonClicked()", "main")
+                    <span class="clear"><!-- ie --></span>
+                </div>
+            </div>
+        #end
+    </div>
+    <span class="cn-clear"><!-- ie --></span>
+#else 
+    <p>#t('blog.error.access.required.MANAGER')</p>
+#end

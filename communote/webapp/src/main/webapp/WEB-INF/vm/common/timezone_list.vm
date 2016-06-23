@@ -1,0 +1,10 @@
+<select class="cn-select" name="$timeZoneSelectName" id="$timeZoneSelectName">
+#if($includeEmpty)
+    <option value="">#t('user.profile.country.empty')</option>
+#end
+#foreach($timeZone in $communoteTool.timeZones)
+    <option value="$timeZone.timeZoneId" #if($timeZone.timeZoneId.equals($selectedTimeZoneId))selected="selected"#end>
+        #t($timeZone.messageKey)
+    </option>
+#end
+</select>

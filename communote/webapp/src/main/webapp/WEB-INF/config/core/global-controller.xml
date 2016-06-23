@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress SpringSecurityFiltersConfiguredInspection -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <bean id="attachmentDownloadController"
+          class="com.communote.server.web.fe.portal.download.AttachmentDownloadController">
+        <property name="errorView" value="main.microblog.portal.message"/>
+    </bean>
+
+    <bean id="errorPageController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view" value="core.error.page"/>
+    </bean>
+
+    <bean id="messagePageController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view" value="core.message.page"/>
+    </bean>
+
+    <bean id="initializationStatusController"
+          class="com.communote.server.web.fe.portal.controller.ApplicationInitializationStatusController"/>
+
+    <bean id="jsConcatenatedResourceStore"
+          class="com.communote.server.web.commons.resource.impl.ConcatenatedResourceStoreImpl" init-method="init">
+        <constructor-arg>
+            <map>
+                <entry key="tinyMCE">
+                    <list>
+                        <!-- the order of the scripts is important because first script defines variable needed when browser evaluates the tinyMCE source -->
+                        <value>/javascript/editors/tiny_mce_config.js</value>
+                        <value>/javascript/editors/tiny_mce/tiny_mce_gzip.js</value>
+                        <value>/javascript/editors/tiny_mce/tiny_mce_gz_init.js</value>
+                        <value>/javascript/editors/tiny_mce_external_plugins/ExternalPluginInitializer.js</value>
+                        <value>/javascript/editors/tiny_mce_external_plugins/suggestions/editor_plugin_src.js</value>
+                        <value>/javascript/editors/tiny_mce_external_plugins/changesettings/editor_plugin_src.js</value>
+                        <value>/javascript/editors/tiny_mce_external_plugins/changesettings/langs/en.js</value>
+                        <!-- just include language file of advanced theme since the communote template just uses them -->
+                        <value>/javascript/editors/tiny_mce/themes/advanced/langs/en.js</value>
+                        <value>/javascript/editors/tiny_mce_communote_theme/editor_template_src.js</value>
+                        <value>/javascript/editors/tiny_mce_communote_theme/FloatingToolbar.js</value>
+                    </list>
+                </entry>
+                <entry key="communote-core">
+                    <list>
+                        <value>/javascript/frameworks/mootools/mootools-core-1.5.0.js</value>
+                        <value>/javascript/frameworks/mootools/mootools-more-1.5.0.js</value>
+                        <value>/javascript/frameworks/mootools/mootols-communote-extensions</value>
+                        <value>/javascript/init/Namespace</value>
+                        <value>/javascript/frameworks/modernizr/modernizr-detection</value>
+                        <value>/javascript/frameworks/mootools/mootabs-1.3</value>
+                        <value>/javascript/frameworks/smoothbox/smoothbox</value>
+                        <value>/javascript/frameworks/roar/roar</value>
+                        <value>/javascript/autocompleter/Autocompleter</value>
+                        <value>/javascript/autocompleter/Suggestions</value>
+                        <value>/javascript/autocompleter/InputField</value>
+                        <value>/javascript/autocompleter/Observer</value>
+                        <value>/javascript/autocompleter/DataSource</value>
+                        <value>/javascript/utils/FormUtils</value>
+                        <value>/javascript/utils/Placeholder</value>
+                        <value>/javascript/utils/i18n.js</value>
+                        <value>/javascript/commons</value>
+                        <value>/javascript/utils/helper.js</value>
+                        <value>/javascript/commons-widget</value>
+                        <value>/javascript/KeyValueStore</value>
+                        <value>/javascript/FilterParamsHandlerStrategies</value>
+                        <value>/javascript/FilterParameterStore</value>
+                        <value>/javascript/FilterParameterListener</value>
+                        <value>/javascript/FilterEventProcessor</value>
+                        <value>/javascript/FilterEventHandler</value>
+                        <value>/javascript/FilterGroup</value>
+                        <value>/javascript/FilterParameterChangedHandler.js</value>
+                        <value>/javascript/ConditionManager.js</value>
+                        <value>/javascript/WidgetController.js</value>
+                        <value>/javascript/Widget.js</value>
+                        <value>/javascript/FilterWidget.js</value>
+                        <value>/javascript/FormWidget.js</value>
+                        <value>/javascript/init/ApplicationInitializer.js</value>
+                        <value>/javascript/utils/AjaxFileUpload.js</value>
+                        <value>/javascript/storage/CommunoteLocalStorage.js</value>
+                        <value>/javascript/utils/AdvancedTips.js</value>
+                    </list>
+                </entry>
+                <!-- empty category which is added to the login page and can be extended by plugins -->
+                <entry key="login"><list></list></entry>
+                <entry key="portal">
+                    <list>
+                        <value>/javascript/controls/ViewManager</value>
+                        <value>/javascript/frameworks/mootools/datepicker/Locale.de-DE.DatePicker</value>
+                        <value>/javascript/frameworks/mootools/datepicker/Locale.en-US.DatePicker</value>
+                        <value>/javascript/frameworks/mootools/datepicker/Picker</value>
+                        <value>/javascript/frameworks/mootools/datepicker/Picker.Attach</value>
+                        <value>/javascript/frameworks/mootools/datepicker/Picker.Date</value>
+                        <value>/javascript/frameworks/mediabox/mediaboxAdv-1.5.4-communote</value>
+                        <value>/javascript/widget/ConfigFactory.js</value>
+                        <value>/javascript/widget/WidgetScrollToTopHandler.js</value>
+                        <value>/javascript/FollowUtils</value>
+                        <value>/javascript/ExpandingTextarea</value>
+                        <value>/javascript/utils/Cache</value>
+                        <value>/javascript/utils/ScrollObserver</value>
+                        <value>/javascript/utils/matchMediaPolyfill</value>
+                        <value>/javascript/utils/AttributeMatcher.js</value>
+                        <value>/javascript/utils/ResponsiveUtils.js</value>
+                        <value>/javascript/utils/LoadMoreSupport</value>
+                        <value>/javascript/utils/RestApiAccessor</value>
+                        <value>/javascript/utils/NavigationUtils.js</value>
+                        <value>/javascript/utils/PropertyUtils.js</value>
+                        <value>/javascript/utils/NoteUtils</value>
+                        <value>/javascript/utils/UserUtils</value>
+                        <value>/javascript/utils/TopicUtils</value>
+                        <value>/javascript/utils/NoteTagUtils</value>
+                        <value>/javascript/utils/LazyTips</value>
+                        <value>/javascript/utils/AutoRefresher</value>
+                        <value>/javascript/utils/image/Cropper</value>
+                        <value>/javascript/utils/image/CropImageAjaxFileUpload</value>
+                        <value>/javascript/linkhandler/LinkHandler</value>
+                        <value>/javascript/linkhandler/ApplicationLinkHandler</value>
+                        <value>/javascript/linkhandler/ActivateContextLinkHandler</value>
+                        <value>/javascript/hovercard/HoverCardManager</value>
+                        <value>/javascript/hovercard/HoverCard</value>
+                        <value>/javascript/hovercard/UserHoverCard</value>
+                        <value>/javascript/hovercard/TopicHoverCard</value>
+                        <value>/javascript/hovercard/TagHoverCard</value>
+                        <value>/javascript/autocompleter/AutocompleterFactory</value>
+                        <value>/javascript/textboxlist/TextboxList</value>
+                        <value>/javascript/controls/Toolbar.js</value>
+                        <value>/javascript/clouds/BlogTagCloud.Widget</value>
+                        <value>/javascript/clouds/TagCloud.Widget</value>
+                        <value>/javascript/clouds/UserTagCloud.Widget</value>
+                        <value>/javascript/widget/navigation/MainPageVerticalNavigation.Widget</value>
+                        <value>/javascript/widget/navigation/MainPageHorizontalNavigation.Widget</value>
+                        <value>/javascript/MainPageContextManager</value>
+                        <value>/javascript/blog/AboutBlog</value>
+                        <value>/javascript/blog/BlogList</value>
+                        <value>/javascript/blog/NotesFilterEventHandler</value>
+                        <value>/javascript/blog/BlogMemberManagement</value>
+                        <value>/javascript/blog/SetAnonymousAccess.Widget</value>
+                        <value>/javascript/blog/BlogManagement</value>
+                        <value>/javascript/blog/BlogPostFilterPeriod</value>
+                        <value>/javascript/widget/note/NoteRefererTooltipsManager.js</value>
+                        <value>/javascript/widget/note/ChronologicalPostListAutoRefresher.js</value>
+                        <value>/javascript/widget/note/NoteActionHandler.js</value>
+                        <value>/javascript/widget/note/NoteInteractionControlRenderer.js</value>
+                        <value>/javascript/blog/ChronologicalPostList.js</value>
+                        <value>/javascript/blog/ChronologicalPostList_DefaultImpl.js</value>
+                        <value>/javascript/widget/note/editor/TopicAccessEvaluator.js</value>
+                        <value>/javascript/widget/note/editor/NoteTextEditors.js</value>
+                        <value>/javascript/blog/CreateNote</value>
+                        <value>/javascript/blog/CreateNote_DefaultImpl</value>
+                        <value>/javascript/blog/InviteUserToBlog.Widget</value>
+                        <value>/javascript/blog/FilteredBy.Widget</value>
+                        <value>/javascript/blog/BlogsAndUsersFilterEventHandler</value>
+                        <value>/javascript/blog/ListExternalObjects.Widget</value>
+                        <value>/javascript/blog/TopBlogs.Widget</value>
+                        <value>/javascript/widget/image/GlobalIdUploadImage.Widget</value>
+                        <value>/javascript/widget/image/GlobalIdShowBannerImage.Widget</value>
+                        <value>/javascript/widget/filter/AuthorFilter.Widget</value>
+                        <value>/javascript/widget/search/SearchBox.Widget</value>
+                        <value>/javascript/widget/search/EntityChooser.Widget</value>
+                        <value>/javascript/widget/tag/TagManagement.Widget</value>
+                        <value>/javascript/widget/topic/DeleteTopic.Widget</value>
+                        <value>/javascript/widget/topic/EditTopicStructure.Widget</value>
+                        <value>/javascript/widget/topic/TopicList.Widget</value>
+                        <value>/javascript/widget/user/UserList.Widget</value>
+                        <value>/javascript/type/ContentType.Widget</value>
+                        <value>/javascript/user/InviteUserViaEmail.Widget</value>
+                        <value>/javascript/user/profile/AboutUserProfile</value>
+                        <value>/javascript/user/profile/UserProfileChangeEmail</value>
+                        <value>/javascript/user/profile/UserProfileUserInterface</value>
+                        <value>/javascript/user/profile/UserProfileChangePassword</value>
+                        <value>/javascript/user/profile/UserProfileDelete</value>
+                        <value>/javascript/user/profile/UserProfileDetails</value>
+                        <value>/javascript/user/profile/UserProfileImageUpload</value>
+                        <value>/javascript/user/profile/UserProfileNotifications</value>
+                        <value>/javascript/message/DateFormatter</value>
+                        <value>/javascript/init/CommunoteStarter</value>
+                        <value>/javascript/controls/HorizontalNavigationToolProvider.js</value>
+                    </list>
+                </entry>
+                <entry key="admin">
+                    <list>
+                        <value>/javascript/widget/image/GlobalIdUploadImage.Widget</value>
+                        <value>/javascript/utils/helper</value>
+                        <value>/javascript/utils/Cache</value>
+                        <value>/javascript/utils/RestApiAccessor</value>
+                        <value>/javascript/utils/ScrollObserver</value>
+                        <value>/javascript/utils/LoadMoreSupport</value>
+                        <value>/javascript/autocompleter/AutocompleterFactory.js</value>
+                        <value>/javascript/utils/image/Cropper</value>
+                        <value>/javascript/utils/image/CropImageAjaxFileUpload</value>
+                        <value>/javascript/user/UserManagementFilterEventHandler.js</value>
+                        <value>/javascript/user/UserManagementSearchBox.js</value>
+                        <value>/javascript/user/UserManagementList.js</value>
+                        <value>/javascript/user/UserManagementUserDialog.js</value>
+                        <value>/javascript/user/UserManagementUserOverview.js</value>
+                        <value>/javascript/user/UserManagementUserProfile.js</value>
+                        <value>/javascript/user/UserManagementSystemUserProfile.js</value>
+                        <value>/javascript/user/group/UserGroupList.js</value>
+                        <value>/javascript/user/group/UserGroupDialog.js</value>
+                        <value>/javascript/user/group/UserGroupMembersList.js</value>
+                        <value>/javascript/user/group/UserGroupAddMember.js</value>
+                        <value>/javascript/user/group/UserGroupEdit.js</value>
+                        <value>/javascript/user/group/UserGroupCreate.js</value>
+                        <value>/javascript/management/groups/GroupSettings.Widget.js</value>
+                        <value>/javascript/management/user/InviteUser.Widget.js</value>
+                        <value>/javascript/management/localization/LocalizeMessage.Widget.js</value>
+                        <value>/javascript/management/system/communication/XmppAdvancedSettings.Widget.js</value>
+                        <value>/javascript/management/system/application/CertificateList.Widget.js</value>
+                        <value>/javascript/widget/admin/application/logging/Logging.Widget.js</value>
+                        <value>/javascript/widget/admin/client/security/ClientPermissions.Widget.js</value>
+                        <value>/javascript/security/iprange/IPRange.js</value>
+                        <value>/javascript/security/iprange/IPRangeList.js</value>
+                        <value>/javascript/AdministrationUtils.js</value>
+                        <value>/javascript/init/CommunoteStarter_Admin.js</value>
+                    </list>
+                </entry>
+            </map>
+        </constructor-arg>
+        <constructor-arg value="text/javascript"/>
+        <constructor-arg value=".js"/>
+        <constructor-arg value="-min"/>
+    </bean>
+    <bean id="cssConcatenatedResourceStore"
+          class="com.communote.server.web.commons.resource.impl.ConcatenatedResourceStoreImpl" init-method="init">
+        <constructor-arg>
+            <map>
+                <entry key="layout-tiny">
+                    <list>
+                        <value>/themes/core/styles/layout-common.css</value>
+                        <value>/styles/frameworks/roar/roar.css</value>
+                        <value>/themes/core/styles/layout-tiny.css</value>
+                        <value>/themes/core/styles/images.css</value>
+                        <value>/themes/core/styles/layout-responsive.css</value>
+                    </list>
+                </entry>
+                <entry key="layout-medium">
+                    <list>
+                        <value>/themes/core/styles/layout-common.css</value>
+                        <value>/styles/frameworks/roar/roar.css</value>
+                        <value>/themes/core/styles/dialog.css</value>
+                        <value>/themes/core/styles/layout-medium.css</value>
+                        <value>/themes/core/styles/layout-form.css</value>
+                        <value>/themes/core/styles/images.css</value>
+                        <value>/themes/core/styles/layout-responsive.css</value>
+                    </list>
+                </entry>
+                <entry key="portal">
+                    <list>
+                        <value>/themes/core/styles/layout-common.css</value>
+                        <value>/styles/frameworks/datepicker/datepicker.css</value>
+                        <value>/styles/frameworks/smoothbox.css</value>
+                        <value>/styles/frameworks/roar/roar.css</value>
+                        <value>/styles/frameworks/mediabox/mediaboxAdv-Dark.css</value>
+                        <value>/styles/frameworks/mediabox/mediabox-custom.css</value>
+                        <value>/themes/core/styles/layout-form.css</value>
+                        <value>/themes/core/styles/layout-main.css</value>
+                        <value>/themes/core/styles/hovercard.css</value>
+                        <value>/themes/core/styles/mootabs.css</value>
+                        <value>/themes/core/styles/page-header.css</value>
+                        <value>/themes/core/styles/service.css</value>
+                        <value>/themes/core/styles/cropper.css</value>
+                        <value>/themes/core/styles/AutoCompleter.css</value>
+                        <value>/themes/core/styles/TextboxList.css</value>
+                        <value>/themes/core/styles/widgets/AboutBlog.Widget.css</value>
+                        <value>/themes/core/styles/widgets/AboutUserProfile.Widget.css</value>
+                        <value>/themes/core/styles/widgets/BlogList.Widget.css</value>
+                        <value>/themes/core/styles/widgets/BlogMemberManagement.Widget.css</value>
+                        <value>/themes/core/styles/widgets/ChronologialPostList.Widget.css</value>
+                        <value>/themes/core/styles/widgets/ContentType.Widget.css</value>
+                        <value>/themes/core/styles/widgets/CreateNote.Widget.css</value>
+                        <value>/themes/core/styles/widgets/FilteredBy.Widget.css</value>
+                        <value>/themes/core/styles/widgets/GlobalIdUploadImage.Widget.css</value>
+                        <value>/themes/core/styles/widgets/GlobalIdShowBannerImage.Widget.css</value>
+                        <value>/themes/core/styles/widgets/HorizontalNavigation.Widget.css</value>
+                        <value>/themes/core/styles/widgets/InviteUserToBlog.Widget.css</value>
+                        <value>/themes/core/styles/widgets/TopicList.Widget.css</value>
+                        <value>/themes/core/styles/widgets/UserList.Widget.css</value>
+                        <value>/themes/core/styles/widgets/ListExternalObjects.Widget.css</value>
+                        <value>/themes/core/styles/widgets/Period.Widget.css</value>
+                        <value>/themes/core/styles/widgets/TagCloud.Widget.css</value>
+                        <value>/themes/core/styles/widgets/TopBlogs.Widget.css</value>
+                        <value>/themes/core/styles/widgets/AuthorFilter.Widget.css</value>
+                        <value>/themes/core/styles/widgets/SearchBox.Widget.css</value>
+                        <value>/themes/core/styles/widgets/EntityChooser.Widget.css</value>
+                        <value>/themes/core/styles/widgets/UserProfileUserInterface.Widget.css</value>
+                        <value>/themes/core/styles/widgets/VerticalNavigation.Widget.css</value>
+                        <value>/themes/core/styles/images.css</value>
+                        <!-- tiny mce css -->
+                        <value>/javascript/editors/tiny_mce_communote_theme/styles/ui.css</value>
+                        <value>/javascript/editors/tiny_mce_external_plugins/suggestions/css/suggestions.css</value>
+                        <!-- responsive stuff -->
+                        <value>/themes/core/styles/layout-responsive.css</value>
+                    </list>
+                </entry>
+                <entry key="admin">
+                    <list>
+                        <!-- first 2 are currently only used in vm based pages (extensions) -->
+                        <value>/themes/core/styles/page-header.css</value>
+                        <value>/themes/core/styles/layout-form.css</value>
+                        <value>/styles/frameworks/smoothbox.css</value>
+                        <value>/styles/frameworks/roar/roar.css</value>
+                        <value>/styles/main/layout-clearing.css</value>
+                        <value>/styles/main/layout-admin.css</value>
+                        <value>/themes/core/styles/widgets/GlobalIdUploadImage.Widget.css</value>
+                        <value>/themes/core/styles/cropper.css</value>
+                        <value>/themes/core/styles/AutoCompleter.css</value>
+                    </list>
+                </entry>
+                <!-- category for the content of the editor IFrame. This category should be added
+                     to the required categories since it contains the CSS for the IFrame. The URL
+                     to category will be exposed to communote JavaScript namespace if tinyMCE 
+                     JavaScript category is included. -->
+                <entry key="tinyMCE-content">
+                    <list>
+                        <value>/javascript/editors/tiny_mce_communote_theme/styles/content.css</value>
+                        <value>/javascript/editors/tiny_mce_external_plugins/suggestions/css/editor_internal.css</value>
+                    </list>
+                </entry>
+            </map>
+        </constructor-arg>
+        <constructor-arg value="text/css"/>
+        <constructor-arg value=".css"/>
+        <constructor-arg value="-min"/>
+        <constructor-arg value="cssCategoryResource" />
+        <property name="resourceConcatenator">
+            <bean class="com.communote.server.web.commons.resource.impl.FilteringResourceConcatenator">
+                <constructor-arg value="url("/>
+                <constructor-arg value=")"/>
+                <constructor-arg>
+                    <bean class="com.communote.server.web.commons.resource.impl.CssUrlRewriter"/>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="resourceCategoryRegistry" class="com.communote.server.web.commons.resource.impl.ResourceCategoryRegistryImpl">
+        <constructor-arg ref="jsConcatenatedResourceStore"/>
+        <constructor-arg ref="cssConcatenatedResourceStore"/>
+    </bean>
+
+    <bean id="downloadPackedJavascriptController"
+          class="com.communote.server.web.fe.portal.controller.ResourceStoreDownloadController">
+        <constructor-arg ref="jsConcatenatedResourceStore"/>
+        <constructor-arg value="true"></constructor-arg>
+    </bean>
+
+    <bean id="downloadPackedCSSController"
+          class="com.communote.server.web.fe.portal.controller.ResourceStoreDownloadController">
+        <constructor-arg ref="cssConcatenatedResourceStore"/>
+        <constructor-arg value="true"></constructor-arg>
+    </bean>
+    <bean id="downloadPropertyResourceCSSController"
+          class="com.communote.server.web.fe.portal.controller.ResourceStoreDownloadController">
+        <constructor-arg ref="cssConcatenatedResourceStore"/>
+        <constructor-arg value="false"></constructor-arg>
+    </bean>
+
+    <bean id="velocityViewController" abstract="true"
+          class="com.communote.server.web.commons.controller.VelocityViewController">
+        <property name="javaScriptCategories">
+            <array>
+                <value>communote-core</value>
+                <value>portal</value>
+            </array>
+        </property>
+        <property name="cssCategories">
+            <array>
+                <value>portal</value>
+            </array>
+        </property>
+        <property name="templateManager" ref="velocityTemplateManager" />
+    </bean>
+
+    <bean id="initialFiltersViewController" parent="velocityViewController" abstract="true"
+          class="com.communote.server.web.fe.portal.blog.controller.InitialFiltersViewController"/>
+
+    <bean id="showVersionController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view" value="main.microblog.version"/>
+    </bean>
+
+    <bean id="jsMessageController" class="com.communote.server.web.fe.portal.controller.JsMessageController">
+    </bean>
+
+    <bean id="showHelpServicePage" parent="velocityViewController">
+        <property name="contentTemplate" value="core.pages.service.help"/>
+        <property name="page" value="help"/>
+        <property name="selectedMenu" value="help"/>
+    </bean>
+
+    <bean id="showLegalServicePage" parent="velocityViewController" class="com.communote.server.web.commons.controller.StaticPageVelocityViewController">
+        <property name="contentTemplate" value="core.pages.service.legal"/>
+        <property name="page" value="legal"/>
+        <property name="selectedMenu" value="legal"/>
+        <property name="contentManager"><bean class="com.communote.server.web.fe.portal.service.ImprintPageContentManagerFactory" /></property>
+    </bean>
+
+    <bean id="showToolsServicePage" parent="velocityViewController" class="com.communote.server.web.commons.controller.StaticPageVelocityViewController">
+        <property name="contentTemplate" value="core.pages.service.tools"/>
+        <property name="page" value="tools"/>
+        <property name="selectedMenu" value="tools"/>
+        <property name="contentManager"><bean class="com.communote.server.web.fe.portal.service.ToolsPageContentManagerFactory" /></property>
+    </bean>
+
+    <bean id="globalIdUploadController"
+          class="com.communote.server.web.fe.widgets.image.GlobalIdUploadImageController"/>
+
+    <bean id="globalHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="mappings">
+            <props>
+                <prop key="/*/*/error-page">errorPageController</prop>
+                <prop key="/*/*/javascripts/packed.js">downloadPackedJavascriptController</prop>
+                <prop key="/*/*/message-page">messagePageController</prop>
+                <prop key="/*/*/portal/files/*/*">attachmentDownloadController</prop>
+                <prop key="/*/*/portal/initializationStatus.json">initializationStatusController</prop>
+                <prop key="/*/*/portal/repositoryContentDownload*">attachmentDownloadController</prop>
+                <prop key="/*/*/portal/service/help">showHelpServicePage</prop>
+                <prop key="/*/*/portal/service/legal">showLegalServicePage</prop>
+                <prop key="/*/*/portal/service/tools">showToolsServicePage</prop>
+                <prop key="/*/*/resources/i18n/messages*">jsMessageController</prop>
+                <prop key="/*/*/styles/packed.css">downloadPackedCSSController</prop>
+                <prop key="/*/*/styles/propertyResource.css">downloadPropertyResourceCSSController</prop>
+                <prop key="/*/*/version.txt">showVersionController</prop>
+                <prop key="/*/*/widgets/image/GlobalIdUploadImageUploader.json">globalIdUploadController</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

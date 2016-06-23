@@ -1,0 +1,53 @@
+#set($widgetInstance = "#jsCurrentWidget()")
+#set($homeBaseUrl = $urlTool.render('/portal/home'))
+<div class="navigation-area-overview">
+    <h3 class="cn-headline">#t('widget.mainPageVerticalNavigation.overview.heading')</h3>
+    <div id="${widget.WidgetId}_navigation_item_notesOverview" class="navigation-item notes">
+        <div class="navigation-notes-item">
+            <a href="${homeBaseUrl}" class="navigation-item-link" onclick="${widgetInstance}.sendFilterGroupEvent('activateContext', {contextId: 'notesOverview', viewId: 'all'}); return false;">
+            <span class="cn-icon"><!-- empty --></span><span class="cn-icon-label">#t('widget.mainPageVerticalNavigation.overview.notes')</span></a>
+        </div>
+        <div class="navigation-overview-observation">
+            <div class="navigation-observation-item following">
+                <a href="${homeBaseUrl}?viewId=following" onclick="${widgetInstance}.sendFilterGroupEvent('activateContext', {contextId: 'notesOverview', viewId: 'following'}); return false;">
+                    <span class="cn-icon"><!-- empty --></span>
+                    <span class="control-navigation-item-new-note-count navigation-item-new-note-count" title="#t('widget.mainPageVerticalNavigation.observation.hint')"></span>
+                </a>
+            </div>
+            <div class="navigation-observation-item mentions">
+                <a href="${homeBaseUrl}?viewId=mentions" onclick="${widgetInstance}.sendFilterGroupEvent('activateContext', {contextId: 'notesOverview', viewId: 'mentions'}); return false;">
+                    <span class="cn-icon"><!-- empty --></span>
+                    <span class="control-navigation-item-new-note-count navigation-item-new-note-count" title="#t('widget.mainPageVerticalNavigation.observation.hint')"></span>
+                </a>    
+            </div>
+        </div>
+    </div>
+    <div id="${widget.WidgetId}_navigation_item_topicsOverview" class="navigation-item topics">
+        <a href="$urlTool.render('/portal/topics')" class="navigation-item-link" onclick="${widgetInstance}.sendFilterGroupEvent('activateContext', {contextId: 'topicsOverview'}); return false;">
+        <span class="cn-icon"><!-- empty --></span><span class="cn-icon-label">#t('widget.mainPageVerticalNavigation.overview.topics')</span></a>
+    </div>
+    <div id="${widget.WidgetId}_navigation_item_usersOverview" class="navigation-item persons">
+        <a href="$urlTool.render('/portal/users')" class="navigation-item-link" onclick="${widgetInstance}.sendFilterGroupEvent('activateContext', {contextId: 'usersOverview'}); return false;">
+        <span class="cn-icon"><!-- empty --></span><span class="cn-icon-label">#t('widget.mainPageVerticalNavigation.overview.people')</span></a>
+    </div>
+</div>
+<div id="${widget.WidgetId}_navigation_search" class="navigation-area-active-search" style="display: none;">
+    <div id="${widget.WidgetId}_navigation_item_search" class="navigation-item">
+        <a href="javascript:;" onclick="${widgetInstance}.searchItemClicked(); return false;" class="navigation-item-label-wrapper navigation-item-link"><span class="cn-icon"></span><span class="control-navigation-item-label"></span></a>
+        <a href="javascript:;" onclick="${widgetInstance}.saveSearch(); return false;" class="navigation-action-save cn-icon" title="#t('widget.mainPageVerticalNavigation.favorites.add')"></a>
+    </div>
+    <div id="${widget.WidgetId}_helper" class="cn-helper" style="display: none;">
+        <span class="cn-helper-label">#t('widget.mainPageVerticalNavigation.favorites.helper')</span>
+        <span class="cn-helper-arrow cn-icon"></span>
+    </div>
+</div>
+<span class="cn-clear"><!-- --></span>
+<div id="${widget.WidgetId}_navigation_favorites" class="navigation-area-favorites" style="display: none;">
+    <h3 class="cn-headline">#t('widget.mainPageVerticalNavigation.favorites.heading')</h3>
+    <div id="${widget.WidgetId}_navigation_favorites_template" class="navigation-item" style="display: none;">
+        <a href="javascript:;" class="navigation-item-label-wrapper navigation-item-link"><span class="cn-icon"></span><span class="control-navigation-item-label"></span><span class="control-navigation-item-new-note-count navigation-item-new-note-count" title="#t('widget.mainPageVerticalNavigation.observation.hint')"></span></a>
+        <a href="javascript:;" class="control-navigation-action-remove navigation-action-remove cn-icon" title="#t('widget.mainPageVerticalNavigation.favorites.remove')"></a>
+    </div>
+    <div id="${widget.WidgetId}_navigation_favorites_wrapper"></div>
+</div>
+<span class="cn-clear"><!-- --></span>

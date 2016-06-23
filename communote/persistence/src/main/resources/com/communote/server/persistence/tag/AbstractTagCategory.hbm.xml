@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.tag.AbstractTagCategoryImpl" table="core_tag_category" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">core_tag_category_seq</param>
+                                                           </generator>
+        </id>
+        <discriminator column="class" type="string"/>
+        <property name="name" type="java.lang.String">
+            <column name="name" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="prefix" type="java.lang.String">
+            <column name="prefix" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="description" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="multipleTags" type="boolean">
+            <column name="multiple_tags" 
+                     not-null="true" unique="false"/>
+        </property>
+        <list name="tags" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <key foreign-key="CATEGORIZED_TAG_CATEGORY_FKC" not-null="false">
+                <column name="CATEGORY_FK"/>
+            </key>
+            <list-index column="ABSTRACT_TAG_CATEGORY_TAGS_IDX"/>
+            <one-to-many class="com.communote.server.model.tag.CategorizedTagImpl"/>
+        </list>
+        <subclass name="com.communote.server.model.tag.GlobalTagCategoryImpl" discriminator-value="GlobalTagCategoryImpl" dynamic-insert="false" dynamic-update="false" abstract="false">
+        </subclass>
+    </class>
+</hibernate-mapping>

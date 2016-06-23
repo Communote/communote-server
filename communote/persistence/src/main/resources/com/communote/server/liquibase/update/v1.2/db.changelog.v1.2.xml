@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.2/db.changelog.v1.2.xml">
+    <changeSet author="unknown" id="KENMEI-1578_Felder_key_und_value_in_Modellen_aendern_v2" context="client">
+        <preConditions onFail="MARK_RAN">
+            <not>   
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.2/db.changelog.v1.2.xml" 
+                    author="unknown" id="KENMEI-1578_Felder_key_und_value_in_Modellen_aendern"/>
+            </not>
+        </preConditions>
+        <renameColumn tableName="custom_messages" oldColumnName="key" newColumnName="message_key"
+            columnDataType="VARCHAR(255)" />
+        <renameColumn tableName="core_external_object_properties" oldColumnName="key" newColumnName="property_key"
+            columnDataType="VARCHAR(300)" />
+        <renameColumn tableName="core_external_object_properties" oldColumnName="value" newColumnName="property_value"
+            columnDataType="VARCHAR(1024)" />
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1694_Follow_model" context="client" dbms="postgresql">
+        <comment>Add required tables for storing follow information</comment>
+        <createTable tableName="core_note2followable">
+            <column name="NOTES_FK" type="BIGINT"><constraints nullable="false" /></column>
+            <column name="FOLLOWABLE_ITEMS_FK" type="BIGINT"><constraints nullable="false" /></column>
+        </createTable>
+        
+        <addPrimaryKey tableName="core_note2followable" columnNames="NOTES_FK,FOLLOWABLE_ITEMS_FK"/>
+        <addForeignKeyConstraint constraintName="core_note_FOLLOWABLE_ITEMS_FKC" 
+            baseTableName="core_note2followable" baseColumnNames="FOLLOWABLE_ITEMS_FK"
+            referencedTableName="core_global_id" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="core_global_id_NOTES_FKC" 
+            baseTableName="core_note2followable" baseColumnNames="NOTES_FK"
+            referencedTableName="core_note" referencedColumnNames="ID"/>
+            
+        <createTable tableName="core_user2follows">
+            <column name="KENMEI_USERS_FK" type="BIGINT"><constraints nullable="false" /></column>
+            <column name="FOLLOWED_ITEMS_FK" type="BIGINT"><constraints nullable="false" /></column>
+        </createTable>
+        <addPrimaryKey tableName="core_user2follows" columnNames="KENMEI_USERS_FK,FOLLOWED_ITEMS_FK"/>
+        <addForeignKeyConstraint constraintName="user_user_FOLLOWED_ITEMS_FKC" 
+            baseTableName="core_user2follows" baseColumnNames="FOLLOWED_ITEMS_FK"
+            referencedTableName="core_global_id" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="core_global_id_KENMEI_USERS_FC" 
+            baseTableName="core_user2follows" baseColumnNames="KENMEI_USERS_FK"
+            referencedTableName="user_user" referencedColumnNames="ID"/>        
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1694_Follow_model_mysql" context="client" dbms="mysql">
+        <sql>
+            CREATE TABLE core_note2followable (
+                NOTES_FK BIGINT NOT NULL,
+                FOLLOWABLE_ITEMS_FK BIGINT NOT NULL
+            ) ENGINE=InnoDB;
+            CREATE TABLE core_user2follows (
+                KENMEI_USERS_FK BIGINT NOT NULL,
+                FOLLOWED_ITEMS_FK BIGINT NOT NULL
+            ) ENGINE=InnoDB;
+        </sql>
+        <addPrimaryKey tableName="core_note2followable" columnNames="NOTES_FK,FOLLOWABLE_ITEMS_FK"/>
+        <addForeignKeyConstraint constraintName="core_note_FOLLOWABLE_ITEMS_FKC" 
+            baseTableName="core_note2followable" baseColumnNames="FOLLOWABLE_ITEMS_FK"
+            referencedTableName="core_global_id" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="core_global_id_NOTES_FKC" 
+            baseTableName="core_note2followable" baseColumnNames="NOTES_FK"
+            referencedTableName="core_note" referencedColumnNames="ID"/>
+        <addPrimaryKey tableName="core_user2follows" columnNames="KENMEI_USERS_FK,FOLLOWED_ITEMS_FK"/>
+        <addForeignKeyConstraint constraintName="user_user_FOLLOWED_ITEMS_FKC" 
+            baseTableName="core_user2follows" baseColumnNames="FOLLOWED_ITEMS_FK"
+            referencedTableName="core_global_id" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="core_global_id_KENMEI_USERS_FC" 
+            baseTableName="core_user2follows" baseColumnNames="KENMEI_USERS_FK"
+            referencedTableName="user_user" referencedColumnNames="ID"/>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-1694_Follow-support_for_tags" dbms="postgresql">
+        <dropUniqueConstraint tableName="core_tag" uniqueColumns="global_id_fk" constraintName="core_tag_global_id_fk_key"/>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-1694_Follow-support_for_tags-MySQL_v3" dbms="mysql">
+        <preConditions onError="MARK_RAN" onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                select count(*) from information_schema.table_constraints where table_schema = schema() and table_name = 'core_tag'
+                and constraint_name = 'core_tag_GLOBAL_ID_FKC' and CONSTRAINT_TYPE='UNIQUE';
+              ]]></sqlCheck>
+        </preConditions>
+        <dropUniqueConstraint tableName="core_tag" uniqueColumns="global_id_fk" constraintName="core_tag_GLOBAL_ID_FKC" />
+    </changeSet>
+    <changeSet author="unknown" id="KENMEI-1694_Follow-support_for_tags-MySQL_v4" dbms="mysql">
+        <preConditions onError="MARK_RAN" onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                select count(*) from information_schema.table_constraints where table_schema = schema() and table_name = 'core_tag'
+                and constraint_name = 'core_tag_GLOBAL_ID_FKC' and CONSTRAINT_TYPE='FOREIGN KEY';
+              ]]></sqlCheck>
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="core_tag" constraintName="core_tag_GLOBAL_ID_FKC"/>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-1694_Follow-support_for_tags-MySQL_v5" dbms="mysql">
+        <preConditions onError="MARK_RAN" onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                select count(*) from information_schema.table_constraints where table_schema = schema() and table_name = 'core_tag'
+                and constraint_name = 'core_tag_global_id_fk_key' and CONSTRAINT_TYPE='UNIQUE';
+             ]]></sqlCheck>
+        </preConditions>
+        <dropUniqueConstraint tableName="core_tag" uniqueColumns="global_id_fk" constraintName="core_tag_global_id_fk_key" />
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1694_Follow-support_for_tags-MySQL_v6" dbms="mysql">
+        <preConditions onError="MARK_RAN" onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                select count(*) from information_schema.table_constraints where table_schema = schema() and table_name = 'core_tag'
+                and constraint_name = 'core_tag_global_id_fk_key' and CONSTRAINT_TYPE='FOREIGN KEY';
+             ]]></sqlCheck>
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="core_tag" constraintName="core_tag_global_id_fk_key" />
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-1979_Attachments_for_outgoing_mails." dbms="postgresql" context="client"
+        failOnError="false">
+        <sql><![CDATA[
+            INSERT INTO configuration_setting(setting_key, setting_value, configuration_fk) VALUES
+            ('kenmei.notification.render.attachmentlinks', (SELECT setting_value FROM configuration_setting WHERE
+            setting_key = 'kenmei.notification.render.permalinks'), (SELECT id FROM configuration LIMIT 1));
+    ]]></sql>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-1979_Attachments_for_outgoing_mails_mysql" dbms="mysql" context="client"
+        failOnError="false">
+        <sql><![CDATA[
+            INSERT INTO configuration_setting(setting_key, setting_value, configuration_fk)
+            SELECT 'kenmei.notification.render.attachmentlinks', setting_value , id FROM configuration_setting,configuration
+            WHERE setting_key = 'kenmei.notification.render.permalinks';
+    ]]></sql>
+    </changeSet>
+    <changeSet author="unknown" id="KENMEI-1901_Drop_news_tables" context="client">
+         <dropTable tableName="news_widget_parameter" cascadeConstraints="false"/>
+         <dropTable tableName="news_widget_feed" cascadeConstraints="false"/>
+         <dropTable tableName="news_feed_cache" cascadeConstraints="false"/>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1901_Drop_news_sequence" dbms="postgresql" context="client">
+        <dropSequence sequenceName="news_widget_parameter_seq"/>
+        <dropSequence sequenceName="news_widget_feed_seq"/>
+        <dropSequence sequenceName="news_feed_cache_seq"/>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2009_Tables_for_changed_LDAP_Config_v2" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <not>   
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.2/db.changelog.v1.2.xml" 
+                    author="unknown" id="KENMEI-2009_Tables_for_changed_LDAP_Config"/>
+            </not>
+        </preConditions>
+        <createTable tableName="configuration_ldap_group">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="member_mode" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column name="group_identifier_is_binary" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column name="GROUP_SEARCH_FK" type="BIGINT">
+                <constraints nullable="false" unique="true" />
+            </column>
+        </createTable>
+        
+        <createTable tableName="configuration_ldap_sbase">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="search_base" type="java.sql.Types.VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>
+            <column name="search_subtree" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column name="LDAP_SEARCH_CONFIGURATION_FK" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <createTable tableName="configuration_ldap_search">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="search_filter" type="java.sql.Types.VARCHAR(1024)">
+                <constraints nullable="true" />
+            </column>
+            <column name="property_mapping" type="java.sql.Types.VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        
+        <addForeignKeyConstraint constraintName="configuration_ldap_group_GROUC" 
+            baseTableName="configuration_ldap_group" baseColumnNames="GROUP_SEARCH_FK" 
+            referencedTableName="configuration_ldap_search" referencedColumnNames="ID" />
+            
+        <addForeignKeyConstraint constraintName="configuration_ldap_sbase_LDAPC" 
+            baseTableName="configuration_ldap_sbase" baseColumnNames="LDAP_SEARCH_CONFIGURATION_FK" 
+            referencedTableName="configuration_ldap_search" referencedColumnNames="ID" />
+        
+        <addColumn tableName="configuration_ldap">
+            <column name="GROUP_SYNC_CONFIG_FK" type="BIGINT">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="USER_SEARCH_FK" type="BIGINT">
+                <constraints nullable="true" unique="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-2009_Tables_for_changed_LDAP_Config_mysql" context="client" dbms="mysql">
+        <sql>
+            CREATE TABLE configuration_ldap_group (
+                ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                member_mode BOOLEAN NOT NULL,
+                group_identifier_is_binary BOOLEAN NOT NULL,
+                GROUP_SEARCH_FK BIGINT NOT NULL UNIQUE
+            ) ENGINE=InnoDB;
+            CREATE TABLE configuration_ldap_sbase (
+                ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                search_base VARCHAR(1024) NOT NULL,
+                search_subtree BOOLEAN NOT NULL,
+                LDAP_SEARCH_CONFIGURATION_FK BIGINT NOT NULL
+            ) ENGINE=InnoDB;
+            CREATE TABLE configuration_ldap_search (
+                ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                search_filter VARCHAR(1024) NULL,
+                property_mapping VARCHAR(1024) NOT NULL
+            ) ENGINE=InnoDB;
+        </sql>
+        <addForeignKeyConstraint constraintName="configuration_ldap_group_GROUC" 
+            baseTableName="configuration_ldap_group" baseColumnNames="GROUP_SEARCH_FK" 
+            referencedTableName="configuration_ldap_search" referencedColumnNames="ID" />
+            
+        <addForeignKeyConstraint constraintName="configuration_ldap_sbase_LDAPC" 
+            baseTableName="configuration_ldap_sbase" baseColumnNames="LDAP_SEARCH_CONFIGURATION_FK" 
+            referencedTableName="configuration_ldap_search" referencedColumnNames="ID" />
+        
+        <addColumn tableName="configuration_ldap">
+            <column name="GROUP_SYNC_CONFIG_FK" type="BIGINT">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="USER_SEARCH_FK" type="BIGINT">
+                <constraints nullable="true" unique="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2009_Sequences_for_changed_LDAP_Config-PostgreSQL" context="client" dbms="postgresql">
+        <createSequence sequenceName="configuration_ldap_group_seq" />
+        <createSequence sequenceName="configuration_ldap_sbase_seq" />
+        <createSequence sequenceName="configuration_ldap_search_seq" />
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2009_Migrate_LDAP_Config-PostgreSQL" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <not><sqlCheck expectedResult="0">select count(*) from configuration_ldap</sqlCheck></not>
+        </preConditions>
+        <sql>
+            INSERT into configuration_ldap_search (ID, search_filter, property_mapping) (SELECT nextval('configuration_ldap_search_seq'), searchfilter, property_mapping FROM configuration_ldap);
+            UPDATE configuration_ldap SET USER_SEARCH_FK=configuration_ldap_search.ID FROM configuration_ldap_search WHERE searchfilter=search_filter AND configuration_ldap.property_mapping=configuration_ldap_search.property_mapping;
+            INSERT into configuration_ldap_sbase (ID, search_base, search_subtree, LDAP_SEARCH_CONFIGURATION_FK) (SELECT nextval('configuration_ldap_sbase_seq'), searchbase, search_sub_tree, USER_SEARCH_FK FROM configuration_ldap);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2009_Migrate_LDAP_Config-MySQL" context="client" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <not><sqlCheck expectedResult="0">select count(*) from configuration_ldap</sqlCheck></not>
+        </preConditions>
+        <sql>
+            INSERT into configuration_ldap_search (search_filter, property_mapping) (SELECT searchfilter, property_mapping FROM configuration_ldap);
+            UPDATE configuration_ldap AS ldapconf, configuration_ldap_search AS ldapsearch SET USER_SEARCH_FK=ldapsearch.ID WHERE ldapconf.searchfilter=ldapsearch.search_filter AND ldapconf.property_mapping=ldapsearch.property_mapping;
+            INSERT into configuration_ldap_sbase (search_base, search_subtree, LDAP_SEARCH_CONFIGURATION_FK) (SELECT searchbase, search_sub_tree, USER_SEARCH_FK FROM configuration_ldap);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2009_Finalize_changed_LDAP_Config" context="client">
+        <dropColumn tableName="configuration_ldap" columnName="property_mapping"/>
+        <dropColumn tableName="configuration_ldap" columnName="searchbase"/>
+        <dropColumn tableName="configuration_ldap" columnName="search_sub_tree"/>
+        <dropColumn tableName="configuration_ldap" columnName="searchfilter"/>
+        <addNotNullConstraint tableName="configuration_ldap" columnName="USER_SEARCH_FK" columnDataType="BIGINT"/>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2009_Refactor_Group_Sync" context="client">
+        <preConditions onFail="MARK_RAN">
+            <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.2/db.changelog.v1.2.xml" 
+                author="unknown" id="KENMEI-2009_Tables_for_changed_LDAP_Config"/>
+        </preConditions>
+        <dropColumn tableName="configuration_ldap_group" columnName="synchronization_attribute"/>
+        <dropColumn tableName="configuration_ldap_group" columnName="group_identifier_attribute"/>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-2009_Ldap_Config_User_UID" context="client">
+        <!-- adding not null constraint directly within column fails for postgres, but not mysql -->
+        <addColumn tableName="configuration_ldap">
+            <column name="user_identifier_is_binary" type="BOOLEAN" valueBoolean="false">
+            </column>
+        </addColumn>
+        <addNotNullConstraint tableName="configuration_ldap" columnName="user_identifier_is_binary" 
+            columnDataType="BOOLEAN"/>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2009_Ldap_Config_SearchBase_list" context="client">
+        <addColumn tableName="configuration_ldap_sbase">
+            <column name="sbase_idx" type="int" valueNumeric="0"></column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2009_Ldap_External_User_Auth_Additional_Props" context="client">
+        <addColumn tableName="user_external_auth">
+            <column name="permanent_id" type="java.sql.Types.VARCHAR(1024)">
+                <constraints nullable="true" />
+            </column>
+            <column name="additional_property" type="CLOB">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <sql>
+            UPDATE user_external_auth SET permanent_id=external_user_id WHERE SYSTEM_ID='DefaultLDAP';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2008_Ldap_External_Group_Additional_Props" context="client">
+        <addColumn tableName="user_group_external">
+            <column name="additional_property" type="CLOB">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="unknown" id="KENMEI-2113_Performanzoptimierung_Direct_Message_v2" context="client" dbms="postgresql">
+        <createTable tableName="core_note2direct_user">
+            <column name="DIRECT_USERS_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="DIRECT_NOTES_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        
+        <addPrimaryKey tableName="core_note2direct_user" columnNames="DIRECT_USERS_FK,DIRECT_NOTES_FK"/>
+        
+        <addForeignKeyConstraint constraintName="user_user_DIRECT_NOTES_FKC" 
+            baseTableName="core_note2direct_user" baseColumnNames="DIRECT_NOTES_FK" 
+            referencedTableName="core_note" referencedColumnNames="ID" />
+            
+        <addForeignKeyConstraint constraintName="core_note_DIRECT_USERS_FKC" 
+            baseTableName="core_note2direct_user" baseColumnNames="DIRECT_USERS_FK" 
+            referencedTableName="user_user" referencedColumnNames="ID" />
+        
+        
+	</changeSet>
+    <changeSet author="unknown" id="KENMEI-2113_Performanzoptimierung_Direct_Message_mysql" context="client" dbms="mysql">
+        <sql>
+            CREATE TABLE core_note2direct_user (
+                DIRECT_USERS_FK BIGINT NOT NULL,
+                DIRECT_NOTES_FK BIGINT NOT NULL
+            ) ENGINE=InnoDB;
+        </sql>
+        
+        <addPrimaryKey tableName="core_note2direct_user" columnNames="DIRECT_USERS_FK,DIRECT_NOTES_FK"/>
+        
+        <addForeignKeyConstraint constraintName="user_user_DIRECT_NOTES_FKC" 
+            baseTableName="core_note2direct_user" baseColumnNames="DIRECT_NOTES_FK" 
+            referencedTableName="core_note" referencedColumnNames="ID" />
+            
+        <addForeignKeyConstraint constraintName="core_note_DIRECT_USERS_FKC" 
+            baseTableName="core_note2direct_user" baseColumnNames="DIRECT_USERS_FK" 
+            referencedTableName="user_user" referencedColumnNames="ID" />
+        
+        
+    </changeSet>
+	
+	<changeSet author="unknown" id="KENMEI-2113_Performanzoptimierung_Direct_Message_migrate" context="client" dbms="postgresql">
+		<sql>
+			insert into core_note2direct_user (DIRECT_USERS_FK, DIRECT_NOTES_FK) 
+				select note.user_fk, note.id from core_note note where note.direct = true;
+			insert into core_note2direct_user (DIRECT_USERS_FK, DIRECT_NOTES_FK) 
+				select notify.users_to_be_notified_fk, notify.notes_fk from core_note note, core_notes2user_to_notify notify where note.id = notify.notes_fk and note.direct = true and note.user_fk != notify.users_to_be_notified_fk;
+		</sql>
+	</changeSet>
+	
+	<changeSet author="unknown" id="KENMEI-2113_Performanzoptimierung_Direct_Message_migrate" context="client" dbms="mysql">
+		<sql>
+			insert into core_note2direct_user (DIRECT_USERS_FK, DIRECT_NOTES_FK) 
+				select note.user_fk, note.id from core_note note where note.direct = true;
+			insert into core_note2direct_user (DIRECT_USERS_FK, DIRECT_NOTES_FK) 
+				select notify.users_to_be_notified_fk, notify.notes_fk from core_note note, core_notes2user_to_notify notify where note.id = notify.notes_fk and note.direct = true and note.user_fk != notify.users_to_be_notified_fk;
+		</sql>
+	</changeSet>
+	
+    <changeSet author="unknown" id="Fix_Column_Size_In_ROLE2BLOG" context="client">
+        <comment>Fix of bug in installer script</comment>
+        <modifyColumn tableName="core_role2blog"><column name="EXTERNAL_SYSTEM_ID" type="varchar(50)"></column></modifyColumn>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2302_Index_on_core_role2blog" context="client">
+        <createIndex tableName="core_role2blog" indexName="core_role2blog_bidx"><column name="BLOG_ID"></column></createIndex>
+        <createIndex tableName="core_role2blog" indexName="core_role2blog_uidx"><column name="USER_ID"></column></createIndex>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2335_UniqueJabberResourceIdPerCluster" context="client">
+        <sql>delete from configuration_app_setting where setting_key='kenmei.xmpp.bot.resource';</sql>
+    </changeSet>
+
+    <!-- changeSet author="Unknown" id="KENMEI-2121-Blogberechtigungen_Nutzer_hinzufuegen" context="client">
+        <addUniqueConstraint tableName="core_role2blog" 
+            columnNames="blog_id,user_id,numeric_role,external_system_id"
+            constraintName="cstr_role2blog" />
+    </changeSet-->
+    
+    <changeSet author="unknown" id="KENMEI-2389_StartTLS_1" context="client">
+        <preConditions onError="MARK_RAN" onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">select count(*) from configuration_app_setting where setting_key='mailfetching.secure.connection';</sqlCheck>
+        </preConditions>
+        <insert tableName="configuration_app_setting">
+            <column name="setting_key" value="mailfetching.starttls" />
+            <column name="setting_value" value="true" />
+        </insert>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2389_StartTLS_2" context="client">
+        <preConditions onError="MARK_RAN" onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">select count(*) from configuration_app_setting where setting_key='mailfetching.secure.connection';</sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO configuration_app_setting (setting_key,setting_value)
+            VALUES
+            ('mailfetching.starttls',
+               (SELECT CASE WHEN c.setting_value = 'false' THEN 'true' ELSE 'false' END
+                FROM (SELECT * FROM configuration_app_setting) AS c WHERE c.setting_key='mailfetching.secure.connection')
+             );
+            UPDATE configuration_app_setting SET setting_value = (SELECT CASE WHEN c.setting_value = 'true' THEN 'imaps' ELSE 'imap' END FROM (SELECT * FROM configuration_app_setting) AS c WHERE c.setting_key='mailfetching.secure.connection') WHERE setting_key='mailfetching.protocol';
+            DELETE FROM configuration_app_setting where setting_key='mailfetching.secure.connection';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2287_StartTLS_1" context="client">
+        <insert tableName="configuration_app_setting">
+            <column name="setting_key" value="mailing.starttls" />
+            <column name="setting_value" value="true" />
+        </insert>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2295_Create_personal_blog_mysql" context="client" dbms="mysql">
+        <sql>ALTER TABLE user_user MODIFY LAST_LOGIN TIMESTAMP NULL DEFAULT NULL;</sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2628_Remove_Wrong_Unique_Constraint" context="client" dbms="mysql">
+        <sql>
+            ALTER TABLE user_external_auth DROP INDEX external_user_id;
+            ALTER TABLE user_external_auth DROP INDEX external_user_id_2;
+        </sql>
+        <addUniqueConstraint tableName="user_external_auth" columnNames="external_user_id,system_id" constraintName="EXTERNAL_USER_ID"/>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2628_Remove_Wrong_Unique_Constraint_postgres" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="user_external_auth_external_user_id_key1"/>
+        </preConditions>
+        <dropUniqueConstraint tableName="user_external_auth" constraintName="user_external_auth_external_user_id_key"/>
+        <dropUniqueConstraint tableName="user_external_auth" constraintName="user_external_auth_external_user_id_key1"/>
+        <addUniqueConstraint tableName="user_external_auth" columnNames="external_user_id,system_id" constraintName="user_external_auth_external_user_id_key"/>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2628_Remove_Wrong_Unique_Constraint_postgres9" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <!-- indexExists does not work, so use the postgres specific check -->
+            <sqlCheck expectedResult="1">select count(*) from pg_constraint where conname='user_external_auth_external_user_id_system_id_key'</sqlCheck>
+        </preConditions>
+        <dropUniqueConstraint tableName="user_external_auth" constraintName="user_external_auth_external_user_id_key"/>
+        <dropUniqueConstraint tableName="user_external_auth" constraintName="user_external_auth_external_user_id_system_id_key"/>
+        <addUniqueConstraint tableName="user_external_auth" columnNames="external_user_id,system_id" constraintName="user_external_auth_external_user_id_key"/>
+    </changeSet>
+</databaseChangeLog>

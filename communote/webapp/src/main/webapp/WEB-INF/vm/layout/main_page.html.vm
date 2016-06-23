@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+    #set($themeName = 'core')
+    <head>
+    #parse( '/WEB-INF/vm/layout/main_head.html.vm' )
+     </head>
+    <body>
+        <div id="cn-communote" #if($page)data-cnt-page="$page" class="cn-page-$page"#end>
+            #parse( '/WEB-INF/vm/layout/main_header.html.vm' )
+            <div id="cn-body-wrapper">
+                #if($contentTemplate)#parse($contentTemplate)#end
+            </div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    </body>
+</html>

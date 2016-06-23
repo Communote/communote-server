@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.1.3/db.changelog.v1.1.3.xml">
+
+    <!-- MT 3277 - CR 96 - Support for Groups -->
+    <include
+        file="com/communote/server/liquibase/update/v1.1.3/postgres/db.changelog.mt3277.xml" />
+    <include
+        file="com/communote/server/liquibase/update/v1.1.3/mysql/db.changelog.mt3277.xml" />
+
+    <!-- MT 3281 - CR 134 - Anonymous Access, Anonymous User -->
+    <include
+        file="com/communote/server/liquibase/update/v1.1.3/postgres/db.changelog.mt3281.xml" />
+    <include
+        file="com/communote/server/liquibase/update/v1.1.3/mysql/db.changelog.mt3281.xml" />
+
+    <!--
+        CRT 135 - Support Synchronization of blog rights with external
+        systems
+    -->
+    <include
+        file="com/communote/server/liquibase/update/v1.1.3/postgres/db.changelog.cr135.xml" />
+    <include
+        file="com/communote/server/liquibase/update/v1.1.3/mysql/db.changelog.cr135.xml" />
+
+    <changeSet id="mt3283_external_configuration" author="unknown"
+        context="client">
+        <comment>Refactor External Authentication</comment>
+
+        <renameTable oldTableName="configuration_auth_external"
+            newTableName="configuration_external_system" />
+        <renameTable oldTableName="configuration_confluence_auth"
+            newTableName="configuration_confluence" />
+        <renameTable oldTableName="configuration_sharepoint_auth"
+            newTableName="configuration_sharepoint" />
+
+        <renameColumn tableName="configuration_external_system"
+            oldColumnName="ACTIVE" newColumnName="ALLOW_EXTERNAL_AUTHENTICATION"
+            columnDataType="BOOLEAN" />
+
+        <addColumn tableName="configuration_external_system">
+            <column name="SYNCHRONIZE_USER_GROUPS" type="BOOLEAN"></column>
+        </addColumn>
+
+        <dropForeignKeyConstraint
+            baseTableName="configuration_external_system"
+            constraintName="configuration_auth_external_cc" />
+
+        <addForeignKeyConstraint constraintName="configuration_external_systemC"
+            baseTableName="configuration_external_system"
+            baseColumnNames="CONFIGURATION_FK" referencedTableName="configuration"
+            referencedColumnNames="ID" />
+
+    </changeSet>
+
+    <changeSet id="mt3283_confluence_configuration" author="unknown"
+        context="client">
+        <addColumn tableName="configuration_confluence">
+            <column name="ADMIN_LOGIN" type="varchar(1024)"></column>
+        </addColumn>
+        <addColumn tableName="configuration_confluence">
+            <column name="ADMIN_PASSWORD" type="varchar(1024)"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="mt3283_external_objects" author="unknown"
+        context="client">
+
+        <!--  external object stuff -->
+        <createTable tableName="core_external_object">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="EXTERNAL_SYSTEM_ID" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="EXTERNAL_ID" type="varchar(200)">
+                <constraints nullable="false" />
+            </column>
+            <column name="EXTERNAL_NAME" type="varchar(1024)">
+            </column>
+            <column name="BLOG_FK" type="BIGINT">
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="core_external_object"
+            constraintName="core_external_object_external_system_id_key"
+            columnNames="EXTERNAL_SYSTEM_ID, EXTERNAL_ID" />
+
+        <createTable tableName="core_external_object_properties">
+            <column name="KEY" type="varchar(300)">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="VALUE" type="varchar(1024)">
+                <constraints nullable="false" />
+            </column>
+            <column name="EXTERNAL_OBJECT_FK" type="BIGINT">
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="core_external_object_BLOG_FKC"
+            baseTableName="core_external_object" baseColumnNames="BLOG_FK"
+            referencedTableName="core_blog" referencedColumnNames="ID" />
+
+        <addForeignKeyConstraint constraintName="core_external_object_propertiC"
+            baseTableName="core_external_object_properties"
+            baseColumnNames="EXTERNAL_OBJECT_FK" referencedTableName="core_external_object"
+            referencedColumnNames="ID" />
+
+        <!-- external blog member -->
+        <addColumn tableName="core_blog_member">
+            <column name="EXTERNAL_SYSTEM_ID" type="varchar(50)"></column>
+        </addColumn>
+
+    </changeSet>
+
+    <include
+        file="com/communote/server/liquibase/update/v1.1.3/mysql/db.changelog.mt3283.xml" />
+    <include
+        file="com/communote/server/liquibase/update/v1.1.3/postgres/db.changelog.mt3283.xml" />
+
+    <changeSet id="mt3283_external_objects_2" author="unknown"
+        context="client">
+        <comment>Add class to blog_member</comment>
+        <addColumn tableName="core_blog_member">
+            <column name="class" type="varchar(255)"></column>
+        </addColumn>
+        <addNotNullConstraint columnName="class"
+            tableName="core_blog_member" defaultNullValue="BlogMemberImpl"
+            columnDataType="varchar(255)" />
+    </changeSet>
+
+    <changeSet id="cr135_1" author="unknown" context="client">
+        <comment>Add serviceUrl to confluence configuration</comment>
+        <addColumn tableName="configuration_confluence">
+            <column name="SERVICE_URL" type="varchar(1024)"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="unknown" id="mt3277_fix_null_constraint"
+        context="client">
+        <comment>Drop wrong "not null" constraint from user entities.</comment>
+        <dropNotNullConstraint tableName="user_entity"
+            columnName="global_id_fk" columnDataType="BIGINT"/>
+    </changeSet>
+
+    <changeSet id="mt3283_external_objects_3" author="unknown" context="client">
+        <addColumn tableName="core_role2blog"><column name="EXTERNAL_SYSTEM_ID" type="varchar(50)"></column></addColumn>
+    </changeSet>
+
+    <changeSet id="mt3292_confluence_permission_url" author="unknown"
+        context="client">
+        <comment>CR 135 - Support Synchronization of blog rights with external systems</comment>
+        <addColumn tableName="configuration_confluence">
+            <column name="PERMISSIONS_URL" type="varchar(1024)"></column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="mt3283_external_objects_fix_key_unique_postgres" author="unknown" context="client" dbms="postgresql">
+        <comment>CR 135 - Support Synchronization of blog rights with external systems</comment>
+        <dropPrimaryKey tableName="core_external_object_properties" constraintName="pk_core_external_object_properties"/>
+        <addColumn tableName="core_external_object_properties">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+        </addColumn>
+        <createSequence sequenceName="core_external_object_properties_seq"/>
+    </changeSet>    
+
+    <changeSet id="mt3283_external_objects_fix_key_unique_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 135 - Support Synchronization of blog rights with external systems</comment>
+        <dropPrimaryKey tableName="core_external_object_properties" constraintName=""/>
+        <addColumn tableName="core_external_object_properties">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+        </addColumn>
+    </changeSet>    
+
+    <changeSet id="mt3277_14" author="unknown" context="client">
+        <comment>CR 96 - support for groups: grantedByGroup flag for mapping table</comment>
+        <addColumn tableName="core_role2blog">
+         <column name="GRANTED_BY_GROUP" type="BOOLEAN" ></column>
+        </addColumn>
+        <sql>
+            UPDATE core_role2blog SET GRANTED_BY_GROUP=TRUE WHERE core_role2blog.id in (select user_to_blog_role_mappings_fk from core_role2blog_granting_group);
+        </sql>
+        <addNotNullConstraint tableName="core_role2blog" columnName="GRANTED_BY_GROUP" defaultNullValue="0" columnDataType="BOOLEAN"  />
+    </changeSet>
+    
+	<!-- Changeset for removing "+" symbols from user data -->
+	<changeSet author="unknown" id="phone_and_fax_country_code_fix_postgres" context="client" dbms="postgresql">
+         <sql>
+             UPDATE "user_contact" SET phone_country_code = replace(phone_country_code, '+', '');
+             UPDATE "user_contact" SET fax_country_code = replace(fax_country_code, '+', '');
+         </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="phone_and_fax_country_code_fix_mysql" context="client" dbms="mysql">
+         <sql>
+             UPDATE user_contact SET phone_country_code = replace(phone_country_code, "+", "");
+             UPDATE user_contact SET fax_country_code = replace(fax_country_code, "+", "");
+         </sql>
+    </changeSet>
+    
+    <!-- Changeset for removing empty strings from user timzones -->
+    <changeSet author="unknown" id="mt_3272_1_postgres" context="client" dbms="postgresql">
+        <comment>MT 3272: UserProfile saves space instead of NULL if no time zone is selected</comment>
+        <sql>
+             UPDATE "user_profile" SET time_zone_id = null WHERE trim(time_zone_id) = '';
+         </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="mt_3272_1_mysql" context="client" dbms="mysql">
+         <comment>MT 3272: UserProfile saves space instead of NULL if no time zone is selected</comment>
+         <sql>
+             UPDATE user_profile SET time_zone_id = NULL WHERE TRIM(time_zone_id) = '';
+         </sql>
+    </changeSet>
+    
+    <changeSet id="cr69_user_groups_v2" author="unknown" context="client">
+        <preConditions onFail="MARK_RAN">
+        <columnExists tableName="user_group_member" columnName="kenmei_entity_groups_fk"/>
+        </preConditions>
+        <renameColumn tableName="user_group_member"
+            oldColumnName="kenmei_entity_groups_fk" newColumnName="GROUPS_FK" 
+            columnDataType="BIGINT"/>
+    </changeSet>
+    
+    <changeSet id="mt_3314_refactor_confluence_page" author="unknown" context="client">
+        <addColumn tableName="configuration_confluence"><column name="BASE_PATH" type="varchar(1024)"></column></addColumn>
+    </changeSet>
+	
+    <changeSet id="mt3283_external_objects_fix_auto_increment_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 135 - Support Synchronization of blog rights with external systems</comment>
+        <sql>ALTER TABLE core_external_object_properties MODIFY ID bigint NOT NULL AUTO_INCREMENT;</sql>
+    </changeSet>    
+    
+    <include file="com/communote/server/liquibase/update/v1.1.3/postgres/db.changelog.mt3329.xml"/>
+    <include file="com/communote/server/liquibase/update/v1.1.3/mysql/db.changelog.mt3329.xml"/>
+    
+    <changeSet id="mt3350_configuration_column_source" author="unknown" context="client">
+        <preConditions onFail="MARK_RAN" ><columnExists tableName="core_blog_member" columnName="source"/></preConditions>
+         <comment>MT 3350</comment>
+        <dropColumn tableName="core_blog_member" columnName="source"/>
+    </changeSet>
+    
+    <changeSet author="unknown" id="confluence_set_basepath_postgresql_new" context="client" dbms="postgresql">
+        <sql>
+            UPDATE configuration_confluence 
+            SET base_path = replace(authentication_api_url, 'plugins/servlet/communote-auth', '')
+            WHERE (base_path is null OR length(base_path) = 0) AND strpos(authentication_api_url, 'plugins/servlet/communote-auth') > 0;
+        </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="confluence_set_basepath_mysql" context="client" dbms="mysql">
+        <sql>
+            UPDATE configuration_confluence 
+            SET BASE_PATH = replace(AUTHENTICATION_API_URL, 'plugins/servlet/communote-auth', '')
+            WHERE AUTHENTICATION_API_URL LIKE '%plugins/servlet/communote-auth';
+        </sql>
+    </changeSet>
+
+    <changeSet author="unknown" id="cr_179_add_messages_table_v2" context="client">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.1.3/db.changelog.v1.1.3.xml" author="unknown" id="cr_179_add_messages_table"/>
+            </not>
+        </preConditions>
+        <createTable tableName="custom_messages">
+            <column name="ID" autoIncrement="true" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="KEY" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="MESSAGE" type="CLOB">
+                <constraints nullable="false" />
+            </column>
+            <column name="LANGUAGE_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="custom_messages_LANGUAGE_FKC"
+            baseTableName="custom_messages" baseColumnNames="LANGUAGE_FK"
+            referencedTableName="md_language" referencedColumnNames="ID" />
+        <addUniqueConstraint constraintName="custom_message_key_language_constraint" tableName="custom_messages" columnNames="KEY,LANGUAGE_FK"/>
+    </changeSet>
+    
+    <changeSet author="unknown" id="cr_179_add_messages_table_fix_key_column" context="client">
+        <preConditions onFail="MARK_RAN">
+            <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.1.3/db.changelog.v1.1.3.xml" author="unknown" id="cr_179_add_messages_table"/>
+        </preConditions>
+        <modifyColumn tableName="custom_messages"><column name="KEY" type="varchar(300)"></column></modifyColumn>
+   </changeSet>
+
+    <changeSet author="unknown" id="cr_179_add_messages_add_sequence"
+        context="client" dbms="postgresql">
+        <createSequence sequenceName="custom_messages_seq" />
+    </changeSet>
+
+    <changeSet author="unknown" id="cr_179_add_is_Html_column_v2"
+        context="client">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.1.3/db.changelog.v1.1.3.xml" author="unknown" id="cr_179_add_is_Html_column"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="custom_messages">
+            <column name="IS_HTML" type="BOOLEAN">
+            </column>
+        </addColumn>
+        <addNotNullConstraint tableName="custom_messages"
+            columnName="IS_HTML" defaultNullValue="1" columnDataType="BOOLEAN"  />
+    </changeSet>
+    
+    <changeSet author="unknown" id="jt1528_convert_core_note_to_innoDB" dbms="mysql" context="client">
+        <comment>Change engine of core_note to innoDB</comment>
+        <sql><![CDATA[
+            ALTER TABLE core_note ENGINE=InnoDB;
+            ALTER TABLE core_notes2crossblogs ENGINE=InnoDB;
+            ALTER TABLE core_notes2tag ENGINE=InnoDB;
+            ALTER TABLE core_notes2user_to_notify ENGINE=InnoDB;
+            ALTER TABLE core_content ENGINE=InnoDB;
+            ALTER TABLE core_attachment ENGINE=InnoDB;
+        ]]></sql>
+    </changeSet>
+        
+    <changeSet author="unknown" id="KENMEI-1566-Remove_MySQL_Timestamp_Trigger" dbms="mysql" context="client">
+        <sql><![CDATA[
+            ALTER TABLE `core_blog` CHANGE CREATION_DATE CREATION_DATE TIMESTAMP NOT NULL DEFAULT 0;
+            ALTER TABLE `core_blog_event` CHANGE `TIME` `TIME` TIMESTAMP NOT NULL DEFAULT 0;
+            ALTER TABLE `core_note` CHANGE `CREATION_DATE` `CREATION_DATE` TIMESTAMP NOT NULL DEFAULT 0;
+            ALTER TABLE `news_feed_cache` CHANGE `TIMESTAMP` `TIMESTAMP` TIMESTAMP NOT NULL DEFAULT 0;
+            ALTER TABLE `security_code` CHANGE `CREATING_DATE` `CREATING_DATE` TIMESTAMP NOT NULL DEFAULT 0;
+            ALTER TABLE `security_user_auth_failed_status` CHANGE `LOCKED_TIMEOUT` `LOCKED_TIMEOUT` TIMESTAMP NOT NULL DEFAULT 0;
+            ALTER TABLE `snc_config` CHANGE `LAST_SYNCHRONIZATION` `LAST_SYNCHRONIZATION` TIMESTAMP NOT NULL DEFAULT 0;
+            ALTER TABLE `user_client` CHANGE `CREATION_TIME` `CREATION_TIME` TIMESTAMP NOT NULL DEFAULT 0;
+            ALTER TABLE `user_profile` CHANGE `LAST_MODIFICATION_DATE` `LAST_MODIFICATION_DATE` TIMESTAMP NOT NULL DEFAULT 0;
+            ALTER TABLE `user_user` CHANGE `LAST_LOGIN` `LAST_LOGIN` TIMESTAMP NOT NULL DEFAULT 0;
+         ]]></sql>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-1533_Erzeugung_Global_ID_fehlerhaft-MySQL" dbms="mysql" context="client">
+        <sqlFile path="com/communote/server/liquibase/update/v1.1.3/mysql/KENMEI-1533-Restore_Global_Ids.sql" />
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1555_Better_Database_Interoperability_v2" dbms="postgresql" context="client">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <not>
+                    <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.1.3/db.changelog.v1.1.3.xml" author="unknown" id="KENMEI-1555_Better_Database_Interoperability"/>
+                </not>
+                <not>
+                    <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.1.3/db.changelog.v1.1.3.xml" author="unknown" id="KENMEI-1555_Better_Database_Interoperability_v1"/>
+                </not>
+            </and>
+        </preConditions>
+        <sqlFile path="com/communote/server/liquibase/update/v1.1.3/postgres/KENMEI-1555_Better_Database_Interoperability.sql" />
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1555_Better_Database_Interoperability_pre_1_1_4" dbms="postgresql" context="client">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.1.4/db.changelog.v1.1.4.xml" author="unknown" id="KENMEI_1555_Rename_reserved_keywords"/>
+            </not>
+        </preConditions>
+        <comment>Reduce varchar length of key column</comment>
+        <modifyColumn tableName="configuration_setting" >
+            <column name="key" type="varchar(255)"/>
+       </modifyColumn>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1521_Purge_Disconnected_External_Auths" context="client">
+        <sql>DELETE FROM user_external_auth WHERE kenmei_user_fk is NULL;</sql>
+    </changeSet>
+
+</databaseChangeLog>

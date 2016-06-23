@@ -1,0 +1,34 @@
+#parse("/WEB-INF/vm/common/global_js_vars.vm")
+## if variables for packing and compression aren't defined fetch the values here
+#if("$!packJavaScript" == '')
+    #set($packJavaScript = $communoteTool.isPackJavaScript())
+#end
+#if("$!compressJavaScript" == '')
+    #set($compressJavaScript = $communoteTool.isCompressJavaScript())
+#end
+<script type="text/javascript">
+    #if($jsMessagesCategory)${fmtTool.jsMessagesDeclaration($jsMessagesCategory, 'communote.i18n')}#end
+    ## expose tinymce content CSS category URL for editor IFrame if tinymce scripts are included. Name of the category can be customized.
+    #if($javaScriptCategories && $javaScriptCategories.contains('tinyMCE'))
+        #if(!${tinyMceContentCssCategory})
+            #set($tinyMceContentCssCategory = "tinyMCE-content")
+        #end
+        communote.environment.tinymceContentCssUrl='$urlTool.renderConcatenatedCssUrl("${tinyMceContentCssCategory}", $compressJavaScript)'
+    #end
+</script>
+
+#if($packJavaScript)
+    #foreach($javaScriptCategory in $javaScriptCategories)
+        #set($jsResourceUrl = $urlTool.renderConcatenatedJsUrl($javaScriptCategory, $compressJavaScript))
+        #if ($jsResourceUrl != '')
+    <script type="text/javascript" src="$jsResourceUrl"></script>
+        #end
+    #end
+#else
+    #foreach($javaScriptCategory in $javaScriptCategories)
+        #set($javaScriptResources = $urlTool.renderJsUrls($javaScriptCategory, $compressJavaScript))
+        #foreach($javaScriptResource in $javaScriptResources)
+        <script type="text/javascript" src="$javaScriptResource"></script>
+        #end
+    #end   
+#end

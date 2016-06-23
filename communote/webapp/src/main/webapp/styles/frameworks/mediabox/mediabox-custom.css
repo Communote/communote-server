@@ -1,0 +1,107 @@
+#mbOverlay.mbOverlayFF {
+    background: transparent url(../../../themes/core/images/frameworks/mediabox/80.png) repeat;
+}
+
+#mbCenter {
+    background-color: #F5F5F5;
+    overflow: visible;
+    border-radius: 0;
+    border: 1px solid #E4E4E4;
+}
+
+#mbCenter.mbLoading {
+    background: #F5F5F5 url(../../../themes/core/images/frameworks/mediabox/loading.gif) no-repeat center;
+}
+
+#mbBottom { /*color: #999;*/
+    color: #444;
+}
+
+#mbTitle,#mbPrevLink,#mbNextLink,#mbCloseLink,#mbActions {
+    color: #424242;
+}
+
+#mbNumber { /*color: #999;*/
+    color: #444;
+}
+
+#mbCaption {
+    color: #444;
+}
+
+#mbActions {
+    display: block;
+    text-align: right;
+}
+
+#mbActions a.mbGalleryLink {
+    float: left;
+}
+
+#mbActions a.mbDownload {
+    
+}
+
+#mbPrevLink b,#mbNextLink b,#mbCloseLink b {
+    color: #fff;
+}
+
+#mbPrevLink,#mbNextLink,#mbCloseLink {
+    display: block;
+    width: 19px;
+    height: 19px;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+#mbBottom a,#mbBottom a:link,#mbBottom a:visited {
+    color: #005599;
+}
+
+#mbBottom a:hover,#mbBottom a:active {
+    text-decoration: none;
+    color: #e66914;
+}
+
+#mbCloseLink {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+}
+
+#mbPrevLink {
+    background-position: -328px -294px;
+}
+
+#mbBottom:hover #mbPrevLink {
+    background-position: -328px -326px;
+}
+
+#mbBottom #mbPrevLink:hover {
+    background-position: -328px -358px;
+}
+
+#mbNextLink {
+    background-position: -295px -294px;
+}
+
+#mbBottom:hover #mbNextLink {
+    background-position: -295px -326px;
+}
+
+#mbBottom #mbNextLink:hover {
+    background-position: -295px -358px;
+}
+
+/* (CLEARING( ... */
+/* ~~~ (gecko, khtml, webkit, ie7/8( ... */
+span.mbClear {
+    clear: both;
+    display: block;
+    overflow: hidden;
+    width: 0;
+    height: 0;
+}
+/* ~~~ ... )gecko, khtml, webkit, ie7/8) */
+/* ... )CLEARING) */

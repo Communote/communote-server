@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+    <include
+        file="com/communote/server/liquibase/install/postgres/db.changelog.init-db.postgres.xml" />         
+    <include
+        file="com/communote/server/liquibase/install/mysql/db.changelog.init-db.mysql.xml" />
+	<include
+        file="com/communote/server/liquibase/install/mssql/db.changelog.init-db.mssql.xml" />
+	<include
+        file="com/communote/server/liquibase/install/oracle/db.changelog.init-db.oracle.xml" />
+    
+</databaseChangeLog>

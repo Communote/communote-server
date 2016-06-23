@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Rest Client Test Suite" verbose="0">
+    <!-- This parameters are necessary for the connection to api. -->
+    <parameter name="username" value="kenmei" />
+    <parameter name="password" value="123456" />
+    <test name="Tests">
+        <classes>
+            <class name="com.communote.server.rest.client.resource.user.UserResourceTest" />
+            <class name="com.communote.server.rest.client.resource.user.follow.FollowResourceTest" />
+            <class name="com.communote.server.rest.client.resource.topic.TopicResourceTest" />
+            <class name="com.communote.server.rest.client.resource.topic.role.RoleResourceTest" />
+            <class name="com.communote.server.rest.client.resource.topic.follow.FollowResourceTest" />
+            <class name="com.communote.server.rest.client.resource.note.NoteResourceTest" />
+        </classes>
+    </test>
+</suite>

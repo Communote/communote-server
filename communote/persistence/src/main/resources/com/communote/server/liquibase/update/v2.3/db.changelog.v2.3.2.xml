@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v2.3/db.changelog.v2.3.2.xml">
+
+    <changeSet author="Communote" id="KENMEI-5034-Angemeldet_bleiben_LDAP">
+        <addColumn tableName="user_user">
+            <column name="authentication_token" type="VARCHAR(1024)" />
+        </addColumn>
+        <modifySql dbms="mssql">
+            <replace replace="VARCHAR" with="NVARCHAR" />
+        </modifySql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5657-Case_Sensitive_for_external_user_id" dbms="mysql">
+        <sql><![CDATA[
+            ALTER TABLE user_external_auth MODIFY external_user_id VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_bin;
+          ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4846-Remove_with_time_zone_v3" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.3/db.changelog.v2.3.2.xml" author="Communote" id="KENMEI-4846-Remove_with_time_zone_2"/>
+            </not>
+        </preConditions>
+        <sql><![CDATA[
+                ALTER TABLE core_external_object_prop CHANGE last_modification_date last_modification_date TIMESTAMP DEFAULT '1993-06-19 16:16:16';
+             ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5555_Anonymisieren_Nutzer_mit_vielen_Notes_sehr_lange" dbms="mysql,mssql,postgresql">
+        <createIndex tableName="user_note_property" indexName="note_fk_idx">
+            <column name="NOTE_FK" />
+        </createIndex>
+        <createIndex tableName="user_note_property" indexName="user_fk_idx">
+            <column name="USER_FK" />
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

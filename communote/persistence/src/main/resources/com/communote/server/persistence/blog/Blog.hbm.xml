@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.blog.Blog" table="core_blog" dynamic-insert="false" dynamic-update="false">
+        <cache usage="read-write" />
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">core_blog_seq</param>
+                                                           </generator>
+        </id>
+        <property name="title" type="java.lang.String">
+            <column name="title" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="description" type="com.communote.server.external.hibernate.usertypes.HibernateStringClobType">
+            <column name="description" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="creationDate" type="java.sql.Timestamp">
+            <column name="creation_date" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="nameIdentifier" type="java.lang.String">
+            <column name="name_identifier" 
+                     not-null="true" unique="true"/>
+        </property>
+        <property name="lastModificationDate" type="java.sql.Timestamp">
+            <column name="last_modification_date" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="crawlLastModificationDate" type="java.sql.Timestamp">
+            <column name="crawl_last_modification_date" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="allCanRead" type="boolean">
+            <column name="all_can_read" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="allCanWrite" type="boolean">
+            <column name="all_can_write" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="publicAccess" type="boolean">
+            <column name="public_access" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="createSystemNotes" type="boolean">
+            <column name="create_system_notes" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="toplevelTopic" type="boolean">
+            <column name="toplevel_topic" 
+                     not-null="true" unique="false"/>
+        </property>
+        <set name="tags" table="core_blog2tag" order-by="TAGS_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <cache usage="read-write" />
+            <key foreign-key="core_tag_BLOGS_FKC">
+                <column name="BLOGS_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.tag.TagImpl" foreign-key="core_blog_TAGS_FKC">
+                <column name="TAGS_FK"/>
+            </many-to-many>
+        </set>
+        <many-to-one name="globalId" class="com.communote.server.model.global.GlobalIdImpl" foreign-key="core_blog_GLOBAL_ID_FKC" cascade="delete" lazy="proxy" fetch="select">
+            <column name="GLOBAL_ID_FK" not-null="false" unique="true"/>
+        </many-to-one>
+        <set name="members" order-by="BLOG_FK" lazy="true" fetch="select" inverse="true" cascade="delete">
+            <key foreign-key="core_blog_member_BLOG_FKC">
+                <column name="BLOG_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.blog.BlogMemberImpl"/>
+        </set>
+        <set name="externalObjects" order-by="BLOG_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <cache usage="read-write" />
+            <key foreign-key="core_external_object_BLOG_FKC">
+                <column name="BLOG_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.external.ExternalObjectImpl"/>
+        </set>
+        <set name="properties" order-by="BLOG_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <cache usage="read-write" />
+            <key foreign-key="core_blog_property_BLOG_FKC">
+                <column name="BLOG_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.blog.BlogProperty"/>
+        </set>
+        <set name="parents" table="core_blog2blog" order-by="PARENTS_FK" lazy="true" fetch="select" inverse="false">
+            <key foreign-key="core_blog_CHILDREN_FKC">
+                <column name="CHILDREN_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.blog.Blog" foreign-key="core_blog_PARENTS_FKC">
+                <column name="PARENTS_FK"/>
+            </many-to-many>
+        </set>
+        <set name="children" table="core_blog2blog" order-by="CHILDREN_FK" lazy="true" fetch="select" inverse="true">
+            <key foreign-key="core_blog_PARENTS_FKC">
+                <column name="PARENTS_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.blog.Blog" foreign-key="core_blog_CHILDREN_FKC">
+                <column name="CHILDREN_FK"/>
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

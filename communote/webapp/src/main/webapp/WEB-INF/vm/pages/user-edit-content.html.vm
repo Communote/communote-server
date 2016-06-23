@@ -1,0 +1,150 @@
+#* @vtlvariable name="canChangePasswordAndEmail" type="java.lang.Boolean" *#
+#* @vtlvariable name="userId" type="java.lang.Long" *#
+#* @vtlvariable name="userAlias" type="java.lang.String" *#
+<div id="cn-two-column-layout">
+    <div id="cn-sidebar-bg"></div>
+    <div id="cn-sidebar">
+        <div id="cn-vertical-navigation-wrapper">
+            <div id="cn-navigation-back">
+                <a href="$urlTool.user($userAlias)" class="cn-button">
+                    <span><span class="cn-arrow-back">&laquo;</span>#t('user.profile.back.button.to.user')</span>
+                </a>
+            </div>
+            <div id="cn-main-navigation">
+                #set($link=$urlTool.render("portal/user-edit?viewId=details"))
+                <div class="navigation-item details" id="editUser_navigation_item_details">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {userId: $userId}); return false;">
+                        <span>#t('user.profile.tabs.details')</span>
+                    </a>
+                </div>
+                #set($link=$urlTool.render("portal/user-edit?viewId=images"))
+                <div class="navigation-item images" id="editUser_navigation_item_images">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {userId: $userId}); return false;">
+                        <span>#t('user.profile.tabs.image')</span>
+                    </a>
+                </div>
+                #set($link=$urlTool.render("portal/user-edit?viewId=notifications"))
+                <div class="navigation-item notifications" id="editUser_navigation_item_notifications">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {userId: $userId}); return false;">
+                        <span>#t('user.profile.tabs.notification')</span>
+                    </a>
+                </div>
+                #set($link=$urlTool.render("portal/user-edit?viewId=account"))
+                <div class="navigation-item account" id="editUser_navigation_item_account">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {userId: $userId}); return false;">
+                        <span>#t('user.profile.tabs.account')</span>
+                    </a>
+                </div>
+                #set($link=$urlTool.render("portal/user-edit?viewId=ui"))
+                <div class="navigation-item ui" id="editUser_navigation_item_ui">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {userId: $userId}); return false;">
+                        <span>#t('user.profile.tabs.ui')</span>
+                    </a>
+                </div>
+            </div>
+            #set($link=$urlTool.render("portal/user-edit?viewId=VIEW_ID"))
+            <div id="vertivalNavigationItemTemplate" class="navigation-item" style="display:none"><a href="$link" data-cnt-linkHandler-data="{&quot;userId&quot;:$userId}"><span class="control-navigation-item-title"></span></a></div>
+        </div>
+    </div>
+    <div id="cn-view-wrapper">
+        <div id="cn-view-header"></div>
+        <div id="cn-view-content">
+            <div id="cn-main"></div>
+            <div id="cn-filterbar"></div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    </div>
+    <script type="text/javascript">
+        (function () {
+            var contextDefs, viewDefs, widgetDefs;
+            contextDefs = {};
+            contextDefs.userEdit = ['details', 'images', 'notifications', 'account', 'ui'];
+            viewDefs = {};
+            viewDefs.userEdit = {
+                visibleWidgets: [ 'GlobalIdShowBannerImage' ]
+            };
+            viewDefs.userEdit_details = {
+                parentViewId: 'userEdit',
+                previousViewAction: 'hide',
+                visibleWidgets: [ 'UserProfileDetails' ]
+            };
+            viewDefs.userEdit_images = {
+                parentViewId: 'userEdit',
+                previousViewAction: 'hide',
+                visibleWidgets: [ 'UserProfileImageUpload', 'UploadBannerImageWidget' ]
+            };
+            viewDefs.userEdit_ui = {
+                parentViewId: 'userEdit',
+                previousViewAction: 'hide',
+                visibleWidgets: [ 'UserProfileUserInterface' ]
+            };
+            viewDefs.userEdit_account = {
+                parentViewId: 'userEdit',
+                previousViewAction: 'hide',
+                visibleWidgets: [ 'UserProfileDelete' ]
+            };
+            viewDefs.userEdit_notifications = {
+                parentViewId: 'userEdit',
+                previousViewAction: 'hide',
+                visibleWidgets: [ 'UserProfileNotifications' ]
+            };
+            widgetDefs = {};
+            widgetDefs['UserProfileDetails'] = {
+                widgetType: 'UserProfileDetailsWidget',
+                containerSelector: '#cn-main'
+            };
+            widgetDefs.GlobalIdShowBannerImage = communote.configuration.factory.createShowBannerWidgetDef('#cn-view-header', '#cn-header-mobile .cn-center', 'mainPageContextManagement');
+            widgetDefs.GlobalIdShowBannerImage.settings.userId = $userId;
+
+            widgetDefs['UserProfileImageUpload'] = {
+                widgetType: 'UserProfileImageUploadWidget',
+                containerSelector: '#cn-main'
+            };
+            widgetDefs['UserProfileUserInterface'] = {
+                widgetType: 'UserProfileUserInterfaceWidget',
+                containerSelector: '#cn-main'
+            };
+            widgetDefs['UserProfileNotifications'] = {
+                widgetType: 'UserProfileNotificationsWidget',
+                containerSelector: '#cn-main'
+            };
+            widgetDefs['UserProfileDelete'] = {
+                widgetType: 'UserProfileDeleteWidget',
+                containerSelector: '#cn-main'
+            };
+            #if($canChangePasswordAndEmail)
+                widgetDefs['UserProfileChangeEmail'] = {
+                    widgetType: 'UserProfileChangeEmailWidget',
+                    containerSelector: '#cn-main'
+                };
+                widgetDefs['UserProfileChangePassword'] = {
+                    widgetType: 'UserProfileChangePasswordWidget',
+                    containerSelector: '#cn-main'
+                };
+                viewDefs.userEdit_account.visibleWidgets.push('UserProfileChangeEmail');
+                viewDefs.userEdit_account.visibleWidgets.push('UserProfileChangePassword');
+            #end
+            widgetDefs['UploadBannerImageWidget'] = {
+                settings: {
+                    imageType: 'banner',
+                    entityType: 'user',
+                    entityId: 'user.$userId',
+                    filterWidgetGroupId: false
+                },
+                widgetType: 'GlobalIdUploadImageWidget',
+                containerSelector: '#cn-main'
+            };
+            communote.configuration.mainPageContexts = contextDefs;
+            communote.configuration.mainPageViewManagerConfig = {
+                views: viewDefs,
+                widgets: widgetDefs
+            };
+            communote.initialFilterParameters = {
+                userId: $userId
+            };
+            communote.initializer.addWidgetFrameworkInitializedCallback(function () {
+                communote.utils.navigationUtils.addHighlightActiveVerticalNavigationItemObserver('mainPageContextManagement');
+            });
+        })();
+    </script>
+</div>

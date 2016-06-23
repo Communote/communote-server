@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+    #set($themeName = 'core')
+    <head>
+    #parse( '/WEB-INF/vm/layout/main_head.html.vm' )
+	#if($embedAdditionalCssUrl)
+		<link rel="stylesheet" href="$embedAdditionalCssUrl">
+	#end
+     </head>
+    <body>
+        #if($contentTemplate)#parse($contentTemplate)#end
+    </body>
+</html>

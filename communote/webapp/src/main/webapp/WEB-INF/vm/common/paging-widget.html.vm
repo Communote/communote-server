@@ -1,0 +1,3 @@
+#set( $pageInformation = $widget.pageInformation )
+#set( $widgetId = $widget.widgetId )
+#parse("/WEB-INF/vm/common/paging.html.vm")

@@ -1,0 +1,23 @@
+body {
+    overflow-y: auto;
+}
+
+#cn-communote {
+    background-color: #F5F5F5;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+#cn-communote #cn-body-wrapper {
+    margin: 15px;
+    width: auto;
+}
+    
+#cn-communote.bookmarklet .cn-chooser-info,
+#cn-communote.bookmarklet .cn-chooser-add{
+    display: none;
+}

@@ -1,0 +1,37 @@
+/* _filterSearch.css */
+
+.cn-filter-search .cn-bar {
+    float: left;
+    margin: 0 0 4px;
+    zoom: 1;
+}
+.cn-filter-search .cn-content {
+    clear: both;
+}
+.cn-filter-search .cn-border {
+    padding: 5px 30px 5px 10px;
+    position: relative;
+}
+.cn-filter-search .cn-filter-search-submit {
+    background-image: url("../../images/icons/icons-map.png?t=${build.timestamp}");
+    background-position: -134px -7px;
+    background-size: 576px 416px;
+    display: block;
+    height: 20px;
+    position: absolute;
+    right: 5px;
+    top: 6px;
+    width: 20px;
+}
+.cn-filter-search .cn-filter-search-submit:hover {
+    background-position: -134px -71px;
+}
+
+.cn-filter-search .cn-filter-search-submit-off,
+.cn-filter-search.cn-filter-search-submit-disabled .cn-filter-search-submit {
+	display: none;
+}
+
+* + html .cn-filter-search .cn-filter-search-submit, * + html .cn-filter-search.cn-filter-search-submit-disabled .cn-filter-search-submit-off {
+	top: 2px;
+}

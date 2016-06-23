@@ -1,0 +1,46 @@
+<div id="cn-header">
+	<div id="cn-header-content">
+	    <div id="cn-header-logo">
+	    	<a href="$urlTool.render('/portal/home')" class="cn-client-image">
+	            <img class="client-logo" src="$urlTool.clientImage($fieldTool.get('com.communote.server.model.user.ImageSizeType.LARGE'))" alt="Logo" />
+	        </a>
+	    </div>
+        <div id="cn-header-navigation">
+            <div id="cn-service-navigation">
+                <div class="cn-toplink-administration">
+                    <a id="cn-toplink-overview" class="cn-link" href="$urlTool.render('/portal/home')">#t('portal.menu.home.title')</a>
+                    #if($authzTool.allGranted("ROLE_KENMEI_CLIENT_MANAGER"))
+                    <a id="cn-toplink-administration" class="cn-link cn-active" href="$urlTool.render('/admin/client/welcome')">
+                            #t('client.menu.myclient.title')
+                    </a>
+                    #end
+                </div>
+            </div>
+    	    <div id="cn-profile-navigation">
+        		#if($authzTool.allGranted("ROLE_KENMEI_USER"))
+        			#set($imageSmall = $fieldTool.get('com.communote.server.model.user.ImageSizeType.SMALL'))
+    				#set($signatureShort = $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.SHORT') )
+    				#set($currentUserSignature = $escTool.xmlSimple($communoteTool.getCurrentUserSignature($signatureShort)) )
+    			#end
+	            #if($authzTool.allGranted("ROLE_KENMEI_USER"))
+	                <div class="cn-bar #if($selectedMenu == 'profile')cn-active#end">
+			        	<ul class="cn-menu" aria-haspopup="true">
+		                	<li class="cn-more-actions"><a class="cn-link" href="$urlTool.currentUser()"><span class="control-current-user-signature">$currentUserSignature</span></a> <span class="cn-icon cn-arrow"><!-- &#9660; --></span><span class="cn-clear"><!--  --></span></li>
+		                	<li>
+                                <ul class="cn-menu-list">
+		                		    <li id="cn-editprofile"><a class="cn-link" href="$urlTool.render('/portal/user-edit')">#t('portal.menu.myprofile.edit')</a></li>
+                                    <li id="cn-logout"><a class="cn-link" href="$urlTool.render('/logout')">#t('login.logout')</a></li>
+                                </ul>
+                            </li>
+		                </ul>
+                        <a href="$urlTool.currentUser()"><img class="profile-image" src="$urlTool.userImage($communoteTool.currentUserId, $imageSmall)" title="$currentUserSignature" alt="$currentUserSignature" width="20" height="20" /></a>
+	                </div>
+	            #else
+	            <a href="$urlTool.render('/portal/home')">#t('portal.menu.home.title')</a></li>
+	            #end
+    	    </div>
+        	<span class="cn-clear"><!-- --></span>
+        </div>
+    	<span class="cn-clear"><!-- --></span>
+    </div>
+</div>

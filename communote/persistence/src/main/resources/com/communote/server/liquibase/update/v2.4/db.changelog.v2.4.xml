@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v2.4/db.changelog.v2.4.xml">
+	<changeSet author="Communote" id="Remove_QueryHelper"
+		context="client">
+		<dropTable tableName="misc_query_helper" />
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-5742_Packagestruktur_aufraeumen_Tasks_v2" context="client">
+		<sql><![CDATA[
+            UPDATE core_task SET handler_class_name = 'com.communote.server.core.user.groups.UserGroupSynchronizationTaskHandler'
+                   WHERE handler_class_name = 'de.communardo.kenmei.core.api.service.user.groups.UserGroupSynchronizationTaskHandler';
+                                       
+            UPDATE core_task SET handler_class_name = 'com.communote.server.core.blog.notes.processors.NotePostProcessTaskHandler'
+                           WHERE handler_class_name = 'de.communardo.kenmei.core.api.service.blog.notes.processors.NotePostProcessTaskHandler'; 
+                                         
+            UPDATE core_task SET handler_class_name = 'com.communote.server.core.user.RemindUserJob'
+                           WHERE handler_class_name = 'de.communardo.kenmei.core.api.service.user.RemindUserJob';
+                           
+            UPDATE core_task SET handler_class_name = 'com.communote.server.core.tasks.ServiceTaskHandler'
+                           WHERE handler_class_name = 'de.communardo.kenmei.core.api.service.tasks.ServiceTaskHandler';
+                           
+            UPDATE core_task SET handler_class_name = 'com.communote.server.core.user.groups.SynchronizeExternalUserTaskHandler'
+                           WHERE handler_class_name = 'de.communardo.kenmei.core.api.service.user.groups.SynchronizeExternalUserTaskHandler'; 
+               ]]></sql>
+	</changeSet>
+	<changeSet author="Communote" id="KENMEI-5828-Localized-Email-Signature_pg"
+		dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1"><![CDATA[
+                 SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.signature';
+               ]]></sqlCheck>
+		</preConditions>
+		<sql><![CDATA[
+            INSERT INTO
+                    custom_messages (id,message_key,MESSAGE,is_html,language_fk)
+            VALUES (
+                nextval('custom_messages_seq'),
+                'custom.message.client.email.signature',
+                (SELECT setting_value FROM configuration_setting WHERE setting_key = 'kenmei.client.signature'),
+                false,
+                (SELECT id FROM md_language WHERE language_code = 'en')
+            );
+        ]]></sql>
+	</changeSet>
+	<changeSet author="Communote" id="KENMEI-5828-Localized-Email-Signature_ora"
+		dbms="oracle">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1"><![CDATA[SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.signature' AND setting_value is not null]]></sqlCheck>
+		</preConditions>
+		<sql><![CDATA[
+            INSERT INTO custom_messages(id,message_key, MESSAGE, is_html, language_fk) 
+            VALUES(
+                    CUSTOM_MESSAGES_SEQ.nextval,
+                    'custom.message.client.email.signature',
+                    (SELECT setting_value FROM configuration_setting WHERE setting_key = 'kenmei.client.signature'),
+                    0,
+                    (SELECT id FROM md_language WHERE language_code = 'en')
+                );
+        ]]></sql>
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-5828-Localized-Email-Signature_mssql_mysql" dbms="mssql,mysql">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1"><![CDATA[
+                 SELECT count(*) FROM configuration_setting WHERE SETTING_KEY = 'kenmei.client.signature' AND setting_value is not null;
+               ]]></sqlCheck>
+		</preConditions>
+		<sql><![CDATA[
+            INSERT INTO custom_messages(message_key, message, is_html, LANGUAGE_FK) 
+            VALUES(
+                    'custom.message.client.email.signature',
+                    (SELECT setting_value FROM configuration_setting WHERE SETTING_KEY = 'kenmei.client.signature'),
+                    0,
+                    (SELECT ID FROM md_language WHERE language_code = 'en')
+                );
+        ]]></sql>
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-5828-Localized-Email-Signature_delete_old">
+		<sql><![CDATA[
+            DELETE FROM configuration_setting WHERE SETTING_KEY = 'kenmei.client.signature';
+            ]]></sql>
+	</changeSet>
+	<changeSet author="Communote" id="KENMEI-5828-Localized-Email-imprint_terms">
+		<sql><![CDATA[
+            UPDATE custom_messages SET message_key = 'custom.message.imprint' WHERE message_key = 'custom.text.imprint';
+            UPDATE custom_messages SET message_key = 'custom.message.termsofuse' WHERE message_key = 'custom.text.termsofuse';
+            ]]></sql>
+	</changeSet>
+	<changeSet author="Communote" id="KENMEI-5859_Neuer_Inhaltstyp_Anhaenge_pg"
+		dbms="postgresql">
+		<sql><![CDATA[
+           INSERT INTO core_note_property(
+                SELECT
+                    nextval('core_note_property_seq') ,
+                    'com.communote' ,
+                    'contentTypes.attachment' ,
+                    'attachment' ,
+                    NOTE_FK ,
+                    '1983-07-19 12:44:21'
+                FROM core_attachment WHERE NOTE_FK IS NOT NULL GROUP BY NOTE_FK);
+            ]]></sql>
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-5859_Neuer_Inhaltstyp_Anhaenge_mssql_mysql" dbms="mssql,mysql">
+		<sql><![CDATA[
+          INSERT INTO core_note_property (key_group, property_key, property_value, NOTE_FK, last_modification_date)
+            (SELECT
+                'com.communote' ,
+                'contentTypes.attachment' ,
+                'attachment' ,
+                NOTE_FK ,
+                '1983-07-19 12:44:21'
+            FROM core_attachment WHERE NOTE_FK IS NOT NULL GROUP BY NOTE_FK);
+            ]]></sql>
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-5859_Neuer_Inhaltstyp_Anhaenge_oracle" dbms="oracle">
+		<sql><![CDATA[
+         INSERT INTO core_note_property (ID, key_group, property_key, property_value, NOTE_FK, last_modification_date)
+            SELECT core_note_property_seq.nextval, 'com.communote', 'contentTypes.attachment' ,'attachment' ,note_id, CURRENT_DATE
+            FROM (SELECT NOTE_FK as note_id FROM core_attachment WHERE NOTE_FK IS NOT NULL GROUP BY NOTE_FK);
+            ]]></sql>
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-5923_Benachrichtung_Themen_und_Diskussionen">
+		<addColumn tableName="core_note">
+			<column name="mention_topic_readers" type="BOOLEAN"
+				defaultValueBoolean="false" />
+			<column name="mention_topic_authors" type="BOOLEAN"
+				defaultValueBoolean="false" />
+			<column name="mention_topic_managers" type="BOOLEAN"
+				defaultValueBoolean="false" />
+			<column name="mention_discussion_authors" type="BOOLEAN"
+				defaultValueBoolean="false" />
+		</addColumn>
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-4847-TIMESTAMP-without-TimeZone_pg_1" dbms="postgresql">
+		<sql><![CDATA[
+                ALTER TABLE core_task ALTER COLUMN next_execution type timestamp without time zone;
+                ALTER TABLE core_task ALTER COLUMN last_execution type timestamp without time zone;
+             ]]></sql>
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-6098-Bild-Filter-zeigt-Nachrichten-ohne-Bild" dbms="mssql,oracle,postgresql">
+		<sql><![CDATA[
+               DELETE FROM core_note_property WHERE
+                    ID IN
+                    (
+                        SELECT
+                            eigenschaft.ID
+                        FROM
+                            core_note_property eigenschaft,
+                            core_note note,
+                            user_user nutzer
+                        WHERE
+                            eigenschaft.NOTE_FK = note.ID
+                        AND note.USER_FK = nutzer.ID
+                        AND nutzer.email LIKE '%@anonymous.host' );
+             ]]></sql>
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-6098-Bild-Filter-zeigt-Nachrichten-ohne-Bild_mysql" dbms="mysql">
+		<sql><![CDATA[
+               DELETE FROM core_note_property WHERE
+                ID IN (
+                    SELECT
+                        *
+                    FROM
+                        (
+                            SELECT
+                                eigenschaft.ID
+                            FROM
+                                core_note_property eigenschaft,
+                                core_note note,
+                                user_user nutzer
+                            WHERE
+                                eigenschaft.NOTE_FK = note.ID
+                            AND note.USER_FK = nutzer.ID
+                            AND nutzer.email LIKE '%@anonymous.host' ) AS tmp);
+             ]]></sql>
+	</changeSet>
+	<changeSet author="Communote"
+		id="KENMEI-5923_Benachrichtung_Themen_und_Diskussionen_default_v2"
+		dbms="mysql,oracle,mssql">
+		<update tableName="core_note">
+			<column name="mention_topic_readers" valueBoolean="false" />
+			<column name="mention_topic_authors" valueBoolean="false" />
+			<column name="mention_topic_managers" valueBoolean="false" />
+			<column name="mention_discussion_authors" valueBoolean="false" />
+		</update>
+	</changeSet>
+	<changeSet author="Communote" id="KENMEI-6122-Add_missing_index">
+		<createIndex tableName="core_note" indexName="kenmei6122_idx">
+			<column name="BLOG_FK" />
+			<column name="USER_FK" />
+		</createIndex>
+	</changeSet>
+</databaseChangeLog>

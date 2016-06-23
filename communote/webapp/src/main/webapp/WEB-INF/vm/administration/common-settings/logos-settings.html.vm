@@ -1,0 +1,2 @@
+#set($contentTemplate = '/WEB-INF/vm/administration/common-settings/logos-settings.content.html.vm')
+#parse('/WEB-INF/vm/layout/main_page_administration.html.vm')

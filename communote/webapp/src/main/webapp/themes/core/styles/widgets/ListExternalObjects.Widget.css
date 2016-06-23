@@ -1,0 +1,33 @@
+.cn-blog-details-integration-wrapper .cn-col-1,
+.cn-blog-details-integration-wrapper .cn-col-2,
+.cn-blog-details-integration-wrapper .cn-col-3 {
+    float: left;
+    margin-right: 5px;
+}
+
+.cn-blog-details-integration-wrapper .cn-col-1 {
+    width: 270px;
+}
+
+.cn-blog-details-integration-wrapper .cn-col-1 span {
+    display: block;
+    color: #737373;
+    font-size: 11px;
+}
+
+.cn-blog-details-integration-wrapper .cn-col-2 {
+    width: 170px;
+}
+
+.cn-blog-details-integration-wrapper .cn-col-3 {
+}
+
+.cn-blog-details-integration-wrapper .cn-blog-details-block.cn-blog-details-tableheader {
+    border-bottom: 1px dotted #A9A9A9;
+    color: #888888;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 0 0 5px;
+    text-transform: uppercase;
+}

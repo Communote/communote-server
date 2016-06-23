@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+         logicalFilePath="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml">
+    <changeSet author="KENMEI-4109-TagClearance_entfernen" id="Unknown">
+        <dropTable tableName="core_tag2clearance_exclude"/>
+        <dropTable tableName="core_tag2clearance_include"/>
+        <dropTable tableName="core_tag_clearance"/>
+    </changeSet>
+    <changeSet author="KENMEI-4109-TagClearance_entfernen-PostgreSQL" id="Unknown" dbms="postgresql">
+        <dropSequence sequenceName="core_tag_clearance_seq"/>
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Create_entity_to_tag_association" context="client">
+        <createTable tableName="core_entity2tags">
+            <column name="KENMEI_ENTITIES_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="TAGS_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB" />
+        </modifySql>
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Create_entity_to_tag_association_Constraints" context="client">
+        <createIndex tableName="core_entity2tags" indexName="core_entity2tags_idx">
+            <column name="KENMEI_ENTITIES_FK" type="BIGINT" />
+            <column name="TAGS_FK" type="BIGINT" />
+        </createIndex>
+        <addForeignKeyConstraint constraintName="user_entity_TAGS_FKC" referencedTableName="core_tag" baseColumnNames="TAGS_FK" baseTableName="core_entity2tags"
+            referencedColumnNames="ID" />
+        <addForeignKeyConstraint constraintName="core_tag_KENMEI_ENTITIES_FKC" referencedTableName="user_entity" baseColumnNames="KENMEI_ENTITIES_FK" baseTableName="core_entity2tags"
+            referencedColumnNames="ID" />
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Create_tag2names" context="client">
+        <createTable tableName="core_tag2names">
+            <column name="TAGS_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="NAMES_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB" />
+        </modifySql>
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Create_tag2names_Constraints" context="client">
+        <addForeignKeyConstraint constraintName="custom_messages_TAGS_FKC" referencedTableName="core_tag" baseColumnNames="TAGS_FK" baseTableName="core_tag2names"
+            referencedColumnNames="ID" />
+        <addForeignKeyConstraint constraintName="core_tag_NAMES_FKC" referencedTableName="custom_messages" baseColumnNames="NAMES_FK" baseTableName="core_tag2names"
+            referencedColumnNames="ID" />
+        <addUniqueConstraint tableName="core_tag2names" columnNames="TAGS_FK,NAMES_FK" constraintName="core_tag2names_idx" />
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Create_tag2descriptions" context="client">
+        <createTable tableName="core_tag2descriptions">
+            <column name="TAGS_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="DESCRIPTIONS_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB" />
+        </modifySql>
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Create_tag2descriptions_Constraints" context="client">
+        <addForeignKeyConstraint constraintName="custom_messages_TAGS_DESC_FKC" referencedTableName="core_tag" baseColumnNames="TAGS_FK" baseTableName="core_tag2descriptions"
+            referencedColumnNames="ID" />
+        <addForeignKeyConstraint constraintName="core_tag_DESCRIPTIONS_FKC" referencedTableName="custom_messages" baseColumnNames="DESCRIPTIONS_FK" baseTableName="core_tag2descriptions"
+            referencedColumnNames="ID" />
+        <addUniqueConstraint tableName="core_tag2descriptions" columnNames="TAGS_FK,DESCRIPTIONS_FK" constraintName="core_tag2descriptions_idx" />
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Add_Tag_Store_information_mssql_1" context="client" dbms="mssql">
+        <dropIndex tableName="core_tag" indexName="core_tag_lower_name_idx" />
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Add_Tag_Store_information" context="client">
+        <modifyColumn tableName="core_tag">
+            <column name="lower_name" type="VARCHAR(255)" />
+        </modifyColumn>
+        <renameColumn tableName="core_tag" oldColumnName="lower_name" newColumnName="tag_store_tag_id" columnDataType="VARCHAR(255)" />
+        <addColumn tableName="core_tag">
+            <column name="tag_store_alias" type="VARCHAR(255)" defaultValue="DefaultNoteTagStore">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Add_Tag_Store_information_mssql_2" context="client" dbms="mssql">
+        <createIndex tableName="core_tag" indexName="core_tag_lower_name_idx">
+            <column name="tag_store_tag_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Add_Tag_Store_information_2_mysql" context="client" dbms="mysql">
+        <dropUniqueConstraint tableName="core_tag" constraintName="NAME" />
+        <renameColumn tableName="core_tag" oldColumnName="name" newColumnName="default_name" columnDataType="VARCHAR(255)" />
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Add_Tag_Store_information_2_not_mysql" context="client">
+        <preConditions onError="MARK_RAN" onFail="MARK_RAN">
+            <not>
+                <dbms type="mysql" />
+            </not>
+        </preConditions>
+        <dropUniqueConstraint tableName="core_tag" constraintName="core_tag_name_key" />
+        <renameColumn tableName="core_tag" oldColumnName="name" newColumnName="default_name" columnDataType="VARCHAR(255)" />
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Consolidate_tags" dbms="postgresql">
+        <validCheckSum>42d023c30d8171784495ea347c85c</validCheckSum>
+        <sqlFile path="com/communote/server/liquibase/update/v2.1/KENMEI-4017-Consolidate_tags.PostgreSQL.sql" />
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4017-Add_Tag_Store_information_2_add_index" context="client">
+        <addUniqueConstraint tableName="core_tag" columnNames="tag_store_tag_id,tag_store_alias" constraintName="core_tag_store_idx" />
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4153_mysql" context="client" dbms="mysql">
+        <sql>
+			insert into core_blog_member (id, role,  BLOG_FK, KENMEI_ENTITY_FK, external_system_id, class)
+			 select distinct
+			   null as id,
+			   'MANAGER' as role,
+			   (select DEFAULT_BLOG_FK from configuration_client) as BLOG_FK,
+			   KENMEI_USER_FK as KENMEI_ENTITY_FK,
+			   null as external_system_id,
+			   'BlogMemberImpl' as class
+			 from user_authorities
+			 where role = 'ROLE_KENMEI_CLIENT_MANAGER' and KENMEI_USER_FK is not null;
+			
+			insert into core_role2blog (
+			 select distinct
+			   null as id,
+			   (select DEFAULT_BLOG_FK from configuration_client) as blog_id,
+			   KENMEI_USER_FK as user_id,
+			   3 as numeric_role,
+			   null as external_system_id,
+			   0 as granted_by_group
+			 from user_authorities
+			 where role = 'ROLE_KENMEI_CLIENT_MANAGER' and KENMEI_USER_FK is not null
+			);	
+			
+			UPDATE core_blog set title = 'Default' where id= (select DEFAULT_BLOG_FK from configuration_client);			
+		</sql>
+    </changeSet>	
+    <changeSet author="UNKNOWN" id="KENMEI-4153_postgresql" context="client" dbms="postgresql">
+        <sql>
+			insert into core_blog_member (id, class, role,  BLOG_FK, KENMEI_ENTITY_FK, external_system_id)
+				select distinct
+				   nextval ('core_blog_member_seq') as id,
+				   'BlogMemberImpl' as class,				
+				   'MANAGER' as ROLE,	
+				   (select DEFAULT_BLOG_FK from configuration_client) as BLOG_FK,		   			   				   
+				   KENMEI_USER_FK as KENMEI_ENTITY_FK,				   			    	   
+				   null as external_system_id
+				 from user_authorities
+				 where role = 'ROLE_KENMEI_CLIENT_MANAGER' and KENMEI_USER_FK is not null;
+				 
+			insert into core_role2blog (
+			  select distinct
+				   nextval ('core_role2blog_seq') as id,
+				   (select DEFAULT_BLOG_FK from configuration_client) as blog_id,
+				   KENMEI_USER_FK as user_id,
+				   3 as numeric_role,
+				   null as external_system_id,
+				   false as granted_by_group
+				 from user_authorities
+				 where role = 'ROLE_KENMEI_CLIENT_MANAGER' and KENMEI_USER_FK is not null
+				);	
+			UPDATE core_blog set title = 'Default' where id= (select DEFAULT_BLOG_FK from configuration_client);		
+		</sql>
+	</changeSet>	
+    <changeSet author="UNKNOWN" id="KENMEI-4153_mssql" context="client" dbms="mssql">
+		<sql>
+			insert into core_blog_member (class, role, BLOG_FK, KENMEI_ENTITY_FK, external_system_id)
+				select distinct		 
+					 'BlogMemberImpl' as class,				
+					 'MANAGER' as ROLE,	
+					 (select DEFAULT_BLOG_FK from configuration_client) as BLOG_FK,		   			   				   
+				     KENMEI_USER_FK as KENMEI_ENTITY_FK,				   			    	   
+					 null as external_system_id
+					from user_authorities
+				where role = 'ROLE_KENMEI_CLIENT_MANAGER' and KENMEI_USER_FK is not null;
+				
+			insert into core_role2blog (blog_id, user_id,numeric_role, external_system_id,granted_by_group)		
+			  select distinct
+					   (select DEFAULT_BLOG_FK from configuration_client) as blog_id,
+					   KENMEI_USER_FK as user_id,
+					   3 as numeric_role,
+					   null as external_system_id,
+					   0 as granted_by_group
+					 from user_authorities
+					 where role = 'ROLE_KENMEI_CLIENT_MANAGER' and KENMEI_USER_FK is not null;		
+			UPDATE core_blog set title = 'Default' where ID = (select DEFAULT_BLOG_FK from configuration_client);						 
+		</sql>
+    </changeSet>
+	<changeSet author="UNKNOWN" id="KENMEI-4153_activate_default_blog_mssql" context="client" dbms="mssql">
+		<preConditions onFail="MARK_RAN">
+		   <sqlCheck expectedResult="0">
+				select count(*) from core_blog where core_blog.all_can_read = 1 and core_blog.ID in (select DEFAULT_BLOG_FK from configuration_client);			
+			</sqlCheck>
+		</preConditions>
+		<sql>
+			update configuration_client set DEFAULT_BLOG_FK = null;	
+		</sql>
+	</changeSet>
+	<changeSet author="UNKNOWN" id="KENMEI-4153_activate_default_blog_postgresql" context="client" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+		   <sqlCheck expectedResult="0">
+				select count(*) from core_blog where core_blog.all_can_read = true and core_blog.id in (select DEFAULT_BLOG_FK from configuration_client);			
+			</sqlCheck>
+		</preConditions>
+		<sql>
+			update configuration_client set DEFAULT_BLOG_FK = null;	
+		</sql>
+	</changeSet>
+	<changeSet author="UNKNOWN" id="KENMEI-4153_activate_default_blog_mysql" context="client" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+		   <sqlCheck expectedResult="0">
+				select count(*) from core_blog where core_blog.all_can_read = true and core_blog.id in (select DEFAULT_BLOG_FK from configuration_client);			
+			</sqlCheck>
+		</preConditions>
+		<sql>
+			update configuration_client set DEFAULT_BLOG_FK = null;	
+		</sql>
+	</changeSet>
+    <changeSet author="Communote" id="KENMEI-4260_Exception_beim_Erstellen_einer_Note" dbms="mssql">
+        <sql><![CDATA[
+        IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[core_tag]') AND name = N'core_tag_lower_name_idx') DROP INDEX [core_tag_lower_name_idx] ON [dbo].[core_tag] WITH ( ONLINE = OFF );
+        IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[core_tag]') AND name = N'core_tag_store_idx')
+            ALTER TABLE [dbo].[core_tag] DROP CONSTRAINT [core_tag_store_idx];
+        ALTER TABLE dbo.core_tag ALTER COLUMN tag_store_tag_id nvarchar(255);
+        ALTER TABLE [dbo].[core_tag] ADD  CONSTRAINT [core_tag_store_idx] UNIQUE NONCLUSTERED 
+            ([tag_store_tag_id] ASC, [tag_store_alias] ASC)
+            WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY];
+        CREATE NONCLUSTERED INDEX [core_tag_lower_name_idx] ON [dbo].[core_tag] 
+            ([tag_store_tag_id] ASC)
+            WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY];
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Commuote" id="KENMEI-3997_Ausschalten_des_Features_Selbstregistrierung">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <or>
+                    <dbms type="mssql" />
+                    <dbms type="mysql" />
+                </or>
+            </not>
+        </preConditions>
+        <addColumn tableName="security_invite_blog">
+            <column name="invitor_fk" type="BIGINT"></column>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="security_invite_blogIFKC" referencedTableName="user_user" baseColumnNames="invitor_fk" baseTableName="security_invite_blog"
+            referencedColumnNames="id" />
+    </changeSet>
+    <changeSet author="Commuote" id="KENMEI-3997_Selbstregistrierung_mssql" dbms="mssql">
+        <addColumn tableName="security_invite_blog">
+            <column name="invitor_fk" type="BIGINT"></column>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fkc_invitor_user" referencedTableName="user_user" baseColumnNames="invitor_fk" baseTableName="security_invite_blog"
+            referencedColumnNames="ID" />
+    </changeSet>
+    <changeSet author="Commuote" id="KENMEI-3997_Selbstregistrierung_mysql" dbms="mysql">
+        <addColumn tableName="security_invite_blog">
+            <column name="invitor_fk" type="BIGINT"></column>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fkc_invitor_user" referencedTableName="user_user" baseColumnNames="invitor_fk" baseTableName="security_invite_blog"
+            referencedColumnNames="ID" />
+    </changeSet>
+    <changeSet author="Commuote" id="KENMEI-3997_Selbstregistrierung_remove2_mssql" dbms="mssql">
+        <dropForeignKeyConstraint baseTableName="security_invite_blog" constraintName="fkc_invitor_user" />
+    </changeSet>
+    <changeSet author="Commuote" id="KENMEI-3997_Selbstregistrierung_remove2_mysql" dbms="mysql">
+        <dropForeignKeyConstraint baseTableName="security_invite_blog" constraintName="fkc_invitor_user" />
+    </changeSet>
+    <changeSet author="Commuote" id="KENMEI-3997_Selbstregistrierung_remove2_oracle" dbms="oracle">
+        <dropForeignKeyConstraint baseTableName="security_invite_blog" constraintName="security_invite_blogIFKC" />
+    </changeSet>
+    <changeSet author="Commuote" id="KENMEI-3997_Selbstregistrierung_remove2_postgresql" dbms="postgresql">
+        <dropForeignKeyConstraint baseTableName="security_invite_blog" constraintName="security_invite_blogIFKC" />
+    </changeSet>
+    <changeSet author="Commuote" id="KENMEI-3997_Selbstregistrierung_remove2">
+        <dropColumn tableName="security_invite_blog" columnName="invitor_fk" />
+    </changeSet>
+    <changeSet author="Commuote" id="KENMEI-3997_Selbstregistrierung_2">
+        <addColumn tableName="security_invite_blog">
+            <column name="invitor_id" type="BIGINT" />
+        </addColumn>
+    </changeSet>
+	<changeSet author="UNKNOWN" id="KENMEI-3005_fix_column_name" context="client">
+	    <preConditions onFail="MARK_RAN">
+            <not>
+            	<dbms type="oracle" />
+            	<dbms type="mssql" />
+            	<dbms type="mysql" />
+            </not>
+        </preConditions>
+		<renameColumn tableName="CORE_ATTACHMENT" oldColumnName="size" newColumnName="attachment_size" columnDataType="BIGINT"/>
+	</changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-3005_fix_column_name_mssql" context="client" dbms="mssql">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="core_attachment" columnName="size" />
+        </preConditions>
+        <renameColumn tableName="core_attachment" oldColumnName="size" newColumnName="attachment_size" columnDataType="BIGINT" />
+    </changeSet> 	    
+    <changeSet author="Communote" id="KENMEI-3005_fix_column_name_mysql" context="client" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="core_attachment" columnName="size" />
+        </preConditions>
+        <renameColumn tableName="core_attachment" oldColumnName="size" newColumnName="attachment_size" columnDataType="BIGINT" />
+    </changeSet> 	    
+    <changeSet author="Commuote" id="KENMEI-3005_fix_large_table_name" context="client">
+         <preConditions onFail="MARK_RAN">
+            <not>
+            	<dbms type="oracle" />
+            </not>
+        </preConditions>
+		<renameTable oldTableName="security_user_auth_failed_status" newTableName="security_user_auth_failed_stat"/>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-3005_fix_large_table_name_seq_postgresql" dbms="postgresql">
+        <renameTable newTableName="security_user_auth_failed_stat_seq" oldTableName="security_user_auth_failed_status_seq" />
+    </changeSet> 
+    <changeSet author="Communote" id="KENMEI-4357-TagCloud-bei-Nutzerübersicht-geht-nicht_mysql" dbms="mysql">
+        <addNotNullConstraint tableName="core_tag" columnName="tag_store_tag_id" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="core_tag" columnName="default_name" columnDataType="varchar(255)"/>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4357-TagCloud-bei-Nutzerübersicht-geht-nicht_postgresql" dbms="postgresql">
+        <addNotNullConstraint tableName="core_tag" columnName="tag_store_tag_id" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="core_tag" columnName="default_name" columnDataType="varchar(255)"/>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4357-TagCloud-bei-Nutzerübersicht-geht-nicht_oracle" dbms="oracle">
+        <addNotNullConstraint tableName="core_tag" columnName="tag_store_tag_id" columnDataType="varchar(255)"/>
+        <addNotNullConstraint tableName="core_tag" columnName="default_name" columnDataType="varchar(255)"/>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4357-TagCloud-bei-Nutzerübersicht-geht-nicht_mssql1_2" dbms="mssql">
+        <dropUniqueConstraint tableName="core_tag" constraintName="core_tag_store_idx"/>
+        <dropIndex tableName="core_tag" indexName="core_tag_lower_name_idx" />
+        <sql>Update core_tag SET tag_store_tag_id = lower(default_name) WHERE tag_store_tag_id is null;</sql>
+        <addNotNullConstraint tableName="core_tag" columnName="tag_store_tag_id" columnDataType="nvarchar(255)"/>
+        <addNotNullConstraint tableName="core_tag" columnName="default_name" columnDataType="nvarchar(255)"/>
+    </changeSet>
+    <changeSet author="UNKNOWN" id="KENMEI-4357-TagCloud-bei-Nutzerübersicht-geht-nicht_mssql2" dbms="mssql">
+        <addUniqueConstraint tableName="core_tag" columnNames="tag_store_tag_id,tag_store_alias" constraintName="core_tag_store_idx" />
+        <createIndex tableName="core_tag" indexName="core_tag_lower_name_idx">
+            <column name="tag_store_tag_id" />
+        </createIndex>
+    </changeSet>
+    
+   <changeSet author="UNKNOWN" id="KENMEI-3005_change_property_value_types_postgres" context="client" dbms="postgresql">
+		<sql>
+			ALTER TABLE user_user_property ALTER COLUMN property_value TYPE CHARACTER VARYING(4000);
+			ALTER TABLE core_blog_property ALTER COLUMN property_value TYPE CHARACTER VARYING(4000);
+			ALTER TABLE core_note_property ALTER COLUMN property_value TYPE CHARACTER VARYING(4000);
+			ALTER TABLE user_group_property ALTER COLUMN property_value TYPE CHARACTER VARYING(4000);
+		</sql>
+    </changeSet>
+    
+   <changeSet author="UNKNOWN" id="KENMEI-3005_change_property_value_types_mysql" context="client" dbms="mysql">
+   		<sql>
+   			ALTER TABLE user_user_property CHANGE property_value property_value VARCHAR(4000) NOT NULL;
+   			ALTER TABLE core_blog_property CHANGE property_value property_value VARCHAR(4000) NOT NULL;
+   			ALTER TABLE core_note_property CHANGE property_value property_value VARCHAR(4000) NOT NULL;
+   			ALTER TABLE user_group_property CHANGE property_value property_value VARCHAR(4000) NOT NULL;
+		</sql>
+    </changeSet>    
+    
+   <changeSet author="UNKNOWN" id="KENMEI-3005_change_property_value_types_mssql" context="client" dbms="mssql">
+   		<sql>
+			ALTER TABLE user_user_property ALTER COLUMN property_value NVARCHAR(4000) NOT NULL;
+			ALTER TABLE core_blog_property ALTER COLUMN property_value NVARCHAR(4000) NOT NULL;
+			ALTER TABLE core_note_property ALTER COLUMN property_value NVARCHAR(4000) NOT NULL;
+			ALTER TABLE user_group_property ALTER COLUMN property_value NVARCHAR(4000) NOT NULL;
+		</sql>
+    </changeSet>       
+    
+    <changeSet author="UNKNOWN" id="KENMEI-3005_rename_tables_new" context="client" dbms="postgresql,mssql,mysql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml" author="UNKNOWN" id="KENMEI-3005_rename_tables"/>
+            </not>
+        </preConditions>
+        <renameTable oldTableName="configuration_external_system" newTableName="configuration_external_sys"></renameTable >
+        <renameTable oldTableName="core_external_object_properties" newTableName="core_external_object_prop"></renameTable >
+        <renameTable oldTableName="security_user_auth_failed_stat" newTableName="security_user_status"></renameTable >
+    </changeSet>
+
+   	<changeSet author="UNKNOWN" id="KENMEI-3005_drop_not_null_constraints_postgres" context="client" dbms="postgresql">
+		<sql>
+			ALTER TABLE mc_config ALTER COLUMN properties DROP NOT NULL;
+			ALTER TABLE configuration_app_setting ALTER COLUMN setting_value DROP NOT NULL;
+			ALTER TABLE user_contact ALTER COLUMN phone_country_code DROP NOT NULL;
+			ALTER TABLE user_contact ALTER COLUMN phone_area_code DROP NOT NULL;
+			ALTER TABLE user_contact ALTER COLUMN phone_phone_number DROP NOT NULL;
+			ALTER TABLE user_contact ALTER COLUMN fax_country_code DROP NOT NULL;
+			ALTER TABLE user_contact ALTER COLUMN fax_area_code DROP NOT NULL;
+			ALTER TABLE user_contact ALTER COLUMN fax_phone_number DROP NOT NULL;
+	    </sql>
+	</changeSet>
+
+
+	<changeSet author="UNKNOWN" id="KENMEI-3005_drop_not_null_constraints_mysql" context="client" dbms="mysql">
+		<sql>
+			ALTER TABLE mc_config MODIFY COLUMN PROPERTIES VARCHAR(1024);
+			ALTER TABLE configuration_app_setting MODIFY COLUMN SETTING_VALUE text;
+			ALTER TABLE user_contact MODIFY COLUMN PHONE_COUNTRY_CODE varchar(1024);
+			ALTER TABLE user_contact MODIFY COLUMN PHONE_AREA_CODE varchar(1024);
+			ALTER TABLE user_contact MODIFY COLUMN PHONE_PHONE_NUMBER varchar(1024);
+			ALTER TABLE user_contact MODIFY COLUMN FAX_COUNTRY_CODE varchar(1024);
+			ALTER TABLE user_contact MODIFY COLUMN FAX_AREA_CODE varchar(1024);
+			ALTER TABLE user_contact MODIFY COLUMN FAX_PHONE_NUMBER varchar(1024);
+    	</sql>
+	</changeSet>
+    
+	<changeSet author="UNKNOWN" id="KENMEI-3005_drop_not_null_constraints_mssql" context="client" dbms="mssql">
+		<sql>
+			ALTER TABLE mc_config ALTER COLUMN properties NVARCHAR(1024) NULL;
+			ALTER TABLE configuration_app_setting ALTER COLUMN setting_value nvarchar(max) NULL;
+			ALTER TABLE user_contact ALTER COLUMN phone_country_code NVARCHAR(1024) NULL;
+			ALTER TABLE user_contact ALTER COLUMN phone_area_code NVARCHAR(1024) NULL;
+			ALTER TABLE user_contact ALTER COLUMN phone_phone_number NVARCHAR(1024) NULL;
+			ALTER TABLE user_contact ALTER COLUMN fax_country_code NVARCHAR(1024) NULL;
+			ALTER TABLE user_contact ALTER COLUMN fax_area_code NVARCHAR(1024) NULL;
+			ALTER TABLE user_contact ALTER COLUMN fax_phone_number NVARCHAR(1024) NULL;
+		</sql>
+	</changeSet>
+	
+   <changeSet author="UNKNOWN" id="KENMEI-3005_change_sequence_name_postgres_24" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml" author="UNKNOWN" id="KENMEI-3005_change_sequence_name_postgres_23"/>
+            </not>
+        </preConditions>
+		<sql>
+			ALTER TABLE configuration_external_system_seq RENAME TO configuration_external_sys_seq;
+			ALTER TABLE core_external_object_properties_seq RENAME TO core_external_object_prop_seq;
+			ALTER TABLE security_user_auth_failed_stat_seq RENAME TO security_user_status_seq;
+		</sql>
+    </changeSet>  	
+
+    <changeSet author="Communote" id="KENMEI-4164-Dem Default Blog einen Blognamen zuweisen_postgres" context="client" dbms="postgresql">
+        <sql>UPDATE core_blog set title='Public' where id=(select DEFAULT_BLOG_FK from configuration_client);</sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4164-Dem Default Blog einen Blognamen zuweisen_mysql" context="client" dbms="mysql">
+        <sql>UPDATE core_blog set title='Public' where id=(select DEFAULT_BLOG_FK from configuration_client);</sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4164-Dem Default Blog einen Blognamen zuweisen_mssql" context="client" dbms="mssql">
+        <sql>UPDATE core_blog set title='Public' where ID=(select DEFAULT_BLOG_FK from configuration_client);</sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4164-Dem Default Blog einen Blognamen zuweisen_all" context="client">
+        <sql>UPDATE core_blog SET title = 'Public' WHERE title = 'custom.message.default.blog';</sql>
+    </changeSet>
+
+	<changeSet author="UNKNOWN" id="KENMEI-3005_set_null_mysql" context="client" dbms="mysql">
+		<sql>
+			update mc_config set PROPERTIES = null where PROPERTIES = "";
+			update configuration_app_setting set setting_value = null where setting_value = "";
+			update user_contact set phone_country_code = null where phone_country_code = "";
+			update user_contact set phone_area_code = null where phone_area_code = "";
+			update user_contact set phone_phone_number = null where phone_phone_number = "";
+			update user_contact set fax_country_code = null where fax_country_code = "";
+			update user_contact set fax_area_code = null where fax_area_code = "";
+			update user_contact set fax_phone_number = null where fax_phone_number = "";
+		</sql>
+	</changeSet>
+
+	<changeSet author="UNKNOWN" id="KENMEI-3005_set_null_postgresql" context="client" dbms="postgresql">
+		<sql>
+			update mc_config set PROPERTIES = null where PROPERTIES = '';
+			update configuration_app_setting set setting_value = null where setting_value = '';
+			update user_contact set phone_country_code = null where phone_country_code = '';
+			update user_contact set phone_area_code = null where phone_area_code = '';
+			update user_contact set phone_phone_number = null where phone_phone_number = '';
+			update user_contact set fax_country_code = null where fax_country_code = '';
+			update user_contact set fax_area_code = null where fax_area_code = '';
+			update user_contact set fax_phone_number = null where fax_phone_number = '';
+		</sql>
+	</changeSet>
+
+	<changeSet author="UNKNOWN" id="KENMEI-3005_set_null_mssql" context="client" dbms="mssql">
+		<sql>
+			update mc_config set properties = null where properties = '';
+			update configuration_app_setting set setting_value = null where setting_value = '';
+			update user_contact set phone_country_code = null where phone_country_code = '';
+			update user_contact set phone_area_code = null where phone_area_code = '';
+			update user_contact set phone_phone_number = null where phone_phone_number = '';
+			update user_contact set fax_country_code = null where fax_country_code = '';
+			update user_contact set fax_area_code = null where fax_area_code = '';
+			update user_contact set fax_phone_number = null where fax_phone_number = '';
+		</sql>
+	</changeSet>   		
+    <changeSet author="UNKNOWN" id="KENMEI-4488-Sprache an ext Tags nicht aktualisiert_mysql_2" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml"
+                author="Communote" id="KENMEI-4488-Sprache an ext Tags nicht aktualisiert_mysql"/>
+        </preConditions>
+        <sql>ALTER TABLE custom_messages DROP INDEX LANGUAGE_FK;</sql>
+    </changeSet> 
+    
+    <changeSet author="UNKNOWN" id="KENMEI-3005_rename_tables_v2" context="client">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml" author="UNKNOWN" id="KENMEI-3005_rename_tables2"/>
+            </not>
+        </preConditions>
+        <renameTable oldTableName="core_global_binary_property" newTableName="core_global_binary_prop"></renameTable >
+    </changeSet>   
+    
+   <changeSet author="UNKNOWN" id="KENMEI-3005_rename_sequence_oracle_v2" context="client" dbms="oracle">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml" author="UNKNOWN" id="KENMEI-3005_rename_sequence_oracle"/>
+            </not>
+        </preConditions>
+		<sql>
+			RENAME core_global_binary_property_ID TO core_global_binary_prop_seq;
+			RENAME configuration_ldap_group_ID_SE TO configuration_ldap_group_seq;
+			RENAME configuration_ldap_sbase_ID_SE TO configuration_ldap_sbase_seq;
+			RENAME configuration_ldap_search_ID_S TO configuration_ldap_search_seq;
+		</sql>
+	</changeSet> 
+    
+    <changeSet author="UNKNOWN" id="KENMEI-3005_rename_sequence_postgresql_v2" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml" author="UNKNOWN" id="KENMEI-3005_rename_sequence_postgresql"/>
+            </not>
+        </preConditions>
+		<sql>
+			ALTER TABLE core_global_binary_property_seq RENAME TO core_global_binary_prop_seq;
+		</sql>
+    </changeSet>  
+    <changeSet author="Communote" id="Update global ids for tags_mysql" context="client" dbms="mysql">
+        <sql>
+            UPDATE core_tag,core_global_id SET core_global_id.global_identifier = CONCAT( '/', 
+            (select sett.setting_value from configuration_setting sett where sett.setting_key = 'kenmei.unique.client.identifer'), 
+            '/tag/', core_tag.ID ) WHERE core_tag.global_id_fk = core_global_id.ID;
+        </sql>
+    </changeSet>
+    <changeSet author="Communote" id="Update global ids for tags_mssql_v2" context="client" dbms="mssql">
+        <sql>
+			UPDATE core_global_id SET core_global_id.global_identifier = ( '/'
+            + CAST((select sett.setting_value from configuration_setting sett where sett.SETTING_KEY = 'kenmei.unique.client.identifer') AS varchar(255))
+            + '/tag/' +  CAST(core_tag.ID as varchar(20)))
+             FROM core_tag,core_global_id WHERE core_tag.GLOBAL_ID_FK = core_global_id.ID;
+        </sql>
+    </changeSet>
+    <changeSet author="Communote" id="Update global ids for tags_postgresql" context="client" dbms="postgresql">
+        <sql>
+            UPDATE core_global_id SET global_identifier = ( '/' ||
+            (select sett.setting_value from configuration_setting sett where sett.setting_key = 'kenmei.unique.client.identifer') 
+            ||'/tag/' || core_tag.ID ) FROM core_tag WHERE core_tag.global_id_fk = core_global_id.ID;
+        </sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4509_remove_not_null_constraint_oracle" context="client" dbms="oracle">
+        <sql>
+				ALTER TABLE security_user_status MODIFY LOCKED_TIMEOUT TIMESTAMP DEFAULT to_date('1970-01-01 00:00:00', 'yyyy-MM-dd hh24:mi:ss') NULL;
+        </sql>
+    </changeSet>    
+    <changeSet author="Communote" id="KENMEI-4236_deadlocks_taskmanagement_mssql" context="client" dbms="mssql">
+        <sql><![CDATA[
+            CREATE NONCLUSTERED INDEX [core_task_props_task_fk_idx] ON [dbo].[core_task_props] 
+            ([TASK_FK] ASC)
+            WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY];
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4582_optimize_create_tagged_note_mssql" context="client" dbms="mssql">
+        <sql><![CDATA[
+            CREATE NONCLUSTERED INDEX [tag_store_asc_idx] ON [dbo].[core_tag] 
+            ([tag_store_tag_id] ASC, [tag_store_alias] ASC)
+            INCLUDE ( [ID], [class],[default_name], [GLOBAL_ID_FK], [CATEGORY_FK])
+            WITH (SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY];
+        ]]></sql>
+    </changeSet>
+    
+    <changeSet author="Communote" id="KENMEI-4573_Change_Datetime_To_Datetime2_v2" context="client" dbms="mssql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml" author="Communote" id="KENMEI-4573_Change_Datetime_To_Datetime2"/>
+            </not>
+        </preConditions>
+        <sql><![CDATA[
+			ALTER TABLE configuration_client ALTER COLUMN last_logo_image_modification_d datetime2;
+			ALTER TABLE core_blog ALTER COLUMN last_modification_date datetime2;
+			ALTER TABLE core_blog ALTER COLUMN  creation_date datetime2;
+			ALTER TABLE core_global_string_property ALTER COLUMN last_modification_date  datetime2;
+			DROP INDEX core_note_creation_date_index ON core_note;
+			ALTER TABLE core_note ALTER COLUMN creation_date datetime2;
+			CREATE INDEX core_note_creation_date_index ON core_note (creation_date DESC);
+			ALTER TABLE core_note ALTER COLUMN last_modification_date datetime2;
+			ALTER TABLE core_task ALTER COLUMN next_execution datetime2;
+			ALTER TABLE core_task ALTER COLUMN last_execution datetime2;
+			ALTER TABLE security_code ALTER COLUMN creating_date datetime2;
+			ALTER TABLE security_user_status ALTER COLUMN locked_timeout datetime2; 
+			ALTER TABLE user_client ALTER COLUMN creation_time datetime2; 
+			ALTER TABLE user_profile ALTER COLUMN last_modification_date datetime2; 
+			ALTER TABLE user_profile ALTER COLUMN last_photo_modification_date datetime2; 
+			ALTER TABLE user_user ALTER COLUMN status_changed datetime2; 
+			ALTER TABLE user_user ALTER COLUMN last_login datetime2;
+        ]]></sql>
+    </changeSet>
+
+	<changeSet author="Communote" id="KENMEI-4583_optimize_note_tag_sort_mssql" context="client" dbms="mssql">
+        <sql><![CDATA[
+            CREATE NONCLUSTERED INDEX [core_note_id_asc_idx] ON [dbo].[core_note] 
+            ([direct] ASC)
+            INCLUDE ( [ID],[creation_date],[status],[BLOG_FK])
+            WITH (SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY];
+            
+            CREATE NONCLUSTERED INDEX [core_notes2tag_asc_idx] ON [dbo].[core_notes2tag] 
+            ([TAGS_FK] ASC, [NOTES_FK] ASC)
+            WITH (SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY];
+            
+            CREATE NONCLUSTERED INDEX [core_tag_id_asc_idx] ON [dbo].[core_tag] 
+            ([ID] ASC)
+            WITH (SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY];
+            
+            CREATE NONCLUSTERED INDEX [core_note_user_fk_idx] ON [dbo].[core_note]
+            ([USER_FK] ASC) 
+            WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY];
+        ]]></sql>
+	</changeSet>
+	
+	<changeSet author="Communote" id="KENMEI-4222_deadlock_delete_notes_index_mssql" context="client" dbms="mssql">
+        <sql><![CDATA[
+            CREATE NONCLUSTERED INDEX [user_note_prop_note_fk_idx] ON [dbo].[user_note_property] 
+            ( [NOTE_FK] ASC )
+            WITH (SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY];
+            
+            CREATE NONCLUSTERED INDEX [core_note_orgin_fk_idx] ON [dbo].[core_note] 
+            ( [ORIGIN_FK] ASC )
+            INCLUDE ( [ID],[creation_date],[last_modification_date],[creation_source],[direct],[status],[version],[discussion_path],[USER_FK],[CONTENT_FK],
+            [GLOBAL_ID_FK],[BLOG_FK],[PARENT_FK],[discussion_id]) 
+            WITH (SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY];
+            
+            CREATE NONCLUSTERED INDEX [core_note_parent_fk_idx] ON [dbo].[core_note] 
+            ( [PARENT_FK] ASC )
+            INCLUDE ( [ID],[creation_date],[last_modification_date],[creation_source],[direct],[status],[version],[discussion_path],[USER_FK],[CONTENT_FK],
+            [GLOBAL_ID_FK],[BLOG_FK],[ORIGIN_FK],[discussion_id]) 
+            WITH (SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF) ON [PRIMARY];
+                        
+            CREATE NONCLUSTERED INDEX core_note_follow_note_fk_idx ON core_note2followable
+            ( NOTES_FK ASC );
+        ]]></sql>
+	</changeSet>
+	
+	<changeSet author="Communote" id="KENMEI-4222_deadlock_delete_notes_index_global_id_mssql" context="client" dbms="mssql">
+        <sql><![CDATA[
+            CREATE NONCLUSTERED INDEX core_note_follow_items_fk_idx ON core_note2followable
+            ( FOLLOWABLE_ITEMS_FK ASC );
+        ]]></sql>
+	</changeSet>
+    <changeSet author="Communote" id="KENMEI-4216_alter_anonymized_user_prefix_mysql" dbms="mysql" context="client">
+        <sql><![CDATA[
+            UPDATE user_user SET alias=concat('_', id) WHERE status='DELETED';
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4216_alter_anonymized_user_prefix_mssql_v2" dbms="mssql" context="client">
+        <sql><![CDATA[
+            UPDATE user_user SET alias=('_' + CAST(ID AS varchar)) WHERE status='DELETED';
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4216_alter_anonymized_user_prefix_postgresql" dbms="postgresql" context="client">
+        <sql><![CDATA[
+              UPDATE user_user SET alias= ('_' || id ) WHERE status='DELETED';
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4216_alter_anonymized_user_prefix_oracle" dbms="oracle" context="client">
+        <sql><![CDATA[
+            UPDATE user_user SET alias=CONCAT('_', id) WHERE status='DELETED';
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>

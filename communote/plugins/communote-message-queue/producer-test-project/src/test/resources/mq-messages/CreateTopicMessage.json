@@ -1,0 +1,33 @@
+{
+   "identityContext":{
+      "@class":"com.communote.plugins.mq.message.base.data.security.UserIdentityContext",
+      "identity":{
+         "identity":"@@TOPIC_MANAGER@@",
+         "identityType":"@@IDENTITY_TYPE@@"
+      }
+   },
+   "authentication" : {
+    "@class" : "com.communote.plugins.mq.message.base.data.security.UsernamePasswordAuthentication",
+    "identity" : {
+      "identity" : "@@CNT_AUTHENTICATION_USERNAME@@"
+    },
+    "password" : "@@CNT_AUTHENTICATION_PASSWORD@@"
+   },
+   "replyType":"FULL",
+   "topic":{
+      "description":"MQ generated topic: @@RANDOM@@",
+      "tags":[
+         {
+            "defaultName":"@@RANDOM@@",
+            "name":"@@RANDOM@@",
+            "tagStoreAlias":"DefaultBlogTagStore"
+         }
+      ],
+      "title":"@@RANDOM@@",
+      "topicAlias":"@@RANDOM@@",
+      "topicRights":{
+         "allCanRead":true,
+         "allCanWrite":false
+      }
+   }
+}

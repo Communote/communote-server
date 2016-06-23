@@ -1,0 +1,33 @@
+<div class="cn-form-container">
+    <form id="something_unique" action="#" method="post">
+        #cnRenderMessages()
+        <fieldset>
+            <h2 class="cn-headline">$fmtTool.message("user.profile.email.change")</h2>
+            <div class="cn-form-info">
+                $fmtTool.message("user.profile.email.description")
+            </div>
+            <div class="cn-field-100 cn-long">
+                <div class="cn-label">
+                    <label>$fmtTool.message("user.profile.email.label.current.address")</label>
+                </div>
+                <div class="cn-input">
+                    <div class="cn-mock-input cn-disabled">
+                        $!escTool.xmlSimple($!command.CurrentEmail)
+                    </div>
+                </div>
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+            <div class="cn-vertical-spacer-20">&nbsp;</div>
+            #cnInputText_Long( 'newEmail' $!escTool.xmlSimple($!command.newEmail) 'user.profile.email.label.new.address' false '' 'command.newEmail')
+            <span class="cn-clear"><!-- ie --></span>
+            #cnInputText_Long( 'password' $!escTool.xmlSimple($!command.password) 'user.profile.email.label.confirm' false '' 'command.password' true)
+            <span class="cn-clear"><!-- ie --></span>
+        </fieldset>
+        <div class="cn-actions">
+            <div class="cn-buttons">
+                <input class="cn-button main" name="" id="" type="submit" value="$fmtTool.message("user.profile.email.button")" />
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+        </div>
+    </form>
+</div>

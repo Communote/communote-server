@@ -1,0 +1,70 @@
+#if( $pageInformation && $pageInformation.countPages != 0 && ($pageInformation.countPages > 1 || $pageInformation.countPages < $pageInformation.pageNumber) )
+    #set( $widgetAccessor = "widgetController.getWidget('${widgetId}')")
+    <div class="cn-list-paging">
+        #if( $pageInformation.pageNumber > 1 )
+            #set( $goToPage = ($pageInformation.pageNumber - 2) * $pageInformation.elementsPerPage )
+                <a class="cn-entry cn-backward cn-icon" href="javascript:;" onclick="${widgetAccessor}.loadPage('$goToPage'); return false;" >&nbsp;</a>
+        #else
+                <span class="cn-entry cn-backward cn-icon">&nbsp;</span>
+        #end
+        #if( $pageInformation.pageNumber - 3 > 1 )
+            
+            #if( $pageInformation.pageNumber - 11 < 1 )
+                    <a class="cn-entry" href="javascript:;" onclick="${widgetAccessor}.loadPage('0'); return false;">1</a>
+            #else
+                    <a class="cn-entry" href="javascript:;" onclick="${widgetAccessor}.loadPage('0'); return false;">1</a>
+                
+                #set( $goToPage = ($pageInformation.pageNumber - 11) * $pageInformation.elementsPerPage )
+                    <a class="cn-entry cn-backward10" href="javascript:;" onclick="${widgetAccessor}.loadPage('$goToPage'); return false;">-10</a>
+            #end
+            #if( $pageInformation.pageNumber - 3 > 2 )
+                    <span class="seperator">&hellip;</span>
+            #end
+        #end
+        
+        #set( $i = $pageInformation.pageNumber - 3 )
+        #set( $k = $pageInformation.pageNumber + 3 )
+        
+        #foreach( $j in [$i .. $k] )
+            #if( $i > $k )
+                #break
+            #end
+                
+            #if( $i < $pageInformation.pageNumber && $i >= 1 )
+                #set( $goToPage = ($i - 1) * $pageInformation.elementsPerPage )
+                    <a class="cn-entry" href="javascript:;" onclick="${widgetAccessor}.loadPage('$goToPage'); return false;">
+                        $i
+                    </a>
+            #end
+            #if( $i == $pageInformation.pageNumber )
+                    <a class="cn-entry cn-active" href="javascript:;">$i</a>
+            #end
+            #if( $i > $pageInformation.pageNumber && $i <= $pageInformation.countPages )
+                #set( $goToPage = ($i - 1) * $pageInformation.elementsPerPage )
+                    <a class="cn-entry" href="javascript:;" onclick="${widgetAccessor}.loadPage('$goToPage'); return false;">
+                        $i
+                    </a>
+            #end
+            
+            #set( $i = $i + 1 )
+        #end
+        #if( $pageInformation.pageNumber + 3 < $pageInformation.countPages )
+            #if( $pageInformation.pageNumber + 3 != $pageInformation.countPages - 1 )
+                    <span class="seperator">&hellip;</span>
+            #end
+            #if( $pageInformation.pageNumber + 10 > $pageInformation.countPages )
+                #set( $goToPage = ($pageInformation.countPages - 1) * $pageInformation.elementsPerPage )
+                    <a class="cn-entry" href="javascript:;" onclick="${widgetAccessor}.loadPage('$goToPage'); return false;">$pageInformation.countPages</a>
+            #else
+                #set( $goToPage = ($pageInformation.pageNumber + 9) * $pageInformation.elementsPerPage )
+                    <a class="cn-entry cn-forward10" href="javascript:;" onclick="${widgetAccessor}.loadPage('$goToPage'); return false;">+10</a>
+            #end
+        #end
+        #if( $pageInformation.pageNumber < $pageInformation.countPages )
+            #set( $goToPage = $pageInformation.pageNumber * $pageInformation.elementsPerPage )
+                <a class="cn-entry cn-forward cn-icon" href="javascript:;" onclick="${widgetAccessor}.loadPage('$goToPage'); return false;" >&nbsp;</a>
+        #else
+                <span class="cn-entry cn-forward cn-icon">&nbsp;</span>
+        #end
+    </div>
+#end

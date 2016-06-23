@@ -1,0 +1,36 @@
+{
+   "identityContext":{
+      "@class":"com.communote.plugins.mq.message.base.data.security.UserIdentityContext",
+      "identity":{
+         "identity":"@@TOPIC_MANAGER@@",
+         "identityType":"@@IDENTITY_TYPE@@"
+      }
+   },
+   "authentication" : {
+    "@class" : "com.communote.plugins.mq.message.base.data.security.UsernamePasswordAuthentication",
+    "identity" : {
+      "identity" : "@@CNT_AUTHENTICATION_USERNAME@@"
+    },
+    "password" : "@@CNT_AUTHENTICATION_PASSWORD@@"
+   },   
+   "externalSystemId": "DefaultSharepoint",
+   "replyType":"FULL",
+   "topic":{
+      "topicId":@@TOPIC_ID@@,
+      "topicRights":{
+         "allCanRead":false,
+         "allCanWrite":true
+      }
+    },
+   "setTags":false,
+   "mergeTags":false,
+   "deleteAllTags":false,
+   "mergeProperties":false,
+   "updateDescription":false,
+   "updateAlias":false,
+   "updateTopicRights":true,
+   "setExternalObjects":false,
+   "mergeExternalObjects":false,
+   "deleteAllExternalObjects":false,
+   "updateTitle":false
+}

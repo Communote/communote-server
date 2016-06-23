@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v2.3/db.changelog.v2.3.xml">
+    <changeSet author="Communote" id="KENMEI-5395-LastDiscussionNoteCreationDate-einfuegen" context="client">
+        <addColumn tableName="core_note">
+            <column name="last_discussion_creation_date" type="TIMESTAMP" />
+        </addColumn>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5416_Setzen_LastDiscussionNoteCreationDate_pg_4" context="client" dbms="postgresql">
+        <sql><![CDATA[
+           UPDATE
+                core_note outerNotes
+           SET
+                last_discussion_creation_date =
+                (
+                    SELECT
+                        MAX(innerNotes.creation_date)
+                    FROM
+                        core_note innerNotes
+                    WHERE
+                        (innerNotes.direct = false OR innerNotes.discussion_id = innerNotes.id)
+                    AND innerNotes.discussion_id = outerNotes.id )
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5416_Setzen_LastDiscussionNoteCreationDate_ora_4" context="client" dbms="oracle">
+        <sql><![CDATA[
+           UPDATE core_note outerNotes SET last_discussion_creation_date =
+            (
+            SELECT max(innerNotes.creation_date) FROM core_note innerNotes
+            WHERE  (innerNotes.direct = 0 OR innerNotes.discussion_id = innerNotes.id) AND innerNotes.discussion_id = outerNotes.id
+            )
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5416_Setzen_LastDiscussionNoteCreationDate_upd_col" dbms="mssql">
+        <modifyColumn tableName="core_note">
+            <column name="last_discussion_creation_date" type="datetime2"></column>
+        </modifyColumn>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5416_Setzen_LastDiscussionNoteCreationDate_mssql_4" context="client" dbms="mssql">
+        <sql><![CDATA[
+        UPDATE outerNotes SET last_discussion_creation_date =
+            (
+                SELECT max(innerNotes.creation_date) FROM core_note as innerNotes
+                WHERE innerNotes.discussion_id = outerNotes.ID AND (innerNotes.direct = 0 or innerNotes.discussion_id = innerNotes.ID)
+            )
+            FROM core_note as outerNotes
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5416_Setzen_LastDiscussionNoteCreationDate_mysql_4" context="client" dbms="mysql">
+        <sql><![CDATA[
+        UPDATE core_note outerNotes SET last_discussion_creation_date = 
+            (
+            SELECT max(creation_date) FROM 
+             (
+              SELECT creation_date,discussion_id FROM core_note WHERE direct=0 OR discussion_id = id
+             ) as innerNotes
+             WHERE innerNotes.discussion_id = outerNotes.ID
+            )
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>

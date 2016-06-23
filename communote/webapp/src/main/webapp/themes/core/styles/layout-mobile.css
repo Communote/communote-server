@@ -1,0 +1,168 @@
+@charset "utf-8";
+
+body {
+    background-color: #FFFFFF;
+    font-family: Verdana, Sans-serif;
+    font-size: 16px;
+    margin: 0px;
+    padding: 0px;
+    color: #424242;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+a , input {
+    cursor: pointer;
+    font-size:  100%;
+}
+
+#cn-communote-mobile {
+    margin: 0 0.5em;
+}
+
+#cn-communote-mobile a {
+    text-decoration: none;
+    color: #005599;
+}
+
+#cn-communote-mobile a * {
+    color: inherit;
+    background-color: inherit;
+}
+
+#cn-communote-mobile a:hover {
+    color: #E66914;
+}
+
+#cn-communote-mobile a:active , #cn-communote-mobile a:focus , input , button {
+    outline-width: 0; /* don't show the dotted box after click... */
+}
+
+#cn-communote-mobile a:hover * {
+    color: inherit;
+    background-color: inherit;
+}
+
+#cn-communote-mobile #cn-header {
+    background-color: #FFFFFF;
+    border-radius: 6px 6px 6px 6px;
+    box-shadow: 0 4px 8px #CBCBCB;
+    -moz-box-shadow: 0 4px 8px #CBCBCB;
+    -webkit-box-shadow: 0 4px 8px #CBCBCB;
+    min-width: 0;
+    position: relative;
+    text-align: center;
+}
+
+#cn-communote-mobile #cn-header #cn-topmenu-arrow {
+    background-image: url("../images/main/arrow-topmenu.png");
+    background-attachment: scroll;
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    bottom: -20px;
+    height: 20px;
+    left: 10%;
+    position: absolute;
+    text-align: center;
+    width: 22px;
+}
+
+#cn-communote-mobile #cn-header #clientlogo img {
+    border: 0 none;
+    margin: 0 auto;
+    display: block;
+}
+
+#cn-communote-mobile #cn-header #clientlogo a {
+    display: block;
+    margin-bottom: 0.3em;
+}
+
+#cn-communote-mobile #cn-login-form {
+    background-color: #EBEBEB;
+    border-radius: 6px 6px 6px 6px;
+    box-shadow: 0 4px 8px #CBCBCB;
+    -moz-box-shadow: 0 4px 8px #CBCBCB;
+    -webkit-box-shadow: 0 4px 8px #CBCBCB;
+    margin-top: 20px;
+    padding: 0.5em;
+}
+
+#cn-communote-mobile #cn-login-form fieldset {
+    text-align: center;
+    border: 0 none;
+    margin: 0;
+    padding: 0;
+}
+
+#cn-communote-mobile #cn-inputs input {
+    background-color: #FFFFFF;
+    border-color: #CBCBCB #DDDDDD #DDDDDD #CBCBCB;
+    border-radius: 6px 6px 6px 6px;
+    border-style: solid;
+    border-width: 2px 1px 1px 2px;
+    padding: 5px 7px;
+    margin: 0.4em 0;
+    height: 20px;
+    line-height: 20px;
+    min-width: 90px;
+    padding: 0.5em;
+    text-align: left;
+    width: 90%;
+    outline: 0 none;
+    display: inline-block;
+}
+
+#cn-communote-mobile #cn-error-message {
+    float: none;
+    text-align: center;
+    width: auto;
+    color: #D33;
+    font-style: italic;
+}
+
+#cn-communote-mobile input#rememberMe {
+    width: 1em; 
+    margin: 0;
+}
+
+#cn-communote-mobile #options {
+    margin: 1em;   
+}
+
+#cn-communote-mobile #mobile-buttons {
+    padding-top: 0.5em;
+}
+
+#cn-communote-mobile #mobile-buttons a , #cn-communote-mobile #cn-send input {
+    display: block;
+    margin: 0.5em 0;
+    padding: 0;
+    height: 1cm;
+    width: 100%;
+}
+
+#cn-send input.cn-button {
+    background: -moz-linear-gradient(top, #4A92C3, #005599);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #4A92C3), color-stop(1, #005599));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr=#4A92C3, EndColorStr=#005599);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#4A92C3, EndColorStr=#005599)";
+    background-color: #4A92C3;
+    color: #FFFFFF;
+}
+
+#mobile-buttons .cn-button , #cn-send .cn-button {
+    background: -moz-linear-gradient(top, #FFFFFF, #EBE9E9);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FFFFFF), color-stop(1, #EBE9E9));
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr=#FFFFFF, EndColorStr=#EBE9E9);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#FFFFFF, EndColorStr=#EBE9E9)";
+    background-color: #EBE9E9;
+    border-color: #EBEBEB #AEADAD #AEADAD #EBEBEB;
+    border-radius: 6px 6px 6px 6px;
+    border-style: solid;
+    border-width: 1px;
+    color: #005599;
+    line-height: 1cm;
+    text-align: center;
+    text-decoration: none;
+}

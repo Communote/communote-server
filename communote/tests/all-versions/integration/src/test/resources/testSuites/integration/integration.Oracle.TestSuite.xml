@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Integration Test Suite Oracle" verbose="1">
+    <suite-files>
+        <suite-file path="integration.TestSuite.xml">
+            <parameter name="dbTypeIdentifier" value="ORACLE" />
+            <parameter name="numberOfThreads" value="1" />
+            <!-- TagFilterTest, needed for Oracle as the filtering is extremely slow -->
+            <parameter name="minNumberOfMessages" value="1" />
+            <parameter name="maxNumberOfMessages" value="3" />
+            <parameter name="numberOfAnswers" value="3" />
+            <!-- /TagFilterTest -->
+        </suite-file>
+    </suite-files>
+</suite>

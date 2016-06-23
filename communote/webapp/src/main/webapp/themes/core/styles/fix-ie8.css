@@ -1,0 +1,20 @@
+/* Bugfixes for IE8 */
+
+/* ----------------------------------------- overrides for Widget CSS definitions ----------------------------------------- */
+
+/* widgets/ChronologialPostList.Widget.css */
+.cn-list-overview-blog-entry.cn-note-action-comment .cn-content-comment,
+.cn-list-overview-blog-entry.cn-note-action-edit .cn-content-edit {
+    border-width: 1px 2px 2px 1px;
+    border-style: solid;
+    border-color: #dddddd #c1c1c1 #c1c1c1 #dddddd;
+}
+
+.cn-list-blog-entry-overlay {
+    filter: alpha(opacity = 80);
+}
+
+/* widgets/CreateNote.Widget.css */
+.cn-write-note-container .cn-container-attachment .close-icon {
+    margin-top: -24px;
+}

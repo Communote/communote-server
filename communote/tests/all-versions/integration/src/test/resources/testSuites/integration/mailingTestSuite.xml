@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Mailing Integration Test Suite" verbose="1">
+    <parameter name="skipDatabaseGeneration" value="true" />
+    <parameter name="skipApplicationInitializing" value="true" />
+    <test name="Communote Integrationstests - Initialization Test">
+        <!-- This test initializes the database and application. -->
+        <parameter name="skipDatabaseGeneration" value="false" />
+        <parameter name="skipApplicationInitializing" value="false" />
+        <classes>
+            <class name="com.communote.server.test.SimpleCommunoteIntegrationTest" />
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - Send Mails">
+        <classes>
+            <class name="com.communote.server.core.mail.message.fetching.BlogNameIdMissingInSubjectMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.fetching.BlogsNotFoundMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.fetching.ContentProcessingErrorMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.fetching.DirectMessageMissingRecipientMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.fetching.DirectMessageWrongRecipientMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.fetching.GenericErrorMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.fetching.NoWriteAccessToBlogMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.GenericMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.fetching.UserNotInClientMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.fetching.WarningMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.TextMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.ForgottenPWMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.InviteUserToBlogMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.InviteUserToBlogWithExternalAuthMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.InviteUserToClientMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.InviteUserToClientWithExternalAuthMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.ManagerSecurityWarnMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.NotifyAboutNoteMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.NotifyAboutCRCSizeLimitReachedMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.NotifyUserCountLimitReachedMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.NoteLimitReachedMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.ConfirmUserMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.RemindUserLoginMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.RemindUserRegistrationMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.ActivateUserMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.manager.ActivateUserForManagerMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.manager.NewUserConfirmedForManagerMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.UserLockedMailMessageTest" />
+            <class name="com.communote.server.core.mail.message.user.ConfirmEmailAddressMessageTest" />
+        </classes>
+    </test>
+</suite>

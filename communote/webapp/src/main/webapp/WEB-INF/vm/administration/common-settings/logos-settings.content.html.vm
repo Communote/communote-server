@@ -1,0 +1,64 @@
+#* @vtlvariable name="command" type="com.communote.server.web.fe.portal.user.client.forms.ClientProfileLogoForm" *#
+#cnRenderMessages()
+<h5>#t('client.change.logo.title')</h5>
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="resetToDefault" id="resetToDefault" value="$command.isResetToDefault()"/>
+    <fieldset class="logo">
+        <div class="line">
+            <div class="w50">
+                <div class="label"><label for="logoFile">
+                    #t('client.change.logo.file')
+                </label></div>
+                <div class="input"><input type="file" name="file" class="file" id="logoFile"/></div>
+            </div>
+            <div class="w50">
+                <div class="label space">
+                    #t('client.change.logo.hint.title')
+                </div>
+                <div class="description smaller">
+                    &ndash;&nbsp;
+                    #t_args('client.change.logo.hint.max.width', ${command.bestLogoWidth})
+                    <br/>
+                    &ndash;&nbsp;
+                    #t_args('client.change.logo.hint.max.height', ${command.bestLogoHeight})
+                    <br/>
+                </div>
+            </div>
+            <span class="clear"><!-- --></span>
+        </div>
+        <div class="spacer">&nbsp;</div>
+        <div class="line">
+            <div class="w100">
+                <div class="label">#t('client.change.logo.current')</div>
+                <div class="input"><img class="currentLogo"
+                                        src="$urlTool.clientImage($fieldTool.get('com.communote.server.model.user.ImageSizeType.MEDIUM'))"
+                                        alt="Easteregg"/>
+                </div>
+            </div>
+            <span class="clear"><!-- --></span>
+        </div>
+    </fieldset>
+    <div class="actionbar actionbar-general">
+        <div class="button-gray main">
+            <input type="submit" name="button" value="#t('client.change.logo.image.upload')"
+                   onclick="$escTool.getD()('resetToDefault').value='false'; return true;">
+        </div>
+        #if(${command.customClientLogo})
+            <div class="button-gray">
+                <input type="submit" name="remove_button" value="#t('client.change.logo.image.remove')"
+                       onclick="$escTool.getD()('resetToDefault').value='true'; return true;"
+                       title="#t('client.change.logo.image.remove')">
+            </div>
+        #end
+        <span class="clear"><!-- --></span>
+    </div>
+</form>
+<br/><br/>
+
+<h5>#t('administration.client.default-images.title')</h5>
+<h6>#t('administration.client.default-images.banner.title')</h6>
+#set($widgetOptions = {"filterWidgetGroupId": false, "imageType" : "banner", "entityId": $fieldTool.get('com.communote.server.core.image.type.EntityImageManagement.DEFAULT_IMAGE_ENTITY_ID')})
+#widget('UploadBannerImageWidget' 'GlobalIdUploadImageWidget', ${widgetOptions})
+<h6>#t('administration.client.default-images.profile.title')</h6>
+#set($widgetOptions = {"filterWidgetGroupId": false, "imageType" : "profile", "entityId": $fieldTool.get('com.communote.server.core.image.type.EntityImageManagement.DEFAULT_IMAGE_ENTITY_ID')})
+#widget('UploadProfileImageWidget' 'GlobalIdUploadImageWidget' ${widgetOptions})

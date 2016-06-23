@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v3.x/db.changelog.v3.2.xml">
+                   
+    <changeSet id="KENMEI-7199-Drop-SharePoint-Configuration" author="Communote">
+    
+    	<dropTable tableName="configuration_sharepoint"/>
+    	
+    	<sql><![CDATA[
+    		delete from configuration_external_sys
+    		where system_id = 'DefaultSharepoint';
+    	]]></sql>
+    
+    </changeSet>
+    
+    <changeSet id="KENMEI-7154-Terms-Of_Use_1-postgres" author="Communote" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                 SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.terms.of.use.users.must.accept' AND setting_value = 'true';
+               ]]></sqlCheck>
+        </preConditions>
+        <sql><![CDATA[
+           UPDATE user_user SET status='TERMS_NOT_ACCEPTED' 
+           WHERE last_login is null AND (status='ACTIVE' OR status='TEMPORARILY_DISABLED') AND terms_accepted = FALSE;
+           UPDATE user_user SET terms_accepted = FALSE WHERE last_login is null AND terms_accepted = TRUE;
+            ]]></sql>
+    </changeSet>
+    <changeSet id="KENMEI-7154-Terms-Of_Use_1-mssql" author="Communote" dbms="mssql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                 SELECT count(*) FROM configuration_setting WHERE SETTING_KEY = 'kenmei.client.terms.of.use.users.must.accept' AND setting_value = 'true';
+               ]]></sqlCheck>
+        </preConditions>
+        <sql><![CDATA[
+           UPDATE user_user SET status='TERMS_NOT_ACCEPTED' 
+           WHERE last_login is null AND (status='ACTIVE' OR status='TEMPORARILY_DISABLED') AND terms_accepted = 0;
+           UPDATE user_user SET terms_accepted = 0 WHERE last_login is null AND terms_accepted = 1;
+            ]]></sql>
+    </changeSet>
+    <changeSet id="KENMEI-7154-Terms-Of_Use_1-oracle" author="Communote" dbms="oracle">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[SELECT count(*) FROM configuration_setting WHERE SETTING_KEY = 'kenmei.client.terms.of.use.users.must.accept' AND to_char(setting_value) = 'true']]></sqlCheck>
+        </preConditions>
+        <sql><![CDATA[
+           UPDATE user_user SET status='TERMS_NOT_ACCEPTED' 
+           WHERE last_login is null AND (status='ACTIVE' OR status='TEMPORARILY_DISABLED') AND terms_accepted = 0;
+           UPDATE user_user SET terms_accepted = 0 WHERE last_login is null AND terms_accepted = 1;
+            ]]></sql>
+    </changeSet>
+    <changeSet id="KENMEI-7154-Terms-Of_Use_1-mysql" author="Communote" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1"><![CDATA[
+                 SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.terms.of.use.users.must.accept' AND setting_value = 'true';
+               ]]></sqlCheck>
+        </preConditions>
+        <sql><![CDATA[
+           UPDATE user_user SET status='TERMS_NOT_ACCEPTED' 
+           WHERE last_login is null AND (status='ACTIVE' OR status='TEMPORARILY_DISABLED') AND terms_accepted = 0;
+           UPDATE user_user SET terms_accepted = 0 WHERE last_login is null AND terms_accepted = 1;
+            ]]></sql>
+    </changeSet>
+    
+    <changeSet id="KENMEI-7154-Terms-Of_Use_2-postgres" author="Communote" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="1"><![CDATA[
+                    SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.terms.of.use.users.must.accept' AND setting_value = 'false';
+                    ]]></sqlCheck>
+                <sqlCheck expectedResult="0"><![CDATA[
+                    SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.terms.of.use.users.must.accept';
+                    ]]></sqlCheck>
+            </or>
+        </preConditions>
+        <sql><![CDATA[
+           UPDATE user_user SET terms_accepted = TRUE WHERE terms_accepted = FALSE AND status='ACTIVE';
+            ]]></sql>
+    </changeSet>
+    <changeSet id="KENMEI-7154-Terms-Of_Use_2-mssql" author="Communote" dbms="mssql">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="1"><![CDATA[
+                    SELECT count(*) FROM configuration_setting WHERE SETTING_KEY = 'kenmei.client.terms.of.use.users.must.accept' AND setting_value = 'false';
+                    ]]></sqlCheck>
+                <sqlCheck expectedResult="0"><![CDATA[
+                    SELECT count(*) FROM configuration_setting WHERE SETTING_KEY = 'kenmei.client.terms.of.use.users.must.accept';
+                    ]]></sqlCheck>
+            </or>
+        </preConditions>
+        <sql><![CDATA[
+           UPDATE user_user SET terms_accepted = 1 WHERE terms_accepted = 0 AND status='ACTIVE';
+            ]]></sql>
+    </changeSet>
+    <changeSet id="KENMEI-7154-Terms-Of_Use_2-oracle" author="Communote" dbms="oracle">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="1"><![CDATA[SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.terms.of.use.users.must.accept' AND to_char(setting_value) = 'false']]></sqlCheck>
+                <sqlCheck expectedResult="0"><![CDATA[SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.terms.of.use.users.must.accept']]></sqlCheck>
+            </or>
+        </preConditions>
+        <sql><![CDATA[UPDATE user_user SET terms_accepted = 1 WHERE terms_accepted = 0 AND status='ACTIVE';]]></sql>
+    </changeSet>
+    <changeSet id="KENMEI-7154-Terms-Of_Use_2-mysql" author="Communote" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <sqlCheck expectedResult="1"><![CDATA[
+                    SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.terms.of.use.users.must.accept' AND setting_value = 'false';
+                    ]]></sqlCheck>
+                <sqlCheck expectedResult="0"><![CDATA[
+                    SELECT count(*) FROM configuration_setting WHERE setting_key = 'kenmei.client.terms.of.use.users.must.accept';
+                    ]]></sqlCheck>
+            </or>
+        </preConditions>
+        <sql><![CDATA[
+           UPDATE user_user SET terms_accepted = 1 WHERE terms_accepted = 0 AND status='ACTIVE';
+            ]]></sql>
+    </changeSet>
+    
+</databaseChangeLog>

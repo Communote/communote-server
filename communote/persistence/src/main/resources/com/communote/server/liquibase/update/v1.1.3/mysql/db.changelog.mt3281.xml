@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.1.3/db.changelog.v1.1.3.xml">
+    
+    <changeSet id="mt3281_1_mysql" author="unknown" context="client" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT
+                    count(*)
+                FROM
+                    configuration_setting
+                WHERE
+                    `key` = 'kenmei.blog.allow.public.access';
+            </sqlCheck>
+        </preConditions>
+        <comment>CR 134 - Anonymous Access, Anonymous User</comment>
+        <insert tableName="configuration_setting">
+            <column name="key" value="kenmei.blog.allow.public.access" />
+            <column name="value" value="false" />
+            <column name="configuration_fk" value="1" />
+        </insert>
+    </changeSet>
+    
+    <changeSet id="mt3281_2_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 134 - Anonymous Access, Anonymous User</comment>
+        <addColumn tableName="core_blog">
+            <column name="PUBLIC_ACCESS" type="BOOLEAN"></column>
+        </addColumn>
+        <addNotNullConstraint tableName="core_blog"
+                              columnName="PUBLIC_ACCESS"
+                              defaultNullValue="0" columnDataType="BOOLEAN" />
+    </changeSet>
+    
+</databaseChangeLog>

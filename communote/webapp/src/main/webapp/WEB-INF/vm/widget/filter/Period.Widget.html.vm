@@ -1,0 +1,26 @@
+<div class="cn-filter-time">
+    <div class="cn-widget-header-toolbar">
+        <span class="cn-label">$fmtTool.message("blog.filter.period.menu.last")</span>
+        <a class="cn-link cn-timeunit-2w" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').filterLastNDays(7);">$fmtTool.message("blog.filter.period.menu.14days")</a>
+        <span class="cn-timeunit-slash">/</span>
+        <a class="cn-link cn-timeunit-1m cn-last-child" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').filterLastNMonths(1);">$fmtTool.message("blog.filter.period.menu.month")</a>
+    </div>
+    <h3 class="cn-headline">$fmtTool.message("blog.filter.period.title")</h3>
+    <div class="cn-content">
+        <div class="cn-time-from">
+            <label>$fmtTool.message("blog.filter.period.start"):</label>
+            <div class="cn-time-input-wrapper">
+                <input type="text" id="${widget.widgetId}_period_filter_start" class="calendar cn-time-from-input cn-border" name="period_filter_start" />
+                <a class="cn-filter-time-clear cn-icon" href="javascript:;" onclick="communote.widgetController.getWidget('${widget.WidgetId}').sendFilterGroupEvent('onSetPeriodFilter', {start:null});"></a>
+            </div>
+        </div>
+        <div class="cn-time-to" >
+            <label>$fmtTool.message("blog.filter.period.end"):</label>
+            <div class="cn-time-input-wrapper">
+                <input type="text" id="${widget.widgetId}_period_filter_end" class="calendar cn-time-to-input cn-border" name="period_filter_end" />
+                <a class="cn-filter-time-clear cn-icon" href="javascript:;" onclick="communote.widgetController.getWidget('${widget.WidgetId}').sendFilterGroupEvent('onSetPeriodFilter', {end:null});"></a>
+            </div>
+        </div>
+        <span class="cn-clear"><!-- clear --></span>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.client.Client" table="user_client" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">user_client_seq</param>
+                                                           </generator>
+        </id>
+        <property name="clientId" type="java.lang.String">
+            <column name="client_id" 
+                     not-null="true" unique="true"/>
+        </property>
+        <property name="name" type="java.lang.String">
+            <column name="name" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="clientStatus" type="com.communote.server.persistence.client.ClientStatusEnum">
+            <column name="client_status" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="creationVersion" type="java.lang.String">
+            <column name="creation_version" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="creationTime" type="java.sql.Timestamp">
+            <column name="creation_time" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="creationRevision" type="java.lang.String">
+            <column name="creation_revision" 
+                     not-null="false" unique="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

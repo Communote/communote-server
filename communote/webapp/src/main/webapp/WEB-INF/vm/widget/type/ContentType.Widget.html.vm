@@ -1,0 +1,23 @@
+#if($list.size() > 0)
+<div class="cn-filter-content cono-filter">
+    <h3 class="cn-headline">#t("filter.by.type")</h3>
+    #if($widget.getBooleanParameter('showFAB', false))
+        <div class="cn-fab-wrapper">
+            <a href="javascript:;" class="cn-entry cn-mention" data-cnt-filter="{'filterKey': 'onShowPostsForMe'}"><span class="cn-icon"><!-- Empty --></span>#t('filter.by.fab.at-user')</a>
+            <a href="javascript:;" class="cn-entry cn-favorite" data-cnt-filter="{'filterKey': 'onShowFavorites'}"><span class="cn-icon"><!-- Empty --></span>#t('filter.by.fab.favorites')</a>
+            <a href="javascript:;" class="cn-entry cn-follow" data-cnt-filter="{'filterKey': 'onShowFollowedItems'}"><span class="cn-icon"><!-- Empty --></span>#t('filter.by.fab.following')</a>
+            #cnClear()
+        </div>
+        #cnClear()
+    #end
+    <div class="cn-types-wrapper">
+        #foreach($contentType in $list)
+            <span class="cn-entry-wrapper content-type-$contentType.alias">
+                <a href="javascript:;" name="$contentType.alias" class="cn-entry" title="#t($contentType.titleKey)" data-property-filter="$escTool.xmlSimple($contentType.propertyFilter)">
+                    <span class="cn-icon"><!-- Leer --></span><span class="cn-icon-label">#t($contentType.titleKey)</span>
+                </a>
+            </span>
+        #end
+    </div>
+</div>
+#end

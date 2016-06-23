@@ -1,0 +1,42 @@
+#set( $widgetInstance = "#jsCurrentWidget()")
+#widgetMetadata(${widget.ResponseMetadata})
+<div class="cn-filter-blogs cono-filter">
+#if($widget.getBooleanParameter('showSortModeSelector', false))
+    <div class="cn-widget-header-toolbar">
+        <ul aria-haspopup="true" class="cn-menu">
+            #if(${sortAlphabetic})
+                <li class="cn-more-actions"><a class="cn-link" href="javascript:;" title="$fmtTool.message('widget.topicFilter.searchMode.alphabetic.hint')"><span class="cn-icon-label">$fmtTool.message("widget.topicFilter.searchMode.alphabetic") </span><span class="cn-icon cn-arrow"><!-- &#9660; --></span></a></li>
+            #else
+                <li class="cn-more-actions"><a class="cn-link " href="javascript:;" title="$fmtTool.message('widget.topicFilter.searchMode.popularity.hint')"><span class="cn-icon-label">$fmtTool.message("widget.topicFilter.searchMode.popularity")</span> <span class="cn-icon cn-arrow"><!-- &#9660; --></span></a></li>
+            #end
+            <li>
+                <ul class="cn-menu-list">
+                    #if(${sortAlphabetic})
+                        <li>
+                            <a class="cn-link " href="javascript:;" onclick="${widgetInstance}.setSortMode('popularity')" title="$fmtTool.message('widget.topicFilter.searchMode.popularity.hint')">$fmtTool.message("widget.topicFilter.searchMode.popularity")</a>
+                        </li>
+                    #else
+                        <li>
+                            <a class="cn-link" href="javascript:;" onclick="${widgetInstance}.setSortMode('alphabetic')" title="$fmtTool.message('widget.topicFilter.searchMode.alphabetic.hint')">$fmtTool.message("widget.topicFilter.searchMode.alphabetic")</a>
+                        </li>
+                    #end
+                </ul>
+            </li>
+        </ul>
+    </div>
+#end
+    <h3 class="cn-headline">#t("filtered.by.blogs")</h3>
+    <div class="cn-content">
+        #if($list.size() == 0)
+            <div class="cn-empty-list">#t('widget.empty.list')</div>
+        #else
+            #foreach($blog in $list)
+                <a class="bloglistitem cn-entry $!blogContainerClasses" id="${widget.WidgetId}_blog_${blog.blogId}" onclick="${widgetInstance}.sendFilterGroupEvent('onBlogToggled', '${blog.blogId}', {type: 'blog', key: '${blog.blogId}', title : '${escTool.javascriptInline($blog.title)}'}); return false;" href="${urlTool.blog($blog.alias)}"> $escTool.xmlSimple(${blog.title}) </a>
+                #if($velocityHasNext)<br />#end
+            #end
+            <span class="cn-clear"><!-- Empty --></span>
+            #parse("/WEB-INF/vm/common/paging-widget.html.vm")
+        #end
+        <span class="cn-clear"><!-- Empty --></span>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+.content-type-attachment .cn-icon {
+    background-position: -134px -128px;
+}
+
+.content-type-attachment a:hover .cn-icon,
+.content-type-attachment a.cn-active .cn-icon {
+    background-position: -134px -160px;
+}
+
+.cn-filter-applied .content-type-attachment .cn-icon {
+    background-position: -133px -131px;
+}
+
+.cn-filter-applied .content-type-attachment:hover .cn-icon {
+    background-position: -133px -163px;
+}
+
+.content-type-image .cn-icon {
+    background-position: -232px -128px;
+}
+
+.content-type-image a:hover .cn-icon,
+.content-type-image a.cn-active .cn-icon {
+    background-position: -232px -160px;
+}
+
+.cn-filter-applied .content-type-image .cn-icon {
+    background-position: -229px -133px;
+}
+
+.cn-filter-applied .content-type-image:hover .cn-icon {
+    background-position: -229px -165px;
+}
+
+.content-type-link .cn-icon {
+    background-position: -102px -128px;
+}
+
+.content-type-link a:hover .cn-icon,
+.content-type-link a.cn-active .cn-icon {
+    background-position: -102px -160px;
+}
+
+.cn-filter-applied .content-type-link .cn-icon {
+    background-position: -101px -133px;
+}
+
+.cn-filter-applied .content-type-link:hover .cn-icon {
+    background-position: -101px -165px;
+}
+
+.content-type-video .cn-icon {
+    background-position: -198px -128px;
+}
+
+.content-type-video a:hover .cn-icon,
+.content-type-video a.cn-active .cn-icon {
+    background-position: -198px -160px;
+}
+
+.cn-filter-applied .content-type-video .cn-icon {
+    background-position: -197px -133px;
+}
+
+.cn-filter-applied .content-type-video:hover .cn-icon {
+    background-position: -197px -165px;
+}
+
+.content-type-document .cn-icon {
+    background-position: -262px -128px;
+}
+
+.content-type-document a:hover .cn-icon,
+.content-type-document a.cn-active .cn-icon {
+    background-position: -262px -160px;
+}
+
+.cn-filter-applied .content-type-document .cn-icon {
+    background-position: -261px -133px;
+}
+
+.cn-filter-applied .content-type-document:hover .cn-icon {
+    background-position: -261px -165px;
+}

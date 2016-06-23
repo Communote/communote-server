@@ -1,0 +1,87 @@
+#communote a * {
+    cursor: pointer;
+}
+
+#communote .actionbar {
+    margin-left: 23px;
+}
+
+#communote .button-gray {
+    background-position: 3px 0;
+}
+#communote .button-right {
+    padding-left: 0px;
+    background-position: 4px 0; 
+}
+#communote .button-blue input ,
+#communote .button-gray input ,
+#communote .button-gray a ,
+.TB_window .button-gray input ,
+.TB_window .button-gray a {
+    line-height: 15px;
+    text-align: center;
+    min-width: 0;
+}
+
+#communote #command .button-gray a {
+	margin-left: 7px;	
+}
+
+.TB_window .button-gray input {
+    padding-top: 2px;
+}
+
+.TB_window .button-left input {
+    width: 58px;
+    margin-left: -25px;
+}
+
+.TB_window .button-right {
+    margin-right: 0px;
+}
+
+.TB_window .button-right input {
+    margin-right: 25px;
+}
+
+/******/
+/*** FORM Design ***/
+/******/
+#communote form {
+    margin: 0px;
+    padding: 0px;
+}
+#communote fieldset legend {
+    margin: 0 0 10px -30px;
+}
+
+#communote .form-container div.checkbox {
+
+}
+#communote .form-container div.checkbox input {
+    margin-top: -0.1em;
+}
+
+/******/
+/*** Installer ***/
+/******/
+#communote #reports .error-report pre ,
+#communote #reports .warning-report pre ,
+#communote #reports .success-report pre {
+    overflow: auto;
+}
+
+
+/******/
+/*** Other ***/
+/******/
+.ajax-loading {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: alpha(opacity =           50);
+    width: 100%;
+    min-height: 100px;
+}
+
+.ajax-loading div.ajax-loading-image {
+    min-height: 100px;
+}

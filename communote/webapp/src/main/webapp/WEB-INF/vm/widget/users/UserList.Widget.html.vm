@@ -1,0 +1,73 @@
+#* @vtlvariable name="list" type="com.communote.common.util.PageableList<com.communote.server.api.core.user.DetailedUserData> *#
+#* @vtlvariable name="widget" type="com.communote.server.web.fe.widgets.users.ListUsersWidget" *#
+#widgetMetadata(${widget.ResponseMetadata})
+#set($nameMedium = $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.MEDIUM'))
+#set($nameShort = $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.SHORT'))
+<div class="cn-list-scroll-top cn-hidden" id="${widget.WidgetId}-top-scroller">
+    <a href="javascript:;"
+       onclick="scrollWindowTo(null, 0, 0, true, true); return false;">
+        <span class="cn-icon"></span>
+        <span class="cn-icon-label">#t('blog.post.list.back.to.top')</span>
+    </a>
+</div>
+#if($communoteTool.isCurrentUserClientManager() && $widget.getParameter('loadMoreMode') != 'paging' && $widget.getLongParameter('offset', 0) == 0)
+<div class="cn-list-entry-new cn-list-people-persons-entry">
+    <div class="cn-left cn-col-1">
+        <a href="$urlTool.render("/admin/client/usermanagementview.do?inviteUser=true")">
+            <span class="cn-tile cn-invite"><!-- Empty --></span>
+        </a>
+    </div>
+    <div class="cn-left cn-col-2"><a href="$urlTool.render("/admin/client/usermanagementview.do?inviteUser=true")">#t('user.list.add-new')</a></div>
+    #cnClear()
+</div>
+#end
+#if( !$list || $list.size() == 0 )
+<div class="cn-empty-list">
+    $fmtTool.message('users.list.empty')
+</div>
+#else
+    #foreach($user in $list)
+        #set($userLink = $urlTool.user($user.alias))
+        #set($userName = $communoteTool.getUserSignature($user, $nameMedium))
+        #set($userNameEscaped = $escTool.xmlSimple($userName))
+        #set($userNameShort = $communoteTool.getUserSignature($user, $nameShort))
+        #set( $imageLarge = $fieldTool.get('com.communote.server.model.user.ImageSizeType.LARGE') )
+    <div id="${widget.WidgetId}-user-${user.Id}" aria-haspopup="true" class="cn-list-people-persons-entry cn-status-$user.getStatus()#if($user.follows) cn-list-entry-followed#end">
+        <div class="cn-left cn-col-1">
+            <a href="$userLink" onclick="return communote.linkHandler.open('$userLink')">
+                <img src="$urlTool.userImage($user.id, $imageLarge)" alt="${userNameEscaped}" />
+            </a>
+        </div>
+        <div class="cn-left cn-col-2">
+            <b><a href="$userLink" title="${userNameEscaped}" onclick="return communote.linkHandler.open('$userLink', {userId: ${user.id}, userShortName: '$escTool.javascriptInline(${userNameShort})', userLongName: '$escTool.javascriptInline(${userName})'})">${userNameEscaped}</a></b><br/>
+                <span class="cn-company">$escTool.xmlSimple("$!user.position")
+                    #if("$!user.company" != '' )
+                        &#040;$escTool.xmlSimple("$!user.company")&#041;
+                    #end
+                </span><br/>
+            #if($user.getStatus() == 'ACTIVE')
+                #cnFollowButton("$user.Id", 'User', $user.follows, 'follow.link.follow', 'user.profile.follow.button')
+            #else
+                <span class="cn-disabled-user">#t("user.list.entry.${user.getStatus()}")</span>
+            #end
+        </div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    #end
+<span name="lastClear" class="cn-clear"><!-- --></span>
+    #if($widget.getParameter('loadMoreMode') != 'paging')
+    <div class="control-loadmore-placeholder cn-list-loadmore-wrapper cn-clear">
+        <div class="control-loadmore-loading-feedback cn-list-loadmore-feedback" style="display:none">
+            <span>#t('user.list.loadmore.loading.feedback')</span>
+        </div>
+        <div class="control-loadmore-no-more-data cn-empty-list" style="display:none">
+            <span>#t('user.list.loadmore.all.loaded')</span>
+        </div>
+        <div class="control-loadmore-limit-reached cn-list-loadmore-manually"
+             #if($widget.getParameter('loadMoreMode')=='append-scroll' || $list.MinNumberOfAdditionalElements==0)style="display:none"#end>
+            <input type="button" class="cn-button" value="#t('user.list.loadmore.manually')"
+                   onclick="document.id(this).setStyle('display', 'none');widgetController.getWidget('${widget.WidgetId}').loadMore()"/>
+        </div>
+    </div>
+    #end
+#end

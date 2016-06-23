@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/DOCUMENT/1.0.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/DOCUMENT/1.0.1 http://maven.apache.org/xsd/document-1.0.1.xsd"
+  outputName="maven-pdf-plugin">
+
+  <meta>
+    <title>${project.name} - Version ${project.version} for Communote ${project.parent.version}</title>
+    <author>Communote GmbH</author>
+  </meta>
+
+  <toc name="Table of Contents">
+    <item ref="index.html" name="About" />
+    <item ref="configuration.html" name="Configuration" />
+    <item ref="contact.html" name="Contact" />
+  </toc>
+
+  <cover>
+    <coverTitle>${project.name}</coverTitle>
+    <coverSubTitle>Version ${project.version} Build ${build.timestamp}</coverSubTitle>
+    <coverType>User Guide</coverType>
+    <projectName>${project.name}</projectName>
+    <companyName>Communote GmbH</companyName>
+    <companyLogo>./images/communote_logo-small.png</companyLogo>
+  </cover>
+  
+  
+</document>

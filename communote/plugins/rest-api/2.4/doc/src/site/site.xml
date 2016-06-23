@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Documentation of Communote REST API Plugin ${project.version}" 
+			xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd ">
+
+	<publishDate position="left" format="MM/dd/yyyy" />
+    <version position="left" />
+
+    <bannerLeft>
+        <name>${project.name}</name>
+    </bannerLeft>
+    <bannerRight>
+        <alt>Communote GmbH</alt>
+        <name>Communote</name>
+        <src>./images/communote_logo-small.png</src>
+		<href>http://www.communote.com</href>
+    </bannerRight>
+    
+    <body>
+        <menu name="Manual" inherit="top">
+			<item href="./index.html" name="Introduction" />
+            <item href="./getting_started.html" name="Getting Started" />
+			<item name="Usage of Resources" href="/gen/resources/usage.html" />
+			<item name="Available Resources" href="/gen/resources/overview.html" >
+				<item name="Attachment and Subresources" href="/gen/resources/attachment.html"/>
+				<item name="Note and Subresources" href="/gen/resources/note.html"/>
+				<item name="Tag and Subresources" href="/gen/resources/tag.html"/>
+				<item name="TagStoreTagList and Subresources" href="/gen/resources/tagstoretaglist.html"/>
+				<item name="TagSuggestionList and Subresources" href="/gen/resources/tagsuggestionlist.html"/>
+				<item name="TimelineNote and Subresources" href="/gen/resources/timelinenote.html"/>
+				<item name="TimelineTag and Subresources" href="/gen/resources/timelinetag.html"/>
+				<item name="TimelineTopic and Subresources" href="/gen/resources/timelinetopic.html"/>
+				<item name="TimelineUser and Subresources" href="/gen/resources/timelineuser.html"/>
+				<item name="Topic and Subresources" href="/gen/resources/topic.html"/>
+				<item name="User and Subresources" href="/gen/resources/user.html"/>
+			</item>
+			<item name="Usage of Communote Client for Java" href="/gen/client/index.html" />
+			<item href="./imprint.html" name="Imprint" />
+        </menu>
+        
+        <menu name="Downloads" inherit="top">
+            <item href="./pdf/Documentation_of_Communote_Rest-Api_Plugin_${project.version}.pdf" name="Documentation as PDF" />
+        </menu>
+    </body>
+	
+    <custom>
+		<fluidoSkin>
+		  <topBarEnabled>false</topBarEnabled>
+		</fluidoSkin>
+	</custom>
+  
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.2.1</version>
+	</skin>	
+	
+</project>

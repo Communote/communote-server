@@ -1,0 +1,167 @@
+#* @vtlvariable name="list" type="com.communote.common.util.PageableList<com.communote.server.core.filter.listitems.UserManagementListItem>" *#
+#if($list.isEmpty())
+<div class="emptyList">#t('widget.empty.list')</div>
+#else
+#set($widgetInstance = "#jsCurrentWidget()")
+<div class="spacer">&nbsp;</div>
+<div class="table-container">
+    <div class="table-header">
+        <div class="row">
+            <div class="column w50">
+                <span>#t('widget.user.management.list.header.name')</span>
+            </div>
+            <div class="column w15">
+                <span>#t('widget.user.management.list.header.alias')</span>
+            </div>
+            <div class="column w20">
+                <span>#t('widget.user.management.list.header.role')</span>
+            </div>
+            <div class="column w15">
+                <span>#t('widget.user.management.list.header.status')</span>
+            </div>
+            <span class="clear"><!-- ie --></span>
+        </div>
+    </div>
+
+    <div class="table-content">
+        #foreach($item in $list)
+            #if($item.getAlias())
+                #set($itemAlias = $item.getAlias())
+            #else
+                #set($itemAlias = '&nbsp;')
+            #end
+            #set($isSystemManager = false)
+            #set($isSystemUser = false)
+            #set($isCrawlUser = false)
+            #foreach($role in $item.getRoles())
+                #if("$role" == 'ROLE_KENMEI_CLIENT_MANAGER' )
+                    #set($isSystemManager = true)
+                #elseif("$role" == 'ROLE_SYSTEM_USER')
+                    #set($isSystemUser = true)
+                #elseif("$role" == 'ROLE_CRAWL_USER')
+                    #set($isCrawlUser = true)
+                #end
+            #end
+
+            #if($isSystemManager)
+                #set($itemRole = "<b>#t('widget.user.management.list.content.admin')</b>")
+            #elseif($isSystemUser)
+                #set($itemRole = "<i>#t('widget.user.management.list.content.system.user')</i>")
+            #elseif($isCrawlUser)
+                #set($itemRole = "<i>#t('widget.user.management.list.content.crawl.user')</i>")
+            #else
+                #set($itemRole = "#t('widget.user.management.list.content.member')")
+            #end
+
+            #if("$item.status" == 'TEMPORARILY_DISABLED')
+                #set($cssStatusClass = 'temp_disabled')
+            #elseif("$item.status" == 'REGISTERED')
+                #set($cssStatusClass = 'registered')
+            #elseif("$item.status" == 'PERMANENTLY_DISABLED')
+                #set($cssStatusClass = 'deleted')
+            #else
+                #set($cssStatusClass = '')
+            #end
+            
+            #set($userSignatureLongEscaped = $escTool.javascriptInline($!communoteTool.getUserSignature($item, $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.LONG'))))
+            #set($defaultUserSignature = $escTool.javascriptInline($!communoteTool.getUserSignature($item, $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.MEDIUM'))))
+
+            #set($zIndex = $list.size() - $foreach.index)
+            <div class="row clickable ${cssStatusClass}" id="client_user_${item.id}"
+                 onmouseover="mOverAddHoverClass(this);" onmouseout="mOutRemoveHoverClass(this);"
+                 style="z-index: $zIndex;">
+                <div class="row-event" #if("$item.status" != 'REGISTERED')
+                     onclick="${widgetInstance}.sendFilterGroupEvent('onUserClick', '${item.id}');"#end>
+                        <div class="column w50 user-name" title="$escTool.xml($defaultUserSignature)">
+                            <img src="$urlTool.userImage($item.id, $fieldTool.get('com.communote.server.model.user.ImageSizeType.SMALL'))"
+                                 width="25" height="25"/>
+                        <span class="${cssStatusClass}">
+                            #if($defaultUserSignature != "")
+                                $escTool.xml($stringTool.truncateMiddle($defaultUserSignature,40,'...'))
+                            #else
+                                #t("widget.user.management.list.no.name")
+                            #end
+                        </span>
+                        </div>
+                    <div class="column w15 user-alias" style="overflow:hidden;" title="${itemAlias}">
+                        <span class="${cssStatusClass}">$stringTool.truncateMiddle($itemAlias,12,'...')</span>
+                    </div>
+                    <div class="column w20 user-role">
+                        <div>${itemRole}</div>
+                    </div>
+                    <div class="column w15 user-status">
+                        <span class="${cssStatusClass}">#t("client.user.status.$item.status.value.toLowerCase()")</span>
+                    </div>
+                    <span class="clear"><!-- ie --></span>
+                </div>
+                <div class="row-tools" onmouseover="mOverShowToolbox(this, '.toolbox');"
+                     onmouseout="mOutHideToolbox(this, '.toolbox');">
+                    <div class="toolbox">
+                        #if("$item.status" == 'CONFIRMED' || "$item.status" == 'TEMPORARILY_DISABLED')
+                            <a class="toolbox-item user-activate" href="javascript:;"
+                               onclick="${widgetInstance}.doActivateUser(${item.id}); return false;"
+                               title="#t('widget.user.management.profile.action.activate')">
+                                <span class="activate">#t('widget.user.management.profile.action.activate.short')</span>
+                            </a>
+                        #elseif("$item.status" == 'ACTIVE')
+                            <a class="toolbox-item user-deactivate" href="javascript:;"
+                               onclick="${widgetInstance}.doDisableUser(${item.id}); return false;"
+                               title="#t('widget.user.management.profile.action.disable')">
+                                <span class="deactivate">#t('widget.user.management.profile.action.disable.short')</span>
+                            </a>
+                        #end
+                        #if("$item.status" == 'PERMANENTLY_DISABLED')
+                            <a class="toolbox-item user-delete" href="javascript:;"
+                               onclick="return ${widgetInstance}.doShowAnonymizeDialog('#t('client.user.management.delete.user.data.title')', ${item.id},
+                                       '${userSignatureLongEscaped}');"
+                               title="#t('widget.user.management.profile.action.anonymize')">
+                                <span class="delete">#t('widget.user.management.profile.action.anonymize.short')</span>
+                            </a>
+                        #else
+                            <a class="user-delete" href="javascript:;"
+                               onclick="return ${widgetInstance}.doShowDeleteDialog('#t('client.user.management.delete.user.data.title')', ${item.id},
+                                       '${userSignatureLongEscaped}');"
+                               title="#t('widget.user.management.profile.action.delete')">
+                                <span class="delete">#t('widget.user.management.profile.action.delete.short')</span>
+                            </a>
+                        #end
+                    </div>
+                </div>
+                <span class="clear"><!-- ie --></span>
+            </div>
+
+        #end
+
+    </div>
+</div>
+
+#end
+
+<div class="spacer">&nbsp;</div>
+#parse('/WEB-INF/vm/common/paging-widget.html.vm')
+<span class="clear"><!-- ie --></span>
+
+<div id="confirmManagerlessGroupsActionTemplate" style="display:none">
+    <form action="$urlTool.render('/admin/client/usermanagement/deleteUser')">
+        <p></p>
+        <input type="hidden" name="confirmedBlogIds" value=""/>
+        <input type="hidden" name="deleteMode" value=""/>
+        <input type="hidden" name="userId" value="${userId}"/>
+
+        <div style="margin-top:1em; margin-bottom:1em;">
+            <span></span>
+
+            <div>
+                <input type="radio" name="becomeManager" value="true" checked="checked" id="managerlessOption1"/> <label
+                    for="managerlessOption1">
+                #t('client.user.management.delete.user.managerless.blogs.option.manager')
+            </label><br>
+                <input type="radio" name="becomeManager" value="false" id="managerlessOption2"/> <label
+                    for="managerlessOption2">
+                #t('client.user.management.delete.user.managerless.blogs.option.del')
+            </label>
+            </div>
+        </div>
+        <p><span></span></p>
+    </form>
+</div>

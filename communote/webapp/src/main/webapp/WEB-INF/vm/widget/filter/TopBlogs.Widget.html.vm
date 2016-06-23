@@ -1,0 +1,10 @@
+<div class="cn-filter-topfive">
+    <h3 class="cn-headline">$fmtTool.message("blog.filter.topblogs.title")</h3>
+    <div class="cn-content">
+        #foreach($item in $list)
+            <a class="cn-entry" 
+                onclick="E2G('onBlogClick', null, '$item.Id', {type: 'blog', key: '$item.Id', title: '$escTool.javascriptInline($item.Title)'}); return false;"
+                href="$urlTool.blog($item.NameIdentifier)">$escTool.xmlSimple($stringUtils.abbreviateMiddle($item.Title, '...', 45))</a>
+        #end
+    </div>
+</div>

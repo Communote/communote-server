@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- toolbox to be used by note template service -->
+<tools>
+    <data type="number" key="TOOLS_VERSION" value="2.0" />
+    <data type="boolean" key="GENERIC_TOOLS_AVAILABLE" value="true" />
+
+    <toolbox scope="application">
+        <tool class="org.apache.velocity.tools.generic.FieldTool" key="fieldTool" />
+        <tool class="com.communote.common.velocity.EscapeTool" key="escTool" />
+        <tool class="com.communote.common.velocity.StringTool" key="stringTool" />
+        <tool class="com.communote.server.core.common.velocity.CommunoteTool" />
+        <tool class="com.communote.server.core.common.velocity.tools.RenderTool" key="renderTool" />
+        <tool class="com.communote.server.core.template.velocity.NoteTemplateUrlTool" />
+        <tool class="com.communote.server.core.template.velocity.NoteTemplateTool" />
+    </toolbox>
+</tools>

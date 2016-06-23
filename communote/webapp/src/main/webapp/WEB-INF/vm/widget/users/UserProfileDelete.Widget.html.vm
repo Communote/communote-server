@@ -1,0 +1,97 @@
+## Deletion of the user account
+#set( $deletionAllowed      = $widget.getBooleanParameter("deletionAllowed", false) )
+#set( $anonymizationAllowed = $widget.getBooleanParameter("anonymizationAllowed", false)  )
+#set( $disableAllowed       = $widget.getBooleanParameter("disableAllowed", false) )
+
+<div class="cn-form-container">
+    <form action="#" method="post">
+        <fieldset>
+            <h2 class="cn-headline">$fmtTool.message("user.delete.account.title")</h2>
+            #if($deletionAllowed)
+                <div id="divDelete">
+                    #if($disableAllowed && !$anonymizationAllowed)
+                        <div class="cn-form-info">
+                            $fmtTool.message("user.delete.account.main.disable")
+                        </div>
+                        <input type="hidden" name="deleteMode" value="disable" />
+                    #elseif(!$disableAllowed && $anonymizationAllowed)
+                        <div class="cn-form-info">
+                            $fmtTool.message("user.delete.account.main.anonymize")
+                        </div>
+                        <input type="hidden" name="deleteMode" value="anonymize" />
+                    #else
+                        <div class="cn-form-info">
+                            $fmtTool.message("user.delete.account.main.options")
+                        </div>
+                        <div class="cn-field-100">
+                            <div class="cn-check">
+                                <input type="radio" name="deleteMode" id="deleteModeOption1" 
+                                    class="cn-inputRadio" value="disable"
+                                    onclick="swapShownDivs('confirmDelDisable', 'confirmDelAnonymize')" />
+                                <label for="deleteModeOption1">$fmtTool.message("user.delete.account.main.option.disable")</label>
+                                <span class="cn-clear"><!-- --></span>
+                            </div>
+                        </div>
+                        <span class="cn-clear"><!-- --></span>
+                        <div class="cn-field-100">
+                            <div class="cn-check">
+                                <input type="radio" name="deleteMode" id="deleteModeOption2" 
+                                    class="cn-inputRadio" value="anonymize"
+                                    onclick="swapShownDivs('confirmDelAnonymize', 'confirmDelDisable')" />
+                                <label for="deleteModeOption2">$fmtTool.message("user.delete.account.main.option.anonymize")</label>
+                                <span class="cn-clear"><!-- --></span>
+                            </div>
+                        </div>
+                        <span class="cn-clear"><!-- --></span>
+                    #end
+                    <div class="cn-vertical-spacer-20">&nbsp;</div>
+                    <div class="cn-actions">
+                        <div class="cn-buttons">
+                            <input class="cn-button" name="b1" id="" type="button"
+                                onclick="swapShownDivs('divDeleteConfirm', 'divDelete');"
+                                value="$fmtTool.message("user.delete.account.delete.button")" onfocus="this.blur()" />
+                        </div>
+                        <span class="cn-clear"><!-- ie --></span>
+                    </div>
+                </div>
+                <div id="divDeleteConfirm" style="display: none;">
+                    #if($disableAllowed && !$anonymizationAllowed)
+                        <div class="cn-form-info">
+                            $fmtTool.message("user.delete.account.confirmation.disable")
+                        </div>
+                    #elseif(!$disableAllowed && $anonymizationAllowed)
+                        <div class="cn-form-info">
+                            $fmtTool.message("user.delete.account.confirmation.anonymize")
+                        </div>
+                    #else
+                        <div class="cn-form-info" id="confirmDelDisable">
+                            $fmtTool.message("user.delete.account.confirmation.disable")
+                        </div>
+                        <div class="cn-form-info" id="confirmDelAnonymize" style="display: none;">
+                            $fmtTool.message("user.delete.account.confirmation.anonymize")
+                        </div>
+                    #end
+                    <div class="cn-form-info">
+                        $fmtTool.message("user.delete.account.confirmation.info")
+                    </div>
+                    <div class="cn-vertical-spacer-20">&nbsp;</div>
+                    <div class="cn-actions">
+                        <div class="cn-buttons">
+                            <input class="cn-button cn-button-space" name="submitButton" id="" type="button"
+                                onclick="widgetController.getWidget('$widget.WidgetId').deleteUserAccount();return false;"
+                                value="$fmtTool.message("user.delete.account.confirmation.yes")" onfocus="this.blur()" />
+                            <input class="cn-button" name="b2" id="" type="button"
+                                onclick="swapShownDivs('divDelete', 'divDeleteConfirm');"
+                                value="$fmtTool.message("user.delete.account.confirmation.no")" onfocus="this.blur()" />
+                        </div>
+                        <span class="cn-clear"><!-- ie --></span>
+                    </div>
+                </div>
+            #else
+                <div class="cn-form-info">
+                    $fmtTool.message("user.delete.account.not.allowed")
+                </div>
+            #end
+        </fieldset>
+    </form>
+</div>

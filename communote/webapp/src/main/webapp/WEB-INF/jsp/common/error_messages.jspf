@@ -1,0 +1,10 @@
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%-- Error Messages --%>
+<c:if test="${not empty errorMessages}">
+    <cform:notification type="error">
+        <c:forEach var="msg" items="${errorMessages}">
+            ${msg}<br/>
+        </c:forEach>
+    </cform:notification>
+    <!-- c:remove var="errorMessages" scope="session"/ -->
+</c:if>

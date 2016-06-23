@@ -1,0 +1,19 @@
+@charset "utf-8";
+
+/* KHTML, Gecko, IE7/8 */
+span.clear ,
+span.clearLeft ,
+span.clearRight {
+    display: block;
+    width: 0;
+    height: 0;
+}
+span.clear {
+    clear: both;
+}
+span.clearLeft {
+    clear: left;
+}
+span.clearRight {
+    clear: right;
+}

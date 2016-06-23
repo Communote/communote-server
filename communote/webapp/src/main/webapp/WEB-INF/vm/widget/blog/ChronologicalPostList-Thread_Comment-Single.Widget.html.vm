@@ -1,0 +1,27 @@
+#if($commentsList.size() == 0)
+    <div class="cn-empty-list">
+        #t('blog.post.empty.list')
+    </div>
+#else
+    #if($renderStyle == 'THREAD')
+    <div class="cn-thread-view-true">
+        #foreach($note in $commentsList)
+            #parse(${widget.getNoteItemTemplate($note)})
+        #end
+        <div class="cn-thread-close">
+                <a class="cn-link cn-last-child" href="javascript:;"
+                    onclick="${widgetInstance}.toggleInlineDiscussion(null, ${widget.getLongParameter('discussionId', 0)})"
+                    >#t("blog.post.list.discussion.inline.hide")</a>
+                <span class="cn-clear"><!-- Empty --></span>
+        </div>
+        <span class="cn-clear"></span>
+    </div>
+    #else
+    <div class="cn-thread-view-false">
+        #foreach($note in $commentsList)
+            #parse(${widget.getNoteItemTemplate($note)})
+        #end
+        <span class="cn-clear"></span>
+    </div>
+    #end
+#end

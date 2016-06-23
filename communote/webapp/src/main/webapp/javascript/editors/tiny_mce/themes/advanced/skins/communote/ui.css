@@ -1,0 +1,253 @@
+/* Reset */
+.communoteSkin table, .communoteSkin tbody, .communoteSkin a, .communoteSkin img, .communoteSkin tr, .communoteSkin div, .communoteSkin td, .communoteSkin iframe, .communoteSkin span, .communoteSkin *, .communoteSkin .mceText {border:0; margin:0; padding:0; background:transparent; white-space:nowrap; text-decoration:none; font-weight:normal; cursor:default; vertical-align:baseline; width:auto; border-collapse:separate; text-align:left}
+.communoteSkin a:hover, .communoteSkin a:link, .communoteSkin a:visited, .communoteSkin a:active {text-decoration:none; font-weight:normal; cursor:default;}
+.communoteSkin table td {vertical-align:middle}
+
+/* Containers */
+.communoteSkin table {direction:ltr}
+.communoteSkin iframe {display:block; background:#FFF}
+.communoteSkin .mceToolbar {height:26px}
+.communoteSkin .mceLeft {text-align:left}
+.communoteSkin .mceRight {text-align:right}
+
+/* External */
+.communoteSkin .mceExternalToolbar {position:absolute; border:1px solid #CCC; border-bottom:0; display:none;}
+.communoteSkin .mceExternalToolbar td.mceToolbar {padding-right:13px;}
+.communoteSkin .mceExternalClose {position:absolute; top:3px; right:3px; width:7px; height:7px; background:url(../../img/icons.gif) -820px 0}
+
+/* Layout */
+.communoteSkin table.mceLayout {border:0}
+/*.communoteSkin table.mceLayout tr.mceFirst td {border-top:1px solid #CCC}
+.communoteSkin table.mceLayout tr.mceLast td {border-bottom:1px solid #CCC}*/
+.communoteSkin table.mceToolbar, .communoteSkin tr.mceFirst .mceToolbar tr td, .communoteSkin tr.mceLast .mceToolbar tr td {border:0; margin:0; padding:0;}
+.communoteSkin td.mceToolbar {padding-top:1px; margin-bottom:5px; vertical-align:top}
+.communoteSkin .mceIframeContainer {
+    background-color: #FFFFFF;
+    background-position: center top;
+    background-repeat: repeat-x;
+    border-top: 1px solid #CCCCCC;
+    border-left: 1px solid #CCCCCC;
+    border-right: 1px solid #DDDDDD;
+    padding-top: 5px;
+    padding-left: 7px;
+    padding-right: 5px;
+    padding-bottom: 0px;
+}
+.communoteSkin .mceStatusbar {
+    overflow:visible; 
+    display:block; 
+    height:10px;
+    padding-left: 7px;
+    border-left: 1px solid #CCCCCC;
+    border-right: 1px solid #DDDDDD;
+    border-bottom: 1px solid #DDDDDD;
+    background-color: #FFFFFF;
+}
+.communoteSkin .mceStatusbar div {
+    float:left; 
+    display: none;
+}
+.communoteSkin .mceStatusbar a.mceResize {
+    display:block; 
+    float:right; 
+    background:url(../../img/icons.gif) -800px -10px; 
+    width:20px; 
+    height:10px; 
+    cursor:se-resize; 
+    outline:0
+}
+.communoteSkin .mceStatusbar a:hover {text-decoration:underline}
+.communoteSkin table.mceToolbar {margin-left:3px}
+.communoteSkin span.mceIcon, .communoteSkin img.mceIcon {display:block; width:20px; height:20px}
+.communoteSkin .mceIcon {background:url(../../img/icons.gif) no-repeat 20px 20px}
+.communoteSkin td.mceCenter {text-align:center;}
+.communoteSkin td.mceCenter table {margin:0 auto 5px; text-align:left;}
+.communoteSkin td.mceRight table {margin:0 0 0 auto;}
+
+/* Button */
+.communoteSkin .mceButton {display:block; border:1px solid transparent; width:20px; height:20px; margin-right:1px;}
+.no-touch .communoteSkin a.mceButtonEnabled:hover {border:1px solid #CDCDCD; background-color:#FFFFFF;}
+.communoteSkin a.mceButtonActive, .communoteSkin a.mceButtonSelected {border:1px solid #CDCDCD; background-color:#FFFFFF;}
+.communoteSkin .mceButtonDisabled .mceIcon {opacity:0.3; -ms-filter:'alpha(opacity=30)'; filter:alpha(opacity=30)}
+.communoteSkin .mceButtonLabeled {width:auto}
+.communoteSkin .mceButtonLabeled span.mceIcon {float:left}
+.communoteSkin span.mceButtonLabel {display:block; font-size:10px; padding:4px 6px 0 22px; font-family:Tahoma,Verdana,Arial,Helvetica}
+.communoteSkin .mceButtonDisabled .mceButtonLabel {color:#888}
+
+/* Separator */
+.communoteSkin .mceSeparator {display:block; background:url(../../img/icons.gif) -180px 0; width:2px; height:20px; margin:2px 2px 0 4px}
+
+/* ListBox */
+.communoteSkin .mceListBox, .communoteSkin .mceListBox a {display:block}
+.communoteSkin .mceListBox .mceText {padding-left:4px; width:70px; text-align:left; border:1px solid #CCC; border-right:0; background:#FFF; font-family:Tahoma,Verdana,Arial,Helvetica; font-size:11px; height:20px; line-height:20px; overflow:hidden}
+.communoteSkin .mceListBox .mceOpen {width:9px; height:20px; background:url(../../img/icons.gif) -741px 0; margin-right:2px; border:1px solid #CCC;}
+.no-touch .communoteSkin table.mceListBoxEnabled:hover .mceText, .communoteSkin .mceListBoxHover .mceText, .communoteSkin .mceListBoxSelected .mceText {border:1px solid #A2ABC0; border-right:0; background:#FFF}
+.no-touch .communoteSkin table.mceListBoxEnabled:hover .mceOpen, .communoteSkin .mceListBoxHover .mceOpen, .communoteSkin .mceListBoxSelected .mceOpen {background-color:#FFF; border:1px solid #A2ABC0}
+.communoteSkin .mceListBoxDisabled a.mceText {color:gray; background-color:transparent;}
+.communoteSkin .mceListBoxMenu {overflow:auto; overflow-x:hidden}
+.communoteSkin .mceOldBoxModel .mceListBox .mceText {height:22px}
+.communoteSkin .mceOldBoxModel .mceListBox .mceOpen {width:11px; height:22px;}
+.communoteSkin select.mceNativeListBox {font-family:'MS Sans Serif',sans-serif,Verdana,Arial; font-size:7pt; background:#F0F0EE; border:1px solid gray; margin-right:2px;}
+
+/* SplitButton */
+.communoteSkin .mceSplitButton {width:32px; border:1px solid transparent; height:20px; direction:ltr}
+.communoteSkin .mceSplitButton a, .communoteSkin .mceSplitButton span {height:20px; display:block}
+.communoteSkin .mceSplitButton span.mceAction {width:20px;}
+.communoteSkin .mceSplitButton a.mceOpen {width:9px; background:url(../../img/icons.gif) -741px 0;}
+.communoteSkin .mceSplitButton span.mceOpen {display:none}
+.no-touch .communoteSkin .mceSplitButtonEnabled .mceSplitButton:hover, .communoteSkin .mceSplitButtonHover, .communoteSkin .mceSplitButtonSelected .mceSplitButtonEnabled {border:1px solid #CDCDCD; background-color:#FFFFFF;}
+.communoteSkin .mceSplitButtonDisabled .mceAction, .communoteSkin .mceSplitButtonDisabled a.mceOpen {opacity:0.3; -ms-filter:'alpha(opacity=30)'; filter:alpha(opacity=30)}
+.communoteSkin .mceSplitButtonMenu .mceFirst .mceIcon {background-color: #FFFFFF; top: -1px; width: 30px}
+
+/* Menu */
+.communoteSkin .mceMenu {position:absolute; left:0; top:0; z-index:1000; border:1px solid #D4D0C8}
+.communoteSkin .mceNoIcons span.mceIcon {width:0;}
+.communoteSkin .mceNoIcons a .mceText {padding-left:10px}
+.communoteSkin .mceMenu table {background:#FFF}
+.communoteSkin .mceMenu a, .communoteSkin .mceMenu span, .communoteSkin .mceMenu {display:block}
+.communoteSkin .mceMenu td {height:20px}
+.communoteSkin .mceMenu a {position:relative;padding:3px 0 4px 0}
+.communoteSkin .mceMenu .mceText {position:relative; display:block; margin:0; padding:0 5px 0 5px; display:block; cursor: pointer;}
+.communoteSkin .mceMenu span.mceText, .communoteSkin .mceMenu .mcePreview {font-size:11px}
+.communoteSkin .mceMenu pre.mceText {font-family:Monospace}
+.communoteSkin .mceMenu .mceIcon {position:absolute; top:0; left:0; width:22px;}
+.communoteSkin td.mceMenuItemSeparator {background:#DDD; height:1px}
+.communoteSkin .mceMenuItemTitle a {border:0; background:#EEE; border-bottom:1px solid #DDD}
+.communoteSkin .mceMenuItemTitle span.mceText {color:#000; font-weight:bold; padding-left:4px}
+.communoteSkin .mceMenuItemSelected .mceIcon {background:url(img/menu_check.gif)}
+.communoteSkin .mceNoIcons .mceMenuItemSelected a {background:url(img/menu_arrow.gif) no-repeat -6px center}
+.communoteSkin .mceMenu span.mceMenuLine {display:none}
+.communoteSkin .mceMenuItemSub a {background:url(img/menu_arrow.gif) no-repeat top right;}
+
+/* Progress,Resize */
+.communoteSkin .mceBlocker {position:absolute; left:0; top:0; z-index:1000; opacity:0.5; -ms-filter:'alpha(opacity=50)'; filter:alpha(opacity=50); background:#FFF}
+.communoteSkin .mceProgress {position:absolute; left:0; top:0; z-index:1001; background:url(img/progress.gif) no-repeat; width:32px; height:32px; margin:-16px 0 0 -16px}
+
+/* Formats */
+.communoteSkin .mce_formatPreview a {font-size:10px}
+.communoteSkin .mce_p span.mceText {}
+.communoteSkin .mce_address span.mceText {font-style:italic}
+.communoteSkin .mce_pre span.mceText {font-family:monospace}
+.communoteSkin .mce_h1 span.mceText {font-weight:bolder; font-size: 2em}
+.communoteSkin .mce_h2 span.mceText {font-weight:bolder; font-size: 1.5em}
+.communoteSkin .mce_h3 span.mceText {font-weight:bolder; font-size: 1.17em}
+.communoteSkin .mce_h4 span.mceText {font-weight:bolder; font-size: 1em}
+.communoteSkin .mce_h5 span.mceText {font-weight:bolder; font-size: .83em}
+.communoteSkin .mce_h6 span.mceText {font-weight:bolder; font-size: .75em}
+
+/* Theme */
+.communoteSkin span.mce_bold {background-position:0 0}
+.communoteSkin span.mce_italic {background-position:-60px 0}
+.communoteSkin span.mce_underline {background-position:-140px 0}
+.communoteSkin span.mce_strikethrough {background-position:-120px 0}
+.communoteSkin span.mce_undo {background-position:-160px 0}
+.communoteSkin span.mce_redo {background-position:-100px 0}
+.communoteSkin span.mce_cleanup {background-position:-40px 0}
+.communoteSkin span.mce_bullist {background-position:-20px 0}
+.communoteSkin span.mce_numlist {background-position:-80px 0}
+.communoteSkin span.mce_justifyleft {background-position:-460px 0}
+.communoteSkin span.mce_justifyright {background-position:-480px 0}
+.communoteSkin span.mce_justifycenter {background-position:-420px 0}
+.communoteSkin span.mce_justifyfull {background-position:-440px 0}
+.communoteSkin span.mce_anchor {background-position:-200px 0}
+.communoteSkin span.mce_indent {background-position:-400px 0}
+.communoteSkin span.mce_outdent {background-position:-540px 0}
+.communoteSkin span.mce_link {background-position:-500px 0}
+.communoteSkin span.mce_unlink {background-position:-640px 0}
+.communoteSkin span.mce_sub {background-position:-600px 0}
+.communoteSkin span.mce_sup {background-position:-620px 0}
+.communoteSkin span.mce_removeformat {background-position:-580px 0}
+.communoteSkin span.mce_newdocument {background-position:-520px 0}
+.communoteSkin span.mce_image {background-position:-380px 0}
+.communoteSkin span.mce_help {background-position:-340px 0}
+.communoteSkin span.mce_code {background-position:-260px 0}
+.communoteSkin span.mce_hr {background-position:-360px 0}
+.communoteSkin span.mce_visualaid {background-position:-660px 0}
+.communoteSkin span.mce_charmap {background-position:-240px 0}
+.communoteSkin span.mce_paste {background-position:-560px 0}
+.communoteSkin span.mce_copy {background-position:-700px 0}
+.communoteSkin span.mce_cut {background-position:-680px 0}
+.communoteSkin span.mce_blockquote {background-position:-220px 0}
+.communoteSkin .mce_forecolor span.mceAction {background-position:-720px 0}
+.communoteSkin .mce_backcolor span.mceAction {background-position:-760px 0}
+.communoteSkin span.mce_forecolorpicker {background-position:-720px 0}
+.communoteSkin span.mce_backcolorpicker {background-position:-760px 0}
+
+/* Plugins */
+.communoteSkin span.mce_advhr {background-position:-0px -20px}
+.communoteSkin span.mce_ltr {background-position:-20px -20px}
+.communoteSkin span.mce_rtl {background-position:-40px -20px}
+.communoteSkin span.mce_emotions {background-position:-60px -20px}
+.communoteSkin span.mce_fullpage {background-position:-80px -20px}
+.communoteSkin span.mce_fullscreen {background-position:-100px -20px}
+.communoteSkin span.mce_iespell {background-position:-120px -20px}
+.communoteSkin span.mce_insertdate {background-position:-140px -20px}
+.communoteSkin span.mce_inserttime {background-position:-160px -20px}
+.communoteSkin span.mce_absolute {background-position:-180px -20px}
+.communoteSkin span.mce_backward {background-position:-200px -20px}
+.communoteSkin span.mce_forward {background-position:-220px -20px}
+.communoteSkin span.mce_insert_layer {background-position:-240px -20px}
+.communoteSkin span.mce_insertlayer {background-position:-260px -20px}
+.communoteSkin span.mce_movebackward {background-position:-280px -20px}
+.communoteSkin span.mce_moveforward {background-position:-300px -20px}
+.communoteSkin span.mce_media {background-position:-320px -20px}
+.communoteSkin span.mce_nonbreaking {background-position:-340px -20px}
+.communoteSkin span.mce_pastetext {background-position:-360px -20px}
+.communoteSkin span.mce_pasteword {background-position:-380px -20px}
+.communoteSkin span.mce_selectall {background-position:-400px -20px}
+.communoteSkin span.mce_preview {background-position:-420px -20px}
+.communoteSkin span.mce_print {background-position:-440px -20px}
+.communoteSkin span.mce_cancel {background-position:-460px -20px}
+.communoteSkin span.mce_save {background-position:-480px -20px}
+.communoteSkin span.mce_replace {background-position:-500px -20px}
+.communoteSkin span.mce_search {background-position:-520px -20px}
+.communoteSkin span.mce_styleprops {background-position:-560px -20px}
+.communoteSkin span.mce_table {background-position:-580px -20px}
+.communoteSkin span.mce_cell_props {background-position:-600px -20px}
+.communoteSkin span.mce_delete_table {background-position:-620px -20px}
+.communoteSkin span.mce_delete_col {background-position:-640px -20px}
+.communoteSkin span.mce_delete_row {background-position:-660px -20px}
+.communoteSkin span.mce_col_after {background-position:-680px -20px}
+.communoteSkin span.mce_col_before {background-position:-700px -20px}
+.communoteSkin span.mce_row_after {background-position:-720px -20px}
+.communoteSkin span.mce_row_before {background-position:-740px -20px}
+.communoteSkin span.mce_merge_cells {background-position:-760px -20px}
+.communoteSkin span.mce_table_props {background-position:-980px -20px}
+.communoteSkin span.mce_row_props {background-position:-780px -20px}
+.communoteSkin span.mce_split_cells {background-position:-800px -20px}
+.communoteSkin span.mce_template {background-position:-820px -20px}
+.communoteSkin span.mce_visualchars {background-position:-840px -20px}
+.communoteSkin span.mce_abbr {background-position:-860px -20px}
+.communoteSkin span.mce_acronym {background-position:-880px -20px}
+.communoteSkin span.mce_attribs {background-position:-900px -20px}
+.communoteSkin span.mce_cite {background-position:-920px -20px}
+.communoteSkin span.mce_del {background-position:-940px -20px}
+.communoteSkin span.mce_ins {background-position:-960px -20px}
+.communoteSkin span.mce_pagebreak {background-position:0 -40px}
+.communoteSkin span.mce_restoredraft {background-position:-20px -40px}
+.communoteSkin span.mce_spellchecker {background-position:-540px -20px}
+
+/* fullscreen plugin */
+#mce_fullscreen_container { background-color: white}    
+#mce_fullscreen_container .communoteSkin table { background-color: #f6f3f0}
+
+/* autoresize plugin activted */
+.communoteSkin.mceAutoresizeEnabled .mceStatusbar {
+    height: 0px;
+}
+
+.communoteSkin .mceToolbar table.mce_changesettings {
+    margin: 0;
+}
+
+.communoteSkin .mceSplitButton span.mce_changesettings {
+    background:url(../../../../../../../themes/core/images/icons/icon-settings-inactive.png);
+    background-repeat: no-repeat;
+    background-position: 0 1px;
+    height: 18px;
+    width: 18px;
+}
+.communoteSkin .mceSplitButton.mce_changesettings {
+    margin-top: 3px;
+    padding-left: 3px;
+}

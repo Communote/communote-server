@@ -1,0 +1,24 @@
+<!-- This VM is used from  -->
+<!-- ClientUserManagementSettingsController  -->
+<div class="admin-profile">
+    <div id="UserManagementTabPanel" class="mootabs mootabs-admin-area">
+        <div class="mootabs-bar">
+            <ul class="mootabs_title">
+                <li id="Tab1" title="#t('administration.user.management.settings.users.title')" class="first"><span>#t('administration.user.management.settings.users.title')</span></li>
+                <li id="Tab2" title="#t('administration.user.management.settings.groups.title')">
+                	<span>#t('administration.user.management.settings.groups.title')</span>
+                </li>
+            </ul>
+            <span class="clear"> <!-- -->
+            </span>
+        </div>
+        <div id="Tab1Panel" class="mootabs_panel">
+        	#parse('/WEB-INF/vm/administration/user-management/user_management-settings.content.users.html.vm')
+        </div>
+        <div id="Tab2Panel" class="mootabs_panel">
+            <div class="TSWidget GroupSettingsWidget" id="GroupSettings">
+                <!-- Empty -->
+            </div>
+        </div>
+    </div>
+</div>

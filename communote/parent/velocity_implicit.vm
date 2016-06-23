@@ -1,0 +1,2 @@
+#* @implicitly included *#
+#* @vtlvariable name="urlTool" type="com.communote.server.web.commons.viewtool.UrlTool" *#

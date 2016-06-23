@@ -1,0 +1,107 @@
+## NOTE avoid unnecessary whitespaces
+#**
+ * Render data about a user. The content that is rendered depends on the current noteRenderMode.
+ * @param id       Number The ID of the user to render.
+ * @param fallback string A plain text string that should be rendered when the user cannot be found.
+ * @param fallback2 string A plain text string that should be rendered when the user cannot be found as an alternative to the first fallback.
+ *#
+#macro(renderUserById $id, $fallback, $fallback2)
+## TODO is it overhead to run through that many macros?
+#if(!$fallback)#renderUser(${communoteTool.getUser($id)}, $fallback2)#else#renderUser(${communoteTool.getUser($id)}, $fallback)#end#end
+
+#**
+ * Render data about a user. The content that is rendered depends on the current noteRenderMode.
+ * @param user     UserListItem The user to render, can be null
+ * @param fallback string A plain text string that should be rendered when the user is null.
+ *#
+#macro(renderUser $user, $fallback)
+#if($templateTool.isHtml($context))#renderUserHtml($user, $fallback)#elseif($templateTool.isPortal($context))#renderUserPortal($user, $fallback)#else#renderUserPlain($user, $fallback)#end
+#end
+
+#**
+ * Render the signature of the user.
+ * @param user     UserListItem The user to render, can be null
+ * @param fallback string A plain text string that should be rendered when the user is null.
+ *#
+#macro(renderUserPlain $user, $fallback)
+#if($user)${communoteTool.getUserSignature($user, $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.SHORT'))}#else$!fallback#end
+#end
+
+#**
+ * Render a link pointing to the permalink of the user. The link also contains the data attributes data-cnt-entity-details 
+ * and data-cnt-topic-id. It will be marked as control-filter-entity-link. The body of the link is the signature of the user.
+ * @param user     UserListItem The user to render, can be null
+ * @param fallback string A plain text string that should be rendered when the user is null.
+ *#
+#macro(renderUserPortal $user, $fallback)
+#if($user)
+#set($userSigShort=${communoteTool.getUserSignature($user, $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.SHORT'))})
+#set($userSigLong=${communoteTool.getUserSignature($user, $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.MEDIUM'))})
+<a href="$urlTool.getUser($context, $user)" title="$escTool.xmlSimple($userSigLong)" class="control-entity-link control-filter-entity-link" data-cnt-user-id="$user.Id" data-cnt-entity-details="$templateTool.userAsJson($user, true)">$escTool.xmlSimple($userSigShort)</a>
+#else<i>$!fallback</i>#end
+#end
+
+#**
+ * Render the signature of the user that is wrapped in a SPAN tag with a data-cnt-user attribute that holds
+ * the user details as JSON.
+ * @param user     UserListItem The user to render, can be null
+ * @param fallback string A plain text string that should be rendered when the user is null.
+ *#
+#macro(renderUserHtml $user, $fallback)
+#if($user)
+#set($userSigShort=${communoteTool.getUserSignature($user, $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.SHORT'))})
+<span data-cnt-user="$templateTool.userAsJson($user, true)">$escTool.xmlSimple($userSigShort)</span>
+#else<i>$!fallback</i>#end
+#end
+
+#**
+ * Render data about a blog. The content that is rendered depends on the current noteRenderMode.
+ * @param id       Number The ID of the blog to render.
+ * @param fallback string A plain text string that should be rendered when the blog cannot be found.
+ *#
+#macro(renderBlogById $id, $fallback)
+## explicitly set to false as minimalBlogInfo can be null, which wouldn't update the variable. TODO activate macro scope (velocimacro.context.localscope)?
+#set($theBlog = false)
+#set($theBlog = ${communoteTool.blogs.getMinimalBlogInfo($id)})
+#if($templateTool.isHtml($context))#renderBlogHtml($theBlog, $fallback)#elseif($templateTool.isPortal($context))#renderBlogPortal($theBlog, $fallback)#else#renderBlogPlain($theBlog, $fallback)#end
+#end
+
+#**
+ * Render data about a blog. The content that is rendered depends on the current noteRenderMode.
+ * @param theBlog  BlogListItem The blog to render, can be null
+ * @param fallback string A plain text string that should be rendered when the blog is null.
+ *#
+#macro(renderBlog $theBlog, $fallback)
+#if($templateTool.isHtml($context))#renderBlogHtml($theBlog, $fallback)#elseif($templateTool.isPortal($context))#renderBlogPortal($theBlog, $fallback)#else#renderBlogPlain($theBlog, $fallback)#end
+#end
+
+#**
+ * Render the title of the blog.
+ * @param theBlog  BlogListItem The blog to render, can be null
+ * @param fallback string A plain text string that should be rendered when the blog is null.
+ *#
+#macro(renderBlogPlain $theBlog, $fallback)
+#if($theBlog)$theBlog.Title#else$!fallback#end
+#end
+
+#**
+ * Render a link pointing to the permalink of the blog. The link will contain the data attributes data-cnt-entity-details 
+ * and data-cnt-topic-id. It will be marked as control-entity-link.
+ * @param theBlog  BlogListItem The blog to render, can be null
+ * @param fallback string A plain text string that should be rendered when the blog is null.
+ *#
+#macro(renderBlogPortal $theBlog, $fallback)
+#if($theBlog)#set($topicUrl=$urlTool.getBlog($context, $theBlog))
+#set($access=$communoteTool.blogs.getBlogRole($theBlog.Id)!="NONE")
+<a href="$topicUrl" title="" class="control-entity-link" data-cnt-topic-id="$theBlog.Id" #if($access)data-cnt-entity-details="$templateTool.blogAsJson($theBlog, true)"#end>$escTool.xmlSimple($theBlog.Title)</a>#else<i>$!fallback</i>#end
+#end
+
+#**
+ * Render the title of the blog that is wrapped in a SPAN tag with a data-cnt-topic attribute that holds
+ * the blog details as JSON.
+ * @param theBlog  BlogListItem The blog to render, can be null
+ * @param fallback string A plain text string that should be rendered when the blog is null.
+ *#
+#macro(renderBlogHtml $theBlog, $fallback)
+#if($theBlog)<span data-cnt-topic="$templateTool.blogAsJson($theBlog, true)">$escTool.xmlSimple($theBlog.Title)</span>#else<i>$!fallback</i>#end
+#end

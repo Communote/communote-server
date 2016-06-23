@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.communote.plugins</groupId>
+        <artifactId>communote-plugins-mq-parent</artifactId>
+        <version>3.4-SNAPSHOT</version>
+        <relativePath>../communote-plugins-mq-parent/pom.xml</relativePath>
+    </parent>
+    <groupId>com.communote.plugins.mq</groupId>
+    <artifactId>communote-plugins-mq-provider-activemq</artifactId>
+    <packaging>bundle</packaging>
+    <name>Communote - Plugins - Message Queue - ActiveMQ Provider</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.communote.server</groupId>
+			<artifactId>communote-server-persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.communote.plugins</groupId>
+            <artifactId>communote-plugins-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.communote.plugins.mq</groupId>
+            <artifactId>communote-plugins-mq-adapter-activemq</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.ipojo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.ipojo.annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <!--  <Embed-Dependency>activemq-all</Embed-Dependency> -->
+                        <Import-Package>
+                            com.communote.server.api.core.application,
+                            com.communote.server.api.core.config,
+                            com.communote.server.api.core.config.type,
+                            com.communote.server.api.core.security,
+                            com.communote.plugins.core.views,
+                            com.communote.plugins.core.views.annotations,
+                            com.communote.plugins.core.services,
+                            com.communote.plugins.mq.adapter.activemq.configuration,
+                            com.communote.plugins.mq.provider.jms,
+                            com.communote.server.web.commons,
+                            com.communote.server.web.commons.i18n,
+
+ 							javax.jms,
+ 							
+                            javax.management,
+                            javax.management.openmbean,
+                            javax.management.remote,
+                            javax.transaction.xa,
+                            javax.naming,
+                            javax.net,
+                            javax.net.ssl,
+
+                            javax.servlet,
+                            javax.servlet.http,
+
+                            javax.security.auth,
+                            javax.security.auth.callback,
+                            javax.security.auth.login,
+                            javax.security.auth.spi,
+                            javax.security.auth.x500,
+
+                            org.apache.commons.codec.digest;version="1.4",
+                            org.apache.commons.lang3,
+                            org.osgi.framework;version="1.5",
+                            org.springframework.security.authentication,
+                            org.springframework.security.core,
+                            org.springframework.web.servlet,
+                            org.springframework.web.servlet.mvc,
+
+                            org.slf4j,
+
+							org.apache.activemq,
+							org.apache.activemq.*,
+							org.apache.activemq.jaas,
+							
+                            !*
+                        </Import-Package>
+                        <Export-Package>
+                            !*
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

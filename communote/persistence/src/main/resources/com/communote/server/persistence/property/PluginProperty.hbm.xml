@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.property.PluginProperty" table="core_plugin_properties" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">core_plugin_properties_seq</param>
+                                                           </generator>
+        </id>
+        <property name="propertyValue" type="com.communote.server.external.hibernate.usertypes.HibernateStringClobType">
+            <column name="property_value" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="keyGroup" type="java.lang.String">
+            <column name="key_group" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="propertyKey" type="java.lang.String">
+            <column name="property_key" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="lastModificationDate" type="java.util.Date">
+            <column name="last_modification_date" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="applicationProperty" type="boolean">
+            <column name="application_property" 
+                     not-null="true" unique="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

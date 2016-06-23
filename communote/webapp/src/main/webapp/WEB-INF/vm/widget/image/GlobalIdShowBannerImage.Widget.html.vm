@@ -1,0 +1,32 @@
+#* @vtlvariable name="singleResult" type="java.util.Map<java.lang.String,java.lang.Object>" *#
+#* @vtlvariable name="widget" type="com.communote.server.web.fe.widgets.image.GlobalIdShowBannerImageWidget" *#
+#cnRenderMessages()
+#widgetMetadata(${widget.ResponseMetadata})
+<div class="cn-banner-wrapper">
+	#set($title = $escTool.xmlSimple($singleResult.get('title')))
+    #if ($widget.getBooleanParameter('renderOnlyTitle', false))
+    <div class="cn-banner-only-title">
+        <span class="cn-title">$title</span>
+    </div>
+    #else
+	<div class="cn-banner-title $widget.getParameterEscaped('contextId')">
+	    <div
+	        class="cn-left #if(!($singleResult.get('description')))cn-alone#end">
+	        <span class="cn-title">#if($singleResult.get('followType')
+	            == 'Tag')<span class="cn-hashtag">&#35;</span>#end$title
+	        </span><br /> #if($singleResult.get('description')) <span
+	            class="description" title="$escTool.xmlSimple($singleResult.get('description'))">$escTool.xmlSimple($singleResult.get('description'))</span>
+	        #end
+	    </div>
+	    #if($singleResult.get('followType'))
+	       <div class="cn-right">#cnFollowButton("$singleResult.get('entityId')", $singleResult.get('followType'), ${singleResult.get('followsEntity')}, 'follow.link.follow', '')</div>
+	    #end <span class="cn-clear">
+	        <!-- -->
+	    </span>
+	</div>
+	<div class="cn-banner-image">
+	    <img alt="$title"
+	        src="$urlTool.imageForBanner($singleResult.get('entityIdForImage'))" />
+	</div>
+    #end
+</div>

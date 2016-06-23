@@ -1,0 +1,19 @@
+#cnRenderMessages($status.Errors)
+<form method="POST">
+    <fieldset class="note-notification-settings cn-form-container"">
+        <h5>#t('client.profile.permalinks.title')</h5>
+        #cnCheckbox('renderPermalinks' $command.renderPermalinks 'client.profile.notifications.render.permalinks' false '' 'command.renderPermalinks')
+        #cnCheckbox('renderAttachmentLinks' $command.renderAttachmentLinks 'client.profile.notifications.render.attachmentlinks' false '' 'command.renderAttachmentLinks')
+        #cnCheckbox('renderBlogPermalinkInInvitation' $command.renderBlogPermalinkInInvitation 'client.profile.notifications.invitation.render.blog.permalink' false '' 'command.renderBlogPermalinkInInvitation')
+    </fieldset>
+    <fieldset class="note-notification-settings cn-form-container"">
+        <h5>#t('client.profile.notifications.title')</h5>
+        #cnInputText_Short('maxUsersToMention' $command.maxUsersToMention 'client.profile.notifications.max-users-to-mention' false 'client.profile.notifications.max-users-to-mention.hint' 'command.maxUsersToMention' false '' false 'number')
+    </fieldset>
+    <div class="actionbar actionbar-general">
+        <div class="button-gray main">
+            <input type="submit" name="button" value="#t('button.save')" title="#t('button.save')">
+        </div>
+        <span class="clear"></span>
+    </div>
+</form:form>

@@ -1,0 +1,107 @@
+#set($renderStyle = $widget.getParameterEscaped('renderStyle', 'full'))
+#set($widgetInstance = "#jsCurrentWidget()")
+#if($widget.CommentAction) 
+    #set($textareaPlaceholder = $fmtTool.message('create.note.placeholder.comment'))
+#else
+    #set($textareaPlaceholder = $fmtTool.message('create.note.placeholder'))
+#end
+#widgetMetadata(${widget.ResponseMetadata})
+<div class="cn-write-note-no-editor cn-hidden">
+    <div class="cn-write-note-no-editor-content cn-list"></div>
+    <span class="cn-clear"><!-- --></span>
+</div>
+<div class="control-write-note-body-wrapper cn-write-note cn-write-note-render-style-${renderStyle}">
+    <div class="cn-write-note-editor-simulate">
+        <div class="cn-border" onclick="${widgetInstance}.activateFullEditor()">$textareaPlaceholder</div>
+    </div>
+    <div class="cn-write-note-editor">
+        <div class="cn-write-note-editor-fields">
+            <a class="cn-write-note-editor-activate-full cn-write-note-editor-expand cn-icon" title="#t('create.note.activate.enhanced.editor')" href="javascript:;" onclick="${widgetInstance}.setRenderStyle('full');return false;">&nbsp;</a>
+            <div class="cn-write-note-editor-textarea-wrapper">
+                <textarea id="${widget.WidgetId}-textarea" style="visibility: hidden; width: 100%; max-height: 200px" placeholder="${textareaPlaceholder}"></textarea>
+            </div>
+            <input type="hidden" name="$widget.AttachmentsSessionAttributeName" value="$widget.AttachmentsSessionAttributeValue" />
+            <span class="cn-clear"><!-- --></span>
+        </div>
+        <span class="cn-clear"><!-- --></span>
+	</div>
+    <div class="cn-write-note-accessories-minimal">
+        <div class="cn-buttons">
+                #cnButton("${widget.WidgetId}-send-button", 'blogpost.create.button' '' "${widgetInstance}.publishNote()" 'main')
+                #cnButton("${widget.WidgetId}-cancel-button", 'blogpost.create.button.close' '' "${widgetInstance}.cancel(event)" '')
+        </div>
+    </div>
+    <div class="cn-write-note-accessories-full">
+        <div class="cn-write-note-accessory-toggles">
+            <div class="cn-bar">
+                <a id="${widget.WidgetId}-accessory-user" class="accessory-user cn-link" href="javascript:;" onclick="${widgetInstance}.showAccessory('user', true)"
+                    title="$fmtTool.message('blogpost.create.tab.user.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.user.title')</span></a>
+                <a id="${widget.WidgetId}-accessory-tag" class="accessory-tag cn-link" href="javascript:;" onclick="${widgetInstance}.showAccessory('tag', true)"
+                    title="$fmtTool.message('blogpost.create.tab.tag.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.tag.title')</span></a>
+                <a id="${widget.WidgetId}-accessory-attachment" class="accessory-attachment cn-link" href="javascript:;" onclick="${widgetInstance}.showAccessory('attachment', false)"
+                    title="$fmtTool.message('blogpost.create.tab.attachment.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.attachment.title')</span></a>
+                <span class="cn-clear"><!-- --></span>  
+            </div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+        <span class="cn-clear"><!-- --></span>
+        <div class="cn-write-note-accessory-contents">
+            #if($widget.CreateAction)
+            <div class="cn-write-note-accessory-topic cn-accessory-container">
+                <div class="cn-accessory-label"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.blog.title')</span></div>
+                <div class="cn-accessory-content">
+                    <input id="${widget.WidgetId}-topic-search" type="text" placeholder="$fmtTool.message('blogpost.create.topics.hint')" />
+                </div>
+            </div>
+            #end
+            <div class="cn-write-note-accessory-user cn-accessory-container" style="display:none;">
+                <div class="cn-accessory-label"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.user.title')</span></div>
+                <div class="cn-accessory-content">
+                    <input id="${widget.WidgetId}-user-search" type="text" placeholder="$fmtTool.message('blogpost.create.users.hint')" />
+                    <span class="cn-clear"><!-- Empty --></span>
+                    <div id="${widget.WidgetId}-direct-message-wrapper" class="cn-note-dm">
+                        <input type="checkbox" class="cn-check" id="${widget.WidgetId}-direct-message" disabled="disabled" 
+                            onclick="${widgetInstance}.changeDirectMessageMode(this.checked)"/>
+                            <label id="${widget.WidgetId}-direct-message-label" for="${widget.WidgetId}-direct-message">$fmtTool.message('blogpost.create.direct') #cnTooltip('blogpost.create.direct.hint')</label>
+                    </div>
+                    <span class="cn-clear"><!-- Empty --></span>
+                </div>
+            </div>
+            <div class="cn-write-note-accessory-tag cn-accessory-container" style="display:none;">
+                <div class="cn-accessory-label"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.tag.title')</span></div>
+                <div class="cn-accessory-content">
+                    <input id="${widget.WidgetId}-tag-search" type="text" placeholder="$fmtTool.message('blogpost.create.tags.hint')"/>
+                </div>
+            </div>
+            <div class="cn-write-note-accessory-attachment cn-accessory-container#if($widget.getBooleanParameter('customUpload', false)) cn-custom-upload#end" style="display:none;">
+                <div class="cn-accessory-label"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.attachment.title')</span></div>
+                <div class="cn-accessory-content">
+                    <div id="${widget.WidgetId}-summary-attachments" class="cn-attachment-summary cn-border cn-hidden"></div>
+                    
+                    <form action="$urlTool.render('/blog/attachmentUpload.do')" method="post"
+                            enctype="multipart/form-data" target="${widget.WidgetId}_iframe">
+                        <input type="file" name="file" class="input-file" id="${widget.WidgetId}_upload-input" /> 
+                        <input type="hidden" name="${widget.AttachmentsSessionAttributeName}" value="${widget.AttachmentsSessionAttributeValue}" />
+                    </form>
+                    <a href="javascript:;" class="cn-button" id="cn-upload-button" onclick="document.id('${widget.WidgetId}_upload-input').click();">$fmtTool.message('blogpost.create.attachments.upload.button')</a>
+                </div>
+            </div>
+            <span class="cn-clear"><!-- --></span>
+            <div class="cn-write-note-footer">
+                <div class="cn-write-note-status">
+                    <span class="cn-clear"><!-- --></span>
+                </div>
+                <div class="cn-buttons">
+                    #if($widget.EditAction)
+                        #cnButton("${widget.WidgetId}-send-button", 'blogpost.create.button.edit' '' "${widgetInstance}.publishNote()" 'main')
+                    #else
+                        #cnButton("${widget.WidgetId}-send-button", 'blogpost.create.button' '' "${widgetInstance}.publishNote()" 'main')
+                    #end
+                    #cnButton("${widget.WidgetId}-cancel-button", 'blogpost.create.button.close' '' "${widgetInstance}.cancel(event)" '')
+                </div>
+            </div>
+        </div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    <span class="cn-clear"><!-- --></span>
+</div>

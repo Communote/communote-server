@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- defines beans of the private WebApplicationContext of the DispatcherServlet -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <context:component-scan base-package="com.communote.server.web" />
+    <context:component-scan base-package="com.communote.server.web.commons.view" />
+    <context:component-scan base-package="com.communote.server.web.fe.admin" />
+
+    <bean id="messageSource" class="com.communote.server.web.commons.i18n.ResourceBundleManagerMessageSource">
+        <!-- also defined in include.jsp for the fmt tag -->
+        <property name="resourceBundleManager">
+            <bean id="resourceBundleManager" class="com.communote.server.persistence.common.messages.ResourceBundleManager" factory-method="instance" />
+        </property>
+    </bean>
+
+    <bean id="localeResolver" class="com.communote.server.web.commons.i18n.SessionHandlerLocaleResolver">
+    </bean>
+
+    <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles.TilesConfigurer">
+        <property name="definitions">
+            <list>
+                <value>/WEB-INF/config/core/tiles-def-widget.xml</value>
+                <value>/WEB-INF/config/core/tiles-def-blog.xml</value>
+                <value>/WEB-INF/config/core/tiles-def-admin-account.xml</value>
+                <value>/WEB-INF/config/core/tiles-def-admin-system.xml</value>
+                <value>/WEB-INF/config/installer/tiles-def-installer.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- View resolvers can also be configured with ResourceBundles or XML files. If you need different view resolving based on Locale, you have to use the resource bundle resolver. -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- <property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property> -->
+        <property name="order" value="1" />
+        <property name="viewClass" value="org.springframework.web.servlet.view.tiles.TilesView" />
+        <property name="requestContextAttribute" value="requestContext" />
+    </bean>
+
+    <!-- This bean sets up the Velocity environment for us based on a root path for templates. Optionally, a properties file can be specified for more control over the Velocity environment, but the defaults 
+        are pretty sane for file based template loading. -->
+    <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+        <property name="resourceLoaderPath">
+            <value>/</value>
+        </property>
+
+        <property name="velocityProperties">
+            <props>
+                <!-- prop key="userdirective"></prop -->
+                <!-- set correct encoding of velocity templates -->
+                <prop key="input.encoding">UTF-8</prop>
+                <!-- seems to be ignored because templates are rendered to a writer initialized by spring -->
+                <prop key="output.encoding">UTF-8</prop>
+                <prop key="velocimacro.permissions.allow.inline">true</prop>
+                <prop key="velocimacro.library">/WEB-INF/vm/macros.vm,/WEB-INF/vm/macros-cn-controls.vm</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="velocityViewResolver" class="com.communote.server.web.commons.view.velocity.DynamicVelocityViewResolver">
+        <property name="viewClass" value="com.communote.server.web.commons.view.velocity.VelocityToolbox2View" />
+        <property name="order" value="0" />
+        <property name="cache" value="true" />
+        <property name="prefix" value="" />
+        <property name="suffix" value="" />
+        <!-- only set the MIME part of the content type the charset will be retrieved from character encoding which is set by EncodingFilter -->
+        <property name="contentType" value="text/html" />
+        <property name="templateManager" ref="velocityTemplateManager" />
+    </bean>
+
+    <import resource="security/authentication.xml" />
+    <import resource="security/authorization.xml" />
+    
+    <import resource="installer/installer-controller.xml"/>
+    
+    <import resource="core/api-controller.xml"/>
+    <import resource="core/blog-controller.xml"/>
+    <import resource="core/client-controller.xml"/>
+    <import resource="core/management-system-controller.xml"/>
+    <import resource="core/global-controller.xml"/>
+    <import resource="core/user-controller.xml"/>
+    <import resource="core/web-api-controller.xml"/>
+    <import resource="core/widget-controller.xml"/>
+    <import resource="core/plugin-controller.xml"/>
+    <import resource="core/legacy-controller.xml"/>
+
+</beans>

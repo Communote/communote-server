@@ -1,0 +1,7 @@
+<div class="terms-page-content">
+    <div class="static-page-section terms">
+        <h2>#t('user.register.terms.legend')</h2>
+        <div class="static-page-section-content">$communoteTool.messages.getTermsOfUse($request)</div>
+    </div>    
+    <br />
+</div>

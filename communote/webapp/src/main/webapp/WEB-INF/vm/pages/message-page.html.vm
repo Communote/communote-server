@@ -1,0 +1,3 @@
+#set($contentTemplate = '/WEB-INF/vm/pages/message-page-content.html.vm')
+#set($pageTitle = "#if($pageTitle)${pageTitle} &ndash;#end $!escTool.xmlSimple(${communoteTool.Client.getClientName($currentClientId)})")
+#parse('/WEB-INF/vm/layout/tiny_page.html.vm')

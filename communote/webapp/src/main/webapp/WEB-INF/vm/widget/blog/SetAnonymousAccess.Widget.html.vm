@@ -1,0 +1,48 @@
+#cnRenderMessages()
+#set($showEditModeToggle = $widget.getBooleanParameter("showEditModeToggle", true))
+#set($widgetInstance = "#jsCurrentWidget()")
+#if ($editMode)
+    #set($wrapperClass = 'cn-form-container')
+#else
+    #set($wrapperClass = 'cn-infocard-container')
+#end
+#if( $singleResult && $publicAccessAllowed )
+    <div class="cn-form-container">
+        <form id="blog-public-access">
+            <fieldset>
+                <div class="cn-form-info">$fmtTool.message("blog.member.public.access.description")</div>
+                #if( $editMode )
+                <div class="cn-field-100 cn-long">
+                    <div class="cn-check">
+                        <input type="checkbox" class="cn-inputCheck" id="allowPublicAccess" name="allowPublicAccess" #if($publicAccessEnabled) checked="checked" #end />
+                        <label for="allowPublicAccess">#t('blog.member.public.access.checkbox.label')</label>
+                        <span class="cn-clear"><!-- ie --></span>
+                    </div>
+                </div>
+                <span class="cn-clear"><!-- --></span>
+                #else
+                <div>
+                    #if($publicAccessEnabled)
+                        $fmtTool.message("blog.member.public.access.granted", $!blogTitle)
+                    #else
+                        $fmtTool.message("blog.member.public.access.denied", $!blogTitle)
+                    #end
+                </div>
+                #end
+            </fieldset>
+        </form>
+         <div class="cn-actions">
+           <div class="cn-buttons">
+            #if( $editMode )
+                #cnButton('create-button', 'blog.member.public.access.button.submit' '' "${widgetInstance}.onBlogPublicAccess();", 'main')
+                #if( $showEditModeToggle )
+                    #cnButton('', 'button.cancel' '' "${widgetInstance}.toggleEditMode(false);")
+                #end
+            #elseif($isBlogManager && $showEditModeToggle)
+                #cnButton('', 'edit.link.edit' '' "${widgetInstance}.toggleEditMode(true);")
+            #end
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+        </div>
+    </div>
+#end

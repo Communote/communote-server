@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="${project.name} - Version ${project.version} for Communote ${project.parent.version}" xmlns="http://maven.apache.org/DECORATION/1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd">
+    <publishDate position="left" format="MM/dd/yyyy" />
+    <version position="left" />
+    <bannerLeft>
+        <name>${project.name}</name>
+    </bannerLeft>
+    <bannerRight>
+        <alt>Communote</alt>
+        <name>Communote</name>
+        <src>./images/communote_logo-small.png</src>
+        <href>https://github.com/communote</href>
+    </bannerRight>
+    <body>
+        <links>
+            <item name="Build number: ${build.timestamp}" href="#" />
+            <item name="Build upon Communote ${project.parent.version}" href="#" />
+            <item name="Deutsche Version" href="de/index.html" />
+        </links>
+        <menu name="Manual" inherit="top">
+            <item href="./index.html" name="About" />
+            <item href="./configuration.html" name="Configuration" />
+            <item href="./contact.html" name="Contact" />
+        </menu>
+    </body>
+</project>

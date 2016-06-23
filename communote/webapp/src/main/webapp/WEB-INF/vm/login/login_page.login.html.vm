@@ -1,0 +1,60 @@
+#set($targetUrl = $escTool.url($paramTool.get('targetUrl')))
+<form id="auth_form" name="auth_form" method="post" action="$urlTool.render("/check_credentials?targetUrl=$!{targetUrl}", true, true, false)" onsubmit="if(communote.loginSubmitted) return false; communote.loginSubmitted=true; return true;">
+    <div class="cn-headline">
+        <h2>#t('login.legend')</h2>
+        #set($authenticationFailures = [ 
+        ['authenticationFailed','login.error.failed'],
+        ['logout','login.logged.out'],
+        ['userLocked','login.error.notactivated'],
+        ['sessionTimeout','login.session.timeout'],
+        ['userPermLocked','login.error.userPermLocked'],
+        ['userTempDisabled','login.error.userTempDisabled'],
+        ['userMailNotActivated','login.error.resendActivationMail'],
+        ['userTempLocked','login.error.userTempLocked']
+        ])
+        #foreach($authenticationFailure in $authenticationFailures)
+            #if($paramTool.exists($authenticationFailure.get(0)))
+                <div class="cn-error-message-right">
+                    #if($authenticationFailure.get(0) == 'userMailNotActivated')
+                        #t_args($authenticationFailure.get(1), $urlTool.render("/user/registration.do?resend=true&email=$!{paramTool.getString('username')}"))
+                    #elseif($authenticationFailure.get(0) == 'userTempLocked')
+                        #t_args($authenticationFailure.get(1), $dateTool.format('medium', 'medium', $paramTool.getNumber('lockedTimeout'), $communoteTool.getCurrentUserLocale($request), $communoteTool.getCurrentUserEffectiveTimeZone()))
+                    #else
+                        #t($authenticationFailure.get(1))
+                    #end
+                </div>
+            #end
+        #end
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    <div class="cn-line">
+        <label for="cn-login-user" class="cn-label">#t('login.label.username')</label>
+        <div class="cn-border">
+            <input type="text" id="cn-login-user" name="j_username" tabindex="1" maxlength="255" value="$!{paramTool.getString('username')}" autofocus="autofocus" autocorrect="off" autocapitalize="off" />
+        </div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    <div class="cn-line">
+        <label for="cn-login-password" class="cn-label">#t('login.label.password')</label>
+        <div class="cn-border">
+            <input type="password" id="cn-login-password" name="j_password" tabindex="2"  maxlength="255"/>
+        </div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    <div class="cn-line">
+        <div class="cn-line-1">
+            <input type="checkbox" id="cn-login-remember" name="communote_rockz" tabindex="3"/>
+            <label for="cn-login-remember">#t('login.label.remember.me')</label>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+        <div class="cn-line-2">
+            #if($communoteTool.auth.isDBAuthenticationPossible())
+                <a href="$urlTool.render("/user/sendforgottenpw.do?pwaction=$fieldTool.in('com.communote.server.web.fe.portal.user.forms.ForgottenPWForm').SEND_PW_LINK")">#t('login.forgott.your.password')</a>
+            #end
+        </div>
+        <div class="cn-buttons">
+            <input type="submit" class="cn-button main"  tabindex="4" value="#t('login.button.login')" />
+        </div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+</form>

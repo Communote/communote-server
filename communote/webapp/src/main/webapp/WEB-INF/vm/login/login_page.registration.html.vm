@@ -1,0 +1,22 @@
+#if($communoteTool.auth.isRegistrationAllowed())
+    <form id="user_registration_form" action="$urlTool.render('/user/registration.do')" method="post" onsubmit="if(communote.registrationSubmitted)return false;communote.registrationSubmitted=true;return true;">
+        <input type="hidden" id="user.registration.cmd" name="user.registration.cmd" value="register" />
+        <div class="cn-headline">
+            <h2>#t('portal.registration.legend')</h2>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+        <div class="cn-line">
+            <label for="cn-reg-user" class="cn-label">#t('portal.registration.email')</label>
+            <div class="cn-border">
+                <input type="text" id="cn-reg-user" name="email" tabindex="5" maxlength="255" title="#t('portal.registration.email.description')"/>
+            </div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+        <div class="cn-line">
+            <div class="cn-buttons">
+                <input type="submit" class="cn-button" name="register" tabindex="6" value="#t('portal.registration.submit')" title="#t('portal.registration.submit.description')" />
+            </div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    </form>
+#end

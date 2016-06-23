@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.user.ContactImpl" table="user_contact" dynamic-insert="false" dynamic-update="false">
+        <cache usage="read-write" />
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">user_contact_seq</param>
+                                                           </generator>
+        </id>
+        <property name="street" type="java.lang.String">
+            <column name="street" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="zip" type="java.lang.String">
+            <column name="zip" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="city" type="java.lang.String">
+            <column name="city" 
+                     not-null="false" unique="false"/>
+        </property>
+        <component name="phone" class="com.communote.server.model.user.PhoneNumberImpl">
+            <property name="CountryCode" type="java.lang.String">
+                <column name="phone_country_code" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="areaCode" type="java.lang.String">
+                <column name="phone_area_code" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="phoneNumber" type="java.lang.String">
+                <column name="phone_phone_number" 
+                     not-null="false" unique="false"/>
+            </property>
+        </component>
+        <component name="fax" class="com.communote.server.model.user.PhoneNumberImpl">
+            <property name="CountryCode" type="java.lang.String">
+                <column name="fax_country_code" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="areaCode" type="java.lang.String">
+                <column name="fax_area_code" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="phoneNumber" type="java.lang.String">
+                <column name="fax_phone_number" 
+                     not-null="false" unique="false"/>
+            </property>
+        </component>
+        <many-to-one name="country" class="com.communote.server.model.user.CountryImpl" cascade="none" foreign-key="user_contact_COUNTRY_FKC" lazy="proxy" fetch="select">
+            <column name="COUNTRY_FK" not-null="false"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

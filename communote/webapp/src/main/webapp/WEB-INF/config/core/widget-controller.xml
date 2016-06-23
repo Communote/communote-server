@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <bean id="widgetController" class="com.communote.server.widgets.springmvc.SpringMVCWidgetController">
+        <property name="widgetFactory">
+            <bean class="com.communote.server.web.fe.widgets.extension.ExtendableWidgetFactory">
+                <property name="widgetPackagePrefix">
+                    <value>com.communote.server.web.fe.widgets.</value>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="blogManagementValidator" class="com.communote.server.web.fe.portal.blog.validator.BlogManagementValidator" />
+
+    <bean id="manageBlogController" class="com.communote.server.web.fe.portal.blog.controller.BlogManagementController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.blog.forms.BlogManagementForm</value>
+        </property>
+        <property name="validator" ref="blogManagementValidator" />
+        <property name="formView">
+            <value>core.widget.blog.management</value>
+        </property>
+        <property name="successView">
+            <value>core.widget.blog.management</value>
+        </property>
+    </bean>
+
+    <bean id="blogMemberInviteController" class="com.communote.server.web.fe.portal.blog.controller.BlogMemberInviteController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.blog.forms.BlogMemberInviteForm</value>
+        </property>
+        <property name="formView">
+            <value>widget.blog.group.member.management.invite.dhtml</value>
+        </property>
+        <property name="successView">
+            <value>widget.blog.group.member.management.invite.dhtml</value>
+        </property>
+    </bean>
+
+    <bean id="userProfileDetailsWidgetController" class="com.communote.server.web.fe.portal.user.profile.controller.UserProfileDetailsController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.profile.forms.UserProfileForm</value>
+        </property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.profile.validator.UserProfileDetailsValidator" />
+        </property>
+        <property name="formView">
+            <value>core.widget.user.profile.details</value>
+        </property>
+        <property name="successView">
+            <value>core.widget.user.profile.details</value>
+        </property>
+    </bean>
+      
+    <bean id="userProfileNotificationsWidgetController" class="com.communote.server.web.fe.portal.user.profile.controller.UserProfileNotificationsController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.profile.forms.UserProfileNotificationsForm</value>
+        </property>
+        <property name="formView">
+            <value>core.widget.user.profile.notifications</value>
+        </property>
+        <property name="successView">
+            <value>core.widget.user.profile.notifications</value>
+        </property>
+    </bean>
+      
+    <bean id="userProfileChangeEmailController" class="com.communote.server.web.fe.portal.user.profile.controller.UserProfileChangeEmailController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.profile.forms.UserProfileChangeEmailForm</value>
+        </property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.profile.validator.UserProfileChangeEmailValidator" />
+        </property>
+        <property name="formView">
+            <value>core.widget.user.profile.change.email</value>
+        </property>
+        <property name="successView">
+            <value>core.widget.user.profile.change.email</value>
+        </property>
+    </bean>
+    
+    <bean id="userManagementUserProfileController" class="com.communote.server.web.fe.portal.user.profile.controller.UserManagementUserProfileController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.profile.forms.UserProfileForm</value>
+        </property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.profile.validator.UserManagementUserProfileValidator" />
+        </property>
+        <property name="formView">
+            <value>widget.client.management.user.profile.dhtml</value>
+        </property>
+        <property name="successView">
+            <value>widget.client.management.user.profile.dhtml</value>
+        </property>
+    </bean>
+    
+
+    <bean id="createUserGroupWidgetController" class="com.communote.server.web.fe.portal.user.client.controller.ClientUserGroupCreateAndEditController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="formView">
+            <value>widget.user.group.create.dhtml</value>
+        </property>
+        <property name="successView">
+            <value>widget.user.group.create.dhtml</value>
+        </property>
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.core.vo.user.group.GroupVO</value>
+        </property>
+        <property name="actionType">
+            <value>CREATE</value>
+        </property>
+    </bean>
+    <bean id="editUserGroupWidgetController" class="com.communote.server.web.fe.portal.user.client.controller.ClientUserGroupCreateAndEditController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="formView">
+            <value>widget.user.group.edit.dhtml</value>
+        </property>
+        <property name="successView">
+            <value>widget.user.group.edit.dhtml</value>
+        </property>
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.core.vo.user.group.GroupVO</value>
+        </property>
+        <property name="actionType">
+            <value>EDIT</value>
+        </property>
+    </bean>
+
+    <bean id="inviteUserWidgetController" class="com.communote.server.web.fe.portal.user.client.controller.InviteUserToClientController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.persistence.user.InviteUserForm</value>
+        </property>
+        <property name="formView">
+            <value>widget.management.user.invite.dhtml</value>
+        </property>
+        <property name="successView">
+            <value>widget.management.user.invite.dhtml</value>
+        </property>
+    </bean>
+
+    <bean id="xmppAdvancedSettingsController" class="com.communote.server.web.fe.portal.user.system.communication.XmppAdvancedController">
+        <property name="sessionForm">
+            <value>false</value>
+        </property>
+        <property name="commandName">
+            <value>command</value>
+        </property>
+        <property name="commandClass">
+            <value>com.communote.server.web.fe.portal.user.system.communication.XmppForm</value>
+        </property>
+        <property name="formView">
+            <value>widget.management.communication.xmpp.advanced.dhtml</value>
+        </property>
+        <property name="successView">
+            <value>widget.management.communication.xmpp.advanced.dhtml</value>
+        </property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.system.communication.XmppAdvancedValidator" />
+        </property>
+    </bean>
+
+    <bean id="certificateUploadController" class="com.communote.server.web.fe.portal.user.system.application.CertificateController">
+        <property name="view">
+            <value>widget.management.application.certificate.upload.dhtml</value>
+        </property>
+    </bean>
+
+    <bean id="widgetHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true" />
+        <property name="mappings">
+            <props>
+
+                <!-- explicitly listed spring widgets -->
+                <prop key="/*/*/widgets/blog/BlogManagementWidget.widget">manageBlogController</prop>
+                <prop key="/*/*/widgets/blog/BlogMemberInviteWidget.widget">blogMemberInviteController</prop>
+
+                <!-- explicitly listed spring widgets for user profile -->
+                <prop key="/*/*/widgets/user/profile/UserProfileDetailsWidget.widget">userProfileDetailsWidgetController</prop>
+                <prop key="/*/*/widgets/user/profile/UserProfileNotificationsWidget.widget">userProfileNotificationsWidgetController</prop>
+                <prop key="/*/*/widgets/user/profile/UserProfileChangeEmailWidget.widget">userProfileChangeEmailController</prop>
+
+                <!-- explicitly listed spring widgets for user management -->
+                <prop key="/*/*/widgets/management/user/UserManagementUserProfileWidget.widget">userManagementUserProfileController</prop>
+                <prop key="/*/*/widgets/management/user/group/UserGroupCreateWidget.widget">createUserGroupWidgetController</prop>
+                <prop key="/*/*/widgets/management/user/group/UserGroupEditWidget.widget">editUserGroupWidgetController</prop>
+
+                <prop key="/*/*/widgets/management/user/InviteUserWidget.widget">inviteUserWidgetController</prop>
+
+                <prop key="/*/*/widgets/management/system/communication/XmppAdvancedSettingsWidget.widget">xmppAdvancedSettingsController</prop>
+
+                <!-- generic fallback -->
+                <prop key="/*/*/widgets/**/*.widget">widgetController</prop>
+
+            </props>
+        </property>
+    </bean>
+
+</beans>

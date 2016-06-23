@@ -1,0 +1,11 @@
+#if($htmlResponse && $htmlResponse != "false") 
+## page that is rendered inside an iframe and provides the response of an ajax file upload. Used for browsers that do not support the FormData based upload.
+<html>
+<head></head>
+<body>
+<script type="text/javascript">
+    var response = ${jsonResponse};
+</script>
+</body>
+</html>
+#else${jsonResponse}#end

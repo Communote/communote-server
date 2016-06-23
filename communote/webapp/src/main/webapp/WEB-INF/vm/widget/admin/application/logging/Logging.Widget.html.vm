@@ -1,0 +1,26 @@
+#if(${logFiles.size()} > 0)
+<div id="TabPanel" class="mootabs mootabs-admin-area">
+    <div class="panel-description logging-description">$fmtTool.message("client.system.logging.description")</div>
+    <ul class="mootabs_title">
+    #foreach($tab in ${tabNames.entrySet()})
+        <li id="${tab.key}" class="active logging-title"><span>$escTool.xmlSimple(${tab.value})</span></li>
+    #end
+    </ul>
+
+#foreach($panel in ${panelNames.entrySet()})
+    <div class="mootabs_panel" id="${panel.key}">
+        <div class="logging-container">
+            <pre class="log">$escTool.xmlSimple(${panel.value[0]})</pre>
+        </div>
+        <div class="actionbar actionbar-general">
+            <div class="button-gray main">
+                <a href='$urlTool.render("/admin/application/logging/download.do?logfile=${panel.value[1]}")' target="_blank">$fmtTool.message("client.system.logging.open")</a>
+            </div>
+            <span class="clear"><!-- --></span>
+        </div>
+    </div>
+#end
+</div>
+#else
+<div class="panel-description">$fmtTool.message("client.system.logging.filesmissing")</div>
+#end

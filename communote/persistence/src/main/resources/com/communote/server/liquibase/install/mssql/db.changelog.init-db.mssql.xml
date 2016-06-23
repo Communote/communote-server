@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/install/mssql/db.changelog.init-db.mssql.xml">
+
+    <!-- caution when changing the id because it is used as precondition -->
+    <changeSet author="unknown" id="initialize-database-schema_mssql" context="client" dbms="mssql">
+		<preConditions onFail="MARK_RAN">
+            <!-- if the first of the mysql changesets was already executed we must not run the db-init -->
+            <not>
+		      <changeSetExecuted id="mt2859_2" author="unknown" changeLogFile="de/communardo/kenmei/database/update/v1.0.3/db.changelog.v1.0.3.xml"/>
+		    </not>
+		</preConditions>
+        <comment>Initialize the Database Schema</comment>
+        <sqlFile path="com/communote/server/liquibase/install/mssql/init-db_mssql.sql" />
+    </changeSet>
+    
+</databaseChangeLog>

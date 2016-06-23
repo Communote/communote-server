@@ -1,0 +1,289 @@
+@charset "utf-8";
+
+/* ************************************************************************** */
+
+#communote .error {
+    color: #DD3333;
+    font-style: italic;
+}
+
+#communote p {
+    margin: 0 0 0.5em;
+}
+
+/* ************************************************************************** */
+
+/* (footer( ... */
+#communote #footer {
+    padding: 0 30px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: #DDDDDD;
+    color: #888888;
+    z-index: 0;
+    font-size: 68.75%;
+}
+
+#communote #footer * {
+    font-size: 100.001%;
+}
+
+#communote #footer p.footer-message {
+    float: left;
+    width: 70%;
+}
+
+#communote #footer p {
+    margin: 1em 0;
+}
+
+#communote #footer dl#version-info {
+    color: #888888;
+}
+
+#communote #footer dl#version-info {
+    float: right;
+    margin: 1em 0;
+    width: 25%;
+    color: #BBBBBB;
+}
+
+#communote #footer dl#version-info dt {
+    float: left;
+}
+
+#communote #footer dl#version-info dd {
+    margin-left: 8em;
+}
+
+/* ... )footer) */
+
+/* ************************************************************************** */
+
+/* (dialog( ... */
+.TB_window #TB_title {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #CCCCCC;
+    height: 28px;
+    background-color: #FFFFFF;
+    background-image: url("../../themes/core/images/misc/gradient_filter.png");
+    background-attachment: scroll;
+    background-repeat: repeat-x;
+    background-position: 0 -20px;
+    color: #083B7D;
+}
+
+.TB_window .dialog-container {
+    font-size: 81.25%;
+}
+
+.TB_window .dialog-container * {
+    font-size: 100.001%;
+}
+
+.TB_window .content-container {
+    padding: 1em;
+}
+
+.TB_window .content-container p {
+    margin: 0;
+}
+
+.TB_window .content-container dt {
+    font-weight: 700;
+}
+
+.TB_window .actionbar {
+    margin-bottom: 10px;
+    font-size: 84.62%;
+    text-align: center;
+}
+
+.TB_window .button-gray {
+    padding-left: 6px;
+    background-color: transparent;
+    background-image: url("../../themes/core/images/misc/button_gray-left.png");
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+.TB_window .button-gray input,.TB_window .button-gray a {
+    display: block;
+    margin: 0;
+    border: 0 none;
+    height: 27px;
+    min-width: 90px;
+    padding-right: 8px;
+    padding-left: 4px;
+    line-height: 20px;
+    background-color: transparent;
+    background-attachment: scroll;
+    background-image: url("../../themes/core/images/misc/button_gray-right.png");
+    background-repeat: no-repeat;
+    background-position: 100% 0;
+    color: #083B7D;
+    font-size: 68.75%;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+}
+
+.TB_window .button-gray a {
+    padding-top: 4px;
+}
+
+.TB_window .button-gray input:hover,.TB_window .button-gray a:hover {
+    color: #FA8502;
+}
+
+.TB_window .button-left {
+    float: left;
+    margin-left: 25px;
+}
+
+.TB_window .button-right {
+    float: right;
+    margin-right: 25px;
+}
+
+.TB_window div#deletePostContainer ,
+.TB_window div#dialog-modal {
+    font-size: 81.25%;
+}
+
+.TB_window div#deletePostContainer * ,
+.TB_window div#dialog-modal * {
+    font-size: 100.001%;
+    line-height: normal;
+}
+
+.TB_window div#deletePostContainer p#deletePostConfirmationMessage ,
+.TB_window div#deletePostContainer p.confirm_btn {
+    text-align: center;
+}
+
+.TB_window a.remove_icon {
+    display: inline;
+    height: 12px;
+    width: 12px;
+    border: none;
+    margin: 0;
+    right: -15px;
+    top: 0;
+    position: absolute;
+    background: transparent url("../../themes/core/images/misc/icon12_delete.gif") no-repeat scroll 0 0;
+}
+
+.TB_window a.remove_icon:hover {
+    background: transparent url("../../themes/core/images/misc/icon12_delete-hover.gif") no-repeat scroll 0 0;
+    cursor: pointer;
+}
+
+.TB_window div#TB_ajaxWindowTitle {
+    font-size: 81.25%;
+    font-weight: 700;
+}
+
+.TB_window div#TB_closeAjaxWindow a {
+    background-color: transparent;
+    background-image: url("../../themes/core/images/misc/icon20_close.gif");
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    display: block;
+    height: 20px;
+    width: 15px;
+}
+
+.TB_window div#TB_closeAjaxWindow a span {
+    display: none;
+}
+
+.TB_window div.TB_ajaxContent {
+    padding: 0 !important;
+}
+
+.TB_window div.TB_ajaxContent p {
+    padding: 0;
+}
+
+/* ... )dialog) */
+
+
+/* (inline notifications( ... */
+#communote .notify-inline {
+    margin: 0px 0px 0px 0px;
+}
+
+#communote .notify-inline .notify-error ,
+#communote .notify-inline .notify-warning ,
+#communote .notify-inline .notify-success ,
+#communote .notify-inline .notify-info {
+    padding: 12px 15px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 9px 6px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -khtml-border-radius: 6px;
+    -ms-border-radius: 6px; 
+}
+
+#communote .notify-inline .notify-error {
+    color: #A31B02;
+    border-color: #A31B02;
+    background-image: url(../../themes/core/images/misc/error.png);
+}
+
+#communote .notify-inline .notify-error * {
+    color: #A31B02;
+}
+
+#communote .notify-inline .notify-warning {
+    color: #FA8502;
+    border-color: #FA8502;
+    background-image: url(../../themes/core/images/misc/warning.png);
+}
+
+#communote .notify-inline .notify-warning * {
+    color: #FA8502;
+}
+
+#communote .notify-inline .notify-success {
+    color: #2F6310;
+    border-color: #579830;
+    background-image: url(../../themes/core/images/misc/success.png);
+}
+
+#communote .notify-inline .notify-success * {
+    color: #2F6310;
+}
+
+#communote .notify-inline .notify-info {
+    color: #083B7D;
+    border-color: #083B7D;
+    background-image: url(../../themes/core/images/misc/info.png);
+}
+
+#communote .notify-inline .notify-info * {
+    color: #083B7D;
+}
+/* ... )inline notifications) */
+
+/* ************************************************************************** */
+
+.input-horizontal {
+    padding: 15px;
+}
+
+#communote .bold{
+    font-weight: bold;    
+}
+
+.no-border {
+    border: none !important;
+}

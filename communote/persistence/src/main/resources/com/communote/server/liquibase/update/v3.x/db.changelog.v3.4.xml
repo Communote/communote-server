@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+    <changeSet  id="KENMEI-7524_remove_license_mode_subscription_seq" author="Communote" dbms="oracle,postgresql">
+        <preConditions onFail="MARK_RAN">
+            <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v3.x/db.changelog.v3.0.3.xml" author="Communote" id="KENMEI-6843_Umsetzung_Lizensierung_Subscription"/>
+        </preConditions>
+        <dropSequence sequenceName="license_subscription_data_seq" />
+    </changeSet>
+
+    <changeSet  id="KENMEI-7524_remove_license_mode_subscription" author="Communote">
+        <preConditions onFail="MARK_RAN">
+            <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v3.x/db.changelog.v3.0.3.xml" author="Communote" id="KENMEI-6843_Umsetzung_Lizensierung_Subscription"/>
+        </preConditions>
+        <dropTable tableName="license_subscription_data" cascadeConstraints="true"/>
+    </changeSet>
+    
+    <!-- 
+    Protect database when accidently running saas build against standalone db and vice versa. Mainly for dev environments.
+    How it works: if run with another installation type this changeset will fail because another checksum is created.
+     -->
+    <changeSet author="Communote" id="installation_type_protection" context="global">
+        <insert tableName="configuration_app_setting" >
+            <column name="SETTING_KEY"   value="communote.standalone.installation"></column>
+            <column name="setting_value" value="${communote.standalone.installation}"></column>
+        </insert>
+    </changeSet>
+    
+    <!-- cleanup license stuff -->
+    <changeSet id="KENMEI-7524_remove_new_credits_seq" author="Communote" dbms="oracle,postgresql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <or>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml" author="UNKNOWN" id="KENMEI-3005_rename_sequence_oracle"/>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.v2.1.1.xml" author="UNKNOWN" id="KENMEI-3005_rename_sequence_postgresql"/>
+            </or>
+        </preConditions>
+        <dropSequence sequenceName="license_credits_balance_seq" />
+        <dropSequence sequenceName="license_credits_payment_seq" />
+    </changeSet>
+    <!-- Note: The xyzExists preconditions are really slow on oracle, but sadly there are no 'drop if exists' statements.
+     Using a changeSetExecuted approach as before isn't easy. Maybe a newer liquibase version brings some improvement on performance. -->
+    <changeSet id="KENMEI-7524_remove_old_credits_seq_postgresql" author="Communote" dbms="postgresql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <sequenceExists sequenceName="license_credits_balance_log_seq"/>
+        </preConditions>
+        <dropSequence sequenceName="license_credits_balance_log_seq" />
+        <dropSequence sequenceName="license_credits_payment_log_seq" />
+    </changeSet>
+    <changeSet id="KENMEI-7524_remove_old_credits_seq_oracle" author="Communote" dbms="oracle" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <sequenceExists sequenceName="license_credits_balance_log_ID"/>
+        </preConditions>
+        <dropSequence sequenceName="license_credits_balance_log_ID" />
+        <dropSequence sequenceName="license_credits_payment_log_ID" />
+    </changeSet>
+    <changeSet id="KENMEI-7524_remove_license_seq" author="Communote" dbms="oracle,postgresql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <sequenceExists sequenceName="license_seq"/>
+        </preConditions>
+        <dropSequence sequenceName="license_seq" />
+    </changeSet>
+    <changeSet id="KENMEI-7524_remove_old_credits_tables_v2" author="Communote" dbms="oracle,postgresql,mssql" context="standalone">
+        <!-- rename of tables was in same release, thus only need to check one table name -->
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="license_credits_balance_log"/>
+        </preConditions>
+        <dropTable tableName="license_credits_balance_log" cascadeConstraints="true"/>
+        <dropTable tableName="license_credits_payment_log" cascadeConstraints="true"/>
+    </changeSet>
+    <changeSet id="KENMEI-7524_remove_new_credits_tables_v2" author="Communote" dbms="oracle,postgresql,mssql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="license_credits_balance"/>
+        </preConditions>
+        <dropTable tableName="license_credits_balance" cascadeConstraints="true"/>
+        <dropTable tableName="license_credits_payment" cascadeConstraints="true"/>
+    </changeSet>
+    <changeSet id="KENMEI-7524_remove_license_table_v2" author="Communote" dbms="oracle,postgresql,mssql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="license"/>
+        </preConditions>
+        <dropTable tableName="license" cascadeConstraints="true"/>
+    </changeSet>
+    <!-- Separate mysql changeset because liquibase 1.9.x has a bug which leads to a NPE when one of the exists-preconditions is used after 
+    changeset KENMEI-5395-LastDiscussionNoteCreationDate-einfuegen was run in the same session (installer use-case) -->
+    <changeSet id="KENMEI-7524_remove_license_tables_mysql" author="Communote" dbms="mysql" context="standalone">
+        <sql>DROP TABLE IF EXISTS license, license_credits_balance_log, license_credits_payment_log, license_credits_balance, license_credits_payment;</sql>
+    </changeSet>
+    
+    <changeSet id="KENMEI-7523_remove_old_jobs" author="Communote" context="global">
+        <delete tableName="core_task">
+            <where>unique_name in ('RemoveClients', 'CreateClients', 'UpdateClientsTaskHandler')</where>
+        </delete>
+    </changeSet>
+
+    <changeSet id="KENMEI-7537_cleanup_client_table" author="Communote" context="client">
+        <dropColumn tableName="user_client" columnName="security_key"/>
+    </changeSet>
+    
+    <!-- Note: must use individual drop column statements because otherwise orcale complains about invalid identifiers -->
+    <changeSet id="KENMEI-7537_cleanup_client_tables_oracle" author="Communote" dbms="oracle" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_client_profile"/>
+        </preConditions>
+        <sql>ALTER TABLE user_client DROP COLUMN MORE_DATA_REQUIRED CASCADE CONSTRAINTS;</sql>
+        <sql>ALTER TABLE user_client DROP COLUMN CLIENT_D_B_CONFIG_FK CASCADE CONSTRAINTS;</sql>
+        <sql>ALTER TABLE user_client DROP COLUMN CREATION_DATA_FK CASCADE CONSTRAINTS;</sql>
+        <sql>ALTER TABLE user_client DROP COLUMN CLIENT_PROFILE_FK CASCADE CONSTRAINTS;</sql>
+        <dropSequence sequenceName="user_client_act_code_seq"/>
+        <dropSequence sequenceName="user_client_creation_seq"/>
+        <dropSequence sequenceName="user_client_db_config_seq"/>
+        <dropSequence sequenceName="user_client_profile_seq"/>
+        <dropTable tableName="user_client_act_code" cascadeConstraints="true"/>
+        <dropTable tableName="user_client_creation" cascadeConstraints="true"/>
+        <dropTable tableName="user_client_db_config" cascadeConstraints="true"/>
+        <dropTable tableName="user_client_profile" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_approval_code" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_reg_code" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_removal_code" cascadeConstraints="true"/>
+    </changeSet>
+    
+    <changeSet id="KENMEI-7537_cleanup_client_tables_pg" author="Communote" dbms="postgresql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_client_profile"/>
+        </preConditions>
+        <dropSequence sequenceName="user_client_creation_seq"/>
+        <dropSequence sequenceName="user_client_db_config_seq"/>
+        <dropSequence sequenceName="user_client_profile_seq"/>
+        <dropUniqueConstraint tableName="user_client" constraintName="user_client_client_d_b_config_fk_key" />
+        <dropUniqueConstraint tableName="user_client" constraintName="user_client_creation_data_fk_key" />
+        <dropUniqueConstraint tableName="user_client" constraintName="user_client_client_profile_fk_key" />
+        <dropForeignKeyConstraint baseTableName="user_client" constraintName="user_client_client_d_b_configc" />
+        <dropForeignKeyConstraint baseTableName="user_client" constraintName="user_client_client_profile_fkc" />
+        <dropForeignKeyConstraint baseTableName="user_client" constraintName="user_client_creation_data_fkc" />
+        <dropColumn tableName="user_client" columnName="more_data_required" />
+        <dropColumn tableName="user_client" columnName="client_d_b_config_fk" />
+        <dropColumn tableName="user_client" columnName="creation_data_fk" />
+        <dropColumn tableName="user_client" columnName="client_profile_fk" />
+        <dropTable tableName="user_client_creation" cascadeConstraints="true"/>
+        <dropTable tableName="user_client_db_config" cascadeConstraints="true"/>
+        <dropTable tableName="user_client_profile" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_approval_code" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_reg_code" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_removal_code" cascadeConstraints="true"/>
+    </changeSet>
+    <changeSet id="KENMEI-7537_act_code_old_pg" author="Communote" dbms="postgresql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_client_activation_code"/>
+        </preConditions>
+        <dropSequence sequenceName="user_client_activation_code_seq"/>
+        <dropTable tableName="user_client_activation_code" cascadeConstraints="true"/>
+    </changeSet>
+    <changeSet id="KENMEI-7537_act_code_new_pg" author="Communote" dbms="postgresql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_client_act_code"/>
+        </preConditions>
+        <dropSequence sequenceName="user_client_act_code_seq"/>
+        <dropTable tableName="user_client_act_code" cascadeConstraints="true"/>
+    </changeSet>
+    
+    <changeSet id="KENMEI-7537_cleanup_client_tables_ms" author="Communote" dbms="mssql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_client_profile"/>
+        </preConditions>
+        <!-- unique constraints are created as unique index and not unique constraint -->
+        <dropIndex tableName="user_client" indexName="user_client_client_d_b_config_fk_key" />
+        <dropIndex tableName="user_client" indexName="user_client_creation_data_fk_key" />
+        <dropIndex tableName="user_client" indexName="user_client_client_profile_fk_key" />
+        <dropForeignKeyConstraint baseTableName="user_client" constraintName="user_client_CLIENT_D_B_CONFIGC" />
+        <dropForeignKeyConstraint baseTableName="user_client" constraintName="user_client_CLIENT_PROFILE_FKC" />
+        <dropForeignKeyConstraint baseTableName="user_client" constraintName="user_client_CREATION_DATA_FKC" />
+        <dropColumn tableName="user_client" columnName="more_data_required" />
+        <dropColumn tableName="user_client" columnName="CLIENT_D_B_CONFIG_FK" />
+        <dropColumn tableName="user_client" columnName="CREATION_DATA_FK" />
+        <dropColumn tableName="user_client" columnName="CLIENT_PROFILE_FK" />
+        <dropTable tableName="user_client_creation" cascadeConstraints="true"/>
+        <dropTable tableName="user_client_db_config" cascadeConstraints="true"/>
+        <dropTable tableName="user_client_profile" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_approval_code" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_reg_code" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_removal_code" cascadeConstraints="true"/>
+    </changeSet>
+    <changeSet id="KENMEI-7537_act_code_old_ms" author="Communote" dbms="mssql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_client_activation_code"/>
+        </preConditions>
+        <dropTable tableName="user_client_activation_code" cascadeConstraints="true"/>
+    </changeSet>
+    <changeSet id="KENMEI-7537_act_code_new_ms" author="Communote" dbms="mssql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_client_act_code"/>
+        </preConditions>
+        <dropTable tableName="user_client_act_code" cascadeConstraints="true"/>
+    </changeSet>
+    
+    <changeSet id="KENMEI-7537_cleanup_client_tables_mysql" author="Communote" dbms="mysql" context="standalone">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0">select count(*) from information_schema.table_constraints where table_schema = schema() and table_name = 'user_client_profile';</sqlCheck>
+            </not>
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="user_client" constraintName="user_client_CLIENT_D_B_CONFIGC" />
+        <dropForeignKeyConstraint baseTableName="user_client" constraintName="user_client_CLIENT_PROFILE_FKC" />
+        <dropForeignKeyConstraint baseTableName="user_client" constraintName="user_client_CREATION_DATA_FKC" />
+        <dropColumn tableName="user_client" columnName="MORE_DATA_REQUIRED" />
+        <dropColumn tableName="user_client" columnName="CLIENT_D_B_CONFIG_FK" />
+        <dropColumn tableName="user_client" columnName="CREATION_DATA_FK" />
+        <dropColumn tableName="user_client" columnName="CLIENT_PROFILE_FK" />
+        <dropTable tableName="user_client_creation" cascadeConstraints="true"/>
+        <dropTable tableName="user_client_db_config" cascadeConstraints="true"/>
+        <dropTable tableName="user_client_profile" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_approval_code" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_reg_code" cascadeConstraints="true"/>
+        <dropTable tableName="security_client_removal_code" cascadeConstraints="true"/>
+    </changeSet>
+    <changeSet id="KENMEI-7537_act_code_mysql" author="Communote" dbms="mysql" context="standalone">
+        <sql>DROP TABLE IF EXISTS user_client_act_code, user_client_activation_code;</sql>
+    </changeSet>
+    
+    <!-- <changeSet id="KENMEI-7514_Cleanup_old_client_settings" author="Communote">
+        <sql>delete from configuration_setting where SETTING_KEY in ('kenmei.client.license.ends.30.mail.send','kenmei.client.user.count.100.mail', 'kenmei.client.user.count.90.mail',
+         'kenmei.client.user.count.limit.activation', 'kenmei.client.user.count.limit');
+        </sql>
+    </changeSet>
+    what about ClientProperty.LAST_DATE_OF_LICENCE_ENDS_MAIL_SEND - remove from standalone?
+    <changeSet id="KENMEI-7514_Cleanup_old_app_settings" author="Communote" context="global">
+        <sql>delete from configuration_app_setting where SETTING_KEY in ('com.communote.license.subscription.email', 'com.communote.license.subscription.reply-to.email', 'com.communote.license.subscription.reply-to.name', 'kenmei.application.home.page.host');
+        </sql>
+    </changeSet> -->
+    
+    <changeSet author="Communote" id="KENMEI-7547_modification_time_of_setting">
+        <addColumn tableName="configuration_setting">
+            <column name="last_modification_timestamp" type="BIGINT" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

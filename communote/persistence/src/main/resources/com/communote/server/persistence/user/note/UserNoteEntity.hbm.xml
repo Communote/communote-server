@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.user.note.UserNoteEntityImpl" table="user_note_entity" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">user_note_entity_seq</param>
+                                                           </generator>
+        </id>
+        <property name="rank" type="int">
+            <column name="rank" 
+                     not-null="true" unique="false"/>
+        </property>
+        <many-to-one name="note" class="com.communote.server.model.note.Note" cascade="delete" foreign-key="user_note_entity_NOTE_FKC" lazy="proxy" fetch="select">
+            <column name="NOTE_FK" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="user" class="com.communote.server.model.user.User" cascade="delete" foreign-key="user_note_entity_USER_FKC" lazy="proxy" fetch="select">
+            <column name="USER_FK" not-null="true"/>
+        </many-to-one>
+        <set name="properties" order-by="USER_NOTE_ENTITY_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <key foreign-key="user_note_property_USER_NOTE_C">
+                <column name="USER_NOTE_ENTITY_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.user.UserNoteProperty"/>
+        </set>
+    </class>
+</hibernate-mapping>

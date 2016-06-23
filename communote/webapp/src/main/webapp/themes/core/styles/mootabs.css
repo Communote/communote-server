@@ -1,0 +1,13 @@
+.mootabs_panel {
+    display: none;
+}
+
+.mootabs_panel.active {
+    display: block;
+}
+
+.mootabs_disabled ,
+.mootabs_disabled:hover {
+   color: #888888; 
+   cursor: default;
+}

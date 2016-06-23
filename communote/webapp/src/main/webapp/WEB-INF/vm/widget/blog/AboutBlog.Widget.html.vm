@@ -1,0 +1,77 @@
+#* @vtlvariable name="singleResult" type="com.communote.server.core.filter.listitems.blog.DetailBlogListItem" *#
+#cnRenderMessages()
+#widgetMetadata(${widget.ResponseMetadata})
+<div class="cn-infocard-container cn-blog-details-about-wrapper">
+    #if(!$singleResult)
+        #if($widget.hasAccess())
+            #t('common.error.topic.not.found')
+        #else
+            #t('common.error.topic.no.access')
+        #end
+    #else
+        <div class="cn-left">
+            <img src="$urlTool.imageForProfile("topic.$singleResult.Id")" alt="$escTool.xmlSimple($!{singleResult.Title})"/>
+        </div>
+        <div class="cn-right cn-infocard-content-group">
+            <h2>$escTool.xmlSimple("$!{singleResult.Title}") <span>(<a
+                    href="$urlTool.blog($singleResult.nameIdentifier)">$escTool.xmlSimple("$!{singleResult.nameIdentifier}")</a>)</span>
+            </h2>
+            #if($singleResult.description && $singleResult.description.trim().length() > 0)
+                <div class="cn-blog-details-block cn-blog-details-description">
+                    <div class="cn-info-block">$!escTool.xmlSimple(${singleResult.description})</div>
+                </div>
+            #end
+            <div class="cn-blog-details-block cn-blog-details-creation-date">
+                <div class="cn-label">#t('blog.about.creation.date')</div>
+                <div class="cn-value">$!{dateTool.format('short', $!singleResult.creationDate, $communoteTool.getCurrentUserLocale($request), $communoteTool.getCurrentUserEffectiveTimeZone() )}</div>
+            </div>
+            #if($widget.getBlogEmailAddress())
+                <div class="cn-blog-details-block cn-blog-details-mail">
+                    <div class="cn-label">#t('blog.about.email')</div><div class="cn-value">
+                        <a href="$!{widget.getBlogMailTo()}"
+                           title="$widget.getBlogEmailAddress()">${widget.getBlogMailTo().replace('mailto:','')}</a>
+                    </div>
+                </div>
+            #end
+            #if($singleResult.tagItems.size() > 0)
+                <div class="cn-blog-details-block cn-blog-details-tags">
+                    <div class="cn-label">#t('blog.about.tags')</div>
+                    <div class="cn-value">
+                        #foreach($tag in $singleResult.tagItems)
+                            <a href="$urlTool.render("/portal/topics?tagId=$tag.id")">
+                                <span>$escTool.xmlSimple($tag.name)#if($velocityHasNext),&nbsp;#end</span>
+                            </a>
+                        #end
+                    </div>
+                    <span class="cn-clear"><!-- Empty --></span>
+                </div>
+            #end
+            #if(${singleResult.createSystemNotes})
+                <div class="cn-blog-details-block cn-blog-details-access">
+                    <div>
+                        <span>#t('blog.create.system.notes')</span>
+                    </div>
+                </div>
+            #end
+            #if($singleResult.isToplevelTopic())
+                <div class="cn-blog-details-block cn-blog-details-toplevel">
+                    <div class="cn-label">
+                        <span>#t('blog.about.is-top-level')</span> #cnTooltip('blog.about.is-top-level.hint')
+                    </div>
+                </div>
+            #end
+        </div>
+        <div class="cn-actions">
+            <div class="cn-buttons">
+                #if($widget.getBooleanParameter('showFollowAction', true))
+                    #cnFollowButton("$singleResult.Id", 'Blog', $widget.currentUserFollowsBlog, 'follow.link.follow', '')
+                #end
+                #if($communoteTool.blogs.hasPermission($singleResult.id, 'EDIT_DETAILS'))
+                    #cnButton('' 'blog.about.button.edit' '' "widgetController.getWidget('$widget.widgetId').openEditMode();")
+                #end
+            </div>
+        </div>
+    #end
+</div>
+<span class="cn-clear"><!-- Empty --></span>
+    

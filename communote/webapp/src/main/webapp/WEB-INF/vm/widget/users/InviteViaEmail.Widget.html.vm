@@ -1,0 +1,9 @@
+#if($singleResult)
+<form>
+    <input type="hidden" name="widgetAction" value="Invite" />
+     #cnInputText('invitationEmailAddress' "$!invitationEmailAddress" 'widget.user.invite.via.email.label' false '' false false 'widget.user.invite.via.email.placeholder')
+     <input type="submit" name="submit" class="cn-button" value="#t('widget.user.invite.via.email.submit')" />
+</form>
+<span class="cn-clear"><!-- Empty --></span>
+#end
+#cnRenderMessages()

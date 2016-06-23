@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+
+    <bean id="legacyNoteExportController" class="com.communote.server.web.fe.portal.controller.LegacyUrlRedirectController">
+        <constructor-arg value="/blog/export" index="0" />
+        <constructor-arg value="/topic/export" index="1" />
+    </bean>
+    
+    <bean id="legacyRedirectBlogsController" class="com.communote.server.web.fe.portal.controller.LegacyUrlRedirectController">
+        <constructor-arg value="/portal/blogs" index="0" />
+        <constructor-arg value="/portal/topics" index="1" />
+    </bean>
+    
+    <bean id="legacyClientManagementController" class="com.communote.server.web.fe.portal.controller.LegacyUrlRedirectController">
+        <constructor-arg value="/user/client" index="0" />
+        <constructor-arg value="/admin/client" index="1" />
+    </bean>
+
+    <bean id="legacyEditCreateBlogController" class="com.communote.server.web.fe.portal.controller.LegacyUrlRedirectController">
+        <constructor-arg value="/portal/blog-" index="0" />
+        <constructor-arg value="/portal/topic-" index="1" />
+    </bean>
+
+    <!-- Note: when removing the mappings don't forget to update the authorization.xml -->
+    <bean id="legacyUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true" />
+        <property name="mappings">
+            <props>
+                <prop key="/microblog/*/blog/export*">legacyNoteExportController</prop>
+                <prop key="/microblog/*/portal/blogs/**">legacyRedirectBlogsController</prop>
+                <prop key="/microblog/*/user/client/**">legacyClientManagementController</prop>
+                <prop key="/microblog/*/portal/blog-edit*">legacyEditCreateBlogController</prop>
+                <prop key="/microblog/*/portal/blog-create*">legacyEditCreateBlogController</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,243 @@
+@charset "utf-8";
+
+/* (inputs( ... */
+#communote input.text ,
+#communote input.file ,
+#communote input.password ,
+#communote select ,
+#communote textarea {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #CCCCCC;
+    padding: 0.15em;
+}
+
+#communote input.text:focus ,
+#communote input.file:focus ,
+#communote input.password:focus ,
+#communote select:focus ,
+#communote textarea:focus {
+    outline-width: 1px;
+    outline-style: solid;
+    outline-color: #FA8502;
+}
+#communote input.error ,
+#communote select.error ,
+#communote textarea.error {
+    color: #000000;
+    font-style: normal;
+}
+/* ... )inputs) */
+
+#communote fieldset {
+    margin: 0;
+    padding: 10px 0 10px 25px;
+    min-height: 350px;
+    border-color: #888888;
+    border-style: solid none none none;
+    border-width: 1px 0 0 0;
+    font-size: 81.25%;
+}
+
+#communote fieldset * {
+    font-size: 100.001%;
+}
+
+#communote fieldset legend {
+    margin: 0 0 0 -25px;
+    padding: 0.5em;
+    color: #FA8502;
+    font-weight: normal;
+}
+
+#communote .form-container {
+    position: relative;
+    padding: 10px;
+    padding-left: 15px;
+    border: 1px solid #CCCCCC;
+    background-color: #F7F7F7;
+}
+
+#communote .form-container .w100 ,
+#communote .form-container .w50 ,
+#communote .form-container .w25 {
+    float: left;
+    margin-bottom: 0.5em;
+}
+
+#communote .form-container .w100 {
+    width: 99.99%;
+}
+
+#communote .form-container .w50 {
+    width: 49.99%;
+}
+
+#communote .form-container .w25 {
+    width: 24.99%;
+}
+
+#communote .form-container div.form-error {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    color: #DD3333;
+    font-size: 84.62%;
+    font-style: italic;
+}
+
+#communote .form-container div.form-input {
+    margin-bottom: 0.5em;   
+}
+
+#communote .form-container div.label {
+    float: left;
+    width: 190px;
+    color: #333333;
+    
+}
+
+#communote .form-container label {
+    line-height: 22px;       
+}
+
+#communote .form-container div.label.space {
+    margin-bottom: 0.2em;
+}
+
+#communote .form-container div.description {
+    margin-bottom: 0.5em;
+}
+
+#communote .form-container div.description.smaller {
+    font-size: 84.62%;
+}
+
+#communote .form-container div.input ,
+#communote .form-container div.checkbox ,
+#communote .form-container div.radio {
+    float: left;
+}
+
+#communote .form-container div.checkbox input {
+    margin: 4px 0 0;
+}
+
+#communote .form-container div.error {
+    clear: both;
+    width: 305px;
+    margin-left: 191px;
+    font-size: 84.62%;
+}
+
+#communote .form-container div.error * {
+    font-size: 100.001%;
+}
+
+#communote .form-container div.input .w25 {
+    float: left;
+    width: 24.99%;
+}
+
+#communote .form-container div.hint {
+    color: #888888;
+    font-size: 84.62%;
+}
+
+#communote .form-container div.advice {
+    float: left;
+    margin-left: 4px;
+    color: #888888;
+    font-size: 84.62%;
+    line-height: 19px;
+}
+
+#communote .form-container div.advice * {
+    font-size: 100.001%;
+}
+
+#communote .form-container .from-description ,
+#communote .form-container .fieldset-description {
+    margin-bottom: 10px;
+}
+#communote .form-container .fieldset-info {
+    font-size:84.62%;
+    font-style:italic;
+    margin-top:8px;
+}
+
+#communote .form-container fieldset h5 {
+    margin: 0.5em 0;
+}
+
+#communote .form-container .actionbar {
+    /*position: absolute;
+    bottom: 10px;
+    width: 605px;*/
+}
+
+#communote .form-container hr {
+    margin: 15px 25px;
+    height: 1px;
+    border: 0px; /* for Firefox and Opera */
+    border-top: solid 1px #888888;
+    border-bottom: transparent; /* for I.Explorer (page background color!) */
+}
+
+/* ************************************************************************** */
+
+/** ToolTips */
+#communote .tooltip-wrapper {
+}
+
+#communote .tooltip {
+    color: #BBBBBB;
+    font-size: 0.8em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#communote .tooltip:hover {
+}
+
+.tip-wrap {
+    width: 250px;
+    z-index: 13000;
+    padding: 7px;
+}
+
+.tip-top ,
+.tip-bottom {
+    display: none;
+}
+
+.tip {
+    color: #333333;
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+}
+
+.tip-title {
+    margin: 0;
+    padding: 0 5px;
+    height: 1.7em;
+    color: #888888;
+    font-size: 68.75%;
+    font-weight: bold;
+    line-height: 1.7em;
+    white-space: nowrap;
+    background-attachment: scroll;
+    background-image: url(../../themes/core/images/misc/gradient_filter.png);
+    background-position: 0 -30px;
+    background-repeat: repeat-x;
+}
+
+.tip-text {
+    margin: 0;
+    padding: 5px;
+    color: inherit;
+    font-size: 68.75%;
+    line-height: 1.3em;
+}
+.tip-text * {
+    font-size: 100%;
+}

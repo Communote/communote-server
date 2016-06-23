@@ -1,0 +1,82 @@
+.content-type-activity .cn-icon {
+    background-position: -166px -128px;
+}
+
+.content-type-activity a:hover .cn-icon,
+.content-type-activity a.cn-active .cn-icon {
+    background-position: -166px -160px;
+}
+
+.cn-filter-applied .content-type-activity .cn-icon {
+    background-position: -165px -132px;
+}
+
+.cn-filter-applied .content-type-activity:hover .cn-icon {
+    background-position: -165px -164px;
+}
+
+/* CPL modifications */
+.cn-inline-comments .cn-activity {
+	padding-left: 7px;
+}
+.cn-inline-comments .cn-activity .cn-left {
+	width: 45px;
+}
+
+.cn-activity .cn-activity-icon {
+    background-image: url("../images/icons/icon-activity.png");
+    background-position: 0 4px;
+    background-repeat: no-repeat;
+    float: left;
+    height: 18px;
+    margin-left: 2px;
+    margin-right: 5px;
+    padding-top: 4px;
+    width: 18px;
+}
+
+.cn-inline-comments .cn-activity .cn-activity-icon {
+    margin-left: 0px;
+    margin-right: 2px;
+}
+
+.cn-activity .cn-user-image .cn-userpic,
+.cn-list-blog-entry-wrapper .cn-inline-comments .cn-activity .cn-userpic {
+    width: 25px;
+    height: 25px;
+}
+
+.cn-activity .cn-entry-info-icons {
+    padding-left: 0;
+}
+
+.cn-inline-comments .cn-activity .cn-right,
+.cn-inline-comments .cn-activity .cn-actions-container {
+	margin-left: 53px;
+}
+
+.cn-activity .cn-bar {
+	margin-top: 10px;
+}
+
+.cn-activity .cn-wrapper-content * {
+    font-size: 12px;
+}
+
+.cn-activity .cn-short-content,
+.cn-activity .cn-content {
+	line-height: 1.2em;
+}
+
+.cn-activity .cn-wrapper-content .cn-link.meta {
+    border-color: #888888;
+    color: #888888;
+    line-height: 13px;
+    margin-right: 10px;
+    padding-left: 0;
+    padding-right: 10px;
+}
+
+.cn-activity .cn-wrapper-content {
+    min-height: 27px;
+}

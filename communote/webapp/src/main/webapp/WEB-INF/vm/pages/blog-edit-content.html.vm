@@ -1,0 +1,228 @@
+#* @vtlvariable name="blogId" type="java.lang.Long" *#
+#set($canInvite = $communoteTool.blogs.hasPermission($blogId,'INVITE_USER'))
+<div id="cn-two-column-layout">
+    <div id="cn-sidebar-bg"></div>
+    <div id="cn-sidebar">
+        <div id="cn-vertical-navigation-wrapper">
+            <div id="cn-navigation-back">
+                <a href="$urlTool.blog($blogAlias)" class="cn-button">
+                    <span><span class="cn-arrow-back">&laquo;</span>#t('blog.management.back.button.to.topic')</span>
+                </a>
+            </div>
+            <div id="cn-main-navigation">
+                #set($link=$urlTool.render("portal/topic-edit?blogId=$blogId&viewId=details"))
+                <div class="navigation-item details" id="editTopic_navigation_item_details">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {blogId: $blogId}); return false;"><span>#t('blog.about.headline')</span></a>
+                </div>
+                #set($link=$urlTool.render("portal/topic-edit?blogId=$blogId&viewId=images"))
+                <div class="navigation-item images" id="editTopic_navigation_item_images">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {blogId: $blogId}); return false;"><span>#t('blog.management.images.title')</span></a>
+                </div>
+                #set($link=$urlTool.render("portal/topic-edit?blogId=$blogId&viewId=members"))
+                <div class="navigation-item members" id="editTopic_navigation_item_members">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {blogId: $blogId}); return false;"><span>#t('blog.member.management.edit.title')</span></a>
+                </div>
+                #if($canInvite)
+                    #set($link=$urlTool.render("portal/topic-edit?blogId=$blogId&viewId=invite"))
+                <div class="navigation-item invite" id="editTopic_navigation_item_invite">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {blogId: $blogId}); return false;"><span>#t('blog.member.management.inviteuser.title')</span></a>
+                </div>
+                #end
+                #if($allowPublicAccess)
+                    #set($link=$urlTool.render("portal/topic-edit?blogId=$blogId&viewId=anonymous"))
+                    <div class="navigation-item anonymous" id="editTopic_navigation_item_anonymous">
+                        <a href="$link" onclick="communote.linkHandler.open('$link', {blogId: $blogId}); return false;"><span>#t('blog.management.anonymous.title')</span></a>
+                    </div>
+                #end
+                #if($hasExternalObjects)
+                    #set($link=$urlTool.render("portal/topic-edit?blogId=$blogId&viewId=integration"))
+                    <div class="navigation-item integration" id="editTopic_navigation_item_integration">
+                        <a href="$link" onclick="communote.linkHandler.open('$link', {blogId: $blogId}); return false;"><span>#t('blog.member.integration')</span></a>
+                    </div>
+                #end
+                #set($link=$urlTool.render("portal/topic-edit?blogId=$blogId&viewId=structure"))
+                <div class="navigation-item structure" id="editTopic_navigation_item_structure">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {blogId: $blogId}); return false;"><span>#t('blog.management.structure.title')</span></a>
+                </div>
+                #set($link=$urlTool.render("portal/topic-edit?blogId=$blogId&viewId=delete"))
+                <div class="navigation-item delete" id="editTopic_navigation_item_delete">
+                    <a href="$link" onclick="communote.linkHandler.open('$link', {blogId: $blogId}); return false;"><span>#t('blog.delete.heading')</span></a>
+                </div>
+                <div></div>
+            </div>
+            #set($link=$urlTool.render("portal/topic-edit?blogId=$blogId&viewId=VIEW_ID"))
+            <div id="vertivalNavigationItemTemplate" class="navigation-item" style="display:none"><a href="$link" data-cnt-linkHandler-data="{&quot;blogId&quot;:$blogId}"><span class="control-navigation-item-title"></span></a></div>
+        </div>
+    </div>
+    <div id="cn-view-wrapper">
+        <div id="cn-view-header"></div>
+        <div id="cn-view-content">
+            <div id="cn-main"></div>
+            <div id="cn-filterbar"></div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    </div>
+    <script type="text/javascript">
+        (function () {
+            var contextDefs, viewDefs, widgetDefs;
+            #if($hasExternalObjects)
+                var addIntegration = true;
+            #else
+                var addIntegration = false;
+            #end
+            #if($allowPublicAccess)
+                var allowPublicAccess = true;
+            #else
+                var allowPublicAccess = false;
+            #end
+            contextDefs = {};
+            contextDefs.topicEdit = ['details', 'images', 'members', 'structure', 'delete'];
+            viewDefs = {};
+            viewDefs.topicEdit = {
+                visibleWidgets: [ 'GlobalIdShowBannerImage' ]
+            };
+            viewDefs.topicEdit_details = {
+                parentViewId: 'topicEdit',
+                previousViewAction: 'hide',
+                visibleWidgets: [ 'BlogManagement' ]
+            };
+            viewDefs.topicEdit_images = {
+                parentViewId: 'topicEdit',
+                previousViewAction: 'hide',
+                visibleWidgets: [ 'UploadProfileImageWidget', 'UploadBannerImageWidget' ]
+            };
+            viewDefs.topicEdit_members = {
+                parentViewId: 'topicEdit',
+                previousViewAction: 'hide',
+                visibleWidgets: [ 'BlogMemberManagement' ]
+            };
+    
+            widgetDefs = {};
+            widgetDefs.GlobalIdShowBannerImage = communote.configuration.factory.createShowBannerWidgetDef('#cn-view-header', '#cn-header-mobile .cn-center', 'mainPageContextManagement');
+            
+            widgetDefs['BlogManagement'] = {
+                widgetType: 'BlogManagementWidget',
+                containerSelector: '#cn-main',
+                settings: {
+                    blogId: $blogId,
+                    showCancelButton: false
+                }
+            };
+            widgetDefs['UploadBannerImageWidget'] = {
+                widgetType: 'GlobalIdUploadImageWidget',
+                containerSelector: '#cn-main',
+                settings: {
+                    imageType: 'banner',
+                    entityType: 'topic',
+                    blogId: $blogId,
+                    filterWidgetGroupId: false
+                }
+            };
+            widgetDefs['UploadProfileImageWidget'] = {
+                widgetType: 'GlobalIdUploadImageWidget',
+                containerSelector: '#cn-main',
+                settings: {
+                    imageType: 'profile',
+                    entityType: 'topic',
+                    blogId: $blogId,
+                    filterWidgetGroupId: false
+                }
+            };
+            widgetDefs['BlogMemberManagement'] = {
+                widgetType: 'BlogMemberManagementWidget',
+                containerSelector: '#cn-main',
+                settings: {
+                    blogId: $blogId,
+                    editMode: true,
+                    showEditModeToggle: false,
+                    filterWidgetGroupId: false
+                }
+            };
+            #if($canInvite)
+                contextDefs.topicEdit.push('invite');
+                viewDefs.topicEdit_invite = {
+                    parentViewId: 'topicEdit',
+                    previousViewAction: 'hide',
+                    visibleWidgets: [ 'InviteUserToBlog' ]
+                };
+                widgetDefs['InviteUserToBlog'] = {
+                    widgetType: 'InviteUserToBlogWidget',
+                    containerSelector: '#cn-main',
+                    settings: {
+                        blogId: $blogId
+                    }
+                };
+            #end
+            if (allowPublicAccess) {
+                viewDefs.topicEdit_anonymous = {
+                    parentViewId: 'topicEdit',
+                    previousViewAction: 'hide',
+                    visibleWidgets: [ 'SetAnonymousAccess' ]
+                };
+                contextDefs.topicEdit.push('anonymous');
+                widgetDefs['SetAnonymousAccess'] = {
+                    widgetType: 'SetAnonymousAccessWidget',
+                    containerSelector: '#cn-main',
+                    settings: {
+                        blogId: $blogId,
+                        editMode: true,
+                        showEditModeToggle: false
+                    }
+                };
+            }
+            if (addIntegration) {
+                viewDefs.topicEdit_integration = {
+                    parentViewId: 'topicEdit',
+                    previousViewAction: 'hide',
+                    visibleWidgets: [ 'ExternalObjects' ]
+                };
+                contextDefs.topicEdit.push('integration');
+                widgetDefs['ExternalObjects'] = {
+                    widgetType: 'ListExternalObjectsWidget',
+                    containerSelector: '#cn-main',
+                    settings: {
+                        blogId: $blogId,
+                        silentIfEmpty: true,
+                        editMode: true,
+                        filterWidgetGroupId: false
+                    }
+                };
+            }
+            viewDefs.topicEdit_structure = {
+                parentViewId: 'topicEdit',
+                previousViewAction: 'hide',
+                visibleWidgets: [ 'EditTopicStructure' ]
+            };
+            widgetDefs['EditTopicStructure'] = {
+                    widgetType: 'EditTopicStructureWidget',
+                    containerSelector: '#cn-main',
+                    settings: {
+                        blogId: $blogId
+                    }
+                };        
+            viewDefs.topicEdit_delete = {
+                    parentViewId: 'topicEdit',
+                    previousViewAction: 'hide',
+                    visibleWidgets: [ 'DeleteTopic' ]
+                };
+                widgetDefs['DeleteTopic'] = {
+                        widgetType: 'DeleteTopicWidget',
+                        containerSelector: '#cn-main',
+                        settings: {
+                            blogId: $blogId
+                        }
+                    };      
+            communote.configuration.mainPageContexts = contextDefs;
+            communote.configuration.mainPageViewManagerConfig = {
+                views: viewDefs,
+                widgets: widgetDefs
+            };
+            communote.initialFilterParameters = {
+                blogId: $blogId
+            };
+            communote.initializer.addWidgetFrameworkInitializedCallback(function () {
+                communote.utils.navigationUtils.addHighlightActiveVerticalNavigationItemObserver('mainPageContextManagement');
+            });
+        })();
+    </script>
+</div>

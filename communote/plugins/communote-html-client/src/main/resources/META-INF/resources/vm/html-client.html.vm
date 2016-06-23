@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width"/>
+        <title>$fmtTool.message("htmlclient.title")</title>
+        <link rel="stylesheet" type="text/css" href="$urlTool.render("/resources/styles/htmlClient-standalone-styles.css?${build.timestamp}")" />
+        <script type="text/javascript" src="$urlTool.render("/resources/javascripts/htmlClient-scripts.js?build=${build.timestamp}")"></script>
+		<link rel="apple-touch-icon" sizes="129x129" href="$urlTool.render('plugins/${maven-symbolicname}/images/communote-apple-touch-icon-129x129.png')" />
+    </head>
+    <body style="margin:0">
+        <script type="text/javascript">
+        	#if($authzTool.allGranted("ROLE_KENMEI_USER"))            
+				window.onbeforeunload = leavePage;
+				/** This method helps prevent the accidental leaving a page. */
+				function leavePage(event){
+				    var message = '$fmtTool.message("htmlclient.common.leave")';				    
+				    if(communote.jQuery('.cntwIframe').contents().find('.cntwDirty').length != 0){		
+					    var event = event || window.event;
+					    event.returnValue = message;		    
+				    	return message;
+				   	}
+				};            	
+			#end
+            communote.widget.start(
+                '#cntwRootNode-1' ,
+                {
+#foreach ($mapEntry in $jsParameterMap.entrySet())
+                    $mapEntry.key: $mapEntry.value,
+#end
+                    edShowUpload: true,
+                    useIframe: false,
+					cntPath: '$urlTool.render("", null, false, false, false, null, false)'
+                }
+            );
+        </script>
+        #if($authzTool.allGranted("ROLE_KENMEI_USER") && ${showHeader})
+            <div class="cntwStandaloneHeader">
+                <div class="cntwStandaloneHeaderLeft">
+                    <a href="$urlTool.renderStartpage()" class="cntwStandaloneHeaderDesktopView">$fmtTool.message("portal.mobile.full.view")</a>
+                </div>
+                <div class="cntwStandaloneHeaderRight">
+                    $escTool.xmlSimple($userName)
+                    <a href="$urlTool.render('/logout')" class="cntwStandaloneHeaderLogout">$fmtTool.message("login.logout")</a>
+                </div>
+            </div>
+        #end
+        <div id='cntwRootNode-1' class='cntwRoot' style="height:auto"></div>
+    </body>
+</html>

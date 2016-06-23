@@ -1,0 +1,21 @@
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@page import="com.communote.server.api.core.application.CommunoteRuntime"%>
+<%@page import="com.communote.server.core.tag.TagParserFactory"%>
+<%@page import="com.communote.server.persistence.user.client.ClientHelper"%>
+<%@page import="com.communote.server.model.client.ClientStatus"%>
+<%@page import="com.communote.server.web.fe.portal.blog.controller.InitialFiltersViewController"%>
+<script type="text/javascript">
+ 	communote.server.applicationUrl = location.protocol + '//' + location.host + '<ct:url value="" renderSessionId="false" />';
+ 	communote.server.resourceUrlBase = location.protocol + '//' + location.host + '<ct:url staticResource="true" value="" renderSessionId="false"/>';
+    <c:if test="<%= (!request.isRequestedSessionIdFromCookie() && request.isRequestedSessionIdValid()) %>">
+        communote.server.applicationSessionId = '<%=request.getSession().getId() %>';
+    </c:if>
+	communote.initialFilterParameters = <%= request.getAttribute(InitialFiltersViewController.KEY_INITIAL_FILTERS_JSON) %>;
+    <%
+      if(ClientStatus.ACTIVE != ClientHelper.getCurrentClient().getClientStatus()){
+          out.write("var defaultBlogEnabled = false;");
+      }else{
+          out.write("var defaultBlogEnabled = "+ CommunoteRuntime.getInstance().getConfigurationManager().getClientConfigurationProperties().isDefaultBlogEnabled() +";"); 
+      }
+    %>
+</script>

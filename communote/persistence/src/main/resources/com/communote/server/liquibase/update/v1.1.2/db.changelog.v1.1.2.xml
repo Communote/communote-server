@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.1.2/db.changelog.v1.1.2.xml">
+
+	<changeSet id="mt3196_1" author="unknown" context="client">
+		<comment>CR 100 - Support Time Zones: add new column to user_profile</comment>
+		
+        <addColumn tableName="user_profile">
+            <column name="TIME_ZONE_ID" type="varchar(1024)"></column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet id="mt3196_2" author="unknown" context="client">
+        <comment>CR 100 - Support Time Zones: add new column to user_client_creation, configuration_client</comment>
+        
+        <addColumn tableName="user_client_creation">
+            <column name="TIME_ZONE_ID" type="varchar(1024)"></column>
+        </addColumn>
+        <addColumn tableName="configuration_client">
+            <column name="TIME_ZONE_ID" type="varchar(1024)"></column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="mt3208" author="unknown" context="client">
+        <comment>CR 68 Read-More functionality</comment>
+        
+        <addColumn tableName="core_content">
+            <column name="SHORT_CONTENT" type="TEXT"></column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="mt3350_configuration_column_ldap" author="unknown" context="client">
+        <preConditions onFail="MARK_RAN" ><columnExists tableName="configuration" columnName="ldap_config_fk"/></preConditions>
+         <comment>MT 3350</comment>
+        <dropColumn tableName="configuration" columnName="ldap_config_fk"/>
+    </changeSet>
+
+</databaseChangeLog>

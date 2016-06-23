@@ -1,0 +1,62 @@
+.cn-blog-details-about-wrapper .cn-left {
+    float: left;
+    margin-right: 20px;
+}
+
+.cn-blog-details-about-wrapper .cn-right {
+    min-width: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.cn-blog-details-about-wrapper .cn-right h2 {
+    border: 0 none;
+    color: #000000;
+    font-size: 20px;
+    font-weight: normal;
+    word-wrap: break-word;
+}
+
+.cn-blog-details-about-wrapper .cn-blog-details-block {
+    clear: both;
+    overflow: hidden;
+    padding-bottom: 20px;
+}
+
+.cn-blog-details-about-wrapper .cn-label {
+    float: left;
+    font-size: 13px;
+    margin: 0;
+    width: 30%;
+}
+
+.cn-blog-details-about-wrapper .cn-blog-details-toplevel .cn-label {
+    width: 100%;    
+}
+
+.cn-blog-details-about-wrapper .cn-value {
+    float: left;
+    width: 70%;
+    word-wrap: break-word;
+}
+
+.cn-blog-details-about-wrapper .cn-blog-details-creation-date {
+    margin-top: 20px;
+}
+
+.cn-blog-details-about-wrapper .cn-blog-details-description {
+    color: #888888;
+    padding-bottom: 0;
+}
+
+.cn-blog-details-about-wrapper .cn-blog-details-access span {
+    color: #888888;
+}
+
+.cn-blog-details-about-wrapper .cn-blog-details-tags span.cn-icon {
+    display: block;
+    float: left;
+    height: 16px;
+    margin-right: 5px;
+    width: 16px;
+}

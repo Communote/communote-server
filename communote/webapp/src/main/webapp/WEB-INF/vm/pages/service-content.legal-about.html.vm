@@ -1,0 +1,7 @@
+<div class="about">
+    <p>
+        <img alt=""
+            src="$urlTool.render('/themes/core/images/service/communote-logo.png',false,false,true)" />
+    </p>
+    <p>#t('service.legalnotice.about.description')</p>
+</div>

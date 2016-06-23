@@ -1,0 +1,14 @@
+#embed-communote-snippet {
+	border: 1px solid #E3E3E3;
+	overflow: auto;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#embed-communote-settings .cn-form-container {
+    margin-bottom: 0;  
+}
+
+#embed-communote-settings {
+    max-width: 700px;
+}

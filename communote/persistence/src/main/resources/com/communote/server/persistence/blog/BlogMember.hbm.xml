@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.blog.BlogMemberImpl" table="core_blog_member" dynamic-insert="false" dynamic-update="false" discriminator-value="BlogMemberImpl">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">core_blog_member_seq</param>
+                                                           </generator>
+        </id>
+        <discriminator column="class" type="string"/>
+        <property name="role" type="com.communote.server.persistence.blog.BlogRoleEnum">
+            <column name="role" 
+                     not-null="true" unique="false"/>
+        </property>
+        <many-to-one name="blog" class="com.communote.server.model.blog.Blog" cascade="none" foreign-key="core_blog_member_BLOG_FKC" lazy="proxy" fetch="select">
+            <column name="BLOG_FK" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="memberEntity" class="com.communote.server.model.user.CommunoteEntity" foreign-key="core_blog_member_KENMEI_ENTITC" lazy="proxy" fetch="select">
+            <column name="KENMEI_ENTITY_FK" not-null="true"/>
+        </many-to-one>
+        <subclass name="com.communote.server.model.blog.ExternalBlogMemberImpl" discriminator-value="ExternalBlogMemberImpl" dynamic-insert="false" dynamic-update="false" abstract="false">
+            <property name="externalSystemId" type="java.lang.String">
+                <column name="external_system_id" 
+                     not-null="false" unique="false"/>
+            </property>
+        </subclass>
+    </class>
+</hibernate-mapping>

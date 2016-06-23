@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.config.ApplicationConfigurationSettingImpl" table="configuration_app_setting" dynamic-insert="false" dynamic-update="false">
+        <id name="settingKey" type="java.lang.String" unsaved-value="null">
+            <column name="SETTING_KEY"/>
+                        <generator class="assigned">
+                                        </generator>
+        </id>
+        <property name="settingValue" type="com.communote.server.external.hibernate.usertypes.HibernateStringClobType">
+            <column name="setting_value" 
+                     not-null="true" unique="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

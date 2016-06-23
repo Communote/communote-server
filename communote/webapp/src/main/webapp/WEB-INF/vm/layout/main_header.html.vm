@@ -1,0 +1,100 @@
+<div id="cn-header">
+	<div id="cn-header-content">
+        #if($authzTool.allGranted("ROLE_KENMEI_USER"))
+            #set($authenticatedUser = true)
+            #set($authenticatedAdminUser = $authzTool.allGranted("ROLE_KENMEI_CLIENT_MANAGER"))
+            #set($imageSmall = $fieldTool.get('com.communote.server.model.user.ImageSizeType.SMALL'))
+            #set($imageMedium = $fieldTool.get('com.communote.server.model.user.ImageSizeType.MEDIUM'))
+            #set($signatureShort = $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.SHORT') )
+            #set($currentUserSignature = $escTool.xmlSimple($communoteTool.getCurrentUserSignature($signatureShort)) )
+        #end
+        #set($clientImageURL = $urlTool.clientImage($fieldTool.get('com.communote.server.model.user.ImageSizeType.LARGE')))
+        <div id="cn-header-mobile">
+            #if(${authenticatedUser})
+                <div class="cn-left"><a href="javascript:;" id="cn-mobile-navigation-toggle" class="cn-icon cn-navigation-toggle"></a></div>
+                <div class="cn-center">
+                    <img src="${clientImageURL}" alt="Logo" />
+                </div>
+                <div id="cn-mobile-user-menu-wrapper">
+                    <div class="cn-touch-button">
+                        <a href="$urlTool.render('/portal/user-edit')">#t('portal.menu.myprofile.edit')</a>
+                    </div>
+                    <div class="cn-touch-button">
+                        <a href="$urlTool.render('/portal/service/legal')">#t('service.legalnotice')</a>
+                    </div>
+                    <div class="cn-touch-button">
+                        <a href="$urlTool.render('/logout')">#t('login.logout')</a>
+                    </div>
+                </div>
+                <div class="cn-right #if($selectedMenu == 'profile')cn-active#end">
+                    <a href="javascript:;" id="cn-mobile-user-menu-toggle">
+                        <img class="profile-image" src="$urlTool.userImage($communoteTool.currentUserId, $imageMedium)" title="$currentUserSignature" alt="$currentUserSignature" width="45" height="45" />
+                    </a>
+                    <div id="cn-profile-navigation-mobile" class="cn-hidden">
+                        <div class="cn-bar #if($selectedMenu == 'profile')cn-active#end">
+                            <ul class="cn-menu" aria-haspopup="true">
+                                <li class="cn-more-actions"><img class="profile-image" src="$urlTool.userImage($communoteTool.currentUserId, $imageMedium)" title="$currentUserSignature" alt="$currentUserSignature" width="45" height="45" /></li>
+                                <li>
+                                    <ul class="cn-menu-list">
+                                        <li id="cn-editprofile"><a class="cn-link" href="$urlTool.render('/portal/user-edit')">#t('portal.menu.myprofile.edit')</a></li>
+                                        <li id="cn-imprint"><a class="cn-link" href="$urlTool.render('/portal/service/legal')">#t('service.legalnotice')</a></li>
+                                        <li id="cn-logout"><a class="cn-link" href="$urlTool.render('/logout')">#t('login.logout')</a></li>
+                                    </ul>
+                                 </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            #else
+                <div class="cn-left">&nbsp;</div>
+                <div class="cn-center">
+                    <img src="${clientImageURL}" alt="Logo" />
+                </div>
+                <div class="cn-right">&nbsp;</div>
+            #end
+        </div>
+        <div id="cn-header-desktop">
+            #if(${authenticatedUser})
+            <div><a href="javascript:;" id="cn-desktop-navigation-toggle" class="cn-icon cn-navigation-toggle"></a></div>
+            #end
+    	    <div id="cn-header-logo">
+    	    	<a href="$urlTool.render('/portal/home')" class="cn-client-image">
+    	            <img src="${clientImageURL}" alt="Logo" />
+    	        </a>
+    	    </div>
+            <div id="cn-header-navigation">
+                <div id="cn-service-navigation">
+                    <div id="cn-toplink-service">
+                        <a id="cn-toplink-help" class="cn-link #if($selectedMenu == 'help')cn-active#end" href="$urlTool.render('/portal/service/help')">#t('service.help')</a>
+                        <a id="cn-toplink-tools" class="cn-link #if($selectedMenu == 'tools')cn-active#end" href="$urlTool.render('/portal/service/tools')">#t('service.apps')</a>
+                        <a id="cn-toplink-legal" class="cn-link #if($selectedMenu == 'legal')cn-active#end" href="$urlTool.render('/portal/service/legal')">#t('service.legalnotice')</a>
+                    </div>
+                </div>
+        	    <div id="cn-profile-navigation">
+    	            #if(${authenticatedUser})
+    	                <div class="cn-bar #if($selectedMenu == 'profile')cn-active#end">
+    			        	<ul class="cn-menu" aria-haspopup="true">
+    		                	<li class="cn-more-actions"><a class="cn-link" href="$urlTool.currentUser()"><span class="control-current-user-signature">$currentUserSignature</span></a> <span class="cn-icon cn-arrow"><!-- &#9660; --></span><span class="cn-clear"><!--  --></span></li>
+                                <li>
+        		                	<ul class="cn-menu-list">
+        		                		<li id="cn-editprofile"><a class="cn-link" href="$urlTool.render('/portal/user-edit')">#t('portal.menu.myprofile.edit')</a></li>
+        			                     #if(${authenticatedAdminUser})
+        					            <li id="cn-administration"><a class="cn-link" href="$urlTool.render('/admin/client/welcome')">
+        					                	#t('client.menu.myclient.title')
+        								</a></li>
+        					        	#end
+        					        	<li id="cn-logout"><a class="cn-link" href="$urlTool.render('/logout')">#t('login.logout')</a></li>
+        		                	</ul>
+                                 </li>
+    		                </ul>
+                            <a href="$urlTool.currentUser()"><img class="profile-image" src="$urlTool.userImage($communoteTool.currentUserId, $imageSmall)" title="$currentUserSignature" alt="$currentUserSignature" width="20" height="20" /></a>
+    	                </div>
+    	            #else
+    	            <a href="$urlTool.render('/portal/home')">#t('portal.menu.home.title')</a></li>
+    	            #end
+        	    </div>
+            	<span class="cn-clear"><!-- --></span>
+            </div>
+        </div>
+    </div>
+</div>

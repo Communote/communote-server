@@ -1,0 +1,24 @@
+#set($wrapperCssClass=$widget.getParameterEscaped('contentWrapperCssClass', 'cn-filter-search'))
+#set($searchModes=$widget.SearchModes)
+#set($modeSwitchElementCss=$widget.getParameterEscaped('modeSwitchElementCssClass'))
+#set($renderSwitches=$widget.getBooleanParameter('renderSearchModeSwitches', true))
+<div class="${wrapperCssClass}">
+    #if($renderSwitches)
+    <div class="cn-bar">
+        #foreach($mode in ${searchModes})
+        <a class="cn-link #if($velocityCount == $searchModes.size())cn-last-child #end${modeSwitchElementCss} ${modeSwitchElementCss}-$mode" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').searchModeClicked(this)">$fmtTool.message( "blog.filter.searchbox.menu.$mode" )</a>
+        #end
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    #end
+    <div class="cn-content">
+        <div class="cn-border control-autocompleter-position-source">
+            <input type="text" id="${widget.WidgetId}-search-input"
+                class="cn-filter-search-input control-search-keywords-field" 
+                size="20" maxlength="200" autocomplete="off" placeholder="$fmtTool.message('blog.filter.searchbox.placeholder')" />
+            <a class="cn-filter-search-submit" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').submitChanges()"></a>
+            <span class="cn-filter-search-submit-off"><!-- --></span>
+        </div>
+    </div>
+</div>
+<span class="cn-clear"><!-- --></span>

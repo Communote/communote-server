@@ -1,0 +1,42 @@
+<div class="cn-form-container">
+    ## URL links to UserProfileActionController
+    <form action="$urlTool.render('/user/profile/imageUpload.do')" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="action" value="$fieldTool.get('com.communote.server.web.commons.FormAction.UPLOAD_IMAGE_FILE_AJAX')" />
+        <fieldset>
+            <div class="cn-field-50">
+                <h4>$fmtTool.message("user.profile.image.choose")</h4>
+                <div class="cn-preview-image">
+                    <img class="cn-profile-image" alt="" src="$urlTool.userImage($widget.UserId, $widget.ImageSizeType )" />
+                </div>
+				#if(!$widget.isExternalImage())
+					<input type="file" accept="image/*" name="file" id="${widget.WidgetId}_image_upload" size="14" />
+				#end
+            </div>
+            <div class="cn-field-50 cn-upload-tip cn-last">
+                #if($widget.isExternalImage())
+                    <h4 class="cn-tip">&nbsp;</h4>
+                    <div class="cn-tip-content">$fmtTool.message("user.profile.image.upload.unavailable.hint")</div>
+                #else
+                    <h4 class="cn-tip">$fmtTool.message("user.profile.image.tip.title")</h4>
+                    <div class="cn-tip-content">
+                        <p><span class="cn-tip-label">$fmtTool.message("user.profile.image.max.size"):</span> <span>${maxImageUploadSize}</span></p>
+                        <p><span class="cn-tip-label">$fmtTool.message("user.profile.image.formats"):</span> <span>bmp, gif, jpg, png</span></p>
+                        <p><span class="cn-tip-label">$fmtTool.message("user.profile.image.best.resolution"):</span> <span>${widget.BestImageWidth}px * ${widget.BestImageHeight}px</span></p>
+                    </div>
+                #end
+                <div class="cn-field-50">
+                    #if(!$widget.isExternalImage())
+                    <input class="cn-button control-set-default" type="button" #if($widget.userHasDefaultImage()) disabled="disabled" #end
+                        onClick="widgetController.getWidget('${widget.WidgetId}').sendImageAction('$fieldTool.get('com.communote.server.web.commons.FormAction.RESET_USER_IMAGE_AJAX')')"
+                        value="$fmtTool.message("user.profile.image.set.default")" onfocus="this.blur()"  />
+                    #else
+                    <input class="cn-button control-set-default" type="button" 
+    				    onclick="widgetController.getWidget('${widget.WidgetId}').sendImageAction('$fieldTool.get('com.communote.server.web.commons.FormAction.REFRESH_EXTERNAL_USER_IMAGE_AJAX')')"
+                        value="$fmtTool.message("user.profile.image.refresh.external.image")" onfocus="this.blur()"  />
+    			    #end
+                </div>
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+        </fieldset>
+    </form>
+</div>

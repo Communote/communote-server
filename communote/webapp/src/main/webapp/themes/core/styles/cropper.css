@@ -1,0 +1,132 @@
+/*the wrapper is added around the image*/
+.cropperWrapper {
+    margin: auto;
+    padding: 0;
+}
+
+/*This is the selection box*/
+.cropperResize {
+    border: 2px solid #E66914;
+    cursor: move;
+}
+
+/*This is the general handle style*/
+.cropperHandle {
+    background-color: #000;
+    border: 1px solid #fff;
+    height: 12px;
+    width: 12px;
+}
+
+/*Top handle*/
+.cropperHandle.top {
+    cursor: n-resize;
+}
+
+/*Bottom handle*/
+.cropperHandle.bottom {
+    cursor: s-resize;
+}
+
+/*Right handle*/
+.cropperHandle.right {
+    cursor: e-resize;
+}
+
+/*Left handle*/
+.cropperHandle.left {
+    cursor: w-resize;
+}
+
+/*Top-left corner handle*/
+.cropperHandle.top.left {
+    cursor: nw-resize !important;
+}
+
+/*Bottom-right corner handle*/
+.cropperHandle.bottom.right {
+    cursor: se-resize !important;
+}
+
+/*Top-right corner handle*/
+.cropperHandle.top.right {
+    cursor: ne-resize !important;
+}
+
+/*Bottom-left corner handle*/
+.cropperHandle.bottom.left {
+    cursor: sw-resize !important;
+}
+
+/*Cropping mas*/
+.cropperMask {
+    background-color: #000;
+    cursor: pointer;
+}
+
+/*The coordinates box*/
+.cropperCoordinates {
+    background-color: #eee;
+    padding: 20px 5px 5px;
+    font-size: 11px;
+    width: auto;
+    border: 1px solid #888;
+}
+
+.cropperCoordinates div.topbar {
+    cursor: move;
+    text-align: center;
+    background-color: #fff;
+    color: #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+/*preview in coordinates box*/
+.cropperCoordinates div.preview {
+    text-align: left;
+    float: left;
+    border: 1px solid #f00;
+}
+
+/*the magic hack for IE*/
+.cropperCoordinates.IE div.preview {
+    width: 1%;
+}
+
+/*labels in coordinates box*/
+.cropperCoordinates label {
+    display: block;
+    float: left;
+    text-align: right;
+    width: 20px;
+    padding: 0 3px;
+    color: #f00;
+    font-size: 11px;
+}
+
+/*inputs in coordinates box*/
+.cropperCoordinates input {
+    width: 20px;
+    padding: 0;
+    height: 13px;
+    float: left;
+    color: #333;
+    border: 1px solid #f00;
+    font-size: 11px;
+    text-align: center;
+}
+
+/*the paragraph containing the buttons (if any) in the coordinates box*/
+.cropperCoordinates p {
+    margin: 0;
+    padding: 5px 0 0 0;
+    text-align: center;
+    clear: left;
+}
+
+/*save/download buttons in the coordinates box*/
+.cropperCoordinates button {
+    margin: 0 2px;
+    outline: 0;
+    font-size: 11px;
+}

@@ -1,0 +1,23 @@
+## 
+## $list -> PageableList of com.communote.server.web.fe.widgets.blog.notes.NoteListData
+## $note -> com.communote.server.web.fe.widgets.blog.notes.NoteListData
+##
+#if($widget.getBooleanParameter('showFooter', false))
+    #if ($widget.getParameter('loadMoreMode') == 'paging')
+     <div>
+        #parse("/WEB-INF/vm/common/paging-widget.html.vm")
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    #else
+    <div class="control-cpl-scroll-top cn-list-scroll-top cn-hidden">
+        <a href="javascript:;" onclick="scrollWindowTo(null, 0, 0, true, true); return false;">
+            <span class="cn-icon"><!--  --></span><span class="cn-icon-label">#t('blog.post.list.back.to.top')</span></a>
+        <div class="new-messages-reminder cn-hidden" onclick="scrollWindowTo(null, 0, 0, true, true);var cpl=widgetController.getWidget('${widget.WidgetId}'); cpl.resetLoadMoreState();cpl.refresh();" style="display: none">
+            <div id="cn-list-refresh">
+                <input type="button" class="cn-button" value="#t('blog.post.list.autorefresh')" />
+            </div>
+            <span class="cn-clear"><!-- empty --></span>
+        </div>
+    </div>
+    #end
+#end

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.communote.plugins</groupId>
+        <artifactId>communote-plugins-mq-parent</artifactId>
+        <version>3.4-SNAPSHOT</version>
+        <relativePath>../communote-plugins-mq-parent/pom.xml</relativePath>
+    </parent>
+    <groupId>com.communote.plugins.mq</groupId>
+    <artifactId>communote-plugins-mq-adapter-activemq</artifactId>
+    <packaging>bundle</packaging>
+    <name>Communote - Plugins - Message Queue - ActiveMQ Adapter</name>
+    <dependencies>
+        <dependency>
+            <groupId>com.communote.plugins.mq</groupId>
+            <artifactId>communote-plugins-mq-adapter-jms</artifactId>
+            <version>${project.version}</version>
+        </dependency>  
+        <dependency>
+            <groupId>com.communote.server</groupId>
+            <artifactId>communote-server-core-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-all</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>
+                            com.communote.server.api.core.config.type,
+                            com.communote.common.encryption,
+                            com.communote.server,
+
+                            com.communote.plugins.core.services,
+                            com.communote.plugins.mq.provider.jms,
+                            
+                            javax.jms,
+                            javax.management,
+                            javax.management.openmbean,
+                            javax.management.remote,
+                            
+						    javax.security.auth,
+						    javax.security.auth.callback,
+						    javax.security.auth.login,
+						    javax.security.auth.spi,
+						    javax.security.auth.x500,
+                            
+                            javax.transaction.xa,
+
+                            javax.naming,
+                            javax.net,
+                            javax.net.ssl,
+
+                            org.slf4j,
+
+                            !*
+                        </Import-Package>
+                        <Export-Package>
+                        	com.communote.plugins.mq.adapter.activemq,
+                            com.communote.plugins.mq.adapter.activemq.configuration,
+                            
+							org.apache.activemq,
+							org.apache.activemq.*,
+							org.apache.activemq.jaas,
+                            
+                            !*
+                        </Export-Package>
+                        <Embed-Dependency>activemq-all|slf4j-simple</Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

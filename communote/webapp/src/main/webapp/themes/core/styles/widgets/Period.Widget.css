@@ -1,0 +1,62 @@
+/* _filterTime.css */
+
+.cn-filter-time .cn-timeunit-slash {
+    color: #888888;
+    float: left;
+    line-height: 12px;
+    padding: 0 2px;
+}
+
+.cn-filter-time .cn-content {
+    clear: both;
+    font-size: 11px;
+}
+
+.cn-time-input-wrapper {
+    position: relative;
+    width: 90%;
+}
+
+.cn-time-to .cn-time-input-wrapper, .cn-time-to label {
+    margin-left: 8%;
+}
+
+.cn-filter-time .cn-time-from {
+    margin-bottom: 10px;
+}
+
+.cn-filter-time .cn-time-to, .cn-filter-time .cn-time-from {
+    float: left;
+    line-height: 18px;
+    overflow: hidden;
+    position: relative;
+    width: 50%;
+}
+
+.cn-time-from-input, .cn-time-to-input {
+    font-size: 12px;
+    height: 10px;
+    padding-left: 3%;
+    padding-right: 0;
+    width: 97%;
+}
+
+.cn-filter-time .cn-filter-time-clear {
+    background-attachment: scroll;
+    background-color: transparent;
+    background-position: -163px -293px;
+    display: block;
+    height: 24px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 24px;
+}
+
+.cn-filter-time .cn-filter-time-clear:hover {
+    background-position: -163px -357px;
+}
+
+.datepicker.column_1 .slider div+div{
+    opacity: 1 !important;
+}

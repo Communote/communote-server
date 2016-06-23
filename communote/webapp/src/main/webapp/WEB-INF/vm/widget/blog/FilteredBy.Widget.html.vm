@@ -1,0 +1,72 @@
+<div class="filtered-by-title cn-filter-applied">
+    <div class="cn-widget-header-toolbar">
+        <a class="cn-link cn-last-child" href="#" onclick="#jsCurrentWidget().sendFilterGroupEvent('onReset'); return false;">#t('filtered.by.show.all')</a>
+    </div>
+    <h3 class="cn-headline">#t('filtered.by')</h3>
+    <span class="cn-clear"><!-- --></span>
+    <div class="cn-content">
+        <a href="javascript:;" class="cono-filter-settings-noteId" title="#t('filtered.by.note')" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-discussionId" title="#t('filterd.by.discussionId')" onclick="#jsCurrentWidget().sendFilterGroupEvent('onReset', ['noteId']);" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-search-tagPrefix" title="#t('filtered.by.search') &#040;#t('filtered.by.search.text')&#041;" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-search-postTextSearchString" title="#t('filtered.by.search') &#040;#t('filtered.by.search.text')&#041;" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-search-blogTextSearchString" title="#t('filtered.by.search') &#040;#t('filtered.by.search.text')&#041;" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-search-searchString" title="#t('filtered.by.search') &#040;#t('filtered.by.search.author')&#041;" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        #if($widget.getBooleanParameter('showFABs', false))
+            <a href="javascript:;" class="cono-filter-settings-showPostsForMe cn-fab-filter" data-cnt-filteredby="boolean" title="#t('filter.by.fab.at-user')" style="display: none">
+                <span class="cn-icon"><!-- Empty --></span>
+                <span class="cn-icon-label"><span>#t('filter.by.fab.at-user')</span></span>
+            </a>
+            <a href="javascript:;" class="cono-filter-settings-showFavorites cn-fab-filter" data-cnt-filteredby="boolean" title="#t('filter.by.fab.favorites')" style="display: none">
+                <span class="cn-icon"><!-- Empty --></span>
+                <span class="cn-icon-label"><span>#t('filter.by.fab.favorites')</span></span>
+            </a>
+            <a href="javascript:;" class="cono-filter-settings-showFollowedItems cn-fab-filter" data-cnt-filteredby="boolean" title="#t('filter.by.fab.following')" style="display: none">
+                <span class="cn-icon"><!-- Empty --></span>
+                <span class="cn-icon-label"><span>#t('filter.by.fab.following')</span></span>
+            </a>
+        #end
+        <a href="javascript:;" class="cono-filter-settings-workspaces" title="#t('filtered.by.blogs')" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-filter" title="#t('filtered.by.tags')" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-tagIds" title="#t('filtered.by.tags')" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-userId" title="#t('filtered.by.authors')" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-startDate-endDate" title="#t('filtered.by.period')" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+        <a href="javascript:;" class="cono-filter-settings-types" style="display: none">
+            <span class="cn-icon"><!-- Empty --></span>
+            <span class="cn-icon-label"></span>
+        </a>
+    </div>
+</div>
+<span class="cn-clear"><!-- --></span>

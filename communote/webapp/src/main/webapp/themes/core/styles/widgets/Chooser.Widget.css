@@ -1,0 +1,125 @@
+.cn-chooser-menu {
+    overflow: hidden;
+    margin: 0 0 2px 0;
+    text-align: right;
+    zoom: 1;
+}
+
+.cn-chooser-menu .cn-bar {
+    float: right;
+    overflow: hidden;
+}
+
+.cn-chooser-menu .cn-link {
+    float: left;
+    margin-right: 10px;
+    border-right-style: solid;
+    padding-right: 10px;
+}
+
+.cn-chooser {
+    position: relative;
+    width: 100%;
+}
+
+.cn-chooser .cn-border {
+    padding: 5px 3px 5px 7px;
+    position: relative;
+}
+
+.cn-chooser .cn-chooser-dropdown,
+.cn-chooser .cn-chooser-add,
+.cn-chooser .cn-chooser-info {
+    background-attachment: scroll;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: block;
+    float: right;
+    height: 18px;
+    width: 22px;
+}
+
+.cn-chooser .cn-chooser-dropdown {
+    margin-left: 3px;
+    width: 26px;
+}
+
+.cn-chooser .cn-chooser-add {
+    margin-left: 5px;
+}
+
+.cn-chooser .cn-chooser-info {
+    margin-right: 4px;
+}
+
+.cn-chooser .cn-split-functions {
+    background-color: #DDDDDD;
+    display: block;
+    float: right;
+    height: 18px;
+    margin: 0 2px;
+    width: 1px;
+}
+
+.cn-chooser .cn-chooser-select-wrapper {
+    box-shadow: 0 2px 5px #CECECE;
+    position: absolute;
+    width: 100%;
+}
+
+.cn-chooser .cn-chooser-select {
+    border-color: #dddddd #dddddd #dddddd #cbcbcb;
+    border-style: solid;
+    border-width: 0px 1px 1px 1px;
+    border-radius: 0 0 3px 3px;
+    -moz-border-radius: 0 0 3px 3px;
+    -webkit-border-radius: 0 0 3px 3px;
+    padding: 15px 5px;
+    background-color: #ffffff;
+}
+
+.cn-chooser .cn-chooser-select ul {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.cn-chooser .cn-chooser-select li {
+    margin-left: 28px;
+    padding-left: 0px;
+    list-style-type: none;
+    list-style-position: outside;
+}
+
+.cn-chooser .cn-chooser-select li.cn-chooser-select-category {
+    margin-left: 15px;
+}
+
+.cn-chooser .cn-chooser-select li li {
+    margin-left: 50px;
+    padding-left: 0;
+    list-style-image: none;
+    list-style-type: none;
+}
+
+.cn-chooser-input-select {
+    border-radius: 6px 6px 0 0 !important;
+    -moz-border-radius: 6px 6px 0 0 !important;
+    -webkit-border-radius: 6px 6px 0 0 !important;
+}
+
+.cn-chooser-input-select {
+    position: relative;
+}
+
+.cn-chooser #cn-chooser-input {
+    width: 494px;
+}
+
+.cn-chooser .cn-chooser-select li.cn-chooser-select-category  a,
+.cn-chooser .cn-chooser-select li.cn-open  a{
+    background-position: left center;
+    background-repeat: no-repeat;
+    padding-left: 14px;
+}

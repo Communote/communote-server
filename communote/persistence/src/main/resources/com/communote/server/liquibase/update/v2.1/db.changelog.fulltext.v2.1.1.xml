@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml">
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-Note" dbms="postgresql"
+		context="client">
+		<preConditions onError="CONTINUE">
+			<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+		</preConditions>
+		<sql>
+			CREATE INDEX ft_en_core_content_content_idx ON core_content USING
+			gin(to_tsvector('english', content));
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-Topic-Drop" dbms="postgresql"
+		context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-Topic" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql>
+			DROP INDEX ft_en_core_blog_title_idx;
+			DROP INDEX ft_en_core_blog_alias_idx;
+			DROP INDEX ft_en_core_blog_desc_idx;;
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-Tag-Drop" dbms="postgresql"
+		context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-Tag" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql>
+			DROP INDEX ft_en_core_tag_name_idx;
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-User-Drop" dbms="postgresql"
+		context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-User" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql>
+			DROP INDEX ft_en_user_user_email_idx;
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-User-Profile-Drop" dbms="postgresql"
+		context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-User-Profile" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql>
+			DROP INDEX ft_en_user_profile_first_name_idx;
+			DROP INDEX ft_en_user_profile_last_name_idx;
+		</sql>
+	</changeSet>
+
+
+	<!-- runInTransaction="false" because the fulltext index creation cannot 
+		run inside a transaction. See http://forum.liquibase.org/topic/cannot-create-mssql-full-text-index-using-liquibase -->
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-mssql-catalog" dbms="mssql"
+		runInTransaction="false" context="client">
+		<preConditions onError="CONTINUE">
+			<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+		</preConditions>
+		<sql>
+			CREATE FULLTEXT CATALOG ft_communote AS DEFAULT;
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-mssql-content" dbms="mssql"
+		runInTransaction="false" context="client">
+		<preConditions onError="CONTINUE">
+			<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+		</preConditions>
+		<sql><![CDATA[
+			DECLARE @SQL VARCHAR(4000)
+			SET @SQL = 'CREATE FULLTEXT INDEX ON core_content ( content ) 
+				KEY INDEX |ConstraintName| ON ft_communote WITH CHANGE_TRACKING AUTO;'
+
+			SET @SQL = REPLACE(@SQL, '|ConstraintName|', ( 
+				SELECT name FROM sysobjects WHERE
+				xtype = 'PK'
+				AND parent_obj = OBJECT_ID('core_content')
+			))
+
+			EXEC (@SQL)
+		]]>
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-mssql-topic-drop" dbms="mssql"
+		runInTransaction="false" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-mssql-topic" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			DROP FULLTEXT INDEX ON core_blog;
+		]]>
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-mssql-tag-name-drop" dbms="mssql"
+		runInTransaction="false" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-mssql-tag-name" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			DROP FULLTEXT INDEX ON core_tag;
+		]]>
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-mssql-user-drop" dbms="mssql"
+		runInTransaction="false" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-mssql-user" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			DROP FULLTEXT INDEX ON user_user;
+		]]>
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-mssql-user-profile-drop" dbms="mssql"
+		runInTransaction="false" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-mssql-user-profile" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			DROP FULLTEXT INDEX ON user_profile;
+		]]>
+		</sql>
+	</changeSet>
+	
+	<changeSet author="Communote"
+		id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-Custom-Message-Drop" dbms="postgresql"
+		context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-Postgresql-Custom-Message" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			DROP INDEX ft_en_custom_messages_message_idx;
+		]]>			
+		</sql>
+	</changeSet>
+	
+	<changeSet author="Communote"
+		id="KENMEI-4504-SQL-Fulltextfunction-mssql-Custom-Message-drop" dbms="mssql"
+		runInTransaction="false" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-mssql-Custom-Message" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			DROP FULLTEXT INDEX ON custom_messages;
+		]]>
+		</sql>
+	</changeSet>
+	
+	<changeSet author="Communote"
+		id="KENMEI-4504-SQL-Fulltextfunction-mssql-User-Group-drop" dbms="mssql"
+		runInTransaction="false" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-mssql-User-Group" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			DROP FULLTEXT INDEX ON user_group;
+		]]>
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-oracle-wordlist" dbms="oracle" context="client">
+		<preConditions onError="CONTINUE">
+			<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+		</preConditions>
+		<sql splitStatements="false"><![CDATA[
+			begin 
+				ctx_ddl.create_preference('SUBSTRING_PREF', 'BASIC_WORDLIST');  
+				ctx_ddl.set_attribute('SUBSTRING_PREF', 'SUBSTRING_INDEX','TRUE'); 
+				ctx_ddl.create_preference('COMMUNOTE_LEX', 'BASIC_LEXER');
+			end;
+		]]>
+		</sql>
+	</changeSet>
+	
+	<changeSet author="Communote"
+		id="KENMEI-4504-SQL-Fulltextfunction-oracle-content-v4" dbms="oracle" context="client">
+		<preConditions onError="CONTINUE">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-oracle-wordlist" />					
+				<customPrecondition
+					className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>				
+		</preConditions>
+		<sql><![CDATA[
+			CREATE INDEX  CORE_CONTENT_IDX ON CORE_CONTENT (CONTENT) INDEXTYPE IS 
+			CTXSYS.CONTEXT PARAMETERS('wordlist SUBSTRING_PREF lexer COMMUNOTE_LEX MEMORY 50M SYNC ( ON COMMIT)') ;
+		]]>
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-oracle-topic-Drop" dbms="oracle" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-oracle-topic" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			drop index core_blog_t_idx;
+			drop index core_blog_n_idx;
+			drop index core_blog_d_idx;
+		]]>
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-oracle-tag-name-Drop" dbms="oracle" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-oracle-tag-name" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			drop index core_tag_d_idx;
+		
+		]]>
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-oracle-user-Drop" dbms="oracle" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-oracle-user" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+			drop index user_user_a_idx;
+			drop index user_user_e_idx;
+		]]>
+		</sql>
+	</changeSet>
+
+	<changeSet author="Unknown"
+		id="KENMEI-4504-SQL-Fulltextfunction-oracle-user-profile-Drop" dbms="oracle" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-oracle-user-profile" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+		
+			drop index user_profile_ln_idx;
+			drop index user_profile_fn_idx;
+
+		]]>
+		</sql>
+	</changeSet>
+	
+	<changeSet author="Communote"
+		id="KENMEI-4504-SQL-Fulltextfunction-oracle-Custom-Message-Drop" dbms="oracle" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-oracle-Custom-Message" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+		
+			drop index custom_messages_m_idx;
+		]]>
+		</sql>
+	</changeSet>
+	
+	<changeSet author="Communote"
+		id="KENMEI-4504-SQL-Fulltextfunction-oracle-User-Group-Drop" dbms="oracle" context="client">
+		<preConditions onFail="MARK_RAN" onError="MARK_RAN">
+			<and>
+				<changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.1/db.changelog.fulltext.v2.1.1.xml" 
+					author="Unknown" id="KENMEI-4504-SQL-Fulltextfunction-oracle-User-Group" />
+				<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+			</and>
+		</preConditions>
+		<sql><![CDATA[
+		
+			drop index user_group_a_idx;
+			drop index user_group_n_idx;
+			drop index user_group_d_idx;		
+		]]>
+		</sql>
+	</changeSet>
+
+</databaseChangeLog>

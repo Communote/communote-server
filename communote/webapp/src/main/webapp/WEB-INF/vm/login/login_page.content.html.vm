@@ -1,0 +1,4 @@
+<div id="cn-container">
+    #parse('/WEB-INF/vm/login/login_page.login.html.vm')
+    #parse('/WEB-INF/vm/login/login_page.registration.html.vm')
+</div>

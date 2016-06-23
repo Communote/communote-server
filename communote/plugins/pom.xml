@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>com.communote.plugins</groupId>
+        <artifactId>communote-plugins-parent</artifactId>
+        <version>3.4-SNAPSHOT</version>
+        <relativePath></relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.communote.server.plugins</groupId>
+    <artifactId>communote-core-build</artifactId>
+    <packaging>pom</packaging>
+    <name>Communote - Plugins - Core - Build</name>
+    <description>This module builds the core plugins.</description>
+    <!-- Parent and Core always first -->
+    <modules>
+        <module>communote-plugins-parent</module>
+		<module>communote-core-plugin</module>
+        <!-- module>rest-api</module-->
+        <module>communote-activity-base-plugin</module>
+        <module>communote-activity-core-plugin</module>
+        <module>communote-alias-and-tag-link-renderer-plugin</module>
+        <module>communote-bookmarklet-plugin</module>
+        <module>communote-confluence-plugin</module>
+        <module>communote-content-types-extractor-plugin</module>
+		<module>communote-embed-plugin</module>
+        <module>communote-html-client</module>
+        <module>communote-ldap-plugin</module>
+        <module>communote-message-queue</module>
+        <module>communote-smileys-plugin</module>
+        <module>communote-webservice-core-plugin</module>
+    </modules>
+</project>

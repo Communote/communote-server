@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.3/db.changelog.v1.3.xml">
+
+    <changeSet author="unknown" id="KENMEI-Drop_snc_tables" context="client">
+        <dropTable tableName="snc_job_details" cascadeConstraints="false" />
+        <dropTable tableName="snc_config" cascadeConstraints="false" />
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-Drop_snc_sequences" dbms="postgresql" context="client">
+        <dropSequence sequenceName="snc_job_details_seq" />
+        <dropSequence sequenceName="snc_config_seq" />
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-2154_Jobs_Services_als_Tasks_in_Datenbank" context="client" dbms="postgresql">
+        <createTable tableName="core_task">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="unique_name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="interval" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="handler_class_name" type="VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>
+            <column name="active" type="BOOLEAN">
+                <constraints nullable="false" />
+            </column>
+            <column name="next_execution" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_execution" type="TIMESTAMP">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <createTable tableName="core_task_execs">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="instance_name" type="VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>
+            <column name="TASK_FK" type="BIGINT">
+                <constraints nullable="false" unique="true" />
+            </column>
+        </createTable>
+        <createTable tableName="core_task_props">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="property_key" type="VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_value" type="VARCHAR(1024)">
+                <constraints nullable="true" />
+            </column>
+            <column name="TASK_FK" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="core_task_execs_TASK_FKC" baseTableName="core_task_execs"
+            baseColumnNames="TASK_FK" referencedTableName="core_task" referencedColumnNames="ID" />
+
+        <addForeignKeyConstraint constraintName="core_task_props_TASK_FKC" baseTableName="core_task_props"
+            baseColumnNames="TASK_FK" referencedTableName="core_task" referencedColumnNames="ID" />
+            
+        <createSequence sequenceName="core_task_seq" />
+        <createSequence sequenceName="core_task_props_seq" />
+        <createSequence sequenceName="core_task_execs_seq" />
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2154_Jobs_Services_als_Tasks_in_Datenbank_mysql" context="client" dbms="mysql">
+        <sql>CREATE TABLE core_task (
+                ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                unique_name VARCHAR(255) NOT NULL UNIQUE,
+                status VARCHAR(255) NOT NULL,
+                `interval` BIGINT NULL,
+                handler_class_name VARCHAR(1024) NOT NULL,
+                active BOOLEAN NOT NULL,
+                next_execution TIMESTAMP NOT NULL DEFAULT 0,
+                last_execution TIMESTAMP NULL DEFAULT 0
+            ) ENGINE=InnoDB;        
+        </sql>
+        <sql>CREATE TABLE core_task_execs (
+                ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                instance_name VARCHAR(1024) NOT NULL,
+                TASK_FK BIGINT NOT NULL UNIQUE
+            ) ENGINE=InnoDB;        
+        </sql>
+        <sql>CREATE TABLE core_task_props (
+                ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                property_key VARCHAR(1024) NOT NULL,
+                property_value VARCHAR(1024) NULL,
+                TASK_FK BIGINT NULL
+            ) ENGINE=InnoDB;        
+        </sql>
+
+        <addForeignKeyConstraint constraintName="core_task_execs_TASK_FKC" baseTableName="core_task_execs"
+            baseColumnNames="TASK_FK" referencedTableName="core_task" referencedColumnNames="ID" />
+
+        <addForeignKeyConstraint constraintName="core_task_props_TASK_FKC" baseTableName="core_task_props"
+            baseColumnNames="TASK_FK" referencedTableName="core_task" referencedColumnNames="ID" />
+            
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-User-Grop-Properties" context="client" dbms="postgresql">
+        <createTable tableName="user_group_property">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="key_group" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_key" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_value" type="java.sql.Types.VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>            
+            <column name="KENMEI_ENTITY_GROUP_FK" type="BIGINT">
+            </column>
+        </createTable>
+        
+        <addForeignKeyConstraint constraintName="user_group_property_KENMEI_ENC" 
+            baseTableName="user_group_property" baseColumnNames="KENMEI_ENTITY_GROUP_FK" 
+            referencedTableName="user_group" referencedColumnNames="ID" />
+        
+        <createTable tableName="user_user_property">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="key_group" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_key" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_value" type="java.sql.Types.VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>            
+            <column name="KENMEI_USER_FK" type="BIGINT">
+            </column>
+        </createTable>
+        
+        <addForeignKeyConstraint constraintName="user_user_property_KENMEI_USEC" 
+            baseTableName="user_user_property" baseColumnNames="KENMEI_USER_FK" 
+            referencedTableName="user_user" referencedColumnNames="ID" />
+            
+        <createSequence sequenceName="user_user_property_seq"/>
+        <createSequence sequenceName="user_group_property_seq"/>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-User-Grop-Properties_mysql" context="client" dbms="mysql">
+        <sql>CREATE TABLE user_group_property (
+                ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                key_group VARCHAR(128) NOT NULL,
+                property_key VARCHAR(128) NOT NULL,
+                property_value VARCHAR(1024) NOT NULL,
+                KENMEI_ENTITY_GROUP_FK BIGINT NULL
+            ) ENGINE=InnoDB;
+        </sql>        
+        <addForeignKeyConstraint constraintName="user_group_property_KENMEI_ENC" 
+            baseTableName="user_group_property" baseColumnNames="KENMEI_ENTITY_GROUP_FK" 
+            referencedTableName="user_group" referencedColumnNames="ID" />
+            
+        <sql>CREATE TABLE user_user_property (
+                ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                key_group VARCHAR(128) NOT NULL,
+                property_key VARCHAR(128) NOT NULL,
+                property_value VARCHAR(1024) NOT NULL,
+                KENMEI_USER_FK BIGINT NULL
+            ) ENGINE=InnoDB;
+        </sql>
+        <addForeignKeyConstraint constraintName="user_user_property_KENMEI_USEC" 
+            baseTableName="user_user_property" baseColumnNames="KENMEI_USER_FK" 
+            referencedTableName="user_user" referencedColumnNames="ID" />
+        
+    </changeSet>
+    
+	<changeSet author="unknown" id="KENMEI-User-Group-Properties_clob" context="client">
+		<modifyColumn tableName="user_group_property">
+			<column name="property_value" type="java.sql.Types.CLOB"></column>
+		</modifyColumn>
+		<modifyColumn tableName="user_user_property">
+			<column name="property_value" type="java.sql.Types.CLOB"></column>
+		</modifyColumn>
+	</changeSet>
+	
+    <changeSet author="unknown" id="KENMEI-Binary-Properties" context="client">
+        <createTable tableName="core_global_binary_property">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="key_group" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_key" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_value" type="java.sql.Types.BLOB">
+                <constraints nullable="false" />
+            </column>            
+            <column name="KENMEI_ENTITY_GROUP_FK" type="BIGINT">
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB"/>
+        </modifySql>
+    </changeSet>
+	
+	<changeSet author="unknown" id="KENMEI-Binary-Properties_seq" dbms="postgresql" context="client">
+		<createSequence sequenceName="core_global_binary_property_seq"/>
+	</changeSet>
+    
+    <changeSet author="unknown" id="Add_binary_property_autoincrement" context="client" dbms="mysql">
+        <addAutoIncrement tableName="core_global_binary_property" columnName="ID" columnDataType="BIGINT" />
+    </changeSet>
+   
+    <changeSet author="unknown" id="KENMEI-2154_Jobs_Services_als_Tasks_in_Datenbank-Rename-Columns" context="client">
+        <renameColumn tableName="core_task" oldColumnName="interval" newColumnName="task_interval" columnDataType="BIGINT"/>
+        <renameColumn tableName="core_task" oldColumnName="status" newColumnName="task_status" columnDataType="VARCHAR(255)" />
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-2240_Spalte_discussionId_in_core_note" context="client">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="core_notes" columnName="discussion_id" />
+            </not>
+        </preConditions>
+        <addColumn tableName="core_note">
+            <column name="discussion_id" type="BIGINT" />
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2240_discussionId_befuellen-PostgreSQL" context="client"
+        dbms="postgresql">
+        <sql><![CDATA[
+            UPDATE core_note SET
+                discussion_id = int8(split_part(discussion_path, '/', 2));
+        ]]></sql>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-2240_discussionId_befuellen-MySQL" context="client"
+        dbms="mysql">
+        <sql><![CDATA[
+            UPDATE core_note SET
+                discussion_id = replace(substring(substring_index(discussion_path, '/', 2), length(substring_index(discussion_path, '/', 2 - 1)) + 1), '/', '');
+        ]]></sql>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-Note-properties" context="client" dbms="postgresql">
+        <createTable tableName="core_note_property">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="key_group" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_key" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_value" type="java.sql.Types.VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>
+            <column name="NOTE_FK" type="BIGINT">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="core_note_properties_NOTE_FKC" baseTableName="core_note_property"
+            baseColumnNames="NOTE_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+        <createSequence sequenceName="core_note_property_seq" />
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-Note-properties_mysql" context="client" dbms="mysql">
+        <sql>CREATE TABLE core_note_property (
+                ID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                key_group VARCHAR(128) NOT NULL,
+                property_key VARCHAR(128) NOT NULL,
+                property_value VARCHAR(1024) NOT NULL,
+                NOTE_FK BIGINT NULL
+            ) ENGINE=InnoDB;
+        </sql>
+        <addForeignKeyConstraint constraintName="core_note_properties_NOTE_FKC" baseTableName="core_note_property"
+            baseColumnNames="NOTE_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-Note-Properties_clob" context="client">
+        <modifyColumn tableName="core_note_property">
+            <column name="property_value" type="java.sql.Types.CLOB"></column>
+        </modifyColumn>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-2261-LDAP_Authentication_SASL_Support" context="client">
+        <addColumn tableName="configuration_ldap">
+            <column name="sasl_mode" type="java.sql.Types.VARCHAR(1024)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="unknown" id="Add_Last_Modification_Date_To_Properties" context="client">
+        <addColumn tableName="core_note_property">
+            <column name="last_modification_date" type="TIMESTAMP" defaultValueDate="1983-06-19T04:09:23">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="user_group_property">
+            <column name="last_modification_date" type="TIMESTAMP" defaultValueDate="1983-06-19T04:09:23">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="user_user_property">
+            <column name="last_modification_date" type="TIMESTAMP" defaultValueDate="1983-06-19T04:09:23">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="core_global_binary_property">
+            <column name="last_modification_date" type="TIMESTAMP" defaultValueDate="1983-06-19T04:09:23">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-2288_remove_old_caching_properties" context="client">
+        <sql>delete from configuration_app_setting where setting_key='ehcache.multicast.group.address' or setting_key='ehcache.multicast.group.port' or setting_key='ehcache.multicast.time.to.live'</sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2315_mediumblob_for_global_binary_property_2" dbms="mysql" context="client">
+        <sql>ALTER TABLE core_global_binary_property MODIFY property_value MEDIUMBLOB NOT NULL;</sql>
+    </changeSet>
+    
+</databaseChangeLog>

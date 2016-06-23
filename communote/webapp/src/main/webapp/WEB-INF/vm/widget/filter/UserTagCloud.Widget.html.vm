@@ -1,0 +1,56 @@
+#set( $maxCount = $widget.getIntParameter("maxCount"))
+#set( $selectedTags = $widget.getParameter("selectedTags"))
+<div class="cn-filter-tagcloud">
+    <div class="cn-widget-header-toolbar">
+        <ul aria-haspopup="true" class="cn-menu">
+            #if($maxCount)
+                <li class="cn-more-actions"><a class="cn-link" href="javascript:;"><span class="cn-icon-label">$fmtTool.message("blog.filter.tagcloud.menu.top") $maxCount </span><span class="cn-icon cn-arrow"><!-- &#9660; --></span></a></li>
+            #end
+            <li>
+                <ul class="cn-menu-list">
+                    #if($maxCount != 10)
+                        <li>
+                            <a class="cn-link" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').setMaxElementCount('10'); return false;">$fmtTool.message("blog.filter.tagcloud.menu.top") 10</a>
+                        </li>
+                    #end
+                    #if($maxCount != 20)
+                        <li>
+                            <a class="cn-link" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').setMaxElementCount('20'); return false;">$fmtTool.message("blog.filter.tagcloud.menu.top") 20</a>
+                        </li>
+                    #end
+                    #if($maxCount != 50)
+                        <li>
+                            <a class="cn-link" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').setMaxElementCount('50'); return false;">$fmtTool.message("blog.filter.tagcloud.menu.top") 50</a>
+                        </li>
+                    #end
+                    #if($maxCount != 100)
+                        <li>
+                            <a class="cn-link" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').setMaxElementCount('100'); return false;">$fmtTool.message("blog.filter.tagcloud.menu.top") 100</a>
+                        </li>
+                    #end
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <h3 class="cn-headline">$fmtTool.message("user.filter.tagcloud.title")</h3>
+    <div class="cn-content">
+        #if( !$list || $list.size() == 0 )
+            <div class="cn-empty-list">
+                $fmtTool.message("widget.empty.list")
+            </div>
+        #else 
+            <ul class="cn-filter-tagcloud-list control-tagcloud">
+                #foreach( $normalizedTag in $list )
+                    #set( $name = $normalizedTag.Item.Name )
+                    #set( $escapedName = $escTool.xmlSimple($name) )
+                    <li class="tag${normalizedTag.normalizedRank}"><a
+                        #if( $selectedTags.contains(",${normalizedTag.Item.Id},") ) class="cn-selected" #end
+                        onclick="return false;" 
+                        name="$escapedName"
+                        #if($widget.moreThanOneTagStore())title="#t('tagstore.source'): #t("tagstore.identifier.$normalizedTag.Item.TagStoreAlias")#if($normalizedTag.Item.Locale) ($normalizedTag.Item.Locale)#end"#end
+                        href="$urlTool.render("portal/users?tagId=$normalizedTag.Item.Id")" rel="$normalizedTag.Item.Id">$escapedName</a></li>
+                #end
+            </ul>
+        #end
+    </div>
+</div>

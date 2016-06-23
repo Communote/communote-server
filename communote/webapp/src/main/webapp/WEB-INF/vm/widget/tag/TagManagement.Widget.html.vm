@@ -1,0 +1,46 @@
+#* @vtlvariable name="internalTag" type="boolean" *#
+#* @vtlvariable name="singleResult" type="com.communote.server.api.core.tag.TagData" *#
+#* @vtlvariable name="widget" type="com.communote.server.web.fe.widgets.tag.TagManagementWidget" *#
+#cnRenderMessages()
+#widgetMetadata(${widget.ResponseMetadata})
+#if($singleResult)
+    #set( $widgetInstance = "#jsCurrentWidget()")
+    <div class="cn-form-container">
+        <h2>#t('widget.tagManagement.replace.title')</h2>
+        #if(!${widget.getAttribute('internalTag')})
+            #t('widget.tagManagement.error.not-internal')
+        #else
+            <fieldset>
+                <div class="cn-form-info">
+                    #t_args('widget.tagManagement.replace.description', $escTool.xmlSimple($singleResult.name))
+                </div>
+                <div class="cn-field-100 cn-long">
+                    <input id="${widget.WidgetId}-rename-tag-input" type="text"
+                           placeholder="#t('widget.tagManagement.replace.placeholder')"/>
+                </div>
+            </fieldset>
+            <div class="cn-actions">
+                <div class="cn-buttons">
+                    <input class="cn-button main" type="submit" value="#t('widget.tagManagement.replace.submit')"
+                           onclick="${widgetInstance}.changeTagButtonClicked(); return false;"/>
+                </div>
+                <span class="cn-clear"><!-- ie --></span>
+            </div>
+        #end
+    </div>
+    <div class="cn-form-container">
+        <fieldset>
+            <h2>#t('widget.tagManagement.delete.title')</h2>
+            <div class="cn-form-info">
+                #t_args('widget.tagManagement.delete.description', $escTool.xmlSimple($singleResult.name))
+            </div>
+        </fieldset>
+        <div class="cn-actions">
+            <div class="cn-buttons">
+                <input class="cn-button main" type="button" value="#t('widget.tagManagement.delete.submit')"
+                       onclick="${widgetInstance}.deleteTagButtonClicked(); return false;"/>
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+        </div>
+    </div>
+#end

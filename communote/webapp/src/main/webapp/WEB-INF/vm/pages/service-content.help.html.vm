@@ -1,0 +1,128 @@
+<div id="cn-two-column-layout">
+    <div id="cn-sidebar-bg"></div>
+    <div id="cn-sidebar">
+        <div id="cn-vertical-navigation-wrapper">
+            <div id="cn-navigation-back">
+                <a href="$urlTool.render('portal/home')" class="cn-button">
+                    <span><span class="cn-arrow-back">&laquo;</span>#t('service.back')</span>
+                </a>
+            </div>
+            <div id="cn-main-navigation">
+                <div class="navigation-item"><a
+                        href="#tutorials"><span>#t('service.tutorials.title')</span></a></div>
+                <div class="navigation-item"><a
+                        href="#slideshare"><span>#t('service.slideshare.title')</span></a></div>
+                <div class="navigation-item"><a
+                        href="#documentations"><span>#t('service.documentation.title')</span></a></div>
+                <div class="navigation-item"><a
+                        href="#supportportal"><span>#t('service.supportportal.title')</span></a></div>
+            </div>
+        </div>
+    </div>
+    <div id="cn-view-wrapper">
+        <div id="cn-view-header"></div>
+        <div id="cn-view-content">
+            <div id="cn-main">
+                <div id="cn-list-service">
+                    <div class="cn-list-service-section">
+                        <h2 id="tutorials" class="cn-headline">#t('service.tutorials.title')</h2>
+    
+                        <div class="cn-list-service-box-left">
+                            <img alt="Video Tutorial Symbol" src="$urlTool.render('/themes/core/images/service/tutorial.png',false,false,true)"/>
+                        </div>
+                        <div class="cn-list-service-box-right">
+                            #t('service.tutorials.description') <br />
+                            <br />
+                            <div class="cn-video-wrapper">
+                                <iframe width="320" height="180" src="//www.youtube.com/embed/videoseries?list=PL46EDOr3AJXTVYAFwKTVLnmmFRgU4I7Ps" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                        <span class="cn-clear"></span>
+                    </div>
+                    <div class="cn-list-service-section">
+                        <h2 id="slideshare" class="cn-headline">#t('service.slideshare.title')</h2>
+    
+                        <div class="cn-list-service-box-left">
+                            <img alt="Slideshare Symbol" src="$urlTool.render('/themes/core/images/service/quickstart.png',false,false,true)"/>
+                        </div>
+                        <div class="cn-list-service-box-right">
+                            #t('service.slideshare.description')
+                            <div class="cn-buttons">
+                                <a class="cn-button"
+                                   href="#t('service.slideshare.link')"
+                                   target="_blank">#t('service.slideshare.download')</a>
+                            </div>
+    
+                        </div>
+                        <span class="cn-clear"></span>
+                    </div>
+                    <div class="cn-list-service-section">
+                        <h2 id="documentations" class="cn-headline">#t('service.documentation.title')</h2>
+    
+                        <div class="cn-list-service-box-left">
+                            <img alt="" src="$urlTool.render('/themes/core/images/service/manuals.png',false,false,true)"/>
+                        </div>
+                        <div class="cn-list-service-box-right">
+                            <h4>#t('service.documentation.manual')</h4>
+                            #t('service.documentation.manual.description')
+                            <div class="cn-buttons">
+                                <a class="cn-button" target="_blank"
+                                       href="#t('communote.documentation.usermanual.url')">#t('service.documentation.manual')</a>
+                            </div>
+                            #if($authzTool.allGranted("ROLE_KENMEI_CLIENT_MANAGER"))
+                                <div class="cn-vertical-spacer-10">&nbsp;</div>
+                                <h4>#t('service.documentation.administrative.manual')</h4>
+                                #t('service.documentation.administrative.manual.description')
+                                <div class="cn-buttons">
+                                        <a class="cn-button" target="_blank"
+                                           href="#t('communote.documentation.adminmanual.url')">#t('service.documentation.administrative.manual')</a>
+                                </div>
+                            #end
+                        </div>
+                        <span class="cn-clear"></span>
+                    </div>
+                    <div class="cn-list-service-section">
+                        <h2 id="supportportal" class="cn-headline">#t('service.supportportal.title')</h2>
+    
+                        <div class="cn-list-service-box-left">
+                            <img alt=""
+                                 src="$urlTool.render('/themes/core/images/service/supportportal.png',false,false,true)"/>
+                        </div>
+                        <div class="cn-list-service-box-right">
+                            #t('service.supportportal.description')
+                            <div class="cn-buttons">
+                                <a class="cn-button" href="http://www.communote.com/support"
+                                   target="_blank">#t('service.supportportal.button')</a>
+                            </div>
+    
+                        </div>
+                        <span class="cn-clear"></span>
+                    </div>
+                </div>
+            </div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    </div>
+</div>
+## provide the widget configuration
+<script type="text/javascript">
+(function(){
+    var widgetDefs = {};
+    var viewDefs = {};
+    viewDefs.serviceHelp = {
+        visibleWidgets: [ 'GlobalIdShowBannerImage' ]
+    };
+    widgetDefs.GlobalIdShowBannerImage = communote.configuration.factory.createShowBannerWidgetDef('#cn-view-header', '#cn-header-mobile .cn-center', 'mainPageContextManagement', "#t('service.help')");
+    
+    communote.configuration.mainPageViewManagerConfig = {
+        views: viewDefs,
+        widgets: widgetDefs
+    };
+    communote.configuration.mainPageContexts = {serviceHelp: []};
+    communote.configuration.mainPageContextManagerOptions = {
+        defaultContextId: 'serviceHelp'
+    };
+    communote.configuration.disableDefaultActivateContextLinkHandlers = true;
+    // activate view
+})();
+</script>

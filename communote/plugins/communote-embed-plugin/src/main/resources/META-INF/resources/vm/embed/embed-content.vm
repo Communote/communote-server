@@ -1,0 +1,182 @@
+#if(${fiShowFilter})
+    #set($cssClasses = 'cn-embed-two-column')
+#else
+    #set($cssClasses = '')
+#end
+#if($page)
+    #set($cssClasses = "$cssClasses cn-page-$page")
+#end
+#if(${embedContext})
+    #set($cssClasses = "$cssClasses cn-embed-context-${embedContext}")
+#end
+
+<div id="cn-communote" class="$cssClasses" #if($page)data-cnt-page="$page"#end>
+    <div id="cn-embed-main-wrapper">
+        <div id="cn-embed-horizontal-navigation"></div>
+        <div id="cn-embed-create-note"></div>
+        <div id="cn-embed-postlist"></div>
+    </div><!-- ## clear whitespace for inline-block styling without gap 
+ --><div id="cn-embed-filter-wrapper"></div>
+</div>
+#set($createNoteTagAutocompleterCategories = $communoteTool.tags.getNoteTagSuggestions(false, 'id', 'title', 'provider', $request))
+#if (${fiShowTagCloud})
+    #set($tagSearchCategories=$communoteTool.tags.getNoteTagSuggestions(true, "id",  "title", "provider", $request))
+#end
+## using always notesOverview context. In topicSelected or userSelected use-case content is just filtered with unresetable parameters
+## TODO using preference of normal FE (there are no prefs for userSelected or tagSelected). Or should
+## we have one for the embed?
+#if(!${cplPredefinedViewType})
+    #if($contextId == 'topicSelected')
+        #set($cplPreferenceId = 'control-blog-notes') 
+    #else
+        #set($cplPreferenceId = 'control-all-notes')
+    #end
+#end
+## provide the widget configuration for each view
+<script type="text/javascript">
+(function(window){
+    var viewIds, contextDefs, viewDefs, widgetDefs, config, cplLoadMoreMode, i, l, viewId2PrefId;
+    
+    function addNoteWidgets(viewDefs, widgetDefs, viewId, cplLoadMoreMode) {
+        var conditionalVisibleWidgets;
+        var subViewName = 'notesOverview_' + viewId;
+        var renderOptions = {
+#if(${fiShowSearch} && ${fiShowTagCloud})
+            searchBoxFilterSearchCategories: ${tagSearchCategories},
+#end
+            includeAuthorFilter: ${fiShowAuthor},
+            includeTopicFilter: ${fiShowTopic},
+            includeTagCloud: ${fiShowTagCloud},
+            includeContentTypeFilter: ${fiShowContentType},
+            includeSearchFilter: ${fiShowSearch},
+            includeDateFilter: ${fiShowDate},
+            includeFilterSummary: ${fiShowFilter},
+            contentTypeFilterShowFAB: false,
+#if(${cplPredefinedViewType})
+            cplPredefinedViewType: '${cplPredefinedViewType}',
+#else
+            cplPreferenceId: viewId2PrefId[viewId],
+#end
+            cplLoadMoreMode: cplLoadMoreMode,
+            createNoteTagAutocompleterCategories: '${createNoteTagAutocompleterCategories}'
+        };
+        config.factory.prepareCommonNoteWidgetDefs(widgetDefs, subViewName, '#cn-embed-postlist', '#cn-embed-filter-wrapper', renderOptions);
+        #if (${fiShowFilter})
+        conditionalVisibleWidgets = [];
+        if (renderOptions.includeSearchFilter) {
+            conditionalVisibleWidgets.push('SearchBox_' + subViewName);
+        }
+        conditionalVisibleWidgets.push('FilteredBy_' + subViewName);
+        if (renderOptions.includeTopicFilter) {
+            conditionalVisibleWidgets.push('TopicFilter_' + subViewName);
+        }
+        if (renderOptions.includeTagCloud) {
+            conditionalVisibleWidgets.push('TagCloud_' + subViewName);
+        }
+        if (renderOptions.includeAuthorFilter) {
+            conditionalVisibleWidgets.push('AuthorFilter_' + subViewName);
+        }
+        if (renderOptions.includeContentTypeFilter) {
+            conditionalVisibleWidgets.push('ContentType_' + subViewName);
+        }
+        if (renderOptions.includeDateFilter) {
+            conditionalVisibleWidgets.push('DateFilter_' + subViewName);
+        }
+        #end
+        viewDefs[subViewName] = config.factory.createSubViewViewDef('notesOverview', 
+                [ 'ChronologicalPostList_' + subViewName], conditionalVisibleWidgets, 
+                conditionalVisibleWidgets, null);
+    }
+    #if(!${cplPredefinedViewType})
+    viewId2PrefId = {};
+    viewId2PrefId.all = '${cplPreferenceId}';
+    viewId2PrefId.mentions = 'control-my-notes';
+    viewId2PrefId.following = 'control-followed-notes';
+    viewId2PrefId.favorites = 'control-favor-notes';
+    #end
+    viewIds = [ ${viewIds} ];
+    contextDefs = {
+        'notesOverview': viewIds
+    };
+    config = communote.configuration;
+    config.mainPageContexts = contextDefs;
+
+    widgetDefs = {};
+	
+	#if (${edShowCreate})
+	widgetDefs.CreateNote = {
+        widgetType: 'CreateNoteDefaultWidget',
+        containerSelector: '#cn-embed-create-note',
+        settings: {
+            action: '$fieldTool.get('com.communote.server.web.commons.FormAction.CREATE')',
+            cancelBehavior: {action:'renderStyle', actionOptions: 'simulate'},
+            draftTimer: $communoteTool.getConfigurationProperty($fieldTool.get('com.communote.server.api.core.config.type.ClientProperty.AUTOSAVE_TIMER'), $fieldTool.get('com.communote.server.api.core.config.type.ClientProperty.DEFAULT_AUTOSAVE_TIMER')),
+            publishSuccessBehavior: {action:'renderStyle', actionOptions: 'simulate'},
+            renderStyle: 'simulate',
+            renderWidgetType: 'CreateNoteWidget',
+            #if(${edPredefinedProperties})predefinedNoteProperties: ${edPredefinedProperties},#end
+            #if(${editorTopicId})targetBlogId: ${editorTopicId},#end
+            ## TODO provide title for performance
+            tagAutocompleterCategories: ${createNoteTagAutocompleterCategories}
+        }
+    };
+	#end
+    if (window.parent != window && communote.embed.autoHeightEnabled) {
+        // disable endless scrolling if in IFrame and height resizes automatically
+        cplLoadMoreMode = 'append-manually';
+    }
+    viewDefs = {};
+    viewDefs.notesOverview = {visibleWidgets: []};
+	
+	#if (${edShowCreate})
+    viewDefs.notesOverview.visibleWidgets.push('CreateNote');
+	#end
+    #if (${showHorizontalNavigation})
+    widgetDefs.HorizontalNavigation = {
+        widgetType: 'MainPageHorizontalNavigationWidget',
+        containerSelector: '#cn-embed-horizontal-navigation',
+        settings: {
+            filterWidgetGroupId: 'mainPageContextManagement',
+            contextDefinitions: contextDefs,
+            customLabels: {
+                notesOverview: ['mentions:@' + communote.currentUser.alias]
+            }
+        }
+    };
+    viewDefs.notesOverview.visibleWidgets.push('HorizontalNavigation');
+        #if(!${horizontalNavShowViewTypeSwitch})
+    config.horizontalNavigationTools = {viewTypeSwitch: false};
+        #end
+    #end
+    for (i = 0, l = viewIds.length; i < l; i++) {
+        addNoteWidgets(viewDefs, widgetDefs, viewIds[i], cplLoadMoreMode);
+    }
+    config.mainPageViewManagerConfig = {
+        views: viewDefs,
+        widgets: widgetDefs
+    };
+    config.mainPageContextManagerOptions = {
+        defaultContextId: 'notesOverview',
+        defaultViews: {
+            'notesOverview': '$defaultViewId',
+        }
+    };
+    config.publishContextManager = true;
+    config.disableDefaultActivateContextLinkHandlers = true;
+    config.init.activateDefaultContext = false;
+    config.init.processLocation = false;
+    ## TODO encode?
+    config.init.embedUnresetableParams = ${unresetableFilterParameters};
+#if(${fiShowFilter})
+    communote.embed.filterEnabled = true;
+#else
+    communote.embed.filterEnabled = false;
+#end
+    communote.initializer.addApplicationReadyCallback(function() {
+        ## send event to activate the default context but pass some more details
+        var contextDescriptor = {options: {unresetableParams: config.init.embedUnresetableParams}};
+        delete config.init.embedUnresetableParams;
+        E2G('activateContext', 'mainPageContextManagement', contextDescriptor);
+    });
+})(this);
+</script>

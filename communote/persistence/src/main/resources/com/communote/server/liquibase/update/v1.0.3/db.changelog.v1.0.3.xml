@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.0.3/db.changelog.v1.0.3.xml">
+
+	<changeSet id="mt2866_1" author="unknown" context="client" dbms="postgresql">
+	   <preConditions onFail="MARK_RAN">
+	       <sqlCheck expectedResult="1">select count(*) from pg_constraint where conname='unique_user_resource'</sqlCheck>
+	   </preConditions>
+	   <comment>Manage constraints</comment>
+	   <dropUniqueConstraint tableName="core_uti" constraintName="unique_user_resource"/>
+    </changeSet>
+    
+    <changeSet id="mt2866_2" author="unknown" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+           <sqlCheck expectedResult="1">select count(*) from pg_constraint where conname='unique_resource'</sqlCheck>
+       </preConditions>
+       <comment>Manage constraints</comment>
+	   <dropUniqueConstraint tableName="core_resource" constraintName="unique_resource"/>
+	</changeSet>
+	
+	<changeSet id="mt2866_3" author="unknown" context="client" dbms="postgresql">
+	   <preConditions onFail="MARK_RAN">
+           <sqlCheck expectedResult="1">select count(*) from pg_indexes where indexname='core_tag_name_unique_idx'</sqlCheck>
+       </preConditions>
+	   <comment>Manage constraints</comment>    
+	   <dropIndex tableName="core_tag" indexName="core_tag_name_unique_idx"/>
+    </changeSet>
+    
+    <changeSet id="mt2866_4" author="unknown" context="client" dbms="postgresql">
+       <preConditions onFail="MARK_RAN">
+           <sqlCheck expectedResult="1">select count(*) from pg_indexes where indexname='core_tag_name_category_unique_idx'</sqlCheck>
+       </preConditions>
+       <comment>Manage constraints</comment>
+	   <dropIndex tableName="core_tag" indexName="core_tag_name_category_unique_idx"/>
+    </changeSet>
+    
+    <changeSet id="mt2866_5" author="unknown" context="client" dbms="postgresql">
+        <comment>Manage constraints</comment>
+	    <addUniqueConstraint tableName="core_tag" constraintName="core_tag_name_key" columnNames="name"/>
+	</changeSet>    
+
+    <changeSet id="mt2859_1" author="unknown" context="client" dbms="postgresql">
+        <comment>CR 122 Securing External Authentication</comment>
+        <addColumn tableName="user_authentication">
+            <column name="SYSTEM_ID" type="varchar(50)"><constraints nullable="false"/></column>
+        </addColumn>
+        <addColumn tableName="user_authentication">
+            <column name="TAGGING_USER_FK" type="BIGINT"><constraints nullable="true"/></column>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="user_authentication_TAGGING_UC"
+            baseTableName="user_authentication" baseColumnNames="TAGGING_USER_FK"
+            referencedTableName="user_user" referencedColumnNames="ID"/>
+        <dropColumn tableName="user_user" columnName="user_authentication_fk"/>
+        <dropUniqueConstraint tableName="user_authentication" constraintName="user_authentication_external_user_id_key"/>
+        <addColumn tableName="configuration_auth_external">
+            <column name="SYSTEM_ID"  type="varchar(50)"><constraints nullable="true" unique="false"/></column>
+        </addColumn>
+        <addColumn tableName="configuration_auth_external">
+            <column name="PRIMARY_AUTHENTICATION" type="BOOLEAN"><constraints nullable="true" unique="false"/></column>
+        </addColumn>
+        <sql>
+             UPDATE configuration_auth_external SET SYSTEM_ID = 'DefaultConfluence' 
+             WHERE configuration_auth_external.ID in (SELECT ID FROM configuration_confluence_auth);
+             UPDATE configuration_auth_external SET SYSTEM_ID = 'DefaultLDAP' 
+             WHERE configuration_auth_external.ID in (SELECT ID FROM configuration_ldap);
+             UPDATE configuration_auth_external SET SYSTEM_ID = 'DefaultSharepoint' 
+             WHERE configuration_auth_external.ID in (SELECT ID FROM configuration_sharepoint_auth);
+             UPDATE configuration_auth_external SET PRIMARY_AUTHENTICATION = TRUE
+             WHERE configuration_auth_external.ID in (select MAX(ID) FROM configuration_auth_external WHERE active = TRUE);
+        </sql>
+        <addUniqueConstraint tableName="configuration_auth_external" columnNames="SYSTEM_ID" constraintName="conf_auth_external_system_id_key"/>
+        <addNotNullConstraint tableName="configuration_auth_external" columnName="SYSTEM_ID" />
+        <addNotNullConstraint tableName="configuration_auth_external" columnName="PRIMARY_AUTHENTICATION" defaultNullValue="FALSE"/>
+    </changeSet>
+    <changeSet id="mt2859_2" author="unknown" context="client">
+        <addUniqueConstraint tableName="user_authentication" columnNames="EXTERNAL_USER_ID, SYSTEM_ID" constraintName="user_authentication_uid_system_id_key"/>
+    </changeSet>
+    
+    <changeSet id="mt2899_mysql_v3" author="unknown" context="client" dbms="mysql">
+    	<comment>MT 2899: Image caching problems </comment>
+    	<sql>
+    		alter table configuration_client add column LAST_LOGO_IMAGE_MODIFICATION_D TIMESTAMP NULL DEFAULT NULL;
+    	</sql>
+    </changeSet>
+    
+   <changeSet id="mt2899_postgresql" author="unknown" context="client" dbms="postgresql">
+    	<comment>MT 2899: Image caching problems</comment>
+    	<sql>
+    		alter table configuration_client add column LAST_LOGO_IMAGE_MODIFICATION_D TIMESTAMP;
+    	</sql>
+    </changeSet>
+    
+    <changeSet id="20091007_postgresql" author="unknown" context="client" dbms="postgresql">
+    	<sql>
+    		update configuration_client set last_logo_image_modification_d = now() where logo_image is not null;
+    	</sql>    
+    </changeSet>
+    
+    <changeSet id="20091007_mysql" author="unknown" context="client" dbms="mysql">
+    	<sql>
+    		update configuration_client set last_logo_image_modification_d = now() where logo_image is not null;
+    	</sql>    
+    </changeSet>
+    
+</databaseChangeLog>

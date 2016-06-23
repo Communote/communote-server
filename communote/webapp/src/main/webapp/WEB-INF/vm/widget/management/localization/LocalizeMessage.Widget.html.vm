@@ -1,0 +1,41 @@
+#widgetMetadata(${widget.ResponseMetadata})
+#cnRenderMessages()
+<form method="POST">
+	<input type="hidden" name="widgetAction" value="SAVE_MESSAGE"/>
+	<input type="hidden" name="messageKey" value="$singleResult.getKey()"/>
+	<input type="hidden" name="showIsHtml" value="$!showIsHtml"/>
+	<input type="hidden" id="languageCode" name="languageCode" value="${singleResult.languageCode}"/>
+    <fieldset class="no-border">
+        <div class="w50">
+            <div class="label">
+                <label for="languageCodeSelector">#t('client.customization.localization.language.title')</label>
+            </div>
+            <div class="input">
+                <select id="languageCodeSelector">
+                	#foreach($language in $languages)
+                        <option value="${language.getLanguageCode()}" #if($singleResult.languageCode == $language.getLanguageCode())selected="selected"#end>$language.getName() - $language.getLanguageCode()</option>
+	                #end
+                </select> 
+            </div>
+        </div>
+        <div class="w100 long">
+            <div class="label"><label for="message">#t('client.customization.localization.message.title')</label></div>
+            <div class="input">
+            	<textarea id="message" name="message" style="height: auto;" rows="15">${singleResult.message}</textarea>
+            </div>
+        </div>
+        #if($showIsHtml)
+            #cnCheckbox('isHtml' $singleResult.isIsHtml() 'client.customization.localization.isHtml' false '')
+        #end
+        <span class="clear"><!-- --></span>
+    </fieldset>
+    <div class="actionbar actionbar-general">
+        <div class="button-gray main">
+            <input type="submit" name="button" value="#t('button.save')" />
+        </div>
+        <div class="button-gray">
+            <input type="button" onclick="#jsCurrentWidget().refresh();" value="#t('button.cancel')" />
+        </div>
+    </div>
+</form>
+<span class="clear"><!-- --></span>

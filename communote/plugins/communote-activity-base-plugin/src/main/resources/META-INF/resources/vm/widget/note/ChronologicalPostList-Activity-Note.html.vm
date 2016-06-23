@@ -1,0 +1,111 @@
+## special CSS definitions
+#set( $wrapperCssClasses = '' )
+#if( !$velocityHasNext )
+    #set( $wrapperCssClasses = ' cn-last' )
+#end
+            
+#if( $note.isDirect() )
+    #set( $wrapperCssClasses = "$wrapperCssClasses cn-direct" )
+#end
+
+#if( $note.isForMe() && !$note.isDirect() )
+    #set( $wrapperCssClasses = "$wrapperCssClasses cn-mentioned" )
+#end
+#set($renderBlog = $renderStyle == 'CLASSIC' || ${note.discussionDepth} == 0)
+## TODO: use classic for unindented single discussion note?
+#if($renderStyle == 'THREAD' && !$widget.getBooleanParameter("noIndentation", false))
+    #if(${note.DiscussionDepth} < 8)
+        #set( $wrapperCssClasses = "$wrapperCssClasses indent-level-${note.DiscussionDepth}")
+    #else
+        #set( $wrapperCssClasses = "$wrapperCssClasses indent-level-7")
+    #end
+#end
+## #####
+#set( $authorSignature      = $escTool.xmlSimple($communoteTool.getUserSignature($note.user, $nameMedium)) )
+#set( $usersWhichLikeThisPost = $note.getProperty('usersWhichLikeThisPost'))
+#set( $currentUserLikesNote = ${note.getProperty('currentUserLikesNote')} == 'true')
+#if($currentUserLikesNote)
+    #set( $wrapperCssClasses = "$wrapperCssClasses cn-note-has-likes cn-note-is-liked" )
+#elseif($usersWhichLikeThisPost.size() > 0)
+    #set( $wrapperCssClasses = "$wrapperCssClasses cn-note-has-likes" )
+#end
+#if(${note.favorite})
+    #set( $wrapperCssClasses = "$wrapperCssClasses cn-note-is-favorite" )
+#end
+#if($renderStyle == 'CLASSIC' && $note.NumberOfDiscussionNotes > 1)
+    #set( $wrapperCssClasses = "$wrapperCssClasses cn-note-has-comments" )
+#end
+
+
+<div class="control-note-wrapper control-note-${note.Id} cn-list-overview-blog-entry cn-activity cn-note-render-mode-view ${wrapperCssClasses}" name="${widget.widgetId}-note-${note.id}" data-cnt-note-id="${note.Id}" data-discussion-path="$note.getDiscussionPath().replace('/',' ')" data-cnt-note-actions="${widget.getNoteActions($note)}" data-cnt-note-meta-data="${escTool.xmlSimple(${widget.getNoteMetaData($note)})}">
+    <div class="cn-left-wrapper">
+        <div class="cn-left">
+            <div class="cn-activity-icon" title="#t('plugins.activity.content.type')"><!-- Activity --></div>
+            <div class="cn-user-image" style="float:left;">
+                #link( $urlTool.user($note.user.alias) "<img class=${escTool.Q}cn-userpic${escTool.Q} src=${escTool.Q}$urlTool.userImage($note.user.id, $imageMedium)${escTool.Q} title=${escTool.Q}$authorSignature${escTool.Q} alt=${escTool.Q}$authorSignature${escTool.Q} width=${escTool.Q}25${escTool.Q} height=${escTool.Q}25${escTool.Q} data-cnt-user-id=${escTool.Q}$note.user.id${escTool.Q} />" $request "control-entity-link")
+            </div>
+            <span class="cn-clear"><!-- --></span>
+            <div class="cn-entry-info-icons">
+                #if($note.Direct)
+                    <img class="cn-direct cn-icon" src="$urlTool.render("/themes/core/images/icons/empty.gif", false, false, true)" />
+                #elseif($note.ForMe)
+                   <img class="cn-mentioned cn-icon" src="$urlTool.render("/themes/core/images/icons/empty.gif", false, false, true)" />
+                #end
+            </div>
+        </div>
+        <div class="cn-click-area open" title="#t('blog.post.list.open.long')">
+            <!-- Empty Click Area -->
+        </div>
+        <div class="cn-click-area close" title="#t('blog.post.list.close.long')">
+            <!-- Empty Click Area -->
+        </div>
+    </div>
+    <div class="cn-right">
+        <div class="cn-wrapper-content">
+        	<div class="cn-wrapper-bar top">
+                #parse('/WEB-INF/vm/widget/blog/single-note-fragments/cn-meta-top.html.vm')
+            </div>
+            <div class="cn-short-content">
+                #if( "$!note.shortContent" == '' )
+                    $!note.content
+                #else
+                    $note.shortContent.replace('<rml/>', $fmtTool.message('blog.post.list.note.read.more.link',['<a class="read-more cn-event control-collapse-expand-note">','</a>']))
+                #end
+                <span class="cn-clear"><!-- --></span>
+            </div>
+            <div class="cn-content cn-hidden">
+                $!note.content
+                <span class="cn-clear"><!-- --></span>
+                <p><a href="javascript:;" class="cn-link cn-close-note control-collapse-expand-note">#t('blog.post.list.note.read.less.link')</a></p>
+            </div>
+            
+            <div class="cn-content-meta cn-hidden #if( !$note.tags.isEmpty() || !$note.notifiedUsers.isEmpty() || $note.mentionTopicReaders || $note.mentionTopicAuthors || $note.mentionTopicManagers || $note.mentionDiscussionAuthors) cn-expanded #end">
+            	#if( !$note.tags.isEmpty() )
+                    <div class="cn-tag-bar">
+                        <span class="cn-icon"><!-- Meta Icon --></span>
+                        <div>
+                            #foreach($tag in $note.tags)
+                                <a class="cn-link control-entity-link" href="$urlTool.tag($tag.id)" target="_blank" data-cnt-tag-id="$tag.Id">$escTool.xmlSimple($tag.name)#if($velocityHasNext),&nbsp;#end</a>
+                            #end
+                        </div>
+                    </div>
+                    <span class="cn-clear"><!-- Empty --></span>
+                #end
+                #if( !$note.notifiedUsers.isEmpty() )
+                    <div class="cn-notified-users-bar">
+                        <span class="cn-icon #if($note.Direct)direct#end"><!-- Meta Icon --></span>
+                        <div>
+                            #foreach($notifiedUser in $note.notifiedUsers)
+                                <a class="cn-link control-entity-link" data-cnt-user-id="$notifiedUser.Id" href="$urlTool.user($notifiedUser.alias)" target="_blank">$escTool.xmlSimple($communoteTool.getUserSignature($notifiedUser, $nameShort))#if($velocityHasNext),&nbsp;#end</a>
+                            #end
+                        </div>
+                    </div>
+                    <span class="cn-clear"><!-- Empty --></span>
+                #end
+                #parse('/WEB-INF/vm/widget/blog/single-note-fragments/cn-mentioned-groups-bar.html.vm')
+            </div>
+        </div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    #parse('/WEB-INF/vm/widget/blog/single-note-fragments/cn-note-actions.html.vm')
+</div>

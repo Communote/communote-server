@@ -1,0 +1,310 @@
+<div id="cn-sidebar-bg"></div>
+<div id="cn-sidebar"><div id="cn-vertical-navigation-wrapper"></div></div>
+<div id="cn-view-wrapper">
+    <div id="cn-view-header"></div>
+    <div id="cn-view-content">
+        <div id="cn-main">
+            <div id="cn-horizontal-navigation"></div>
+            <div id="cn-filterbar-small-width"></div>
+            <div id="cn-create-note"></div>
+            <div id="aboutUserProfileWrapper"></div>
+            <div id="cn-topic-info"></div>
+            <div id="cn-tag-management-wrapper"></div>
+            <div id="cn-list-posts"></div>
+            <div id="cn-list-blogs"></div>
+            <div id="cn-list-users"></div>
+        </div>
+        <div id="cn-filterbar"></div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+</div>
+<span class="cn-clear"><!-- --></span>
+#set($createNoteTagAutocompleterCategories = $communoteTool.tags.getNoteTagSuggestions(false, 'id', 'title', 'provider', $request))
+#set($tagSearchCategories=$communoteTool.tags.getNoteTagSuggestions(true, "id",  "title", "provider", $request))
+#set($topicTagSearchCategories=$communoteTool.tags.getBlogTagSuggestions(true, "id",  "title", "provider", $request))
+#set($userTagSearchCategories=$communoteTool.tags.getEntityTagSuggestions(true, "id",  "title", "provider", $request))
+#set($notesOverviewDefaultViewId = "$communoteTool.getUserPreferences('com.communote.server.core.vo.user.preferences.UserInterfaceUserPreference').getPreselectedTab().name().toLowerCase()")
+## map the old IDs to the correct viewId names
+#if ($notesOverviewDefaultViewId == "favor")
+    #set($notesOverviewDefaultViewId = "favorites")
+#elseif ($notesOverviewDefaultViewId == "followed")
+    #set($notesOverviewDefaultViewId = "following")
+#elseif ($notesOverviewDefaultViewId == "my")
+    #set($notesOverviewDefaultViewId = "mentions")
+#end
+
+#set($topicsOverviewDefaultViewId = "$communoteTool.getConfigurationPropertyAsString($fieldTool.get('com.communote.server.api.core.config.type.ClientProperty.PRESELECTED_TOPIC_OVERVIEW_TAB'), $fieldTool.get('com.communote.server.api.core.config.type.ClientProperty.DEFAULT_PRESELECTED_TOPIC_OVERVIEW_TAB')).toLowerCase()")
+
+## provide the widget configuration for each view
+<script type="text/javascript">
+(function(){
+    var contextDefs, viewDefs, widgetDefs, i, subViews, subViewName, cplTabNames, sharedVisibleWidgets;
+    var conditionalSelector;
+    function createFilteredByWidgetDef(subViewName, parentViewId) {
+        return {
+            widgetType: 'FilteredByWidget',
+            containerSelector: '#cn-filterbar',
+            settings: {
+                filterWidgetGroupId: 'filterGroup_' + subViewName,
+                showFABs: !parentViewId.toLowerCase().contains('overview')
+            }
+        };
+    }
+    function prepareCommonNoteWidgets(viewDefs, widgetDefs, subViewName, parentViewId) {
+        var factory = communote.configuration.factory;
+        var renderOptions = factory.prepareCommonNoteViewRenderOptions(parentViewId);
+        renderOptions.cplPreferenceId = cplTabNames[subViewName];
+        renderOptions.createNoteTagAutocompleterCategories = '${createNoteTagAutocompleterCategories}';
+        if (renderOptions.includeSearchFilter) {
+            renderOptions.searchBoxFilterSearchCategories = ${tagSearchCategories};
+        }
+        factory.prepareCommonNoteWidgetDefs(widgetDefs, subViewName, '#cn-list-posts', '#cn-filterbar', renderOptions);
+        // add conditional selectors for filter
+        if (renderOptions.includeSearchFilter) {
+            widgetDefs['SearchBox_' + subViewName].conditionalContainerSelectors = conditionalSelector;
+        }
+        if (renderOptions.includeFilterSummary) {
+            widgetDefs['FilteredBy_' + subViewName].conditionalContainerSelectors = conditionalSelector;
+        }
+        factory.prepareCommonNoteViewDef(viewDefs, subViewName, parentViewId, renderOptions);
+    }
+    
+    function prepareCommonTopicWidgets(viewDefs, widgetDefs, subViewName, parentViewId) {
+        var conditionalWidgets;
+        var factory = communote.configuration.factory;
+        factory.prepareCommonTopicWidgetDefs(widgetDefs, subViewName, '#cn-list-blogs', '#cn-filterbar', {
+            contentTypeFilterShowFAB: !parentViewId.toLowerCase().contains('overview'),
+            topicListShowNew: parentViewId == 'topicsOverview',
+            topicListShowAdd: parentViewId == 'topicSelected',
+            searchBoxFilterTagCategories: ${topicTagSearchCategories}
+        });
+        widgetDefs['SearchBox_' + subViewName].conditionalContainerSelectors = conditionalSelector;
+        widgetDefs['FilteredBy_' + subViewName].conditionalContainerSelectors = conditionalSelector;
+        conditionalWidgets = ['SearchBox_' + subViewName, 'FilteredBy_' + subViewName, 'TagCloud_' + subViewName ];
+        viewDefs[subViewName] = factory.createSubViewViewDef(parentViewId, [ 'TopicList_' + subViewName], 
+            conditionalWidgets, conditionalWidgets, ['SearchBox_' + subViewName, 'FilteredBy_' + subViewName]);
+    }
+    function prepareCommonUserWidgets(viewDefs, widgetDefs, subViewName, parentViewId) {
+        var conditionalWidgets;
+        var factory = communote.configuration.factory;
+        factory.prepareCommonUserWidgetDefs(widgetDefs, subViewName, '#cn-list-users', '#cn-filterbar', {
+            contentTypeFilterShowFAB: !parentViewId.toLowerCase().contains('overview'),
+            searchBoxFilterTagCategories: ${userTagSearchCategories}
+        });
+        widgetDefs['SearchBox_' + subViewName].conditionalContainerSelectors = conditionalSelector;
+        widgetDefs['FilteredBy_' + subViewName].conditionalContainerSelectors = conditionalSelector;
+        conditionalWidgets = ['SearchBox_' + subViewName, 'FilteredBy_' + subViewName, 'TagCloud_' + subViewName ];
+        viewDefs[subViewName] = factory.createSubViewViewDef(parentViewId, [ 'UserList_' + subViewName], 
+            conditionalWidgets, conditionalWidgets, ['SearchBox_' + subViewName, 'FilteredBy_' + subViewName]);
+    }
+    conditionalSelector = {
+            type: 'responsive',
+            selector: '#cn-filterbar-small-width',
+            condition: {name: 'viewportWidth', value: ['tiny', 'small']}
+        };
+    cplTabNames = {};
+    cplTabNames.topicSelected_notes = 'control-blog-notes';
+    cplTabNames.notesOverview_all = 'control-all-notes';
+    cplTabNames.notesOverview_mentions = 'control-my-notes';
+    cplTabNames.notesOverview_following = 'control-followed-notes';
+    cplTabNames.notesOverview_favorites = 'control-favor-notes';
+    contextDefs = {};
+    if(communote.currentUser.isManager) {
+        contextDefs.topicsOverview = [ 'directory', 'all', 'following', 'my', 'admin' ];
+    } else {
+        contextDefs.topicsOverview = [ 'directory', 'all', 'following', 'my' ];
+    }
+    contextDefs.notesOverview = [ 'all', 'following', 'mentions', 'favorites' ];
+    contextDefs.usersOverview = [ 'all', 'following' ];
+    if(communote.currentUser.isManager) {
+        contextDefs.tagSelected = [ 'notes', 'admin' ];
+    } else {
+        contextDefs.tagSelected = [ 'notes' ];
+    }
+    
+    contextDefs.userSelected = [ 'profile', 'notes' ];
+    contextDefs.topicSelected = [ 'notes', 'topics', 'members', 'info' ];
+    communote.configuration.mainPageContexts = contextDefs;
+
+    widgetDefs = {
+        GlobalIdShowBannerImage: communote.configuration.factory.createShowBannerWidgetDef('#cn-view-header', '#cn-header-mobile .cn-center', 'mainPageContextManagement'),
+        HorizontalNavigation: {
+            widgetType: 'MainPageHorizontalNavigationWidget',
+            containerSelector: '#cn-horizontal-navigation',
+            settings: {
+                filterWidgetGroupId: 'mainPageContextManagement',
+                contextDefinitions: contextDefs,
+                customLabels: {
+                    notesOverview: ['mentions:@' + communote.currentUser.alias]
+                }
+            }
+        },
+        EntityChooser: {
+            widgetType: 'EntityChooserWidget',
+            containerSelector: '#cn-vertical-navigation-wrapper',
+            settings: {
+                filterWidgetGroupId: 'mainPageContextManagement',
+                renderSearchModeSwitches: false,
+                categories: {mostUsedTopics: {title:'${escTool.javascriptSimple($fmtTool.message("widget.entityChooser.category.mostUsedTopics.title"))}',noContentMessage:'${escTool.javascriptSimple($fmtTool.message("widget.entityChooser.category.mostUsedTopics.noContent"))}'}},
+                searchModes: 'mixed',
+                searchModeOptions: {mixed:{placeholder:'${escTool.javascriptSimple($fmtTool.message("widget.entityChooser.placeholder"))}', activeCategories: ['mostUsedTopics'], acSelectEvent: 'entitySelected', acFactoryFunction: 'createEntityAutocompleter', acParameterSubset: [], acOptions: {searchValueSuggestionDisabled: true, userSuggestionType: 'USER', suggestionsOptions:{autocompleterContainerCssClass: 'autocompleter-context-chooser', positionOffset: {x:-1,y:-1}, visibleChoices: false, width: 'auto'}, tagCategories: ${tagSearchCategories}}, acPostData: {common: {maxCount: 5}, topic: {maxCount: 10} }}},
+                chooserMarkOpenSelector: '.navigation-area-chooser',
+                chooserToggleCssClass: 'cn-chooser-toggle cn-icon',
+                contentWrapperCssClass: 'navigation-area-chooser'
+            }
+        },
+        VerticalNavigation: {
+            widgetType: 'MainPageVerticalNavigationWidget',
+            containerSelector: '#cn-vertical-navigation-wrapper',
+            settings: {
+                filterWidgetGroupId: 'mainPageContextManagement'
+            }
+        },
+        CreateNote: {
+            widgetType: 'CreateNoteDefaultWidget',
+            containerSelector: '#cn-create-note',
+            settings: {
+                action: '$fieldTool.get('com.communote.server.web.commons.FormAction.CREATE')',
+                cancelBehavior: {action:'renderStyle', actionOptions: 'simulate'},
+                draftTimer: $communoteTool.getConfigurationProperty($fieldTool.get('com.communote.server.api.core.config.type.ClientProperty.AUTOSAVE_TIMER'), $fieldTool.get('com.communote.server.api.core.config.type.ClientProperty.DEFAULT_AUTOSAVE_TIMER')),
+                filterWidgetGroupId: 'mainPageContextManagement',
+                publishSuccessBehavior: {action:'renderStyle', actionOptions: 'simulate'},
+                renderStyle: 'simulate',
+                renderWidgetType: 'CreateNoteWidget',
+                tagAutocompleterCategories: ${createNoteTagAutocompleterCategories}
+            }
+        }
+    };
+    sharedVisibleWidgets = ['EntityChooser', 'VerticalNavigation', 'HorizontalNavigation', 'GlobalIdShowBannerImage'];
+    viewDefs = {};
+    viewDefs.topicsOverview = {
+        visibleWidgets: sharedVisibleWidgets
+    };
+    viewDefs.usersOverview = {
+        visibleWidgets: sharedVisibleWidgets
+    };
+    viewDefs.notesOverview = {
+        visibleWidgets: sharedVisibleWidgets.clone().include('CreateNote')
+    };
+    viewDefs.topicSelected = {
+            visibleWidgets: sharedVisibleWidgets
+    };
+    viewDefs.userSelected = {
+            visibleWidgets: sharedVisibleWidgets
+    };
+    viewDefs.tagSelected = {
+            visibleWidgets: sharedVisibleWidgets
+    };
+
+    subViews = contextDefs.topicsOverview;
+
+    for (i = 0; i < subViews.length; i++) {
+        subViewName = 'topicsOverview_' + subViews[i];
+        prepareCommonTopicWidgets(viewDefs, widgetDefs, subViewName, 'topicsOverview');
+    }
+    subViews = contextDefs.notesOverview;
+    for (i = 0; i < subViews.length; i++) {
+        subViewName = 'notesOverview_' + subViews[i];
+        prepareCommonNoteWidgets(viewDefs, widgetDefs, subViewName, 'notesOverview');
+    }
+    subViews = contextDefs.usersOverview;
+    for (i = 0; i < subViews.length; i++) {
+        subViewName = 'usersOverview_' + subViews[i];
+        prepareCommonUserWidgets(viewDefs, widgetDefs, subViewName, 'usersOverview');
+    }
+    subViews = contextDefs.tagSelected;
+    for (i = 0; i < subViews.length; i++) {
+        subViewName = 'tagSelected_' + subViews[i];
+        prepareCommonNoteWidgets(viewDefs, widgetDefs, subViewName, 'tagSelected');
+    }
+    if(communote.currentUser.isManager) {
+        viewDefs.tagSelected_admin = {
+            parentViewId: 'tagSelected',
+            previousViewAction: 'hide',
+            visibleWidgets: [ 'TagManagement' ]
+        };
+        widgetDefs['TagManagement'] = {
+            widgetType: 'TagManagementWidget',
+            containerSelector: '#cn-tag-management-wrapper',
+            settings: {
+                filterWidgetGroupId: 'mainPageContextManagement',
+                showFollowAction: false
+            }
+        };
+    }
+    viewDefs.tagSelected_notes.visibleWidgets.push('CreateNote');
+    viewDefs.userSelected_profile = {
+            parentViewId: 'userSelected',
+            previousViewAction: 'hide',
+            visibleWidgets: [ 'AboutUser' ],
+            hiddenContainers: ['#cn-filterbar-small-width']
+    };
+    widgetDefs['AboutUser'] = {
+            widgetType: 'AboutUserProfileWidget',
+            containerSelector: '#aboutUserProfileWrapper',
+            settings: {
+                filterWidgetGroupId: 'filterGroup_userSelected_notes',
+                showFollowAction: false
+            }
+        };
+    prepareCommonNoteWidgets(viewDefs, widgetDefs, 'userSelected_notes', 'userSelected');
+    viewDefs.userSelected_notes.visibleWidgets.push('CreateNote');
+    prepareCommonNoteWidgets(viewDefs, widgetDefs, 'topicSelected_notes', 'topicSelected');
+    viewDefs.topicSelected_notes.visibleWidgets.push('CreateNote');
+    prepareCommonTopicWidgets(viewDefs, widgetDefs, 'topicSelected_topics', 'topicSelected');
+    widgetDefs['AboutBlog'] = {
+            widgetType: 'AboutBlogWidget',
+            containerSelector: '#cn-topic-info',
+            settings: {
+                blogIdFilterParameterName: 'parentTopicIds',
+                filterWidgetGroupId: 'filterGroup_topicSelected_topics',
+                showFollowAction: false,
+                editUrl: '/portal/topic-edit?blogId=ID_PLACEHOLDER'
+            }
+        };
+    widgetDefs['ExternalObjects'] = {
+            widgetType: 'ListExternalObjectsWidget',
+            containerSelector: '#cn-topic-info',
+            settings: {
+                blogIdFilterParameterName: 'parentTopicIds',
+                filterWidgetGroupId: 'filterGroup_topicSelected_topics',
+                silentIfEmpty: true
+            }
+        };
+
+    viewDefs.topicSelected_info = {
+            parentViewId: 'topicSelected',
+            previousViewAction: 'hide',
+            visibleWidgets: [ 'AboutBlog', 'ExternalObjects' ],
+            hiddenContainers: ['#cn-filterbar-small-width']
+    };
+    widgetDefs['BlogMemberManagement'] = {
+            widgetType: 'BlogMemberManagementWidget',
+            containerSelector: '#cn-topic-info',
+            settings: {
+                blogIdFilterParameterName: 'parentTopicIds',
+                filterWidgetGroupId: 'filterGroup_topicSelected_topics',
+                editMode: true,
+                showEditModeToggle: false
+            }
+        };
+    viewDefs.topicSelected_members = {
+            parentViewId: 'topicSelected',
+            previousViewAction: 'hide',
+            visibleWidgets: [ 'BlogMemberManagement' ],
+            hiddenContainers: ['#cn-filterbar-small-width']
+    };
+    communote.configuration.mainPageViewManagerConfig = {
+        views: viewDefs,
+        widgets: widgetDefs
+    };
+    communote.configuration.mainPageContextManagerOptions = {
+        defaultContextId: 'notesOverview',
+        defaultViews: {
+            notesOverview: '$notesOverviewDefaultViewId',
+            topicsOverview: '$topicsOverviewDefaultViewId'
+        }
+    };
+    communote.configuration.publishContextManager = true;
+})();
+</script>

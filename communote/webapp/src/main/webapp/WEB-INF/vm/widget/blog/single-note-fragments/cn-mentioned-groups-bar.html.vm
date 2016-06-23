@@ -1,0 +1,27 @@
+#if($note.mentionTopicReaders || $note.mentionTopicAuthors || $note.mentionTopicManagers || $note.mentionDiscussionAuthors)
+    <div class="cn-mentioned-groups-bar">
+        <span class="cn-icon #if($note.Direct)direct#end"><!-- Meta Icon --></span>
+        <div>
+            #if($note.mentionTopicReaders)
+                <span class="cn-content-meta-description" title="$fieldTool.get('com.communote.server.core.blog.NoteManagement.CONSTANT_MENTION_TOPIC_READERS')">#t('blog.post.list.meta.mentions.topic-readers')</span>
+            	#set($AtAtSeparator = '<span>,&nbsp;</span>')
+            #end
+            #if($note.mentionTopicAuthors)
+            	$!AtAtSeparator
+            	#set($AtAtSeparator = '<span>,&nbsp;</span>')
+                <span class="cn-content-meta-description" title="$fieldTool.get('com.communote.server.core.blog.NoteManagement.CONSTANT_MENTION_TOPIC_AUTHORS')">#t('blog.post.list.meta.mentions.topic-authors')</span>
+            #end
+            #if($note.mentionTopicManagers)
+            	$!AtAtSeparator
+            	#set($AtAtSeparator = '<span>,&nbsp;</span>')
+                <span class="cn-content-meta-description" title="$fieldTool.get('com.communote.server.core.blog.NoteManagement.CONSTANT_MENTION_TOPIC_MANAGERS')">#t('blog.post.list.meta.mentions.topic-managers')</span>
+            #end
+            #if($note.mentionDiscussionAuthors)
+            	$!AtAtSeparator
+                <span class="cn-content-meta-description" title="$fieldTool.get('com.communote.server.core.blog.NoteManagement.CONSTANT_MENTION_DISCUSSION_PARTICIPANTS')">#t('blog.post.list.meta.mentions.discussion-authors')</span>
+            #end
+            #set($AtAtSeparator = '')
+        </div>
+    </div>
+    <span class="cn-clear"><!-- Empty --></span>
+#end

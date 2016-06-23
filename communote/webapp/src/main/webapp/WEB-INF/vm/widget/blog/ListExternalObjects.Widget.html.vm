@@ -1,0 +1,67 @@
+#if(!$externalObjects || $externalObjects.size() == 0)
+    #if(!$widget.getBooleanParameter('silentIfEmpty', false))
+    <h2 class="cn-headline">#t('blog.member.integration')</h2>
+    #t('blog.member.integration.empty')
+    #end
+#else
+    <h2 class="cn-headline">#t('blog.member.integration')</h2>
+    <div id="blog-confluence-integration" class="cn-infocard-container cn-blog-details-integration-wrapper">
+        <div class="cn-form-description">
+            #t('blog.member.integration.description')
+        </div>
+        <div class="cn-infocard-content-group">
+            <div class="cn-blog-details-block cn-blog-details-tableheader">
+                <div class="cn-col cn-col-1">#t('blog.member.integration.details.name')</div>
+                <div class="cn-col cn-col-2">#t('blog.member.integration.details.system')</div>
+            #if($editMode)
+                <div class="cn-col-3">#t('blog.member.integration.details.actions')</div>
+            #end
+            <span class="cn-clear"><!-- ie --></span>
+        </div>
+        #foreach($externalObject in $externalObjects)
+            #if($externalObject.externalId.startsWith('page'))
+                #set($subclass= 'page')
+            #end
+            #if($externalObject.externalId.startsWith('space'))
+                #set($subclass= 'space')
+            #end
+            #if("$!externalObject.externalName" == "")
+                #set( $externalName = '&mdash;' )
+            #else
+                #set( $externalName = $externalObject.externalName )
+            #end
+            #set( $externalObjectLink = '' )
+            #set( $externalObjectLink = $urlTool.getExternalObjectLink($externalObject.externalSystemId,$externalObject.externalId))
+            <div class="cn-blog-details-block $!{subclass}">
+                <div class="cn-col-1" title="$!externalObject.externalName">
+                #if( "$!externalObjectLink" != "" )
+                    <a href="$externalObjectLink" target="_blank">$externalName</a>
+                #else
+                    $externalName
+                #end
+                    <span>($!{externalObject.externalId})</span>
+                </div>
+                <div class="cn-col-2">
+                    $communoteTool.getDisplayNameForExternalObject($request, $!{externalObject.externalSystemId})
+                </div>
+                #if($editMode)
+                    <div class="cn-col-3">
+                        <a href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').removeExternalObject('${externalObject.id}');">
+                            #t('add.resource.delete')
+                        </a>
+                    </div>
+                #end
+                <span class="cn-clear"><!-- ie --></span>
+            </div>
+        #end
+        </div>
+        #if($isBlogManager && !$editMode)
+            <div class="cn-actions">
+                <div class="cn-buttons">
+                    #cnButton('' 'blog.about.integration.edit.button.label' '' "widgetController.getWidget('$widget.widgetId').openEditMode();")
+                </div>
+            </div>
+        #end
+        <span class="cn-clear"><!-- Emptry --></span>
+    </div>
+#end

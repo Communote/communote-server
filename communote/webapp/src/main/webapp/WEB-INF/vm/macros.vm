@@ -1,0 +1,47 @@
+#macro(t $key)
+#set($result = $fmtTool.message($key))
+#if($result.length() > 0)$result#else$key #end
+#end
+
+#macro(t_args $key $parameters)
+#set($result = $fmtTool.message($key, $parameters))
+#if($result.length() > 0)$result#else$key #end
+#end
+
+#**
+ * Macro to render a Widget container. The WidgetController JavaScript component will convert this container into a widget.
+ * @param    id            string         The ID of the widget, must be unique within the page.
+ * @param    classes       string         A string containing the name of the widget class and additional CSS classes
+ * @param    settingsMap   java.util.Map  An optional key-value mapping containing the widget settings. The keys are expected to be strings and the values should only be primitive types and strings.
+ *#
+#macro(widget $id $classes $settingsMap)
+<div class="TSWidget $classes" id="$id" #if($settingsMap)data-cnt-widget-settings="$communoteTool.convertToJsonString($settingsMap, true)"#end></div>
+#end
+
+#**
+ * Macro to render internal links. This macro builds in a
+ * @param    href           string  The url of the link.
+ * @param    content        string  Content of the link.
+ * @param    title          string  Value for the title attribute.
+ * @param    cssClasses     string  Additional css classes.
+ *#
+#macro(link $href $content $request $cssClasses $title)
+<a href="$href"#if("$!title" != '') title="$title"#end #if("$!cssClasses" != '') class="$!cssClasses"#end #if($request && $request.isRequestedSessionIdFromURL())onclick="location.href='$urlTool.insertSessionId($href)';return false;"#end>
+$!bodyContent$content</a>
+#end
+
+#**
+ * Macro to render the response metadata of a widget as the content of a data-* attribute
+ * of a SPAN element.
+ * @param metadata  string A string representation of a JSON that holds the metadata. If null the SPAN won't be rendered.
+*#
+#macro(widgetMetadata $metadata)
+    #if($metadata)<span style="display:none" class="control-widget-response-metadata" data-widget-metadata="$escTool.xmlSimple($metadata)"></span>#end
+#end
+
+#**
+ * Macro that renders a JavaScriptSnippet to get the current widget. The widget variable must be set.
+*#
+#macro(jsCurrentWidget)
+communote.widgetController.getWidget('${widget.WidgetId}')
+#end

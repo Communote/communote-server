@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Installer Test Suite" verbose="1">
+    <parameter name="dbTypeIdentifier" value="MYSQL" />
+    <parameter name="jdbcURLQueryString" value="?allowMultiQueries=true" />
+    <parameter name="tempDbName" value="" />
+    
+    <test name="communote-installation-test">
+        <groups>
+            <define name="Installer" />
+        </groups>
+        <classes>
+            <class name="com.communote.server.installer.InstallerTest"></class>
+        </classes>
+    </test>
+</suite>

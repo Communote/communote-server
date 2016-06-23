@@ -1,0 +1,890 @@
+/* disable platform look, esp. iOS. But disabling it for all elements since some (e.g. checkboxes and radio-buttons) will disappear in Chrome! */
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="text"],
+textarea,
+button {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+/* (CLEARING( ... */
+/* ~~~ (gecko, khtml, webkit, ie7/8( ... */
+span.cn-clear {
+    clear: both;
+    display: block;
+    overflow: hidden;
+    width: 0;
+    height: 0;
+}
+
+/* ~~~ ... )gecko, khtml, webkit, ie7/8) */
+html, input, select, textarea, table, div.cn-mock-input {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    color: #000000; /* color (base for all texts) */
+}
+
+body {
+    margin: 0;
+    padding: 10px;
+    padding: 0;
+    background-color: #FFFFFF;
+}
+
+fieldset {
+    margin: 0;
+    border: 0 none;
+    padding: 0;
+}
+
+form {
+    display: inline;
+}
+
+h1 {
+    color: #888888;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 0;
+    margin: 10px 5px 0 0;
+    width: 100%;
+}
+
+h2 {
+    border-bottom: 1px dotted #D0D0D0;
+    color: #888888;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0 0 10px;
+    padding: 0 0 5px;
+}
+
+h3 {
+    border-bottom: 1px dotted #D0D0D0;
+    color: #888888;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+    margin: 0;
+    padding: 0 0 5px;
+    text-transform: uppercase;
+}
+
+h4 {
+    color: #737373;
+    font-size: 13px;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+}
+
+h5 {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    color: #737373; /* color ((sidebar-)headlines) */
+    font-weight: normal;
+    font-style: italic;
+}
+
+input {
+    margin: 0px; /* Chrome UA style sheet defines some margin by default */
+}
+
+a {
+    text-decoration: none;
+    border-color: #005599; /* border-color (all links, separators for bars) */
+    color: #005599; /* color (all links) */
+}
+
+.no-touch a:hover, 
+a:active, 
+.active a, 
+a.active, 
+.no-touch .cn-ui-action .active a:hover, 
+.no-touch .cn-ui-action a:hover.active {
+    color: #E66914; /* color (all hovered hovered links) */
+}
+
+.cn-ui-action a:hover,
+.cn-ui-action a:active {
+    color: #005599; /* when a ui action like DnD is running change color to default to avoid flickering if mouse leaves element*/
+}
+
+.no-touch a:active, a:visited, a:link {
+    outline: 0 none;
+}
+
+a img {
+    display: block;
+    border: 0 none;
+}
+
+.cn-ui-action.cn-ui-action-move,
+.cn-ui-action.cn-ui-action-move a {
+    cursor: move;
+}
+
+.cn-bar {
+    float: right;
+}
+
+.cn-link {
+    display: block;
+    float: left;
+    margin-right: 10px;
+    padding-right: 5px;
+    padding-left: 5px;
+    line-height: 1.2em;
+    font-size: 11px;
+    color: #005599; /* ??? */
+}
+
+.cn-bar .cn-link {
+    border: 0 none;
+    border-color: #005599;
+    color: #005599;
+    padding: 0;
+    margin: 0;
+}
+
+a.cn-link:hover {
+    color: #e66914;
+}
+
+.cn-label {
+    color: #888888;
+    display: block;
+    float: left;
+    font-size: 11px;
+    line-height: 12px;
+    margin-right: 5px;
+}
+
+.cn-last-child {
+    margin-right: 0 !important;
+    border-right: 0 none !important;
+}
+
+a.cn-tab-active, a.cn-active, a.cn-selected, span.cn-link, .mootabs_title.active {
+    color: #E66914;
+}
+
+h3.cn-headline {
+    border-bottom: 1px dotted #D0D0D0;
+    color: #888888;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0 0 10px;
+    padding: 0 0 5px;
+}
+
+.cn-icon {
+    background-image: url("../images/icons/icons-map.png?t=${build.timestamp}");
+    background-repeat: repeat;
+    background-size: 576px 416px;
+    display: block;
+    float: left;
+    height: 32px;
+    width: 32px;
+}
+
+/* ---------------------- */
+#cn-header-content {
+    margin: 0 auto;
+    height: 50px;
+}
+
+/* ---------------------- */
+.cn-teaser {
+    color: #888888; /* color (Teaser following headlines) */
+}
+
+.cn-vertical-spacer-10 {
+    height: 10px;
+    font-size: 0;
+    line-height: 0;
+}
+
+.cn-vertical-spacer-20 {
+    height: 20px;
+    font-size: 0;
+    line-height: 0;
+}
+
+.cn-topspace40 {
+    margin-top: 40px;
+}
+
+input.cn-inputTxt, input.cn-inputFile, input.cn-inputPwd, select.cn-select, textarea.cn-textarea, div.cn-mock-input {
+    display: block;
+    width: 99%;
+    border: 1px solid #cbcbcb;
+}
+
+input.cn-inputTxt:focus, input.cn-inputFile:focus, input.cn-inputPwd:focus, select.cn-select:focus, textarea.cn-textarea:focus {
+    outline: #005599 solid 1px;
+}
+
+.cn-read-only {
+    background-color: #cbcbcb;
+    color: #424242;
+}
+
+.cn-readonly {
+    background-color: #f4f4f4;
+    color: #888888;
+}
+
+.cn-hidden {
+    display: none;
+}
+
+/* Formular-Zeile */
+.cn-line {
+    clear: both;
+    margin-bottom: 10px;
+}
+
+/* Dialog-Trennlinie */
+hr {
+    margin: 0;
+    border-width: 1px 0;
+    border-style: solid none;
+    border-top-color: #cbcbcb;
+    border-bottom-color: #ffffff;
+    padding: 0;
+    height: 0;
+}
+
+.cn-button {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E2E2;
+    border-radius: 3px 3px 3px 3px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -webkit-border-radius: 3px 3px 3px 3px;
+    box-shadow: 0 -2px 0 #F3F3F3 inset;
+    -moz-box-shadow: 0 -2px 0 #F3F3F3 inset;
+    -webkit-box-shadow: 0 -2px 0 #F3F3F3 inset;
+    font-size: 12px;
+    float: left;
+    height: 28px;
+    line-height: 28px;
+    min-width: 50px;
+    padding: 0 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.1s ease 0s;
+    -webkit-transition: all 0.1s ease 0s;
+    -moz-transition: all 0.1s ease 0s;
+    -o-transition: all 0.1s ease 0s;
+}
+
+a.cn-button {
+   display: block;
+}
+
+.cn-button:disabled, .cn-button:disabled:hover {
+    color: #AEADAD;
+}
+
+input.cn-button {
+    color: #005599;
+    height: 30px;
+    line-height: 30px;
+    margin-left: 15px;
+    min-width: 65px;
+}
+
+input.cn-button:hover {
+    color: #E66914;
+}
+
+.cn-button.main { 
+    background-color: #1779C8;
+    background-image: none;
+    border-color: #1268AD;
+    box-shadow: 0 -2px 0 #1268AD inset;
+    -moz-box-shadow: 0 -2px 0 #1268AD inset;
+    -webkit-box-shadow: 0 -2px 0 #1268AD inset;
+    color: #FFFFFF;
+}
+
+.cn-button.main:hover {
+    box-shadow: 1px 1px 2px -2px #444444 inset;
+    -moz-box-shadow: 1px 1px 2px -2px #444444 inset;
+    -webkit-box-shadow: 1px 1px 2px -2px #444444 inset;
+    border-bottom-color: #1779C8;
+    color: #FFFFFF;
+}
+
+/* ie7 */
+*+html .cn-button {
+    border-width: 1px 2px 2px 1px;
+    border-style: solid;
+    border-color: #dddddd #cbcbcb #cbcbcb #dddddd;
+}
+
+.cn-button:hover {
+    cursor: pointer;
+    box-shadow: 1px 4px 3px -6px #888888 inset;
+    -moz-box-shadow: 1px 4px 3px -6px #888888 inset;
+    -webkit-box-shadow: 1px 4px 3px -6px #888888 inset;
+}
+
+/**
+ * counter part for cn-form-container to group items displaying information
+ */
+.cn-infocard-container {
+    margin-bottom: 17px;
+    margin-top: 8px;
+}
+
+/**
+ * content group is the counter part to a fieldset
+ */
+.cn-infocard-container .cn-infocard-content-group {
+    margin-bottom: 18px;
+}
+
+.cn-infocard-container .cn-actions a {
+    margin-right: 20px;
+}
+
+.cn-infocard-container .cn-buttons {
+    clear: both;
+    float: right;
+}
+
+.cn-border {
+background-color: #FFFFFF;
+    background-position: center top;
+    background-repeat: repeat-x;
+    border-color: #C7C7C7;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
+    -moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
+    -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
+    padding: 5px 7px;
+}
+
+.cn-border input, .cn-border textarea {
+    border: 0 none;
+    font-size: 14px;
+    outline: 0 none;
+    width: 100%;
+}
+
+.tooltip-wrapper .tooltip {
+    color: #888888; /* color of tooltip placeholder*/
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.tooltip-wrapper .tooltip:hover {
+    color: #E66914; /* color of highlighted tooltip placeholder: differs from admin section!*/
+}
+
+.tip-wrap {
+    padding: 7px;
+    width: 300px;
+    z-index: 1000;
+}
+
+.tip-wrap .tip {
+    background-color: #FFFFFF;
+    border: 1px solid #D9D9D9;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.05);
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.05);
+    color: #737373;
+}
+
+.tip-wrap .tip-text {
+    font-size: 12px;
+    line-height: 1.3em;
+    margin: 0;
+    padding: 5px;
+}
+
+.tip-wrap .tip-top, .tip-wrap .tip-bottom {
+    display: none;
+}
+
+.cn-pwd-strength {
+    position: relative;
+    top: 22px;
+    margin-left: 370px;
+}
+
+.cn-pwd-strength table {
+    font-size: 11px;
+}
+
+.cn-pwd-strength .progressbar {
+    width: 50px;
+    height: 16px;
+}
+
+.cn-pwd-strength .progressbarArrow {
+    position: relative;
+    left: 25px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #000000;
+    width: 3px;
+    height: 12px;
+}
+
+#cn-container {
+    padding: 2.5%;
+}
+
+#cn-container .cn-buttons {
+    position: relative;
+    clear: both;
+    float: right;
+    margin: 0;
+}
+
+/* Error-Message */
+div.cn-error {
+    clear: both;
+    color: #ff0000;
+    font-size: 11px;
+    margin-bottom: 3px;
+}
+
+/* Error-Message */
+div.cn-error+input, div.cn-error+.multi-input input, div.cn-error+.cn-input select, div.cn-error+.cn-input input, div.cn-error+.passwordContainer input {
+    border-color: #ff0000;
+}
+
+.cn-list {
+    background-color: #FFFFFF;
+    border-color: #D9D9D9;
+    border-style: solid;
+    border-width: 0px 1px 1px 1px;
+    padding: 5px 15px 15px 15px;
+    position: relative;
+    zoom: 1;
+}
+
+.cn-empty-list {
+    clear: both;
+    color: #888888;
+    font-size: 12px;
+    padding: 10px 0;
+    position: relative;
+    text-align: center;
+}
+
+.cn-list.cn-firsttab-active, .mootabs_firsttab_active {
+    border-top-left-radius: 0;
+    -moz-border-radius-topleft: 0;
+    -webkit-border-top-left-radius: 0;
+}
+
+/* paging */
+.cn-list-paging {
+    float: right;
+    font-size: 12px;
+    line-height: 15px;
+    padding-top: 5px;
+}
+
+.cn-list-paging * {
+    display: block;
+    float: left;
+    padding: 0 3px;
+}
+
+.cn-list-paging .cn-entry.cn-active {
+    font-weight: bold;
+}
+
+.cn-list-paging .cn-entry.cn-forward, .cn-list-paging .cn-entry.cn-backward {
+    display: block;
+    float: left;
+    width: 16px;
+    height: 16px;
+}
+
+.cn-list-paging a.cn-entry.cn-forward {
+    background-position: -517px -329px;
+}
+
+.cn-list-paging a.cn-entry.cn-forward:hover {
+    background-position: -517px -361px;
+}
+
+.cn-list-paging span.cn-entry.cn-forward {
+    background-position: -519px -297px;
+}
+
+.cn-list-paging a.cn-entry.cn-backward {
+    background-position: -486px -329px;
+}
+
+.cn-list-paging a.cn-entry.cn-backward:hover {
+    background-position: -486px -361px;
+}
+
+.cn-list-paging span.cn-entry.cn-backward {
+    background-position: -486px -297px;
+}
+
+/* end of paging */
+
+/* _footer-communote.css */
+#cn-footer-communote {
+    bottom: 0;
+    clear: both;
+    font-size: 11px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+#cn-footer-communote.version-info {
+    color: #888888;
+}
+
+#cn-footer-communote div {
+    float: left;
+    margin-bottom: 10px;
+}
+
+#cn-footer-communote img {
+    margin-bottom: 4px;
+    display: inline;
+}
+
+#cn-footer-communote dl {
+    float: right;
+    margin: 10px 400px 0 0;
+    padding: 0;
+    font-size: 11px;
+    color: #888888;
+    line-height: 18px;
+}
+
+#cn-footer-communote dt {
+    clear: both;
+    float: left;
+    width: 80px;
+}
+
+#cn-footer-communote dd {
+    float: left;
+    margin: 0;
+}
+
+/* end of footer */
+
+.notify-inline {
+    margin: 0px 0px 0px 0px;
+}
+
+.notify-inline.notify-error, .notify-inline.notify-warning, .notify-inline.notify-success, .notify-inline.notify-info {
+    padding: 12px 15px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 9px 6px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -khtml-border-radius: 6px;
+}
+
+.notify-inline.notify-error {
+    color: #a31b02;
+    border-color: #a31b02;
+}
+
+.notify-inline.notify-error * {
+    color: #a31b02;
+}
+
+.notify-inline.notify-warning {
+    color: #fa8502;
+    border-color: #fa8502;
+}
+
+.notify-inline.notify-warning * {
+    color: #fa8502;
+}
+
+.notify-inline.notify-success {
+    color: #2f6310;
+    border-color: #579830;
+}
+
+.notify-inline.notify-success * {
+    color: #2f6310;
+}
+
+.notify-inline.notify-info {
+    color: #083b7d;
+    border-color: #083b7d;
+}
+
+.notify-inline.notify-info * {
+    color: #083b7d;
+}
+
+.w50 {
+    width: 46%;
+    margin-right: 3.5%;
+    float: left;
+    margin-bottom: 6px;
+}
+
+.w100 {
+    width: 95.5%;
+    margin-bottom: 6px;
+}
+
+/* placeholder */
+:-ms-input-placeholder {
+    color: #888888;
+}
+
+::-webkit-input-placeholder {
+    color: #888888;
+}
+
+:-moz-placeholder, ::-moz-placeholder {
+    color: #888888;
+}
+
+label.overTxtLabel, .cn-info-gray {
+    color: #888888;
+}
+
+label.overTxtLabel {
+    font-family: verdana, sans-serif;
+    font-size: 12px;
+    padding: 1px 0; /* inputs have a padding by default */
+    white-space: nowrap;
+}
+/* end of placeholder */
+
+a.cn-button-look {
+    background: #f3f3f3 url("../images/main/button-background-1.png?t=${build.timestamp}") repeat-x scroll center bottom;
+    border-color: #E2E2E2;
+    border-radius: 3px 3px 3px 3px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 0 2px 1px #FAFAFA;
+    display: block;
+    float: left;
+    font-size: 12px;
+    height: 28px;
+    line-height: 28px;
+    min-width: 50px;
+    padding: 0 10px;
+    text-align: center;
+    text-decoration: none;
+}
+
+#cn-communote a.cn-button-look .cn-icon {
+    height: 18px;
+    margin-top: 6px;
+    width: 18px;
+}
+
+#cn-communote a.cn-button-look .cn-icon-label {
+    padding-left: 4px;
+}
+
+/** BEGIN - Follow Buttons */
+
+a.cn-follow:hover, a.cn-follow.active:hover, a.cn-follow.active {
+    color: #E66914;
+}
+
+a.cn-follow .cn-icon {
+    background-position: -263px -231px;
+}
+
+a.cn-follow.active .cn-icon {
+    background-position: -199px -360px;
+}
+
+a.cn-follow:hover .cn-icon {
+    background-position: -263px -263px;
+}
+
+a.cn-follow.active:hover .cn-icon {
+    background-position: -167px -360px;
+}
+
+/** END - Follow Buttons */
+
+.cn-menu {
+    list-style: none outside none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.cn-menu:hover .cn-menu-list {
+    display: block;
+}
+
+
+.cn-menu:hover .cn-more-actions {
+    color: #E66914;
+    position: relative;
+    z-index: 11;
+}
+
+.cn-menu-list .cn-link {
+    float: none;
+    padding-bottom: 3px;
+    padding-top: 3px;
+    display: block;
+}
+
+.cn-menu-list {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.05);
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.05);
+    display: none;
+    list-style: none outside none;
+    padding: 5px;
+    position: absolute;
+    right: 0;
+    z-index: 10;
+}
+
+/*  Smoothbox */
+div.TB_window {
+    border-color: #DBDBDB #DBDBDB #F5F5F5;
+    border-style: solid;
+    border-width: 1px 1px 2px;
+}
+
+.dialog-container .content-container {
+    margin-top: 12px;
+}
+.dialog-container .content-container img {
+    margin: 0;
+    border: 0;
+}
+.dialog-container .button-container {
+    float: right;
+    margin-top: 12px;
+}
+
+.dialog-container input.cn-button {
+    margin-left: 15px;
+}
+
+.dialog-container label {
+    color: #888888;
+}
+
+.dialog-container .dialog-paragraph {
+    max-width: 500px;
+}
+
+/* crop dialog */
+.dialog-container .image-wrapper {
+    text-align: center;
+}
+
+/* common widget styles */
+.TSWidget {
+    min-height: 32px;
+    position: relative;
+    zoom: 1;
+}
+
+.TSWidget.cn-empty-widget {
+    display: none;
+}
+
+.cn-widget-header-toolbar {
+    float: right;
+    padding-top: 2px;
+}
+
+.cn-widget-header-toolbar a {
+    color: #888888;
+}
+
+.cn-widget-header-toolbar:hover a {
+    color: #005599;
+}
+
+.cn-widget-header-toolbar a:hover {
+    color: #E66914;
+}
+
+.cn-widget-header-toolbar .cn-link {
+    margin: 0;
+    padding: 0;
+}
+
+.cn-widget-header-toolbar .cn-menu .cn-menu-list {
+    margin-top: 14px;
+    min-width: 40px;
+}
+
+.cn-widget-header-toolbar .cn-menu .cn-icon-label {
+    float: left;
+}
+    
+.cn-widget-header-toolbar .cn-menu .cn-arrow {
+    background-position: -392px -299px;
+    border-color: transparent;
+    border-radius: 3px 3px 0 0;
+    border-style: solid;
+    border-width: 1px;
+    color: #888888;
+    cursor: pointer;
+    display: inline-block;
+    float: none;
+    height: 13px;
+    margin-left: 4px;
+    padding: 0 2px;
+    width: 10px;
+}
+
+.cn-widget-header-toolbar .cn-menu:hover .cn-arrow {
+    background-position: -456px -363px;
+    border-color: #DEDEDE #DEDEDE #FFFFFF;
+}
+
+.ajax-loading {
+    background-color: #FFF;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    height: 100%;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    position: absolute;
+    top: 0px;
+    vertical-align: middle;
+    width: 100%;
+    z-index: 50;
+}
+
+.ajax-loading div.ajax-loading-image {
+    background: transparent no-repeat scroll center center;
+    height: 100%;
+    margin: auto 0;
+    min-height: 32px; /* must not be higher than min-height of widget! */
+    min-width: 52px;
+    opacity: 1;
+    width: 100%;
+}

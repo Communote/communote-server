@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="classpath:de/communardo/kenmei/database/update/v1.0.2/db.changelog.v1.0.2.xml">
+
+	<changeSet id="mt1957_1" author="unknown" context="client" dbms="postgresql">
+		<comment>1957: CR 99 Create posts for blog right changes</comment>
+		<sql>
+			ALTER TABLE core_uti ADD COLUMN CREATION_SOURCE CHARACTER VARYING(1024);
+			UPDATE core_uti SET creation_source = 'WEB';
+			ALTER TABLE core_uti ALTER COLUMN creation_source SET not null;
+		</sql>
+	</changeSet>
+	
+	<changeSet author="unknown" id="mt2276_1" context="client" dbms="postgresql">
+		<comment>2276: CR 43 Delete/Disable user: update name of user status constant DISABLED</comment>
+		<sql>
+			UPDATE user_user SET status = 'TEMPORARILY_DISABLED' where status = 'DISABLED';
+		</sql>
+	</changeSet>
+	    
+	
+	<changeSet id="mt2699_1" author="unknown" context="client" dbms="postgresql">
+		<comment>2699: CR 71 - Force SSL | 2698: Redirect einer https Anfrage wird zu http Anfrage</comment>
+		<sql>
+			create table channel_configuration (
+		        ID BIGINT not null,
+		        FORCE_SSL BOOLEAN not null,
+		        CHANNEL_TYPE CHARACTER VARYING(1024) not null,
+		        primary key (ID)
+		    );
+    		create sequence channel_configuration_seq;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="mt2710_1" author="unknown" context="client" dbms="postgresql">
+		<preConditions onError="MARK_RAN" onFail="MARK_RAN">
+			<not><tableExists tableName="isNew" /></not>
+		</preConditions>
+		<comment>2710: tags get lost when removing origin of crosspost created through edit operation</comment>
+		<sql>
+			UPDATE core_utp SET origin_fk = null WHERE status = 'PUBLISHED';
+		</sql>
+	</changeSet>
+	
+	<changeSet id="mt2849" author="unknown" context="client" dbms="postgresql">
+		<comment>2849: [Widget] Render Image Url to external systems into the widget </comment>
+		<addColumn tableName="configuration_confluence_auth">
+			<column name="image_api_url" type="varchar(1024)"></column>
+		</addColumn>
+		<addColumn tableName="configuration_sharepoint_auth">
+			<column name="image_api_url" type="varchar(1024)"></column>
+		</addColumn>
+	</changeSet>
+	
+</databaseChangeLog>

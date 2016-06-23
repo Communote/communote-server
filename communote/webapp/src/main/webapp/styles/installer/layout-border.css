@@ -1,0 +1,23 @@
+@charset "utf-8";
+
+#communote-south {
+    background-image: url("../../themes/core/images/misc/gradient_border-south.png");
+    background-attachment: scroll;
+    background-repeat: repeat-x;
+    background-position: 0 0;
+}
+#communote-south-west {
+    margin-left: -10px;
+    background-image: url("../../themes/core/images/misc/gradient_border-south-west.png");
+    background-attachment: scroll;
+    background-repeat: repeat-y;
+    background-position: 0 0;
+}
+#communote-south-east {
+    height: 10px;
+    font-size: 0;
+    background-image: url("../../themes/core/images/misc/gradient_border-south-east.png");
+    background-attachment: scroll;
+    background-repeat: repeat-y;
+    background-position: 100% 0;
+}

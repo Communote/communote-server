@@ -1,0 +1,50 @@
+#if(!$broker_jmx)
+    #t('plugins.mq.provider.monitor.jmx.off')
+#elseif($has_errors)
+	<h5>#t('plugins.mq.provider.monitor.jmx.error')</h5>
+	<br />
+	$error_message
+#elseif($broker_active)
+	   <h5>$fmtTool.message('plugins.mq.provider.monitor.title'): $broker_name</h5>
+    <br />  
+    <h6 class="subheadline">$fmtTool.message('plugins.mq.provider.monitor.handler.consumers')</h6>
+    
+    #if(!$broker_users.isEmpty())
+        <table>
+        <tr>
+            <th>$fmtTool.message('plugins.mq.provider.monitor.handler.consumer.selector')</th>
+            <th>$fmtTool.message('plugins.mq.provider.monitor.handler.consumer.pending')</th>
+            <th>$fmtTool.message('plugins.mq.provider.monitor.handler.consumer.processed')</th>
+        </tr>
+    #foreach($user in $broker_users)
+        <tr>
+            <td>$user.selector </td>
+            <td>$user.pendingMessagesCount </td>
+            <td>$user.dispatchedMessagesCount </td>
+        </tr>
+    #end
+        </table>
+    #else
+        <div class="block">
+            <i>$fmtTool.message('plugins.mq.provider.monitor.handler.consumer.nodata')</i>
+        </div>
+    #end
+    <br />
+    <h6 class="subheadline">$fmtTool.message('plugins.mq.provider.monitor.queues')</h6>
+    <table>
+        <tr>
+            <th>$fmtTool.message('plugins.mq.provider.monitor.queue.name')</th>
+            <th>$fmtTool.message('plugins.mq.provider.monitor.queue.pending')</th>
+            <th>$fmtTool.message('plugins.mq.provider.monitor.queue.processed')</th>
+        </tr> 
+        #foreach($queue in $broker_queues)
+            <tr>
+                <td>$queue.name </td>
+                <td>$queue.pendingMessagesCount </td>
+                <td>$queue.dispatchedMessagesCount </td>
+            </tr>
+        #end
+    </table>
+#else
+    $fmtTool.message('plugins.mq.provider.monitor.broker.deactivate')
+#end	

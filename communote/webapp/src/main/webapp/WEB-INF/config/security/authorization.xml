@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sec="http://www.springframework.org/schema/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/security 
+                        http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+    <bean id="filterInvocationInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="securityMetadataSource">
+            <sec:filter-security-metadata-source lowercase-comparisons="true" request-matcher="ant">
+                <sec:intercept-url pattern="/*/*/installer/**" access="ROLE_ANONYMOUS" />
+                <sec:intercept-url pattern="/*/*/downloads/**" access="ROLE_ANONYMOUS" />
+                <sec:intercept-url pattern="/*/*/error-page" access="ROLE_KENMEI_USER,ROLE_ANONYMOUS,ROLE_KENMEI_CLIENT_MANAGER" />
+                <sec:intercept-url pattern="/*/*/message-page" access="ROLE_KENMEI_USER,ROLE_ANONYMOUS,ROLE_KENMEI_CLIENT_MANAGER" />
+                <sec:intercept-url pattern="/*/*/version.txt" access="ROLE_KENMEI_USER,ROLE_ANONYMOUS,ROLE_KENMEI_CLIENT_MANAGER" />
+                <sec:intercept-url pattern="/*/*/resources/i18n/**" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER,ROLE_PUBLIC_USER,ROLE_SYSTEM_USER" />
+                <sec:intercept-url pattern="/*/*/resources/**" access="ROLE_ANONYMOUS" />
+                <sec:intercept-url pattern="/*/*/portal/authenticate" access="ROLE_ANONYMOUS" />
+                <sec:intercept-url pattern="/*/*/portal/authenticate.do" access="ROLE_ANONYMOUS" />
+                <sec:intercept-url pattern="/*/*/portal/help.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/portal/imprint.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/portal/downloads/mobile/**" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/portal/repositorycontentdownload.do" access="ROLE_PUBLIC_USER,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/portal/files/**" access="ROLE_PUBLIC_USER,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/user/registration.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/user/confirm.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/user/termsconditions" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER,ROLE_KENMEI_CLIENT_MANAGER" />
+                <sec:intercept-url pattern="/*/*/user/confirmcode.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/user/about" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/user/about.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/user/viewtermsconditions.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/user/sendforgottenpw.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/admin/**" access="ROLE_KENMEI_CLIENT_MANAGER" />
+                <sec:intercept-url pattern="/*/*/client/registration.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/jsp/system/**" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER" />
+                <sec:intercept-url pattern="/*/*/api/*/local/xmpp.do" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER,ROLE_SYSTEM_USER" />
+                <sec:intercept-url pattern="/*/*/api/rest/information" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER,ROLE_SYSTEM_USER,ROLE_PUBLIC_USER,ROLE_CRAWL_USER" />
+                <sec:intercept-url pattern="/*/*/api/*/login.*" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER,ROLE_SYSTEM_USER" />
+                <sec:intercept-url pattern="/*/*/api/rest/*/logins" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER,ROLE_SYSTEM_USER" />
+                <sec:intercept-url pattern="/*/*/api/rest/**" access="ROLE_KENMEI_USER,ROLE_SYSTEM_USER,ROLE_PUBLIC_USER" />
+                <sec:intercept-url pattern="/*/*/web/rest/**" access="ROLE_KENMEI_USER,ROLE_SYSTEM_USER,ROLE_PUBLIC_USER" />
+                <sec:intercept-url pattern="/*/*/api/rest-crawl/**" access="ROLE_CRAWL_USER" />
+                <sec:intercept-url pattern="/*/*/api/**" access="ROLE_KENMEI_USER,ROLE_SYSTEM_USER" />
+                <sec:intercept-url pattern="/*/*/image/client*" access="ROLE_ANONYMOUS,ROLE_PUBLIC_USER,ROLE_KENMEI_USER,ROLE_KENMEI_CLIENT_MANAGER" />
+                <sec:intercept-url pattern="/*/*/widgets/admin/**" access="ROLE_KENMEI_CLIENT_MANAGER" />
+                <sec:intercept-url pattern="/*/*/widgets/management/**" access="ROLE_KENMEI_CLIENT_MANAGER" />
+                <!-- Admin plugin widgets, first pattern expects bundle name in group, second in request parameter -->
+                <sec:intercept-url pattern="/*/*/widgets/plugin/*/admin/**" access="ROLE_KENMEI_CLIENT_MANAGER" />
+                <sec:intercept-url pattern="/*/*/widgets/plugin/admin/**" access="ROLE_KENMEI_CLIENT_MANAGER" />
+                <sec:intercept-url pattern="/*/*/plugins/**" access="ROLE_ANONYMOUS" />
+                <sec:intercept-url pattern="/*/*/javascripts/**" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER,ROLE_PUBLIC_USER,ROLE_SYSTEM_USER" />
+                <sec:intercept-url pattern="/*/*/image/*" access="ROLE_PUBLIC_USER,ROLE_KENMEI_USER,ROLE_SYSTEM_USER" />
+                <sec:intercept-url pattern="/*/*/styles/**" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER,ROLE_PUBLIC_USER,ROLE_SYSTEM_USER" />
+                <sec:intercept-url pattern="/*/*/is_running/**" access="ROLE_ANONYMOUS,ROLE_KENMEI_USER,ROLE_PUBLIC_USER,ROLE_SYSTEM_USER" />
+                <sec:intercept-url pattern="/**" access="ROLE_KENMEI_USER" />
+
+                <!-- The following patterns are deprecated and should be avoided. -->
+                <sec:intercept-url pattern="/*/*/user/client/**" access="ROLE_KENMEI_CLIENT_MANAGER" />
+            </sec:filter-security-metadata-source>
+        </property>
+    </bean>
+    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <constructor-arg>
+            <list>
+                <ref bean="roleVoter" />
+                <ref bean="authenticatedVoter" />
+            </list>
+        </constructor-arg>
+        <property name="allowIfAllAbstainDecisions">
+            <value>false</value>
+        </property>
+    </bean>
+    <bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
+    <bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter"></bean>
+</beans>
+

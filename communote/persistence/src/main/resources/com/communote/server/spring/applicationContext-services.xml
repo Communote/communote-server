@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <context:component-scan base-package="com.communote.server.core"/>
+    <context:component-scan base-package="com.communote.server.service"/>
+    <context:component-scan base-package="com.communote.server.persistence"/>
+
+
+    <!-- ========================= Start of SERVICE DEFINITIONS ========================= -->
+    <!-- To avoid scanning API package we add the ServiceLocator manually -->
+    <bean class="com.communote.server.api.ServiceLocator"/>
+    
+    <!-- Service Transactional Interceptor -->
+    <bean id="serviceTransactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+        <property name="transactionManager">
+            <ref bean="transactionManager"/>
+        </property>
+        <property name="transactionAttributeSource">
+            <value>
+                com.communote.server.core.crc.RepositoryConnectorDelegate.addRepositoryConnector=PROPAGATION_REQUIRED
+                com.communote.server.core.crc.RepositoryConnectorDelegate.assertRepositorySizeLimitNotReached=PROPAGATION_REQUIRES_NEW
+            	com.communote.server.core.crc.RepositoryConnectorDelegate.deleteContent=PROPAGATION_REQUIRED
+            	com.communote.server.core.crc.RepositoryConnectorDelegate.getContent=PROPAGATION_REQUIRED
+            	com.communote.server.core.crc.RepositoryConnectorDelegate.getDefaultRepositoryConnector=PROPAGATION_REQUIRED
+            	com.communote.server.core.crc.RepositoryConnectorDelegate.getMetadata=PROPAGATION_REQUIRED
+            	com.communote.server.core.crc.RepositoryConnectorDelegate.getRepositoryConnectors=PROPAGATION_REQUIRED
+            	com.communote.server.core.crc.RepositoryConnectorDelegate.getRepositoryConnector=PROPAGATION_REQUIRED
+            	com.communote.server.core.crc.RepositoryConnectorDelegate.removeRepositoryConnector=PROPAGATION_REQUIRED
+            	com.communote.server.core.crc.RepositoryConnectorDelegate.storeContent=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.findUserProfileByUserId=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.getUserProfileDetailsById=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.loadImage=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.updateImage=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.updateUserProfile=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.findUserProfileVOByUserId=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.removeUserImage=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.addMessagingConnectorConfig=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.updateNotificationConfig=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.anonymizeUserProfile=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.findUserProfileDetailListItemByUserId=PROPAGATION_REQUIRED
+                com.communote.server.core.user.UserProfileManagement.getMessagerConnectorConfigs=PROPAGATION_REQUIRED
+                com.communote.server.core.blog.MailBasedPostingManagement.createNoteFromMail=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.createFilter=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.updateFilter=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.removeFilter=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.listFilter=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.setFilterEnabled=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.setFilterChannelEnabled=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.isInRange=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.setChannelEnabled=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.findFilterById=PROPAGATION_REQUIRED
+                com.communote.server.core.security.iprange.IpRangeFilterManagement.findIpRanges=PROPAGATION_REQUIRED
+                com.communote.server.core.security.ssl.ChannelManagement.isForceSsl=PROPAGATION_SUPPORTS
+                com.communote.server.core.security.ssl.ChannelManagement.loadAll=PROPAGATION_REQUIRED
+                com.communote.server.core.security.ssl.ChannelManagement.update=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.createGlobalTagCategory=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.findGlobalTagCategoryByName=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.findGlobalTagCategoryByPrefix=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.getCategorizedTags=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.updateGlobalTagCategory=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.deleteTagCategory=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.createCategorizedTag=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.updateCategorizedTag=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.deleteCategorizedTag=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.changeCategorizedTagIndex=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.assignGlobalCategoryToBlog=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.assignGlobalCategoryToAllBlogs=PROPAGATION_REQUIRED
+                com.communote.server.core.tag.category.TagCategoryManagement.removeTagCategoryFromBlog=PROPAGATION_REQUIRED
+            </value>
+        </property>
+    </bean>
+
+    <!-- RepositoryConnectorDelegate Service Proxy with inner RepositoryConnectorDelegate Service Implementation -->
+    <bean id="repositoryConnectorDelegate" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.core.crc.RepositoryConnectorDelegateImpl">
+                <property name="clientStatisticDao">
+                    <ref bean="clientStatisticDao"/>
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.core.crc.RepositoryConnectorDelegate</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>serviceTransactionInterceptor</value>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserProfileManagement Service Proxy with inner UserProfileManagement Service Implementation -->
+    <bean id="userProfileManagement" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.core.user.UserProfileManagementImpl">
+                <property name="userDao">
+                    <ref bean="userDao"/>
+                </property>
+                <property name="userProfileDao">
+                    <ref bean="userProfileDao"/>
+                </property>
+                <property name="userImageDao">
+                    <ref bean="userImageDao"/>
+                </property>
+                <property name="contactDao">
+                    <ref bean="contactDao"/>
+                </property>
+                <property name="messagerConnectorConfigDao">
+                    <ref bean="messagerConnectorConfigDao"/>
+                </property>
+                <property name="notificationConfigDao">
+                    <ref bean="notificationConfigDao"/>
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.core.user.UserProfileManagement</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>serviceTransactionInterceptor</value>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- MailBasedPostingManagement Service Proxy with inner MailBasedPostingManagement Service Implementation -->
+    <bean id="mailBasedPostingManagement" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.core.blog.MailBasedPostingManagementImpl">
+                <property name="userDao">
+                    <ref bean="userDao"/>
+                </property>
+                <property name="processedMailNoteDao">
+                    <ref bean="processedMailNoteDao"/>
+                </property>
+                <property name="blogDao">
+                    <ref bean="blogDao"/>
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.core.blog.MailBasedPostingManagement</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>serviceTransactionInterceptor</value>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- IpRangeFilterManagement Service Proxy with inner IpRangeFilterManagement Service Implementation -->
+    <bean id="ipRangeFilterManagement" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.core.security.iprange.IpRangeFilterManagementImpl">
+                <property name="ipRangeDao">
+                    <ref bean="ipRangeDao"/>
+                </property>
+                <property name="ipRangeChannelDao">
+                    <ref bean="ipRangeChannelDao"/>
+                </property>
+                <property name="ipRangeFilterDao">
+                    <ref bean="ipRangeFilterDao"/>
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.core.security.iprange.IpRangeFilterManagement</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>serviceTransactionInterceptor</value>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ChannelManagement Service Proxy with inner ChannelManagement Service Implementation -->
+    <bean id="channelManagement" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.core.security.ssl.ChannelManagementImpl">
+                <property name="channelConfigurationDao">
+                    <ref bean="channelConfigurationDao"/>
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.core.security.ssl.ChannelManagement</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>serviceTransactionInterceptor</value>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- TagCategoryManagement Service Proxy with inner TagCategoryManagement Service Implementation -->
+    <bean id="tagCategoryManagement" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.core.tag.category.TagCategoryManagementImpl">
+                <property name="tagDao">
+                    <ref bean="tagDao"/>
+                </property>
+                <property name="globalTagCategoryDao">
+                    <ref bean="globalTagCategoryDao"/>
+                </property>
+                <property name="categorizedTagDao">
+                    <ref bean="categorizedTagDao"/>
+                </property>
+                <property name="abstractTagCategoryDao">
+                    <ref bean="abstractTagCategoryDao"/>
+                </property>
+                <property name="noteDao">
+                    <ref bean="noteDao"/>
+                </property>
+                <property name="blogDao">
+                    <ref bean="blogDao"/>
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.core.tag.category.TagCategoryManagement</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>serviceTransactionInterceptor</value>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ========================= End of SERVICE DEFINITIONS ========================= -->
+</beans>

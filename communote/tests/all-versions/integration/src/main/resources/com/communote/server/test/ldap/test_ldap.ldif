@@ -1,0 +1,1937 @@
+version: 1
+
+dn: dc=communote,dc=com
+objectClass: dcObject
+objectClass: organization
+o: Communote
+dc: communote
+
+dn: ou=Users,dc=communote, dc=com
+ou: Users
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Groups,dc=communote, dc=com
+ou: Groups
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Accounting,ou=Users,dc=communote, dc=com
+ou: Accounting
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Consulting,ou=Users,dc=communote, dc=com
+ou: Consulting
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Product Development,ou=Users,dc=communote, dc=com
+ou: Product Development
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Product Testing,ou=Users,dc=communote, dc=com
+ou: Product Testing
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Human Resources,ou=Users,dc=communote, dc=com
+ou: Human Resources
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Management,ou=Users,dc=communote, dc=com
+ou: Management
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Administrative,ou=Users,dc=communote, dc=com
+ou: Administrative
+objectClass: top
+objectClass: organizationalUnit
+
+dn: cn=Nataly Satterfield,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Nataly Satterfield
+sn: Satterfield
+sAMAccountName: SatterfN
+description: This is Nataly Satterfield's description
+facsimileTelephoneNumber: +1 408 700-8319
+l: Cupertino
+ou: Management
+postalAddress: Management$Cupertino
+telephoneNumber: +1 408 372-6958
+title: Junior Management Writer
+userPassword: 123456
+uid: SatterfN
+givenName: Nataly
+mail: SatterfN@ns-mail7.localhost
+carLicense: RYHHW7
+departmentNumber: 8327
+employeeType: Contract
+homePhone: +1 408 489-7587
+initials: N. S.
+mobile: +1 408 415-1127
+pager: +1 408 619-2730
+roomNumber: 8495 
+
+dn: cn=Sibylla DeBrusk,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Sibylla DeBrusk
+sn: DeBrusk
+sAMAccountName: DeBruskS
+description: This is Sibylla DeBrusk's description
+facsimileTelephoneNumber: +1 804 387-9160
+l: San Mateo
+ou: Product Development
+postalAddress: Product Development$San Mateo
+telephoneNumber: +1 804 163-8450
+title: Associate Product Development Director
+userPassword: 123456
+uid: DeBruskS
+givenName: Sibylla
+mail: DeBruskS@ns-mail7.localhost
+carLicense: 9YGQQ1
+departmentNumber: 3002
+employeeType: Contract
+homePhone: +1 804 949-2326
+initials: S. D.
+mobile: +1 804 469-2415
+pager: +1 804 677-4556
+roomNumber: 9246
+manager: cn=Nataly Satterfield,ou=Management,ou=Users,dc=communote, dc=com 
+
+dn: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Norrie Walkley
+sn: Walkley
+sAMAccountName: WalkleyN
+description: This is Norrie Walkley's description
+facsimileTelephoneNumber: +1 213 771-4560
+l: Fremont
+ou: Consulting
+postalAddress: Consulting$Fremont
+telephoneNumber: +1 213 705-1391
+title: Supreme Consulting Architect
+userPassword: 123456
+uid: WalkleyN
+givenName: Norrie
+mail: WalkleyN@ns-mail8.localhost
+carLicense: G1QWP4
+departmentNumber: 1792
+employeeType: Employee
+homePhone: +1 213 191-8453
+initials: N. W.
+mobile: +1 213 212-2200
+pager: +1 213 798-5585
+roomNumber: 9084
+secretary: cn=Sibylla DeBrusk,ou=Product Development,ou=Users,dc=communote, dc=com
+manager: cn=Nataly Satterfield,ou=Management,ou=Users,dc=communote, dc=com 
+
+dn: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Saskia Zazulak
+sn: Zazulak
+sAMAccountName: ZazulakS
+description: This is Saskia Zazulak's description
+facsimileTelephoneNumber: +1 408 955-3499
+l: San Jose
+ou: Product Development
+postalAddress: Product Development$San Jose
+telephoneNumber: +1 408 385-7827
+title: Associate Product Development Writer
+userPassword: 123456
+uid: ZazulakS
+givenName: Saskia
+mail: ZazulakS@ns-mail9.localhost
+carLicense: 9X430P
+departmentNumber: 8585
+employeeType: Normal
+homePhone: +1 408 197-7383
+initials: S. Z.
+mobile: +1 408 253-2895
+pager: +1 408 250-5446
+roomNumber: 8339
+secretary: cn=Sibylla DeBrusk,ou=Product Development,ou=Users,dc=communote, dc=com
+manager: cn=Nataly Satterfield,ou=Management,ou=Users,dc=communote, dc=com 
+
+dn: cn=Robin Herberger,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Robin Herberger
+sn: Herberger
+sAMAccountName: HerbergR
+description: This is Robin Herberger's description
+facsimileTelephoneNumber: +1 818 639-8785
+l: San Jose
+ou: Management
+postalAddress: Management$San Jose
+telephoneNumber: +1 818 535-4049
+title: Chief Management Technician
+userPassword: 123456
+uid: HerbergR
+givenName: Robin
+mail: HerbergR@ns-mail4.localhost
+carLicense: 09Q2BN
+departmentNumber: 7837
+employeeType: Normal
+homePhone: +1 818 893-1841
+initials: R. H.
+mobile: +1 818 149-1740
+pager: +1 818 881-9899
+roomNumber: 9023
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com 
+
+dn: cn=Verina Kirby,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Verina Kirby
+sn: Kirby
+sAMAccountName: KirbyV
+description: This is Verina Kirby's description
+facsimileTelephoneNumber: +1 818 397-1699
+l: Armonk
+ou: Consulting
+postalAddress: Consulting$Armonk
+telephoneNumber: +1 818 694-4298
+title: Junior Consulting President
+userPassword: 123456
+uid: KirbyV
+givenName: Verina
+mail: KirbyV@ns-mail9.localhost
+carLicense: FFUXMX
+departmentNumber: 1777
+employeeType: Contract
+homePhone: +1 818 371-9486
+initials: V. K.
+mobile: +1 818 386-4072
+pager: +1 818 127-3983
+roomNumber: 9285
+secretary: cn=Sibylla DeBrusk,ou=Product Development,ou=Users,dc=communote, dc=com
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com 
+
+dn: cn=Pamella Hjartarson,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Pamella Hjartarson
+sn: Hjartarson
+sAMAccountName: HjartarP
+description: This is Pamella Hjartarson's description
+facsimileTelephoneNumber: +1 818 792-9968
+l: Cambridge
+ou: Consulting
+postalAddress: Consulting$Cambridge
+telephoneNumber: +1 818 772-1659
+title: Master Consulting Janitor
+userPassword: 123456
+uid: HjartarP
+givenName: Pamella
+mail: HjartarP@ns-mail5.localhost
+carLicense: HVVWJG
+departmentNumber: 8133
+employeeType: Contract
+homePhone: +1 818 457-9996
+initials: P. H.
+mobile: +1 818 802-2292
+pager: +1 818 875-9093
+roomNumber: 8559
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com 
+
+dn: cn=Manon Shelton,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Manon Shelton
+sn: Shelton
+sAMAccountName: SheltonM
+description: This is Manon Shelton's description
+facsimileTelephoneNumber: +1 510 408-4266
+l: Sunnyvale
+ou: Human Resources
+postalAddress: Human Resources$Sunnyvale
+telephoneNumber: +1 510 593-5722
+title: Chief Human Resources Mascot
+userPassword: 123456
+uid: SheltonM
+givenName: Manon
+mail: SheltonM@ns-mail7.localhost
+carLicense: DRARWL
+departmentNumber: 4920
+employeeType: Contract
+homePhone: +1 510 172-5562
+initials: M. S.
+mobile: +1 510 239-6011
+pager: +1 510 103-4013
+roomNumber: 8647
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Kumar Fallahi,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Kumar Fallahi
+sn: Fallahi
+sAMAccountName: FallahiK
+description: This is Kumar Fallahi's description
+facsimileTelephoneNumber: +1 213 935-3304
+l: San Jose
+ou: Product Testing
+postalAddress: Product Testing$San Jose
+telephoneNumber: +1 213 883-8897
+title: Chief Product Testing Assistant
+userPassword: 123456
+uid: FallahiK
+givenName: Kumar
+mail: FallahiK@ns-mail6.localhost
+carLicense: LXS1LD
+departmentNumber: 9051
+employeeType: Normal
+homePhone: +1 213 177-2363
+initials: K. F.
+mobile: +1 213 892-9928
+pager: +1 213 192-6512
+roomNumber: 8221
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Abahri Nixon,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Abahri Nixon
+sn: Nixon
+sAMAccountName: NixonA
+description: This is Abahri Nixon's description
+facsimileTelephoneNumber: +1 415 775-8014
+l: Milpitas
+ou: Human Resources
+postalAddress: Human Resources$Milpitas
+telephoneNumber: +1 415 386-3564
+title: Supreme Human Resources President
+userPassword: 123456
+uid: NixonA
+givenName: Abahri
+mail: NixonA@ns-mail6.localhost
+carLicense: AS3D1F
+departmentNumber: 3060
+employeeType: Contract
+homePhone: +1 415 639-4225
+initials: A. N.
+mobile: +1 415 831-2061
+pager: +1 415 480-4698
+roomNumber: 9364
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Dedie Jazanoski,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Dedie Jazanoski
+sn: Jazanoski
+sAMAccountName: JazanosD
+description: This is Dedie Jazanoski's description
+facsimileTelephoneNumber: +1 510 982-4474
+l: Cambridge
+ou: Consulting
+postalAddress: Consulting$Cambridge
+telephoneNumber: +1 510 414-2393
+title: Chief Consulting Madonna
+userPassword: 123456
+uid: JazanosD
+givenName: Dedie
+mail: JazanosD@ns-mail3.localhost
+carLicense: X2H99M
+departmentNumber: 9416
+employeeType: Normal
+homePhone: +1 510 652-8777
+initials: D. J.
+mobile: +1 510 998-9017
+pager: +1 510 304-6913
+roomNumber: 8916
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Lauree Schierbaum,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Lauree Schierbaum
+sn: Schierbaum
+sAMAccountName: SchierbL
+description: This is Lauree Schierbaum's description
+facsimileTelephoneNumber: +1 415 622-3582
+l: Alameda
+ou: Product Development
+postalAddress: Product Development$Alameda
+telephoneNumber: +1 415 196-6470
+title: Master Product Development Stooge
+userPassword: 123456
+uid: SchierbL
+givenName: Lauree
+mail: SchierbL@ns-mail5.localhost
+carLicense: KMU8FR
+departmentNumber: 1480
+employeeType: Employee
+homePhone: +1 415 795-7057
+initials: L. S.
+mobile: +1 415 354-2082
+pager: +1 415 929-8075
+roomNumber: 8124
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Cthrine Helseth,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Cthrine Helseth
+sn: Helseth
+sAMAccountName: HelsethC
+description: This is Cthrine Helseth's description
+facsimileTelephoneNumber: +1 510 506-1111
+l: Orem
+ou: Human Resources
+postalAddress: Human Resources$Orem
+telephoneNumber: +1 510 727-6995
+title: Chief Human Resources Janitor
+userPassword: 123456
+uid: HelsethC
+givenName: Cthrine
+mail: HelsethC@ns-mail4.localhost
+carLicense: RG8TPC
+departmentNumber: 8932
+employeeType: Normal
+homePhone: +1 510 289-2395
+initials: C. H.
+mobile: +1 510 934-1782
+pager: +1 510 288-5828
+roomNumber: 8182
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Clemence Piyasena,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Clemence Piyasena
+sn: Piyasena
+sAMAccountName: PiyasenC
+description: This is Clemence Piyasena's description
+facsimileTelephoneNumber: +1 206 141-7160
+l: Fremont
+ou: Management
+postalAddress: Management$Fremont
+telephoneNumber: +1 206 279-8311
+title: Master Management Figurehead
+userPassword: 123456
+uid: PiyasenC
+givenName: Clemence
+mail: PiyasenC@ns-mail8.localhost
+carLicense: 6NNN5M
+departmentNumber: 4489
+employeeType: Contract
+homePhone: +1 206 635-4658
+initials: C. P.
+mobile: +1 206 731-3797
+pager: +1 206 403-2094
+roomNumber: 8246
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Clint Kemppainen,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Clint Kemppainen
+sn: Kemppainen
+sAMAccountName: KemppaiC
+description: This is Clint Kemppainen's description
+facsimileTelephoneNumber: +1 804 503-8820
+l: San Mateo
+ou: Management
+postalAddress: Management$San Mateo
+telephoneNumber: +1 804 881-7897
+title: Chief Management Sales Rep
+userPassword: 123456
+uid: KemppaiC
+givenName: Clint
+mail: KemppaiC@ns-mail6.localhost
+carLicense: PDUHJL
+departmentNumber: 2049
+employeeType: Employee
+homePhone: +1 804 850-1705
+initials: C. K.
+mobile: +1 804 178-8712
+pager: +1 804 363-2413
+roomNumber: 8910
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Fredrika Rabatich,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Fredrika Rabatich
+sn: Rabatich
+sAMAccountName: RabaticF
+description: This is Fredrika Rabatich's description
+facsimileTelephoneNumber: +1 818 483-2777
+l: San Francisco
+ou: Human Resources
+postalAddress: Human Resources$San Francisco
+telephoneNumber: +1 818 837-6987
+title: Junior Human Resources Czar
+userPassword: 123456
+uid: RabaticF
+givenName: Fredrika
+mail: RabaticF@ns-mail5.localhost
+carLicense: L6XTDE
+departmentNumber: 6470
+employeeType: Normal
+homePhone: +1 818 234-6713
+initials: F. R.
+mobile: +1 818 106-6255
+pager: +1 818 125-4149
+roomNumber: 9840
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Aile Giamberardino,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Aile Giamberardino
+sn: Giamberardino
+sAMAccountName: GiamberA
+description: This is Aile Giamberardino's description
+facsimileTelephoneNumber: +1 213 731-4100
+l: Cambridge
+ou: Product Development
+postalAddress: Product Development$Cambridge
+telephoneNumber: +1 213 479-7661
+title: Junior Product Development Stooge
+userPassword: 123456
+uid: GiamberA
+givenName: Aile
+mail: GiamberA@ns-mail5.localhost
+carLicense: G0C155
+departmentNumber: 2704
+employeeType: Contract
+homePhone: +1 213 725-6328
+initials: A. G.
+mobile: +1 213 507-6105
+pager: +1 213 223-4801
+roomNumber: 9011
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Meryl Staples,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Meryl Staples
+sn: Staples
+sAMAccountName: StaplesM
+description: This is Meryl Staples's description
+facsimileTelephoneNumber: +1 408 833-4641
+l: Armonk
+ou: Human Resources
+postalAddress: Human Resources$Armonk
+telephoneNumber: +1 408 722-9533
+title: Chief Human Resources Admin
+userPassword: 123456
+uid: StaplesM
+givenName: Meryl
+mail: StaplesM@ns-mail4.localhost
+carLicense: YLPOEP
+departmentNumber: 5783
+employeeType: Normal
+homePhone: +1 408 194-2134
+initials: M. S.
+mobile: +1 408 472-2595
+pager: +1 408 467-1391
+roomNumber: 8920
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Clara Labuhn,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Clara Labuhn
+sn: Labuhn
+sAMAccountName: LabuhnC
+description: This is Clara Labuhn's description
+facsimileTelephoneNumber: +1 804 132-7707
+l: Milpitas
+ou: Product Development
+postalAddress: Product Development$Milpitas
+telephoneNumber: +1 804 421-5325
+title: Master Product Development Punk
+userPassword: 123456
+uid: LabuhnC
+givenName: Clara
+mail: LabuhnC@ns-mail9.localhost
+carLicense: MML78U
+departmentNumber: 8705
+employeeType: Normal
+homePhone: +1 804 828-9069
+initials: C. L.
+mobile: +1 804 907-4177
+pager: +1 804 686-2424
+roomNumber: 9067
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Troy Parrilli,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Troy Parrilli
+sn: Parrilli
+sAMAccountName: ParrillT
+description: This is Troy Parrilli's description
+facsimileTelephoneNumber: +1 213 794-1535
+l: San Francisco
+ou: Product Testing
+postalAddress: Product Testing$San Francisco
+telephoneNumber: +1 213 330-3158
+title: Master Product Testing Technician
+userPassword: 123456
+uid: ParrillT
+givenName: Troy
+mail: ParrillT@ns-mail4.localhost
+carLicense: PGDXO1
+departmentNumber: 3201
+employeeType: Contract
+homePhone: +1 213 816-8854
+initials: T. P.
+mobile: +1 213 925-3045
+pager: +1 213 160-7181
+roomNumber: 9095
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Allen Willhoff,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Allen Willhoff
+sn: Willhoff
+sAMAccountName: WillhofA
+description: This is Allen Willhoff's description
+facsimileTelephoneNumber: +1 510 888-7665
+l: Alameda
+ou: Consulting
+postalAddress: Consulting$Alameda
+telephoneNumber: +1 510 506-5677
+title: Associate Consulting Janitor
+userPassword: 123456
+uid: WillhofA
+givenName: Allen
+mail: WillhofA@ns-mail4.localhost
+carLicense: 3O0RVB
+departmentNumber: 7815
+employeeType: Normal
+homePhone: +1 510 112-3768
+initials: A. W.
+mobile: +1 510 967-4363
+pager: +1 510 695-2201
+roomNumber: 9233
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Martin Matsugu,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Martin Matsugu
+sn: Matsugu
+sAMAccountName: MatsuguM
+description: This is Martin Matsugu's description
+facsimileTelephoneNumber: +1 510 325-7750
+l: Redwood Shores
+ou: Product Development
+postalAddress: Product Development$Redwood Shores
+telephoneNumber: +1 510 570-4727
+title: Supreme Product Development Mascot
+userPassword: 123456
+uid: MatsuguM
+givenName: Martin
+mail: MatsuguM@ns-mail9.localhost
+carLicense: MA3PHJ
+departmentNumber: 5182
+employeeType: Contract
+homePhone: +1 510 908-7510
+initials: M. M.
+mobile: +1 510 757-1575
+pager: +1 510 790-7709
+roomNumber: 9124
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Adelheid Kimbarovsky,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Adelheid Kimbarovsky
+sn: Kimbarovsky
+sAMAccountName: KimbaroA
+description: This is Adelheid Kimbarovsky's description
+facsimileTelephoneNumber: +1 510 266-9598
+l: Cambridge
+ou: Product Testing
+postalAddress: Product Testing$Cambridge
+telephoneNumber: +1 510 922-1991
+title: Master Product Testing Czar
+userPassword: 123456
+uid: KimbaroA
+givenName: Adelheid
+mail: KimbaroA@ns-mail9.localhost
+carLicense: ONTYGI
+departmentNumber: 4315
+employeeType: Normal
+homePhone: +1 510 144-6668
+initials: A. K.
+mobile: +1 510 527-8706
+pager: +1 510 188-6521
+roomNumber: 8629
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Gipsy Raglin,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Gipsy Raglin
+sn: Raglin
+sAMAccountName: RaglinG
+description: This is Gipsy Raglin's description
+facsimileTelephoneNumber: +1 408 499-4504
+l: Redmond
+ou: Product Testing
+postalAddress: Product Testing$Redmond
+telephoneNumber: +1 408 480-5928
+title: Supreme Product Testing Mascot
+userPassword: 123456
+uid: RaglinG
+givenName: Gipsy
+mail: RaglinG@ns-mail2.localhost
+carLicense: KH2HSH
+departmentNumber: 4525
+employeeType: Employee
+homePhone: +1 408 171-9238
+initials: G. R.
+mobile: +1 408 294-9723
+pager: +1 408 574-9205
+roomNumber: 9179
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Valinda Mc Alpine,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Valinda Mc Alpine
+sn: Mc Alpine
+sAMAccountName: Mc AlpiV
+description: This is Valinda Mc Alpine's description
+facsimileTelephoneNumber: +1 415 642-4898
+l: Palo Alto
+ou: Product Development
+postalAddress: Product Development$Palo Alto
+telephoneNumber: +1 415 167-1090
+title: Junior Product Development Admin
+userPassword: 123456
+uid: Mc AlpiV
+givenName: Valinda
+mail: Mc AlpiV@ns-mail8.localhost
+carLicense: AT1PMG
+departmentNumber: 8545
+employeeType: Contract
+homePhone: +1 415 542-6158
+initials: V. M.
+mobile: +1 415 784-3047
+pager: +1 415 357-6303
+roomNumber: 9982
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Geralda Dunlap,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Geralda Dunlap
+sn: Dunlap
+sAMAccountName: DunlapG
+description: This is Geralda Dunlap's description
+facsimileTelephoneNumber: +1 510 498-6362
+l: Redwood Shores
+ou: Consulting
+postalAddress: Consulting$Redwood Shores
+telephoneNumber: +1 510 238-2443
+title: Junior Consulting Czar
+userPassword: 123456
+uid: DunlapG
+givenName: Geralda
+mail: DunlapG@ns-mail5.localhost
+carLicense: XHTLWV
+departmentNumber: 8440
+employeeType: Normal
+homePhone: +1 510 832-1608
+initials: G. D.
+mobile: +1 510 904-7117
+pager: +1 510 690-7239
+roomNumber: 8027
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Bettye Salamon,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Bettye Salamon
+sn: Salamon
+sAMAccountName: SalamonB
+description: This is Bettye Salamon's description
+facsimileTelephoneNumber: +1 510 406-7793
+l: Palo Alto
+ou: Product Testing
+postalAddress: Product Testing$Palo Alto
+telephoneNumber: +1 510 236-9095
+title: Chief Product Testing Janitor
+userPassword: 123456
+uid: SalamonB
+givenName: Bettye
+mail: SalamonB@ns-mail9.localhost
+carLicense: 1W8RIN
+departmentNumber: 3735
+employeeType: Employee
+homePhone: +1 510 793-5705
+initials: B. S.
+mobile: +1 510 623-8968
+pager: +1 510 198-4461
+roomNumber: 9561
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Cassaundra Digiacomo,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Cassaundra Digiacomo
+sn: Digiacomo
+sAMAccountName: DigiacoC
+description: This is Cassaundra Digiacomo's description
+facsimileTelephoneNumber: +1 213 616-6022
+l: Redmond
+ou: Management
+postalAddress: Management$Redmond
+telephoneNumber: +1 213 332-7059
+title: Supreme Management Architect
+userPassword: 123456
+uid: DigiacoC
+givenName: Cassaundra
+mail: DigiacoC@ns-mail9.localhost
+carLicense: 7I939U
+departmentNumber: 2015
+employeeType: Employee
+homePhone: +1 213 371-5347
+initials: C. D.
+mobile: +1 213 451-4674
+pager: +1 213 407-4609
+roomNumber: 9298
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Tiphany Michelussi,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Tiphany Michelussi
+sn: Michelussi
+sAMAccountName: MicheluT
+description: This is Tiphany Michelussi's description
+facsimileTelephoneNumber: +1 510 186-9950
+l: Armonk
+ou: Human Resources
+postalAddress: Human Resources$Armonk
+telephoneNumber: +1 510 680-3921
+title: Chief Human Resources Architect
+userPassword: 123456
+uid: MicheluT
+givenName: Tiphany
+mail: MicheluT@ns-mail3.localhost
+carLicense: SA609T
+departmentNumber: 4529
+employeeType: Contract
+homePhone: +1 510 998-2908
+initials: T. M.
+mobile: +1 510 510-2658
+pager: +1 510 744-5256
+roomNumber: 8690
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Cong Higgins,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Cong Higgins
+sn: Higgins
+sAMAccountName: HigginsC
+description: This is Cong Higgins's description
+facsimileTelephoneNumber: +1 510 240-2515
+l: Fremont
+ou: Product Development
+postalAddress: Product Development$Fremont
+telephoneNumber: +1 510 130-3073
+title: Associate Product Development Artist
+userPassword: 123456
+uid: HigginsC
+givenName: Cong
+mail: HigginsC@ns-mail8.localhost
+carLicense: LVCT02
+departmentNumber: 1222
+employeeType: Normal
+homePhone: +1 510 882-8016
+initials: C. H.
+mobile: +1 510 650-4441
+pager: +1 510 218-5243
+roomNumber: 9112
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Natalee Goulette,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Natalee Goulette
+sn: Goulette
+sAMAccountName: GoulettN
+description: This is Natalee Goulette's description
+facsimileTelephoneNumber: +1 408 124-9595
+l: Sunnyvale
+ou: Management
+postalAddress: Management$Sunnyvale
+telephoneNumber: +1 408 611-4438
+title: Chief Management Grunt
+userPassword: 123456
+uid: GoulettN
+givenName: Natalee
+mail: GoulettN@ns-mail3.localhost
+carLicense: 2RI6LE
+departmentNumber: 3205
+employeeType: Contract
+homePhone: +1 408 417-9749
+initials: N. G.
+mobile: +1 408 299-4993
+pager: +1 408 151-3346
+roomNumber: 9152
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Vesna Waybright,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Vesna Waybright
+sn: Waybright
+sAMAccountName: WaybrigV
+description: This is Vesna Waybright's description
+facsimileTelephoneNumber: +1 510 440-7267
+l: Orem
+ou: Human Resources
+postalAddress: Human Resources$Orem
+telephoneNumber: +1 510 608-4268
+title: Supreme Human Resources Janitor
+userPassword: 123456
+uid: WaybrigV
+givenName: Vesna
+mail: WaybrigV@ns-mail5.localhost
+carLicense: X9JNME
+departmentNumber: 5583
+employeeType: Employee
+homePhone: +1 510 817-6987
+initials: V. W.
+mobile: +1 510 360-8905
+pager: +1 510 115-3319
+roomNumber: 9069
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Ashly Beattie,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Ashly Beattie
+sn: Beattie
+sAMAccountName: BeattieA
+description: This is Ashly Beattie's description
+facsimileTelephoneNumber: +1 213 614-2813
+l: Menlo Park
+ou: Human Resources
+postalAddress: Human Resources$Menlo Park
+telephoneNumber: +1 213 704-4531
+title: Supreme Human Resources Assistant
+userPassword: 123456
+uid: BeattieA
+givenName: Ashly
+mail: BeattieA@ns-mail2.localhost
+carLicense: DP7GJK
+departmentNumber: 9835
+employeeType: Contract
+homePhone: +1 213 153-7198
+initials: A. B.
+mobile: +1 213 998-3140
+pager: +1 213 186-1047
+roomNumber: 9140
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Kania Krol,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Kania Krol
+sn: Krol
+sAMAccountName: KrolK
+description: This is Kania Krol's description
+facsimileTelephoneNumber: +1 415 376-9754
+l: San Jose
+ou: Product Testing
+postalAddress: Product Testing$San Jose
+telephoneNumber: +1 415 267-1314
+title: Junior Product Testing Figurehead
+userPassword: 123456
+uid: KrolK
+givenName: Kania
+mail: KrolK@ns-mail2.localhost
+carLicense: P2F3DD
+departmentNumber: 5913
+employeeType: Normal
+homePhone: +1 415 633-4383
+initials: K. K.
+mobile: +1 415 960-5406
+pager: +1 415 967-3466
+roomNumber: 9628
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Rosalinde Gundlach,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Rosalinde Gundlach
+sn: Gundlach
+sAMAccountName: GundlacR
+description: This is Rosalinde Gundlach's description
+facsimileTelephoneNumber: +1 415 247-3464
+l: Cupertino
+ou: Product Development
+postalAddress: Product Development$Cupertino
+telephoneNumber: +1 415 263-3185
+title: Associate Product Development Engineer
+userPassword: 123456
+uid: GundlacR
+givenName: Rosalinde
+mail: GundlacR@ns-mail4.localhost
+carLicense: 22VNBH
+departmentNumber: 6371
+employeeType: Normal
+homePhone: +1 415 748-8453
+initials: R. G.
+mobile: +1 415 731-3283
+pager: +1 415 842-8135
+roomNumber: 9172
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Eugine Bruncati,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Eugine Bruncati
+sn: Bruncati
+sAMAccountName: BruncatE
+description: This is Eugine Bruncati's description
+facsimileTelephoneNumber: +1 206 668-9782
+l: Alameda
+ou: Human Resources
+postalAddress: Human Resources$Alameda
+telephoneNumber: +1 206 542-4693
+title: Supreme Human Resources Technician
+userPassword: 123456
+uid: BruncatE
+givenName: Eugine
+mail: BruncatE@ns-mail5.localhost
+carLicense: MPGORW
+departmentNumber: 3318
+employeeType: Normal
+homePhone: +1 206 131-2762
+initials: E. B.
+mobile: +1 206 398-8791
+pager: +1 206 101-5627
+roomNumber: 9684
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Eartha Whetston,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Eartha Whetston
+sn: Whetston
+sAMAccountName: WhetstoE
+description: This is Eartha Whetston's description
+facsimileTelephoneNumber: +1 213 875-6026
+l: Menlo Park
+ou: Management
+postalAddress: Management$Menlo Park
+telephoneNumber: +1 213 679-3121
+title: Junior Management Director
+userPassword: 123456
+uid: WhetstoE
+givenName: Eartha
+mail: WhetstoE@ns-mail4.localhost
+carLicense: G89XTO
+departmentNumber: 1849
+employeeType: Contract
+homePhone: +1 213 177-6244
+initials: E. W.
+mobile: +1 213 120-2222
+pager: +1 213 250-3314
+roomNumber: 8843
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Lesly Rajguru,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Lesly Rajguru
+sn: Rajguru
+sAMAccountName: RajguruL
+description: This is Lesly Rajguru's description
+facsimileTelephoneNumber: +1 510 281-4878
+l: Palo Alto
+ou: Consulting
+postalAddress: Consulting$Palo Alto
+telephoneNumber: +1 510 933-6575
+title: Junior Consulting Manager
+userPassword: 123456
+uid: RajguruL
+givenName: Lesly
+mail: RajguruL@ns-mail3.localhost
+carLicense: TB7SI2
+departmentNumber: 9093
+employeeType: Contract
+homePhone: +1 510 547-9414
+initials: L. R.
+mobile: +1 510 596-1164
+pager: +1 510 213-9220
+roomNumber: 8269
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Zdenek Forester,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Zdenek Forester
+sn: Forester
+sAMAccountName: ForesteZ
+description: This is Zdenek Forester's description
+facsimileTelephoneNumber: +1 206 653-5871
+l: Redwood Shores
+ou: Product Development
+postalAddress: Product Development$Redwood Shores
+telephoneNumber: +1 206 228-9443
+title: Supreme Product Development Grunt
+userPassword: 123456
+uid: ForesteZ
+givenName: Zdenek
+mail: ForesteZ@ns-mail7.localhost
+carLicense: 1KRKKY
+departmentNumber: 6901
+employeeType: Contract
+homePhone: +1 206 950-9094
+initials: Z. F.
+mobile: +1 206 553-8947
+pager: +1 206 100-8655
+roomNumber: 8031
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Duane Laursen,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Duane Laursen
+sn: Laursen
+sAMAccountName: LaursenD
+description: This is Duane Laursen's description
+facsimileTelephoneNumber: +1 510 864-1022
+l: Menlo Park
+ou: Consulting
+postalAddress: Consulting$Menlo Park
+telephoneNumber: +1 510 107-4635
+title: Supreme Consulting Madonna
+userPassword: 123456
+uid: LaursenD
+givenName: Duane
+mail: LaursenD@ns-mail8.localhost
+carLicense: PMHLY8
+departmentNumber: 2674
+employeeType: Contract
+homePhone: +1 510 916-8092
+initials: D. L.
+mobile: +1 510 621-9548
+pager: +1 510 855-6226
+roomNumber: 8777
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Denni Marko,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Denni Marko
+sn: Marko
+sAMAccountName: MarkoD
+description: This is Denni Marko's description
+facsimileTelephoneNumber: +1 510 665-9832
+l: San Jose
+ou: Product Development
+postalAddress: Product Development$San Jose
+telephoneNumber: +1 510 244-4242
+title: Master Product Development Visionary
+userPassword: 123456
+uid: MarkoD
+givenName: Denni
+mail: MarkoD@ns-mail2.localhost
+carLicense: 6S41G9
+departmentNumber: 7366
+employeeType: Employee
+homePhone: +1 510 703-4094
+initials: D. M.
+mobile: +1 510 379-8642
+pager: +1 510 988-9054
+roomNumber: 8916
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Krystyna Dorion-Magnan,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Krystyna Dorion-Magnan
+sn: Dorion-Magnan
+sAMAccountName: Dorion-K
+description: This is Krystyna Dorion-Magnan's description
+facsimileTelephoneNumber: +1 818 317-5321
+l: Cambridge
+ou: Consulting
+postalAddress: Consulting$Cambridge
+telephoneNumber: +1 818 723-5501
+title: Chief Consulting Writer
+userPassword: 123456
+uid: Dorion-K
+givenName: Krystyna
+mail: Dorion-K@ns-mail7.localhost
+carLicense: P2T07N
+departmentNumber: 8079
+employeeType: Normal
+homePhone: +1 818 343-5563
+initials: K. D.
+mobile: +1 818 495-4000
+pager: +1 818 465-2177
+roomNumber: 9931
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Yee-Ning Zubricki,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Yee-Ning Zubricki
+sn: Zubricki
+sAMAccountName: ZubrickY
+description: This is Yee-Ning Zubricki's description
+facsimileTelephoneNumber: +1 206 871-5600
+l: Palo Alto
+ou: Human Resources
+postalAddress: Human Resources$Palo Alto
+telephoneNumber: +1 206 102-2506
+title: Chief Human Resources Figurehead
+userPassword: 123456
+uid: ZubrickY
+givenName: Yee-Ning
+mail: ZubrickY@ns-mail4.localhost
+carLicense: AJNYKQ
+departmentNumber: 4310
+employeeType: Employee
+homePhone: +1 206 322-6926
+initials: Y. Z.
+mobile: +1 206 705-2997
+pager: +1 206 373-1814
+roomNumber: 8922
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Bedford Lupatin,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Bedford Lupatin
+sn: Lupatin
+sAMAccountName: LupatinB
+description: This is Bedford Lupatin's description
+facsimileTelephoneNumber: +1 804 566-5768
+l: Palo Alto
+ou: Product Testing
+postalAddress: Product Testing$Palo Alto
+telephoneNumber: +1 804 559-5484
+title: Supreme Product Testing Mascot
+userPassword: 123456
+uid: LupatinB
+givenName: Bedford
+mail: LupatinB@ns-mail9.localhost
+carLicense: 2YOTMA
+departmentNumber: 5438
+employeeType: Employee
+homePhone: +1 804 603-1885
+initials: B. L.
+mobile: +1 804 299-7920
+pager: +1 804 806-2775
+roomNumber: 8191
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Buffy Gadbois,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Buffy Gadbois
+sn: Gadbois
+sAMAccountName: GadboisB
+description: This is Buffy Gadbois's description
+facsimileTelephoneNumber: +1 818 702-1425
+l: Cambridge
+ou: Consulting
+postalAddress: Consulting$Cambridge
+telephoneNumber: +1 818 432-2247
+title: Master Consulting Assistant
+userPassword: 123456
+uid: GadboisB
+givenName: Buffy
+mail: GadboisB@ns-mail6.localhost
+carLicense: B7DOPN
+departmentNumber: 8437
+employeeType: Contract
+homePhone: +1 818 294-5259
+initials: B. G.
+mobile: +1 818 808-3928
+pager: +1 818 351-4450
+roomNumber: 8561
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Sheridan Hrubik,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Sheridan Hrubik
+sn: Hrubik
+sAMAccountName: HrubikS
+description: This is Sheridan Hrubik's description
+facsimileTelephoneNumber: +1 804 795-4647
+l: Alameda
+ou: Management
+postalAddress: Management$Alameda
+telephoneNumber: +1 804 498-3999
+title: Supreme Management Pinhead
+userPassword: 123456
+uid: HrubikS
+givenName: Sheridan
+mail: HrubikS@ns-mail9.localhost
+carLicense: KB1KOJ
+departmentNumber: 7532
+employeeType: Normal
+homePhone: +1 804 454-8311
+initials: S. H.
+mobile: +1 804 531-9466
+pager: +1 804 131-4363
+roomNumber: 8217
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Tehchi Talis,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Tehchi Talis
+sn: Talis
+sAMAccountName: TalisT
+description: This is Tehchi Talis's description
+facsimileTelephoneNumber: +1 804 285-7137
+l: San Mateo
+ou: Product Testing
+postalAddress: Product Testing$San Mateo
+telephoneNumber: +1 804 563-6166
+title: Junior Product Testing Evangelist
+userPassword: 123456
+uid: TalisT
+givenName: Tehchi
+mail: TalisT@ns-mail9.localhost
+carLicense: XWGPO3
+departmentNumber: 6560
+employeeType: Normal
+homePhone: +1 804 370-5178
+initials: T. T.
+mobile: +1 804 631-9499
+pager: +1 804 372-1885
+roomNumber: 9749
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Kimberlee Marren,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Kimberlee Marren
+sn: Marren
+sAMAccountName: MarrenK
+description: This is Kimberlee Marren's description
+facsimileTelephoneNumber: +1 206 524-2566
+l: Redwood Shores
+ou: Human Resources
+postalAddress: Human Resources$Redwood Shores
+telephoneNumber: +1 206 716-3258
+title: Junior Human Resources Technician
+userPassword: 123456
+uid: MarrenK
+givenName: Kimberlee
+mail: MarrenK@ns-mail4.localhost
+carLicense: FU1J35
+departmentNumber: 7323
+employeeType: Contract
+homePhone: +1 206 471-1923
+initials: K. M.
+mobile: +1 206 202-7807
+pager: +1 206 191-3094
+roomNumber: 8289
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Nari Maritan,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Nari Maritan
+sn: Maritan
+sAMAccountName: MaritanN
+description: This is Nari Maritan's description
+facsimileTelephoneNumber: +1 818 189-6050
+l: Redwood Shores
+ou: Product Testing
+postalAddress: Product Testing$Redwood Shores
+telephoneNumber: +1 818 908-1299
+title: Associate Product Testing Evangelist
+userPassword: 123456
+uid: MaritanN
+givenName: Nari
+mail: MaritanN@ns-mail7.localhost
+carLicense: UPXNX0
+departmentNumber: 6842
+employeeType: Employee
+homePhone: +1 818 107-2962
+initials: N. M.
+mobile: +1 818 501-3751
+pager: +1 818 350-6678
+roomNumber: 8319
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Vilis Saravanos,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Vilis Saravanos
+sn: Saravanos
+sAMAccountName: SaravanV
+description: This is Vilis Saravanos's description
+facsimileTelephoneNumber: +1 415 182-3453
+l: Armonk
+ou: Human Resources
+postalAddress: Human Resources$Armonk
+telephoneNumber: +1 415 203-5044
+title: Supreme Human Resources Admin
+userPassword: 123456
+uid: SaravanV
+givenName: Vilis
+mail: SaravanV@ns-mail9.localhost
+carLicense: JK110B
+departmentNumber: 9298
+employeeType: Normal
+homePhone: +1 415 359-7599
+initials: V. S.
+mobile: +1 415 253-4687
+pager: +1 415 131-3927
+roomNumber: 8312
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Miroslav Sengoba,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Miroslav Sengoba
+sn: Sengoba
+sAMAccountName: SengobaM
+description: This is Miroslav Sengoba's description
+facsimileTelephoneNumber: +1 213 694-8778
+l: Sunnyvale
+ou: Product Testing
+postalAddress: Product Testing$Sunnyvale
+telephoneNumber: +1 213 792-1803
+title: Chief Product Testing Figurehead
+userPassword: 123456
+uid: SengobaM
+givenName: Miroslav
+mail: SengobaM@ns-mail4.localhost
+carLicense: TSV48K
+departmentNumber: 2662
+employeeType: Normal
+homePhone: +1 213 892-8670
+initials: M. S.
+mobile: +1 213 178-8241
+pager: +1 213 651-2072
+roomNumber: 8236
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Lachu Picard,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Lachu Picard
+sn: Picard
+sAMAccountName: PicardL
+description: This is Lachu Picard's description
+facsimileTelephoneNumber: +1 408 681-4430
+l: Sunnyvale
+ou: Consulting
+postalAddress: Consulting$Sunnyvale
+telephoneNumber: +1 408 868-9341
+title: Associate Consulting Vice President
+userPassword: 123456
+uid: PicardL
+givenName: Lachu
+mail: PicardL@ns-mail2.localhost
+carLicense: D4LWXT
+departmentNumber: 4621
+employeeType: Employee
+homePhone: +1 408 255-5915
+initials: L. P.
+mobile: +1 408 584-6734
+pager: +1 408 183-9608
+roomNumber: 9076
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Kim-Minh Sokolowski,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Kim-Minh Sokolowski
+sn: Sokolowski
+sAMAccountName: SokolowK
+description: This is Kim-Minh Sokolowski's description
+facsimileTelephoneNumber: +1 415 805-9754
+l: Milpitas
+ou: Product Development
+postalAddress: Product Development$Milpitas
+telephoneNumber: +1 415 866-7929
+title: Associate Product Development President
+userPassword: 123456
+uid: SokolowK
+givenName: Kim-Minh
+mail: SokolowK@ns-mail9.localhost
+carLicense: 5CTJG8
+departmentNumber: 8358
+employeeType: Employee
+homePhone: +1 415 540-5870
+initials: K. S.
+mobile: +1 415 122-8085
+pager: +1 415 427-7725
+roomNumber: 9542
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Kendall Andrukat,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Kendall Andrukat
+sn: Andrukat
+sAMAccountName: AndrukaK
+description: This is Kendall Andrukat's description
+facsimileTelephoneNumber: +1 415 957-5754
+l: Cupertino
+ou: Management
+postalAddress: Management$Cupertino
+telephoneNumber: +1 415 665-1697
+title: Master Management Writer
+userPassword: 123456
+uid: AndrukaK
+givenName: Kendall
+mail: AndrukaK@ns-mail7.localhost
+carLicense: UL21OE
+departmentNumber: 2430
+employeeType: Contract
+homePhone: +1 415 300-9254
+initials: K. A.
+mobile: +1 415 904-7339
+pager: +1 415 467-7591
+roomNumber: 9171
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Hyacinthe Lee,ou=Human Resources,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Hyacinthe Lee
+sn: Lee
+sAMAccountName: LeeH
+description: This is Hyacinthe Lee's description
+facsimileTelephoneNumber: +1 206 801-6900
+l: Cupertino
+ou: Human Resources
+postalAddress: Human Resources$Cupertino
+telephoneNumber: +1 206 244-5501
+title: Junior Human Resources Madonna
+userPassword: 123456
+uid: LeeH
+givenName: Hyacinthe
+mail: LeeH@ns-mail9.localhost
+carLicense: PGLK8H
+departmentNumber: 3380
+employeeType: Normal
+homePhone: +1 206 219-8441
+initials: H. L.
+mobile: +1 206 772-2815
+pager: +1 206 637-9460
+roomNumber: 9201
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Leah Pitt,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Leah Pitt
+sn: Pitt
+sAMAccountName: PittL
+description: This is Leah Pitt's description
+facsimileTelephoneNumber: +1 510 298-1454
+l: Cambridge
+ou: Management
+postalAddress: Management$Cambridge
+telephoneNumber: +1 510 834-7191
+title: Supreme Management Visionary
+userPassword: 123456
+uid: PittL
+givenName: Leah
+mail: PittL@ns-mail6.localhost
+carLicense: BD4E3N
+departmentNumber: 1313
+employeeType: Employee
+homePhone: +1 510 732-8191
+initials: L. P.
+mobile: +1 510 208-6065
+pager: +1 510 504-1200
+roomNumber: 9368
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Mollie Whiting,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Mollie Whiting
+sn: Whiting
+sAMAccountName: WhitingM
+description: This is Mollie Whiting's description
+facsimileTelephoneNumber: +1 408 789-1245
+l: Fremont
+ou: Product Development
+postalAddress: Product Development$Fremont
+telephoneNumber: +1 408 604-6058
+title: Junior Product Development Developer
+userPassword: 123456
+uid: WhitingM
+givenName: Mollie
+mail: WhitingM@ns-mail4.localhost
+carLicense: LBC11Q
+departmentNumber: 6209
+employeeType: Normal
+homePhone: +1 408 179-2220
+initials: M. W.
+mobile: +1 408 305-8245
+pager: +1 408 627-1530
+roomNumber: 8371
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Carmencita Boutnikoff,ou=Consulting,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Carmencita Boutnikoff
+sn: Boutnikoff
+sAMAccountName: BoutnikC
+description: This is Carmencita Boutnikoff's description
+facsimileTelephoneNumber: +1 213 747-2664
+l: Cupertino
+ou: Consulting
+postalAddress: Consulting$Cupertino
+telephoneNumber: +1 213 876-4782
+title: Chief Consulting Sales Rep
+userPassword: 123456
+uid: BoutnikC
+givenName: Carmencita
+mail: BoutnikC@ns-mail5.localhost
+carLicense: HMI77F
+departmentNumber: 1979
+employeeType: Employee
+homePhone: +1 213 852-4783
+initials: C. B.
+mobile: +1 213 718-2485
+pager: +1 213 619-8358
+roomNumber: 9932
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com
+seeAlso: cn=Project1,ou=Groups,dc=communote,dc=com
+seeAlso: cn=Project2,ou=Groups,dc=communote,dc=com
+
+dn: cn=Vivi Strandlund,ou=Product Development,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Vivi Strandlund
+sn: Strandlund
+sAMAccountName: StrandlV
+description: This is Vivi Strandlund's description
+facsimileTelephoneNumber: +1 206 698-6464
+l: San Jose
+ou: Product Development
+postalAddress: Product Development$San Jose
+telephoneNumber: +1 206 774-6388
+title: Junior Product Development Technician
+userPassword: 123456
+uid: StrandlV
+givenName: Vivi
+mail: StrandlV@ns-mail8.localhost
+carLicense: 8Q5VVV
+departmentNumber: 6026
+employeeType: Employee
+homePhone: +1 206 560-7839
+initials: V. S.
+mobile: +1 206 401-3549
+pager: +1 206 970-9192
+roomNumber: 8836
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com 
+
+dn: cn=Mark Shahen,ou=Management,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Mark Shahen
+sn: Shahen
+sAMAccountName: ShahenM
+description: This is Mark Shahen's description
+facsimileTelephoneNumber: +1 206 522-1465
+l: Menlo Park
+ou: Management
+postalAddress: Management$Menlo Park
+telephoneNumber: +1 206 559-2248
+title: Master Management Architect
+userPassword: 123456
+uid: ShahenM
+givenName: Mark
+mail: ShahenM@ns-mail6.localhost
+carLicense: DCLWQA
+departmentNumber: 7383
+employeeType: Employee
+homePhone: +1 206 353-3336
+initials: M. S.
+mobile: +1 206 446-6627
+pager: +1 206 346-5467
+roomNumber: 8589
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com
+secretary: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com
+seeAlso: cn=Project3,ou=Groups,dc=communote,dc=com
+
+dn: cn=Pete Tester,ou=Product Testing,ou=Users,dc=communote, dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Pete Tester
+sn: Tester
+sAMAccountName: testuser
+description: a pseudo test user
+l: Virtual Reality
+ou: Product Testing
+title: Test user
+userPassword: 123456
+uid: testuser
+givenName: Pete
+mail: testuser@localhost
+roomNumber: 8227
+manager: cn=Norrie Walkley,ou=Consulting,ou=Users,dc=communote, dc=com  
+
+dn: cn=Core Development,ou=Groups,dc=communote,dc=com
+cn: Core Development
+objectClass: groupOfNames
+objectClass: top
+member: cn=Saskia Zazulak,ou=Product Development,ou=Users,dc=communote, dc=com
+member: cn=Vivi Strandlund,ou=Product Development,ou=Users,dc=communote, dc=com
+member: cn=Mollie Whiting,ou=Product Development,ou=Users,dc=communote, dc=com
+
+dn: cn=Plugin Development,ou=Groups,dc=communote,dc=com
+cn: Plugin Development
+description: All Communote plugin developers
+objectClass: groupOfNames
+objectClass: top
+member: cn=Denni Marko,ou=Product Development,ou=Users,dc=communote, dc=com
+member: cn=Zdenek Forester,ou=Product Development,ou=Users,dc=communote, dc=com
+member: cn=Rosalinde Gundlach,ou=Product Development,ou=Users,dc=communote, dc=com
+member: cn=Vivi Strandlund,ou=Product Development,ou=Users,dc=communote, dc=com
+member: cn=Sibylla DeBrusk,ou=Product Development,ou=Users,dc=communote, dc=com
+
+dn: cn=Development,ou=Groups,dc=communote,dc=com
+cn: Development
+objectClass: groupOfNames
+objectClass: top
+member: cn=Plugin Development,ou=Groups,dc=communote,dc=com
+member: cn=Core Development,ou=Groups,dc=communote,dc=com
+member: cn=Lauree Schierbaum,ou=Product Development,ou=Users,dc=communote, dc=com
+
+dn: cn=Project1,ou=Groups,dc=communote,dc=com
+cn: Procject1
+objectClass: groupOfNames
+objectClass: top
+member: cn=Lauree Schierbaum,ou=Product Development,ou=Users,dc=communote, dc=com
+seeAlso: cn=Project1 And Project2,ou=Groups,dc=communote,dc=com
+seeAlso: cn=Project1 And Project4,ou=Groups,dc=communote,dc=com
+
+dn: cn=Project2,ou=Groups,dc=communote,dc=com
+cn: Procject2
+objectClass: groupOfNames
+objectClass: top
+member: cn=Lauree Schierbaum,ou=Product Development,ou=Users,dc=communote, dc=com
+seeAlso: cn=Project1 And Project2,ou=Groups,dc=communote,dc=com
+
+dn: cn=Project3,ou=Groups,dc=communote,dc=com
+cn: Procject3
+objectClass: groupOfNames
+objectClass: top
+member: cn=Lauree Schierbaum,ou=Product Development,ou=Users,dc=communote, dc=com
+
+dn: cn=Project4,ou=Groups,dc=communote,dc=com
+cn: Procject4
+objectClass: groupOfNames
+objectClass: top
+member: cn=Lauree Schierbaum,ou=Product Development,ou=Users,dc=communote, dc=com
+
+dn: cn=Project1 And Project2,ou=Groups,dc=communote,dc=com
+cn: Procject1_2
+objectClass: groupOfNames
+objectClass: top
+member: cn=Lauree Schierbaum,ou=Product Development,ou=Users,dc=communote, dc=com
+
+dn: cn=Project1 And Project4,ou=Groups,dc=communote,dc=com
+cn: Procject1_4
+objectClass: groupOfNames
+objectClass: top
+member: cn=Project4,ou=Groups,dc=communote,dc=com

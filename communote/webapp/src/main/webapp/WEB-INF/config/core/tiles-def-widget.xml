@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+	<definition name="widget.controls.multiViewTab.dhtml" path="/WEB-INF/widgets/controls/MultiViewTab.dhtml.jsp" ></definition>
+		
+	<definition name="widget.user.usersearchbox.dhtml"                 path="/WEB-INF/widgets/user/UserSearchBox.dhtml.jsp" ></definition>
+	<definition name="widget.user.usertagcloud.dhtml"                  path="/WEB-INF/widgets/user/UserTagCloud.dhtml.jsp" ></definition>
+
+	<definition name="widget.client.management.searchbox.dhtml"        path="/WEB-INF/widgets/user/UserManagementSearchBox.dhtml.jsp" ></definition>
+	<definition name="widget.client.management.user.dialog.dhtml"      path="/WEB-INF/widgets/user/UserManagementUserDialog.dhtml.jsp" ></definition>
+	<definition name="widget.client.management.user.profile.dhtml"     path="/WEB-INF/widgets/user/UserManagementUserProfile.dhtml.jsp" ></definition>
+	
+	<definition name="widget.client.management.security.iprange.dhtml" path="/WEB-INF/widgets/security/iprange/IpRange.dhtml.jsp" ></definition>
+	<definition name="widget.client.management.security.iprange.list.dhtml" path="/WEB-INF/widgets/security/iprange/IpRangeList.dhtml.jsp" ></definition>
+
+	<definition name="widget.management.user.invite.dhtml"             path="/WEB-INF/widgets/management/user/InviteUser.Widget.dhtml.jsp" ></definition>
+
+	<definition name="widget.management.communication.xmpp.advanced.dhtml"  path="/WEB-INF/jsp/user/system/communication/xmpp.settings-advanced.widget.jsp" ></definition>
+    
+	<definition name="widget.management.application.certificate.list"  path="/WEB-INF/jsp/user/system/application/certificate.list.widget.jsp" ></definition>
+
+	<definition name="widget.user.group.usergroupsearchbox.dhtml"      path="/WEB-INF/widgets/user/group/UserGroupSearchBox.dhtml.jsp" ></definition>
+	<definition name="widget.user.group.usergrouplist.dhtml"           path="/WEB-INF/widgets/user/group/UserGroupList.dhtml.jsp" ></definition>
+	<definition name="widget.user.group.usergroupdialog.dhtml"         path="/WEB-INF/widgets/user/group/UserGroupDialog.dhtml.jsp" ></definition>
+	<definition name="widget.user.group.usergroup.add.member.dhtml"    path="/WEB-INF/widgets/user/group/UserGroupAddMember.dhtml.jsp" ></definition>
+	<definition name="widget.user.group.create.dhtml"                  path="/WEB-INF/widgets/user/group/CreateUserGroup.dhtml.jsp" ></definition>
+	<definition name="widget.user.group.edit.dhtml"                    path="/WEB-INF/widgets/user/group/UserGroupEdit.dhtml.jsp" ></definition>
+
+	<definition name="widget.message.messages.dhtml" path="/WEB-INF/widgets/message/Messages.dhtml.jsp" ></definition>
+	<definition name="widget.blog.group.member.management.list.dhtml"  path="/WEB-INF/widgets/blog/BlogMemberManagement.dhtml.jsp" ></definition>
+</tiles-definitions>

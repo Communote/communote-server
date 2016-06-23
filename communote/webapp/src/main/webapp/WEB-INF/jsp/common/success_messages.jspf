@@ -1,0 +1,9 @@
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%-- Success Messages --%>
+<c:if test="${not empty successMessages}">
+    <cform:notification type="success">
+        <c:forEach var="msg" items="${successMessages}">
+            ${msg}<br/>
+        </c:forEach>
+    </cform:notification>
+</c:if>

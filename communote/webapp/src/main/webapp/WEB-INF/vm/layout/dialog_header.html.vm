@@ -1,0 +1,22 @@
+#* @vtlvariable name="currentClientId" type="java.lang.String" *#
+#if("$!showClientName" == '')
+    #set($showClientName = true)
+#end
+#if($showClientName)
+    #set($clientName = $communoteTool.Client.getClientName($currentClientId))
+    #if("$!clientName" == '')
+        #set($showClientName = false)
+    #end
+#end
+<div id="cn-header">
+    <div id="cn-header-content">
+        <div id="cn-overflow">
+            <a href="$urlTool.render('/', null, false, true, false, $currentClientId, false)">
+                <img src="$urlTool.clientImage($fieldTool.get('com.communote.server.model.user.ImageSizeType.LARGE'))"
+                     alt="Logo Client"/>
+            </a><br/>
+            #if($showClientName)<h1 class="client-name">$escTool.xmlSimple($clientName)</h1>#end
+        </div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+</div>

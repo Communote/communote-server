@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.user.NotificationConfigImpl" table="notification_config" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">notification_config_seq</param>
+                                                           </generator>
+        </id>
+        <property name="fallback" type="java.lang.String">
+            <column name="fallback" 
+                     not-null="false" unique="false"/>
+        </property>
+        <set name="configs" order-by="NOTIFICATION_CONFIG_FK" lazy="false" fetch="select" inverse="false" cascade="all">
+            <key foreign-key="mc_config_NOTIFICATION_CONFIGC">
+                <column name="NOTIFICATION_CONFIG_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.messaging.MessagerConnectorConfigImpl"/>
+        </set>
+    </class>
+</hibernate-mapping>

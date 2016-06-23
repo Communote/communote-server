@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v3.x/db.changelog.v3.1.xml">
+    <changeSet id="KENMEI-1264_Offline-Autosave" author="Communote">
+        <addColumn tableName="core_attachment">
+            <column name="UPLOADER_FK" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+            <column name="upload_date" type="TIMESTAMP" valueDate="NOW()"/>
+        </addColumn>
+        <modifySql dbms="postgresql">
+            <replace replace="TIMESTAMP WITH TIME ZONE" with="TIMESTAMP WITHOUT TIME ZONE"/>
+        </modifySql>
+        <modifySql dbms="mssql">
+            <replace replace="NOW()" with="GETDATE()"/>
+        </modifySql>
+        <modifySql dbms="oracle">
+            <replace replace="NOW()" with="SYSDATE"/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="KENMEI-1264_Offline-Autosave_Foreign_Keys" author="Communote">
+        <addForeignKeyConstraint baseTableName="core_attachment"
+                                 baseColumnNames="UPLOADER_FK"
+                                 constraintName="core_attachment_UPLOADER_FKC"
+                                 referencedTableName="user_user"
+                                 referencedColumnNames="ID"/>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-1264_Offline-Autosave_AddUploader_postgresql" context="client" dbms="postgresql">
+        <sql><![CDATA[
+            UPDATE core_attachment attachment
+            SET UPLOADER_FK = note.USER_FK, upload_date = note.creation_date
+            FROM core_note note WHERE note.ID = attachment.NOTE_FK;
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-1264_Offline-Autosave_AddUploader_mysql" context="client" dbms="mysql">
+        <sql><![CDATA[
+            UPDATE core_attachment attachment LEFT JOIN core_note note ON note.ID = attachment.NOTE_FK
+            SET UPLOADER_FK = note.USER_FK, upload_date = note.creation_date;
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-1264_Offline-Autosave_AddUploader_mssql" context="client" dbms="mssql">
+        <sql><![CDATA[
+            UPDATE core_attachment
+            SET UPLOADER_FK = note.USER_FK, upload_date = note.creation_date
+            FROM core_note note WHERE note.ID = NOTE_FK;
+        ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-1264_Offline-Autosave_AddUploader_oracle1" context="client" dbms="oracle">
+        <sql><![CDATA[
+            UPDATE core_attachment attachment 
+            SET (UPLOADER_FK, upload_date) = (SELECT note.USER_FK,note.creation_date FROM core_note note WHERE note.ID = attachment.NOTE_FK);
+        ]]></sql>
+    </changeSet>
+</databaseChangeLog>

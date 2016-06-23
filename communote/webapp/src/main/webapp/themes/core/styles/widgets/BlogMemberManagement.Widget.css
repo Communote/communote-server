@@ -1,0 +1,105 @@
+.cn-blog-details-access-wrapper .cn-col12 {
+    clear: left;
+    float: left;
+    margin-right: 1%;
+    width: 49%;
+}
+
+.cn-blog-details-access-wrapper .cn-col1 {
+    clear: left;
+    float: left;
+    margin-right: 2%;
+    width: 7%;
+}
+
+.cn-blog-details-access-wrapper .cn-system{
+    font-style:italic;
+}
+
+.cn-blog-details-access-wrapper .cn-col2 {
+    float: left;
+    margin-right: 1%;
+    width: 40%;
+}
+
+.cn-blog-details-access-wrapper .cn-col3 {
+    float: left;
+    margin-right: 2%;
+    width: 23%;
+}
+
+.cn-blog-details-access-wrapper .cn-col4 {
+    float: left;
+    width: 25%;
+}
+
+.cn-blog-details-access-wrapper .cn-blog-details-block.cn-blog-details-tableheader {
+    border-bottom: 1px dotted #A9A9A9;
+    color: #888888;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0 0 5px;
+    height: 25px;
+}
+
+.cn-blog-details-access-wrapper .cn-blog-details-block {
+    height: 32px;
+    line-height: 32px;
+    margin: 10px 0;
+}
+
+.cn-blog-details-access-wrapper #all-users span {
+    background-position: -32px -32px;
+}
+
+.cn-blog-details-access-wrapper span.user-group {
+    background-position: -544px -320px;
+}
+
+.cn-blog-details-access-wrapper .cn-blog-details-member-table img {
+    width: 32px;
+    height: 32px;
+}
+
+.cn-blog-details-access-wrapper .cn-bar {
+    float: left;
+    width: 100%;
+}
+
+.cn-blog-details-access-wrapper .cn-link {
+    border: 0 none;
+    font-size: 12px;
+    padding-right: 20px;
+    line-height: 30px;
+    white-space: nowrap;
+}
+
+.cn-blog-details-access-wrapper .cn-link.cn-last-child {
+    padding-right: 0;
+}
+
+.cn-blog-details-access-wrapper select {
+    border: 1px solid #D9D9D9;
+    height: 28px;
+    padding: 5px 2px;
+    width: 120px;
+}
+
+.cn-blog-details-access-wrapper input {
+    border: 1px solid #C7C7C7;
+    padding: 5px;
+}
+
+.cn-blog-details-access-wrapper #view-member-role_add input {
+    font-size: 12px;
+    width: 220px;
+}
+
+.cn-blog-details-access-wrapper .cn-blog-details-block #view-member-role_add .overTxtLabel {
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.cn-blog-details-access-wrapper #change-member_all {
+    font-weight: bold;
+}

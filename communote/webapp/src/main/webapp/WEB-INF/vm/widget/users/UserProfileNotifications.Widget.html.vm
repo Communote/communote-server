@@ -1,0 +1,118 @@
+#set( $requestFriendship = $fmtTool.message("user.profile.notification.xmpp.button.friendship") )
+#set( $isXmppServiceEnabled = $command.isXmppEnabled() )
+#cnRenderMessages()
+<div class="cn-form-container">
+    <form id="something_unique" action="#" method="post">
+        <input type="hidden" name="action" /> 
+        <fieldset>
+        	<h2 class="cn-headline">$fmtTool.message("user.profile.notification.what.title")</h2>
+	        #foreach($userNotificationSchedule in $userNotificationSchedules.entrySet())
+	        	#if($userNotificationSchedule.getValue().name() == 'IMMEDIATE')
+	        	  #set($userNotificationScheduleEnabled = true)
+	        	#else
+	        	  #set($userNotificationScheduleEnabled = false)
+	        	#end
+	        	#cnCheckbox("notificationSchedule_$userNotificationSchedule.getKey().getId()" $userNotificationScheduleEnabled $userNotificationSchedule.getKey().getMessageKeyForName() false '')
+	        #end
+        </fieldset>
+        <fieldset>
+        	<h2 class="cn-headline">$fmtTool.message("user.profile.notification.how.title")</h2>
+            #if($isXmppServiceEnabled)
+            <div class="cn-form-info">
+                $fmtTool.message("user.profile.notification.description")
+            </div>
+            <div class="cn-field-100">
+                <div class="cn-check">
+                    #springBind( "command.xmpp" )
+                    <input type="checkbox" name="${status.expression}" id="notify_xmpp" class="cn-inputCheck"
+                        onclick="$('notify_xmppFail').disabled = !this.checked;"
+                        #if($!status.value == 'true') checked="checked" #end />
+                    <input type="hidden" value="$!status.value" name="_$status.expression" />
+                    <label for="notify_xmpp">$fmtTool.message("user.profile.notification.xmpp")</label>
+                    <span class="cn-clear"><!-- --></span>
+                </div>
+                #springShowErrors("" "cn-error")
+            </div>
+            <span class="cn-clear"><!-- --></span>
+            <div class="cn-field-100">
+                <div class="cn-check">
+                    #springBind( "command.xmppFail" )
+                    <input type="checkbox" name="${status.expression}" id="notify_xmppFail" class="cn-inputCheck"
+                        #if(!$command.xmpp) disabled="disabled" #end
+                        #if($!status.value == 'true') checked="checked" #end />
+                    <input type="hidden" value="$!status.value" name="_$status.expression" />
+                    <label for="notify_xmppFail">$fmtTool.message("user.profile.notification.xmpp.fail")</label>
+                    <span class="cn-clear"><!-- --></span>
+                </div>
+                #springShowErrors("" "cn-error")
+            </div>
+            <span class="cn-clear"><!-- --></span>
+            #else
+            <div class="cn-form-info">
+                $fmtTool.message("user.profile.notification.description.emailOnly")
+            </div>
+            #end
+            <div class="cn-field-100">
+                <div class="cn-check">
+                    #springBind( "command.mail" )
+                    <input type="checkbox" name="${status.expression}" id="user-notify-mail" class="cn-inputCheck"
+                        #if($!status.value == 'true') checked="checked" #end />
+                    <input type="hidden" value="$!status.value" name="_$status.expression" />
+                    <label for="user-notify-mail">$fmtTool.message("user.profile.notification.mail")</label>
+                    <span class="cn-clear"><!-- --></span>
+                </div>
+                #springShowErrors("" "cn-error")
+            </div>
+            <span class="cn-clear"><!-- --></span>
+            </fieldset>
+            <div class="cn-actions">
+	            <div class="cn-buttons">
+	                <input class="cn-button main" name="submit" type="submit" value="$fmtTool.message("user.profile.update.profile")"
+	                    onClick="this.form.action.value='$fieldTool.get('com.communote.server.web.commons.FormAction.UPDATE_USER_PROFILE')'"
+	                    onfocus="this.blur()" />
+	            </div>
+	            <span class="cn-clear"><!-- ie --></span>
+	        </div>
+            #if($isXmppServiceEnabled)
+            <fieldset>
+                #set( $fullXmppId = $command.XmppId )
+                #set( $xmppIds = $fullXmppId.split("@") )
+                <div class="cn-vertical-spacer-20">&nbsp;</div>
+                <h2 class="cn-headline">$fmtTool.message("user.profile.notification.xmpp.help.title")</h2>
+                <div class="cn-tip-content">
+                    <ol>
+                        <li>$fmtTool.message("user.profile.notification.xmpp.help.1")</li>
+                        <li>$fmtTool.message("user.profile.notification.xmpp.help.2")
+                            <ol class="listMargin">
+                                <li>$fmtTool.message("user.profile.notification.xmpp.help.2.0", $fullXmppId)</li>
+                                <li>$fmtTool.message("user.profile.notification.xmpp.help.2.1", $xmppIds.get(0))</li>
+                                <li>$fmtTool.message("user.profile.notification.xmpp.help.2.2", $xmppIds.get(1))</li>
+                                <li>$fmtTool.message("user.profile.notification.xmpp.help.2.3", $!communoteTool.CurrentUserAlias)</li>
+                                <li>$fmtTool.message("user.profile.notification.xmpp.help.2.4")</li>
+                            </ol>
+                        </li>
+                        <li>$fmtTool.message("user.profile.notification.xmpp.help.3")</li>
+                        <li>$fmtTool.message("user.profile.notification.xmpp.help.4", $requestFriendship)</li>
+                        <li>$fmtTool.message("user.profile.notification.xmpp.help.5")</li>
+                        <li>$fmtTool.message("user.profile.notification.xmpp.help.6")
+                            <ol class="listMargin">
+                                <li>$fmtTool.message("user.profile.notification.xmpp.help.6.1")</li>
+                                <li>$fmtTool.message("user.profile.notification.xmpp.help.6.2", $!communoteTool.CurrentClientId, $!command.XmppBlogSuffix)</li>
+                            </ol>
+                        </li>
+                    </ol>
+                </div>
+                <span class="cn-clear"><!-- --></span>
+        </fieldset>
+        <div class="cn-actions">
+            <div class="cn-buttons">
+                <input type="hidden" id="requestFriendship" name="cmd" value="requestFriendship" />
+                <input class="cn-button" name="submit" type="submit" value="${requestFriendship}"
+                    onClick="this.form.action.value='$fieldTool.get('com.communote.server.web.commons.FormAction.XMPP_REQUEST_FRIENDSHIP')'"
+                    onfocus="this.blur()" />
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+        </div>
+        #end
+    </form>
+</div>

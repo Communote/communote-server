@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<div id="embed-communote"></div>
+
+<script type="text/javascript" src="http://localhost:8080/microblog/global/javascripts/packed.js?category=cnt-load-embed&t=0"></script>
+<script type="text/javascript">
+communote.embedCommunote("#embed-communote", {
+    "server": "http://localhost:8080",
+    "communoteId": "global",
+    "edPreselectedTopicId": 0,
+    "fiPreselectedTopicIds": 0,
+  	"minWidth": '300px',
+  	"minHeight": '400px',
+  	"maxHeight": '1200px',
+  	"width": '100%',
+  	"height": 'auto'
+});
+</script>
+
+</body>
+</html>

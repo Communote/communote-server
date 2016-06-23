@@ -1,0 +1,1377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <!-- The Hibernate interceptor -->
+    <bean id="hibernateInterceptor" class="org.springframework.orm.hibernate3.HibernateInterceptor">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <!-- Tag Entity Proxy with inner Tag Entity implementation -->
+    <bean id="tagDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.tag.TagDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+                <property name="globalIdDao">
+                    <ref bean="globalIdDao" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.tag.TagDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- AbstractTagCategory Entity Proxy with inner AbstractTagCategory Entity implementation -->
+    <bean id="abstractTagCategoryDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.tag.AbstractTagCategoryDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.tag.AbstractTagCategoryDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- GlobalTagCategory Entity Proxy with inner GlobalTagCategory Entity implementation -->
+    <bean id="globalTagCategoryDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.tag.GlobalTagCategoryDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.tag.GlobalTagCategoryDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- CategorizedTag Entity Proxy with inner CategorizedTag Entity implementation -->
+    <bean id="categorizedTagDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.tag.CategorizedTagDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.tag.CategorizedTagDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Attachment Entity Proxy with inner Attachment Entity implementation -->
+    <bean id="attachmentDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.resource.AttachmentDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+                <property name="globalIdDao">
+                    <ref bean="globalIdDao" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.resource.AttachmentDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Content Entity Proxy with inner Content Entity implementation -->
+    <bean id="contentDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.resource.ContentDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.resource.ContentDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ProcessedMailNote Entity Proxy with inner ProcessedMailNote Entity implementation -->
+    <bean id="processedMailNoteDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.blog.ProcessedMailNoteDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.blog.ProcessedMailNoteDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Blog Entity Proxy with inner Blog Entity implementation -->
+    <bean id="blogDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.blog.BlogDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+                <property name="globalIdDao">
+                    <ref bean="globalIdDao" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.blog.BlogDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Note Entity Proxy with inner Note Entity implementation -->
+    <bean id="noteDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.blog.NoteDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+                <property name="globalIdDao">
+                    <ref bean="globalIdDao" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.blog.NoteDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- BlogMember Entity Proxy with inner BlogMember Entity implementation -->
+    <bean id="blogMemberDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.blog.BlogMemberDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.blog.BlogMemberDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserToBlogRoleMapping Entity Proxy with inner UserToBlogRoleMapping Entity implementation -->
+    <bean id="userToBlogRoleMappingDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.blog.UserToBlogRoleMappingDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.blog.UserToBlogRoleMappingDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ExternalBlogMember Entity Proxy with inner ExternalBlogMember Entity implementation -->
+    <bean id="externalBlogMemberDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.blog.ExternalBlogMemberDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.blog.ExternalBlogMemberDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- NoteProperty Entity Proxy with inner NoteProperty Entity implementation -->
+    <bean id="notePropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.blog.NotePropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.blog.NotePropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- BlogProperty Entity Proxy with inner BlogProperty Entity implementation -->
+    <bean id="blogPropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.blog.BlogPropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.blog.BlogPropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- GlobalId Entity Proxy with inner GlobalId Entity implementation -->
+    <bean id="globalIdDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.global.GlobalIdDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.global.GlobalIdDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- TaskExecution Entity Proxy with inner TaskExecution Entity implementation -->
+    <bean id="taskExecutionDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.tasks.TaskExecutionDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.tasks.TaskExecutionDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Task Entity Proxy with inner Task Entity implementation -->
+    <bean id="taskDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.tasks.TaskDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.tasks.TaskDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- TaskProperty Entity Proxy with inner TaskProperty Entity implementation -->
+    <bean id="taskPropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.tasks.TaskPropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.tasks.TaskPropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- QueryHelper Entity Proxy with inner QueryHelper Entity implementation -->
+    <bean id="queryHelperDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.query.QueryHelperDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.query.QueryHelperDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- LdapConfiguration Entity Proxy with inner LdapConfiguration Entity implementation -->
+    <bean id="ldapConfigurationDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.LdapConfigurationDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.LdapConfigurationDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Setting Entity Proxy with inner Setting Entity implementation -->
+    <bean id="settingDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.SettingDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.SettingDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Configuration Entity Proxy with inner Configuration Entity implementation -->
+    <bean id="configurationDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.ConfigurationDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.ConfigurationDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ClientConfiguration Entity Proxy with inner ClientConfiguration Entity implementation -->
+    <bean id="clientConfigurationDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.ClientConfigurationDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.ClientConfigurationDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ConfluenceConfiguration Entity Proxy with inner ConfluenceConfiguration Entity implementation -->
+    <bean id="confluenceConfigurationDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.ConfluenceConfigurationDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.ConfluenceConfigurationDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ExternalSystemConfiguration Entity Proxy with inner ExternalSystemConfiguration Entity implementation -->
+    <bean id="externalSystemConfigurationDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.ExternalSystemConfigurationDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.ExternalSystemConfigurationDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ApplicationConfigurationSetting Entity Proxy with inner ApplicationConfigurationSetting Entity implementation -->
+    <bean id="applicationConfigurationSettingDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.ApplicationConfigurationSettingDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.ApplicationConfigurationSettingDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- LdapSearchConfiguration Entity Proxy with inner LdapSearchConfiguration Entity implementation -->
+    <bean id="ldapSearchConfigurationDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.LdapSearchConfigurationDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.LdapSearchConfigurationDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- LdapGroupSyncConfiguration Entity Proxy with inner LdapGroupSyncConfiguration Entity implementation -->
+    <bean id="ldapGroupSyncConfigurationDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.LdapGroupSyncConfigurationDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.LdapGroupSyncConfigurationDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- LdapSearchBaseDefinition Entity Proxy with inner LdapSearchBaseDefinition Entity implementation -->
+    <bean id="ldapSearchBaseDefinitionDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.config.LdapSearchBaseDefinitionDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.config.LdapSearchBaseDefinitionDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ExternalObject Entity Proxy with inner ExternalObject Entity implementation -->
+    <bean id="externalObjectDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.external.ExternalObjectDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.external.ExternalObjectDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ExternalObjectProperty Entity Proxy with inner ExternalObjectProperty Entity implementation -->
+    <bean id="externalObjectPropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.external.ExternalObjectPropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.external.ExternalObjectPropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- StringProperty Entity Proxy with inner StringProperty Entity implementation -->
+    <bean id="stringPropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.property.StringPropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.property.StringPropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- BinaryProperty Entity Proxy with inner BinaryProperty Entity implementation -->
+    <bean id="binaryPropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.property.BinaryPropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.property.BinaryPropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Property Entity Proxy with inner Property Entity implementation -->
+    <bean id="propertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.property.PropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.property.PropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- GlobalProperty Entity Proxy with inner GlobalProperty Entity implementation -->
+    <bean id="globalPropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.property.GlobalPropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.property.GlobalPropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- PluginProperty Entity Proxy with inner PluginProperty Entity implementation -->
+    <bean id="pluginPropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.property.PluginPropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.property.PluginPropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- SecurityCode Entity Proxy with inner SecurityCode Entity implementation -->
+    <bean id="securityCodeDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.common.security.SecurityCodeDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.common.security.SecurityCodeDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Message Entity Proxy with inner Message Entity implementation -->
+    <bean id="messageDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.common.messages.MessageDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.common.messages.MessageDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- User Entity Proxy with inner KenmeiUser Entity implementation -->
+    <bean id="userDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.UserDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+                <property name="globalIdDao">
+                    <ref bean="globalIdDao" />
+                </property>
+                <property name="languageDao">
+                    <ref bean="languageDao" />
+                </property>
+                <property name="userAuthorityDao">
+                    <ref bean="userAuthorityDao" />
+                </property>
+                <property name="notificationConfigDao">
+                    <ref bean="notificationConfigDao" />
+                </property>
+                <property name="userProfileDao">
+                    <ref bean="userProfileDao" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.UserDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserImage Entity Proxy with inner UserImage Entity implementation -->
+    <bean id="userImageDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.UserImageDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.UserImageDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- NotificationConfig Entity Proxy with inner NotificationConfig Entity implementation -->
+    <bean id="notificationConfigDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.NotificationConfigDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.NotificationConfigDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Language Entity Proxy with inner Language Entity implementation -->
+    <bean id="languageDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.LanguageDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.LanguageDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ExternalUserAuthentication Entity Proxy with inner ExternalUserAuthentication Entity implementation -->
+    <bean id="externalUserAuthenticationDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.ExternalUserAuthenticationDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.ExternalUserAuthenticationDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- CommunoteEntity Entity Proxy with inner KenmeiEntity Entity implementation -->
+    <bean id="communoteEntityDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.CommunoteEntityDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.CommunoteEntityDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserSecurityCode Entity Proxy with inner UserSecurityCode Entity implementation -->
+    <bean id="userSecurityCodeDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.security.UserSecurityCodeDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+                <property name="securityCodeDao">
+                    <ref bean="securityCodeDao" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.security.UserSecurityCodeDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- EmailSecurityCode Entity Proxy with inner EmailSecurityCode Entity implementation -->
+    <bean id="emailSecurityCodeDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.security.EmailSecurityCodeDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+                <property name="securityCodeDao">
+                    <ref bean="securityCodeDao" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.security.EmailSecurityCodeDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ForgottenPasswordSecurityCode Entity Proxy with inner ForgottenPasswordSecurityCode Entity implementation -->
+    <bean id="forgottenPasswordSecurityCodeDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.security.ForgottenPasswordSecurityCodeDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.security.ForgottenPasswordSecurityCodeDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- InviteUserToClientSecurityCode Entity Proxy with inner InviteUserToClientSecurityCode Entity implementation -->
+    <bean id="inviteUserToClientSecurityCodeDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.security.InviteUserToClientSecurityCodeDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.security.InviteUserToClientSecurityCodeDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- InviteUserToBlogSecurityCode Entity Proxy with inner InviteUserToBlogSecurityCode Entity implementation -->
+    <bean id="inviteUserToBlogSecurityCodeDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.security.InviteUserToBlogSecurityCodeDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.security.InviteUserToBlogSecurityCodeDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UnlockUserSecurityCode Entity Proxy with inner UnlockUserSecurityCode Entity implementation -->
+    <bean id="unlockUserSecurityCodeDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.security.UnlockUserSecurityCodeDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.security.UnlockUserSecurityCodeDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- AuthenticationFailedStatus Entity Proxy with inner AuthenticationFailedStatus Entity implementation -->
+    <bean id="authenticationFailedStatusDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.security.AuthenticationFailedStatusDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.security.AuthenticationFailedStatusDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Country Entity Proxy with inner Country Entity implementation -->
+    <bean id="countryDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.CountryDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.CountryDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserProfile Entity Proxy with inner UserProfile Entity implementation -->
+    <bean id="userProfileDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.UserProfileDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.UserProfileDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Contact Entity Proxy with inner Contact Entity implementation -->
+    <bean id="contactDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.ContactDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.ContactDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Group Entity Proxy with inner Group Entity implementation -->
+    <bean id="groupDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.group.GroupDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+                <property name="globalIdDao">
+                    <ref bean="globalIdDao" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.group.GroupDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ExternalUserGroup Entity Proxy with inner ExternalUserGroup Entity implementation -->
+    <bean id="externalUserGroupDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.group.ExternalUserGroupDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.group.ExternalUserGroupDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserOfGroup Entity Proxy with inner UserOfGroup Entity implementation -->
+    <bean id="userOfGroupDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.group.UserOfGroupDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.group.UserOfGroupDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- GroupProperty Entity Proxy with inner GroupProperty Entity implementation -->
+    <bean id="groupPropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.group.GroupPropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.group.GroupPropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserAuthority Entity Proxy with inner UserAuthority Entity implementation -->
+    <bean id="userAuthorityDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.UserAuthorityDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.UserAuthorityDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserProperty Entity Proxy with inner UserProperty Entity implementation -->
+    <bean id="userPropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.UserPropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.UserPropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserNoteProperty Entity Proxy with inner UserNoteProperty Entity implementation -->
+    <bean id="userNotePropertyDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.UserNotePropertyDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.UserNotePropertyDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UserNoteEntity Entity Proxy with inner UserNoteEntity Entity implementation -->
+    <bean id="userNoteEntityDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.note.UserNoteEntityDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.note.UserNoteEntityDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- IpRange Entity Proxy with inner IpRange Entity implementation -->
+    <bean id="ipRangeDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.security.iprange.IpRangeDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.security.iprange.IpRangeDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- IpRangeChannel Entity Proxy with inner IpRangeChannel Entity implementation -->
+    <bean id="ipRangeChannelDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.security.iprange.IpRangeChannelDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.security.iprange.IpRangeChannelDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- IpRangeFilter Entity Proxy with inner IpRangeFilter Entity implementation -->
+    <bean id="ipRangeFilterDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.security.iprange.IpRangeFilterDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.security.iprange.IpRangeFilterDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ChannelConfiguration Entity Proxy with inner ChannelConfiguration Entity implementation -->
+    <bean id="channelConfigurationDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.security.ssl.ChannelConfigurationDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.security.ssl.ChannelConfigurationDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Client Entity Proxy with inner Client Entity implementation -->
+    <bean id="clientDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.client.ClientDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.client.ClientDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ClientStatistic Entity Proxy with inner ClientStatistic Entity implementation -->
+    <bean id="clientStatisticDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.user.client.ClientStatisticDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.user.client.ClientStatisticDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- MessagerConnectorConfig Entity Proxy with inner MessagerConnectorConfig Entity implementation -->
+    <bean id="messagerConnectorConfigDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.messaging.config.MessagerConnectorConfigDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.messaging.config.MessagerConnectorConfigDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- LastModificationDateDao Entity Proxy with inner LastModificationDateDao Entity implementation -->
+    <bean id="lastModificationDateDao" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <bean class="com.communote.server.persistence.lastmodifieddate.LastModificationDateDaoImpl">
+                <property name="sessionFactory">
+                    <ref local="sessionFactory" />
+                </property>
+            </bean>
+        </property>
+        <property name="proxyInterfaces">
+            <value>com.communote.server.persistence.lastmodifieddate.LastModificationDateDao</value>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>hibernateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+        
+</beans>

@@ -1,0 +1,17 @@
+@charset "utf-8";
+
+#communote .logo , #communote #main {
+    text-align: center;
+    background-color: #FFFFFF;
+}
+
+html,
+input,
+select,
+textarea,
+table,
+div.cn-mock-input {
+    font-family: verdana, sans-serif;
+    font-size: 12px;
+    color: #000000;
+}

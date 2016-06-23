@@ -1,0 +1,11 @@
+$response.setContentType("text/css")
+@charset "utf-8";
+
+#if($refererPath)
+	#set( $refererPath = $refererPath + "/plugins/${maven-symbolicname}/" )
+#else
+	#set( $refererPath = "$urlTool.render('plugins/${maven-symbolicname}/', null, false, false, false, null, false)" )
+#end
+
+
+#parse("${staticResourcesBasePath}/styles/widget-standalone.css.vm")

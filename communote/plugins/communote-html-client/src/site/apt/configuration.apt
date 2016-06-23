@@ -1,0 +1,100 @@
+Configuration
+
+
+  The widget parameters can be used to customize the widget. The parameters are added to Widget URL as request parameters (eg. http://myhost/microblog/global/portal/mobile?fiPreselectedTopics=automotive&edShowCreate=false).
+
+* Widget parameters
+
+  The following parameters are available:
+
+*--+--+--+--+
+|| Parameter name || Possible values || Default value || Description |
+*--+--+--+--+
+| <<Editor\ (ed)>> | | |
+*--+--+--+--+
+| edShowCreate | true/false | true | Show the editor area for creating new notes |
+*--+--+--+--+
+| edInitLines | 1 ... 50 | 2 | The initial height of the editor |
+*--+--+--+--+
+| edShowTopicChooser | true/false | true | Show the topic selection, is used for adding new notes |
+*--+--+--+--+
+| edTopicList | | - | A comma separated list of topic aliases, shown in the topic chooser |
+| | | | Default: all writeable topics of the user |
+*--+--+--+--+
+| edPreselectedTopic | | - | A preselected topic for writing |
+*--+--+--+--+
+| edShowTag | true/false | false | Show the tagging function for notes |
+*--+--+--+--+
+| edShowTagField | true/false | false | Show the tagging text field for notes (Communote Version 2.2) |
+*--+--+--+--+
+| edAddDefaultTags | | - | A comma separated list of tags that are added to the notes by default |
+*--+--+--+--+
+| edShowUpload | true/false | true for mobile view, otherwise false | Show the file upload function for notes (Communote Version 2.2) |
+*--+--+--+--+
+| <<Message\ Stream\ (msg)>> |
+*--+--+--+--+
+| msgShowMessages | true/false | true | Show the message stream |
+*--+--+--+--+
+| msgShowEdit | true/false | true | Show the note action link "edit" |
+*--+--+--+--+
+| msgShowReply | true/false | true | Show the note action link "reply" |
+*--+--+--+--+
+| msgShowDelete | true/false | true | Show the note action link "delete" |
+*--+--+--+--+
+| msgShowLike | true/false | true | Show the note action link "like" |
+*--+--+--+--+
+| msgShowFavor | true/false | true | Show the note action link "bookmark" |
+*--+--+--+--+
+| msgShowAuthorImg | true/false | true | Show the author images at notes and anwers |
+*--+--+--+--+
+| msgMaxCount | 0 ... 50 | 10 | The count of notes that are loaded at once |
+*--+--+--+--+
+| msgShowViews | all/follow/me/favorites | all | The available views for the message stream (comma seperated list) |
+*--+--+--+--+
+| msgViewSelected | all/follow/me/favorites | all | When multiple views are provided a special view can be preselected |
+*--+--+--+--+
+| msgFollowButton | true/false | true | Show a button to follow a single topic |
+*--+--+--+--+
+| msgHomeButton | true/false | false | Show a button to open the full application in a new window |
+*--+--+--+--+
+| <<Filter\ (fi)>> |
+*--+--+--+--+
+| fiShowFilter | true/false | true | Show the note filter area |
+*--+--+--+--+
+| fiShowSearch | true/false | true | Show the keyword search |
+*--+--+--+--+
+| fiShowTopic | true/false | true | Show the topic filter |
+*--+--+--+--+
+| fiShowTagCloud | true/false | true | Show the tag cloud |
+*--+--+--+--+
+| fiShowAuthor | true/false | true | Show the author filter |
+*--+--+--+--+
+| fiPreselectedSearch | | - | To initialize the text search filter with a predefined string |
+*--+--+--+--+
+| fiPreselectedTopics | | - | To initialize the topic filter with a comma separated list of topic aliases, shown in the topic filter (default: all readable for the user) |
+| | | |  Default: all readable topics for the user |
+*--+--+--+--+
+| fiPreselectedTopicIds | | - | Like fiPreselectedTopics, but with the database id of topics |
+*--+--+--+--+
+| fiPreselectedTagIds | | - | To initialize the tag filter with a comma separated list with the database id of tags |
+*--+--+--+--+
+| fiPreselectedAuthors | | - | To initialize the author filter with a comma separated list of user aliases |
+*--+--+--+--+
+| fiPreselectedAuthorIds | | - | To initialize the topic filter with a comma separated list of the database id of users |
+*--+--+--+--+
+| fiPreselectedNoteId | | - | To initialize the note filter with the database id of a note |
+*--+--+--+--+
+| fiTopicPageSize | 1 ... 50 | 10 | The count of topics per page the user can filter by (topic filter) |
+*--+--+--+--+
+| fiAuthorPageSize | 1 ... 50 | 14 | The count of authors per page the user can filter by (author filter) |
+*--+--+--+--+
+| <<Activities\ (ac)>> |
+*--+--+--+--+
+| acShow | true/false | true | Show activities in the message stream (Communote Version 2.2) |
+*--+--+--+--+
+| acShowFilter | true/false | true | Show the activity filter (Communote Version 2.2) |
+*--+--+--+--+
+| <<Miscellaneous>> |
+*--+--+--+--+
+| utcTimeZoneOffset | -720 ... +840 | 0 | Sets the timezone offset in minutes |
+*--+--+--+--+

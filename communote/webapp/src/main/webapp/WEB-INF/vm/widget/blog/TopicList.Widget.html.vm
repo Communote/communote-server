@@ -1,0 +1,203 @@
+#* @vtlvariable name="list" type="com.communote.common.util.PageableList<com.communote.server.api.core.blog.BlogData>" *#
+#* @vtlvariable name="widget" type="com.communote.server.web.fe.widgets.blog.TopicListWidget" *#
+#widgetMetadata(${widget.ResponseMetadata})
+#set($widgetInstance = "#jsCurrentWidget()")
+#if($widget.getParameter('loadMoreMode') != 'paging' && $widget.getLongParameter('offset', 0) == 0)
+    #set($parents = $widget.getParents())
+    #if($parents && $parents.size() > 0)
+        #set($isParents = true)
+    #else
+        #set($isParents = false)
+    #end
+#else
+    #set($isLoadMore = true)
+    #set($isParents = false)
+    <div class="cn-list-scroll-top cn-hidden" id="${widget.WidgetId}-top-scroller">
+        <a href="javascript:;"
+           onclick="scrollWindowTo(null, 0, 0, true, true); return false;">
+            <span class="cn-icon"></span>
+            <span class="cn-icon-label">#t('blog.post.list.back.to.top')</span>
+        </a>
+    </div>
+#end
+<div id="cono-view" class="cn-list-view">
+    #if($isParents)
+        <div class="cn-topic-list parent-topics">
+            <h2 class="cn-headline">#t('topic.list.parents.title')</h2>
+            #foreach($item in $parents)
+                #set( $followsBlog = $followTool.followsBlog($item.Id) )
+                <div id="${widget.WidgetId}-topic-${item.Id}" aria-haspopup="true" class="cn-list-blogs-blogs-entry #if(!$managementAction && $followsBlog)cn-list-entry-followed#end">
+                    #set($blogUrl = "$urlTool.blog(${item.NameIdentifier})?viewId=topics")
+                    #set($blogTitleXmlEscaped = "$escTool.xmlSimple($item.Title)")
+                    #set($blogTitleJsEscaped = "$escTool.javascriptInline($item.Title)")
+                    <div class="cn-tile">
+                        <div class="cn-left">
+                            <a href="${blogUrl}" title="${blogTitleXmlEscaped}" onclick="return communote.linkHandler.open('${blogUrl}', {blogId: $item.Id, blogTitle: '${blogTitleJsEscaped}'});">
+                                <img src="$urlTool.imageForProfile("topic.$item.getId()")" alt="${blogTitleXmlEscaped}"/>
+                                <span class="title">${blogTitleXmlEscaped}</span>
+                            </a>
+                        </div>
+                        <div class="cn-right">
+                            #cnFollowButton("$item.Id", 'Blog', $followsBlog, 'follow.link.follow')
+                        </div>
+                    </div>
+                    #cnClear()
+                </div>
+            #end
+        </div>
+    #end
+    <div class="cn-topic-list child-topics">
+        #if($isParents)
+            <h2 class="cn-headline">#t('topic.list.childrens.title')</h2>
+        #end
+        #if( !$list || $list.size() == 0 )
+            #set($showOnlyToplevel = $widget.getBooleanParameter('showOnlyToplevelTopics', false))
+            #if($widget.showCreateNewTopic())
+                #if(${showOnlyToplevel})
+                    #if($communoteTool.isCurrentUserClientManager())
+                        <div class="cn-list-entry-new cn-list-blogs-blogs-entry">
+                            <div class="cn-left">
+                                <a href="$urlTool.render('portal/topic-create?toplevelTopic=true')">
+                                    <span class="cn-add cn-tile"><!-- Empty --></span>
+                                    <span class="cn-title">#t('topic.list.add-new')</span>
+                                </a>
+                            </div>
+                            #cnClear()
+                        </div>
+                    #end
+                #else
+                    <div class="cn-list-entry-new cn-list-blogs-blogs-entry">
+                        <div class="cn-left">
+                            <a href="$urlTool.render('portal/topic-create')">
+                                <span class="cn-add cn-tile"><!-- Empty --></span>
+                                <span class="cn-title">#t('topic.list.add-new')</span>
+                            </a>
+                        </div>
+                        #cnClear()
+                    </div>
+                #end
+            #end
+            #if($widget.showAddSubtopic())
+                <div class="cn-list-entry-add cn-list-blogs-blogs-entry">
+                    <div class="cn-left">
+                        <a href="$urlTool.render("portal/topic-create?parentTopicId=$widget.getParameter('parentTopicIds')")">
+                            <span class="cn-add cn-tile"><!-- Empty --></span>
+                            <span class="cn-title">#t('topic.list.add-childtopic')</span></a>
+                    </div>
+                    #cnClear()
+                </div>
+            #end
+            #if(${showOnlyToplevel})
+                #if($communoteTool.isCurrentUserClientManager())
+                    <div class="cn-empty-list help">#t('topic.list.directory.empty.admin.help')</div>
+                #else
+                    <div class="cn-empty-list">#t('topic.list.directory.empty')</div>
+                #end
+            #else
+                <div class="cn-empty-list">$fmtTool.message("blog.overview.empty.list")</div>
+            #end
+        #else
+            #if(!$isLoadMore)
+                #if($widget.showCreateNewTopic())
+                    #if($widget.getBooleanParameter('showOnlyToplevelTopics', false))
+                        #if($communoteTool.isCurrentUserClientManager())
+                            <div class="cn-list-entry-new cn-list-blogs-blogs-entry">
+                                <div class="cn-left">
+                                    <a href="$urlTool.render('portal/topic-create?toplevelTopic=true')">
+                                        <span class="cn-add cn-tile"><!-- Empty --></span>
+                                        <span class="cn-title">#t('topic.list.add-new')</span>
+                                    </a>
+                                </div>
+                                #cnClear()
+                            </div>
+                        #end
+                    #else
+                        <div class="cn-list-entry-new cn-list-blogs-blogs-entry">
+                            <div class="cn-left">
+                                <a href="$urlTool.render('portal/topic-create')">
+                                    <span class="cn-add cn-tile"><!-- Empty --></span>
+                                    <span class="cn-title">#t('topic.list.add-new')</span>
+                                </a>
+                            </div>
+                            #cnClear()
+                        </div>
+                    #end
+                #end
+                #if($widget.showAddSubtopic())
+                    <div class="cn-list-entry-add cn-list-blogs-blogs-entry">
+                        <div class="cn-left">
+                            <a href="$urlTool.render("portal/topic-create?parentTopicId=$widget.getParameter('parentTopicIds')")">
+                                <span class="cn-add cn-tile"><!-- Empty --></span>
+                                <span class="cn-title">#t('topic.list.add-childtopic')</span></a>
+                        </div>
+                        #cnClear()
+                    </div>
+                #end
+            #end
+            #set($managementAction = $widget.getBooleanParameter('forceAllTopics', false) && $communoteTool.isCurrentUserClientManager())
+            #foreach($item in $list)
+                #set( $followsBlog = $followTool.followsBlog($item.Id) )
+                <div id="${widget.WidgetId}-topic-${item.Id}" aria-haspopup="true" 
+                class="cn-list-blogs-blogs-entry #if(!$managementAction && $followsBlog)cn-list-entry-followed#end">
+                    #set($blogUrl = "$urlTool.blog(${item.NameIdentifier})?viewId=topics")
+                    #set($blogTitleXmlEscaped = "$escTool.xmlSimple($item.Title)")
+                    #set($blogTitleJsEscaped = "$escTool.javascriptInline($item.Title)")
+                    
+                    #if($managementAction)
+                        #set($currentRole = $communoteTool.blogs.getBlogRole($item.Id))
+                    #end
+                    <div class="cn-tile">
+                        <div class="cn-left">
+                            #if($managementAction && $currentRole == "NONE")
+                                #set($profileImage = $urlTool.topicDefaultProfileImage())
+                                <a href="javascript:;" title="${blogTitleXmlEscaped}" onclick="${widgetInstance}.askForGainTopicAccess($item.Id,'${blogTitleJsEscaped}', 
+                                        '$currentRole', $communoteTool.topics.getUsersWithRoleAsJson($item.Id, 'MANAGER'))">
+                            #else
+                                #set($profileImage = $urlTool.imageForProfile("topic.$item.getId()"))
+                                <a href="${blogUrl}" title="${blogTitleXmlEscaped}" onclick="return communote.linkHandler.open('${blogUrl}', 
+                                        {blogId: $item.Id, blogTitle: '${blogTitleJsEscaped}'});">
+                            #end
+                                <img src="$profileImage" alt="${blogTitleXmlEscaped}"/>
+                                <span class="title">${blogTitleXmlEscaped}</span>
+                            </a>
+                        </div>
+                        <div class="cn-right">
+                            #if($managementAction)
+                                #if($currentRole == 'MANAGER')
+                                    <a href="$urlTool.render("portal/topic-edit?blogId=$item.Id")" class="cn-button cn-button-look">#t('blog.overview.tab.admister.manage')</a>
+                                #else
+                                    #cnButton("gainAccess$item.Id" 'blog.overview.tab.admister.access' '' "${widgetInstance}
+                                        .askForGainTopicAccess($item.Id,'${blogTitleJsEscaped}', '$currentRole',
+                                        $communoteTool.topics.getUsersWithRoleAsJson($item.Id, 'MANAGER')
+                                        )" 'cn-button-type-gain-access cn-button-look')
+                                #end
+                            #else
+                                #cnFollowButton("$item.Id", 'Blog', $followsBlog, 'follow.link.follow')
+                            #end
+                        </div>
+                    </div>
+                    #cnClear()
+                </div>
+            #end
+        #end 
+        #cnClear()
+    </div>
+</div>
+#if($widget.getParameter('loadMoreMode') != 'paging')
+<div class="control-loadmore-placeholder cn-list-loadmore-wrapper cn-clear">
+    <div class="control-loadmore-loading-feedback cn-list-loadmore-feedback" style="display:none">
+        <span>#t('topic.list.loadmore.loading.feedback')</span>
+    </div>
+    #if($isLoadMore)
+        <div class="control-loadmore-no-more-data cn-empty-list" style="display:none">
+            <span>#t('topic.list.loadmore.all.loaded')</span>
+        </div>
+    #end
+    <div class="control-loadmore-limit-reached cn-list-loadmore-manually"
+         #if($widget.getParameter('loadMoreMode')=='append-scroll' || $list.MinNumberOfAdditionalElements==0)style="display:none"#end>
+        <input type="button" class="cn-button" value="#t('topic.list.loadmore.manually')"
+               onclick="document.id(this).setStyle('display', 'none');${widgetInstance}.loadMore()"/>
+    </div>
+</div>
+#end
+#cnClear()

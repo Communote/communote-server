@@ -1,0 +1,5 @@
+<div class="cn-guideline-howto">
+    <h2>#t('usage.guideline.howto.favorite.title')</h2>
+    #t('usage.guideline.howto.favorite')
+    #t_args('usage.guideline.howto.favorite.example', $urlTool.renderStaticBase(true, false, $!communoteTool.CurrentClientId))
+</div>

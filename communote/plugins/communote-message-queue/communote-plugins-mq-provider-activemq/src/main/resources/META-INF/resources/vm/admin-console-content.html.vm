@@ -1,0 +1,217 @@
+<script type="text/javascript">
+    function deleteUser(user) {
+        showConfirmDialog(
+            getJSMessage('plugins.mq.provider.configuration.button.user.dialog.title', []),
+            getJSMessage('plugins.mq.provider.configuration.button.user.dialog.question', []),
+                function() {
+                        $('action').set('value', 'broker-user-delete');
+                        $('user-name').set('value', user);
+                        $('mq-form').submit();
+                }
+			);
+    }
+
+    function toggleSslCheckboxes(disable) {
+        if (disable) {
+            $('ssl-force').disabled = true;
+            $('ssl-force').checked = false;
+
+            $('ssl-client-auth').disabled = true;
+            $('ssl-client-auth').checked = false;
+        } else {
+            $('ssl-force').disabled = false;
+
+            $('ssl-client-auth').disabled = false;
+        }
+    }
+</script>
+#cnRenderMessages($status.Errors)
+<form method="post">
+	<div class="actionbar actionbar-service">
+		#if ($broker_active)
+		<div class="service-status">
+			<img alt="active" src="$urlTool.render("/themes/core/images/misc/service-on.png", false, false, true)" />&nbsp;
+			$fmtTool.message('plugins.mq.provider.configuration.activate')
+		</div>
+		<input type="hidden" value="broker-deactivate" name="action" />
+		<div class="button-gray">
+			<input type="submit" name="submit"
+				value="$fmtTool.message('plugins.mq.provider.configuration.button.broker.deactivate')" />
+		</div>
+		#else
+		<div class="service-status">
+			<img alt="turned off" src="$urlTool.render("/themes/core/images/misc/service-off.png", false, false, true)" />&nbsp;
+			$fmtTool.message('plugins.mq.provider.configuration.deactivate')
+		</div>
+		<input type="hidden" value="broker-activate" name="action">
+		<div class="button-gray">
+			<input type="submit" name="submit"
+				value="$fmtTool.message('plugins.mq.provider.configuration.button.broker.activate')" />
+		</div>
+		#end <span class="clear"> <!-- ie -->
+		</span>
+	</div>
+</form>
+<hr />
+<h5>$fmtTool.message('plugins.mq.provider.configuration.title')</h5>
+<div class="form-description">$fmtTool.message("plugins.mq.provider.configuration.description")</div>
+<form method="post" id="mq-form">
+	<fieldset>
+		<h6 class="subheadline">$fmtTool.message('plugins.mq.provider.configuration.heading.connector')</h6>
+		<div class="w100">
+			<div class="label">
+				<label>$fmtTool.message('plugins.mq.provider.configuration.label.connector.url')</label>
+			</div>
+			<div class="mock-textarea disabled">
+				$stringUtils.join($mq_connectors, ', ')</div>
+		</div>
+		<div style="font-size: 11px; color: #737373; width: 630px;">#t('plugins.mq.provider.configuration.connector.hint')</div>
+		<span class="clear">
+			<!-- ie -->
+		</span>
+	</fieldset>
+	<fieldset class="topspace">
+		<h6 class="subheadline">$fmtTool.message('plugins.mq.provider.configuration.heading.advanced.settings')</h6>
+		<div class="w100">
+			<input type="checkbox" class="checkbox" name="enableTCP"
+				id="tcp-activate" #if($isEnableTCP) checked="checked" #end
+				 /> <label
+				for="tcp-activate">#t_args('plugins.mq.provider.configuration.tcp.activate', $tcpPort)&nbsp;<span
+				class="tooltip-wrapper"><a class="tooltip"
+					rel="#t('plugins.mq.provider.configuration.tcp.activate.hint')">[?]</a></span></label>
+		</div>		
+		<div class="w100">
+			<input type="checkbox" class="checkbox" name="enableSSL"
+				id="ssl-activate" #if($isEnableSSL) checked="checked" #end
+				onclick="toggleSslCheckboxes(!this.checked);" /> <label
+				for="ssl-activate">#t_args('plugins.mq.provider.configuration.ssl.activate',  $sslPort)&nbsp;<span
+				class="tooltip-wrapper"><a class="tooltip"
+					rel="#t('plugins.mq.provider.configuration.ssl.activate.hint')">[?]</a></span></label>
+		</div>
+		<div style="font-size: 11px; color: #737373; width: 630px;">#t('plugins.mq.provider.configuration.ssl.hint')</div>
+		<div class="w100">
+			<input type="checkbox" class="checkbox" name="forceSSL"
+				id="ssl-force" #if($isForceSSL) checked="checked"
+				#end
+                #if(!$isEnableSSL) disabled="disabled" #end />
+			<label for="ssl-force">#t('plugins.mq.provider.configuration.ssl.force')&nbsp;<span
+				class="tooltip-wrapper"><a class="tooltip"
+					rel="#t('plugins.mq.provider.configuration.ssl.force.hint')">[?]</a></span></label>
+		</div>
+		<div class="w100">
+			<input type="checkbox" class="checkbox"
+				name="forceSSLClientAuthentication" id="ssl-client-auth"
+				#if($isForceSSLClientAuthentication) checked="checked"
+				#end
+                #if(!$isEnableSSL) disabled="disabled" #end />
+			<label for="ssl-client-auth">#t('plugins.mq.provider.configuration.ssl.client.auth')&nbsp;<span
+				class="tooltip-wrapper"><a class="tooltip"
+					rel="#t('plugins.mq.provider.configuration.ssl.client.auth.hint')">[?]</a></span></label>
+		</div>
+		<div class="w100">
+			<input type="checkbox" class="checkbox" name="enableJmx"
+				id="jmx-activate" #if($isEnableJmx) checked="checked" #end /> <label
+				for="jmx-activate">#t_args('plugins.mq.provider.configuration.jmx.activate', $jmxPort)&nbsp;<span
+				class="tooltip-wrapper"><a class="tooltip"
+					rel="$fmtTool.message('plugins.mq.provider.configuration.jmx.activate.hint', $jmxPort)">[?]</a></span></label>
+		</div>
+		<div class="w100">&nbsp;</div>
+		<div class="w100">
+			<div class="label">
+				<label for="dataDirectory">$fmtTool.message('plugins.mq.provider.configuration.label.data.dir')<span
+					class="required">*</span>
+				</label>
+			</div>
+			<div class="input">
+				<input type="text" name="dataDirectory" class="text"
+					value="$mq_data_directory" id="dataDirectory" />
+				<div style="font-size: 11px; color: #737373; width: 630px;">#t('plugins.mq.provider.configuration.label.data.dir.hint')</div>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset>
+		<h6 class="subheadline">$fmtTool.message('plugins.mq.provider.configuration.heading.user')</h6>
+		<div class="form-description">#set($descriptionArg =
+			"#t('plugins.mq.provider.configuration.ssl.client.auth')")
+			#t_args("plugins.mq.provider.configuration.user.description",
+			$descriptionArg)</div>
+		<div class="w50">
+			<div class="label">
+				<label for="userName">$fmtTool.message('plugins.mq.provider.configuration.label.user.name')<span
+					class="required">*</span>
+				</label>
+			</div>
+			<div class="input">
+				<input type="text" class="text" name="userName" id="userName" />
+			</div>
+		</div>
+		<div class="w50">
+			<div class="label">
+				<label for="password">$fmtTool.message('plugins.mq.provider.configuration.label.user.password')</label>
+			</div>
+			<div class="input">
+				<input id="password" type="password" value="" class="text"
+					name="password" />
+			</div>
+		</div>
+		<span class="clear">
+			<!-- ie -->
+		</span>
+		<div class="actionbar actionbar-general">
+			<div class="button-gray">
+				<input type="submit"
+					value="$fmtTool.message('plugins.mq.provider.configuration.button.user.add')"
+					onclick="$('action').set('value','broker-user-add');" />
+			</div>
+			<span class="clear">
+				<!-- ie -->
+			</span>
+		</div>
+		<div class="table-container">
+			<div class="table-header">
+				<div class="column w100">
+					<span>$fmtTool.message('plugins.mq.provider.configuration.label.user.name')</span>
+				</div>
+			</div>
+			<div class="table-content">
+				#if(!$mq_users.isEmpty()) #foreach($user in $mq_users)
+				<div id="member_$user" class="row">
+					<div class="column w100" title="$user">
+						<span>$user</span>
+					</div>
+					<span class="clear">
+						<!-- ie -->
+					</span>
+					<div class="row-tools"
+						onmouseout="mOutHideToolbox(this, '.toolbox');"
+						onmouseover="mOverShowToolbox(this, '.toolbox');">
+						<div class="toolbox">
+							<a class="toolbox-item user-delete"
+								href="javascript:deleteUser('$user');"
+								title="$fmtTool.message('plugins.mq.provider.configuration.button.user.delete')">
+								<span class="delete">$fmtTool.message('plugins.mq.provider.configuration.button.user.delete')</span>
+							</a>
+						</div>
+					</div>
+				</div>
+				#end #else
+				<div class="cn-empty-list">
+					$fmtTool.message('plugins.mq.provider.configuration.no.users')</div>
+				#end
+			</div>
+		</div>
+	</fieldset>
+	<div class="info">$fmtTool.message('form.info.required.fields')</div>
+	<div class="actionbar actionbar-general">
+		<input type="hidden" name="action" id="action" value="update-settings" />
+		<input type="hidden" name="removeUser" id="user-name" value="" />
+		<div class="button-gray main">
+			<input type="submit"
+				value="$fmtTool.message('plugins.mq.provider.configuration.button.data.dir.save')"
+				onclick="$('action').set('value','update-settings');" />
+		</div>
+		<span class="clear">
+			<!-- Empty -->
+		</span>
+	</div>
+</form>

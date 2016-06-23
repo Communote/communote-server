@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.user.UserProfile" table="user_profile" dynamic-insert="false" dynamic-update="false">
+        <cache usage="read-write" />
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">user_profile_seq</param>
+                                                           </generator>
+        </id>
+        <property name="lastName" type="java.lang.String">
+            <column name="last_name" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="salutation" type="java.lang.String">
+            <column name="salutation" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="position" type="java.lang.String">
+            <column name="position" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="company" type="java.lang.String">
+            <column name="company" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="firstName" type="java.lang.String">
+            <column name="first_name" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="lastModificationDate" type="java.sql.Timestamp">
+            <column name="last_modification_date" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="lastPhotoModificationDate" type="java.sql.Timestamp">
+            <column name="last_photo_modification_date" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="timeZoneId" type="java.lang.String">
+            <column name="time_zone_id" 
+                     not-null="false" unique="false"/>
+        </property>
+        <many-to-one name="smallImage" class="com.communote.server.model.user.UserImageImpl" foreign-key="user_profile_SMALL_IMAGE_FKC" cascade="delete" lazy="proxy" fetch="select">
+            <column name="SMALL_IMAGE_FK" not-null="false" unique="true"/>
+        </many-to-one>
+        <many-to-one name="contact" class="com.communote.server.model.user.ContactImpl" foreign-key="user_profile_CONTACT_FKC" cascade="delete" lazy="proxy" fetch="select">
+            <column name="CONTACT_FK" not-null="false" unique="true"/>
+        </many-to-one>
+        <many-to-one name="mediumImage" class="com.communote.server.model.user.UserImageImpl" foreign-key="user_profile_MEDIUM_IMAGE_FKC" cascade="delete" lazy="proxy" fetch="select">
+            <column name="MEDIUM_IMAGE_FK" not-null="false" unique="true"/>
+        </many-to-one>
+        <many-to-one name="largeImage" class="com.communote.server.model.user.UserImageImpl" foreign-key="user_profile_LARGE_IMAGE_FKC" cascade="delete" lazy="proxy" fetch="select">
+            <column name="LARGE_IMAGE_FK" not-null="false" unique="true"/>
+        </many-to-one>
+        <many-to-one name="notificationConfig" class="com.communote.server.model.user.NotificationConfigImpl" foreign-key="user_profile_NOTIFICATION_CONC" cascade="delete" lazy="proxy" fetch="select">
+            <column name="NOTIFICATION_CONFIG_FK" not-null="true" unique="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

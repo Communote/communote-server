@@ -1,0 +1,22 @@
+<div class="cn-actions-container">
+    <div class="cn-content-edit"><!-- reserved for editing the note --></div>
+    <div class="cn-bar">
+        <div class="cn-note-actions-wrapper"></div>
+        <div class="cn-note-meta-info-wrapper"></div>
+    </div>
+    <div class="cn-content-comment"><!-- Reserved for commenting the note --></div>
+    <div class="cn-like-meta-users cn-hidden">
+    #foreach($user in $usersWhichLikeThisPost)
+        <a class="cn-author control-entity-link #if(${user.Id} == ${currentUserId})cn-note-liker-current-user#end" href="$urlTool.user($user.Alias)" target="_blank">
+        #set($escName = $escTool.xmlSimple($communoteTool.getUserSignature($user, $nameShort)))
+            <img src="$urlTool.userImage($user.Id, $imageMedium)" alt="$escName" data-cnt-user-id="${user.Id}" title="$escName" width="26" height="26" />
+        </a>
+    #end
+    #if(!${currentUserLikesNote})
+        #set($escName = $escTool.xmlSimple($communoteTool.getCurrentUserSignature($nameShort)))
+        <a class="cn-author control-entity-link cn-note-liker-current-user" href="$urlTool.currentUser()" target="_blank">
+            <img src="$urlTool.userImage($currentUserId, $imageMedium)" alt="$escName" data-cnt-user-id="${currentUserId}" title="$escName" width="26" height="26" />
+        </a>
+    #end
+    </div>
+</div>

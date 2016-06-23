@@ -1,0 +1,93 @@
+.cn-banner-wrapper {
+		height: 100px;
+}
+
+.cn-banner-only-title {
+		overflow: hidden;
+	  text-overflow: ellipsis;
+	  white-space: nowrap;
+}
+
+.cn-banner-title {
+    background-color: #FFFFFF;
+    bottom: 20px;
+    min-width: 120px;
+    padding-left: 10px;
+    padding-right: 10px;
+    position: absolute;
+    top: 20px;
+}
+
+.no-touch .cn-banner-title {
+		opacity: 0.9;
+    filter: alpha(opacity=90);
+    transition: opacity 0.5s linear 0.2s;
+    -webkit-transition: opacity 0.5s linear 0.2s;
+    -moz-transition: opacity 0.5s linear 0.2s;
+    -o-transition: opacity 0.5s linear 0.2s;
+}
+
+.no-touch .cn-banner-wrapper:hover .cn-banner-title {
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.cn-banner-title .cn-left {
+    float: left;
+    height: 100%;
+    max-width: 480px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-banner-title .cn-left .cn-title span {
+    display: inline;
+}
+
+.cn-banner-title .cn-right {
+    float: left;
+    overflow: hidden;
+    padding-top: 12px;
+}
+
+.no-touch .cn-banner-title .cn-right {
+    transition: width 0.1s linear 0.3s;
+    width: 0;
+    -webkit-transition: width 0.1s linear 0.3s;
+    -moz-transition: width 0.1s linear 0.3s;
+    -o-transition: width 0.1s linear 0.3s;
+}
+
+.no-touch .cn-banner-wrapper:hover .cn-right,
+.touch .cn-banner-wrapper .cn-right {
+    width: 120px;
+}
+
+.cn-banner-title .cn-button-look {
+    margin-left: 20px;
+    margin-top: 4px;
+}
+
+.cn-banner-wrapper .cn-title {
+    color: #000000;
+    font-size: 20px;
+    line-height: 34px;
+}
+
+.cn-banner-title .cn-alone .cn-title {
+    line-height: 60px;
+}
+
+.cn-banner-title .description {
+    color: #888888;
+}
+
+.cn-banner-title span.following {
+    margin-top: 10px;
+    padding-left: 10px;
+}
+
+.cn-banner-image {
+    overflow: hidden;
+}

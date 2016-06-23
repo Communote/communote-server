@@ -1,0 +1,546 @@
+#CreateNote {
+    background-color: #F5F5F5;
+    border: 1px solid #E4E4E4;
+    display: block;
+    margin-bottom: 12px;
+    padding: 5px 12px;
+}
+
+.cn-write-note {
+    position: relative;
+    margin-bottom: 10px;
+    zoom: 1;
+}
+
+.cn-write-note.cn-write-note-render-style-simulate {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.cn-write-note.cn-write-note-render-style-simulate .cn-border {
+    color: #888888;
+    padding-bottom: 12px;
+    padding-left: 10px;
+    padding-top: 12px;
+}
+
+.cn-write-note.cn-write-note-render-style-simulate:after, .cn-write-note.cn-write-note-render-style-simulate:before {
+    border: medium solid transparent;
+    content: " ";
+    height: 0;
+    margin-top: -1px;
+    pointer-events: none;
+    position: absolute;
+    top: 100%;
+    width: 0;
+}
+
+.cn-write-note.cn-write-note-render-style-simulate:after {
+    border-color: rgba(255, 255, 255, 0); 
+    border-top-color: #FFFFFF;
+    border-width: 7px;
+    left: 5%;
+    margin-left: -7px;
+}
+
+.cn-write-note.cn-write-note-render-style-simulate:before {
+    border-color: rgba(199, 199, 199, 0); 
+    border-top-color: #C7C7C7;
+    border-width: 8px;
+    left: 5%;
+    margin-left: -8px;
+}
+
+.cn-write-note-no-editor {
+    color: #424242;
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
+.cn-write-note-no-editor .cn-list {
+    border-width: 1px;
+    padding: 10px;
+}
+
+.cn-write-note-accessory-contents .cn-accessory-container {
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.cn-write-note-accessory-contents span {
+    color: #888888;
+    font-size: 12px;
+}
+
+.cn-write-note .cn-bar {
+    clear: left;
+    float: left;
+    margin-top: 0;
+    min-height: 24px;
+}
+
+.cn-write-note .cn-bar .cn-link {
+    font-size: 13px;
+    line-height: 22px;
+    margin-bottom: 15px;
+    margin-right: 15px;
+    margin-top: 4px;
+    padding-left: 0;
+}
+
+.cn-accessory-label {
+    float: left;
+    margin-top: 8px;
+    min-width: 22%;
+}
+
+.cn-accessory-content {
+    float: right;
+    position: relative;
+    width: 74%;
+}
+
+.cn-write-note .cn-write-note-accessories-full .cn-icon,
+.cn-write-note-accessories-full .cn-write-note-accessory-contents .cn-icon {
+    height: 24px;
+    margin-right: 8px;
+    width: 24px;
+}
+
+.cn-write-note-accessory-contents .cn-icon-label {
+    line-height: 22px;
+}
+    
+.cn-write-note .cn-write-note-accessory-user .cn-icon {
+    background-position: -421px -101px;
+}
+
+.cn-write-note .accessory-user .cn-icon {
+    background-position: -421px -133px;
+}
+
+.cn-write-note .accessory-user:hover .cn-icon {
+    background-position: -421px -165px;
+}
+
+.cn-write-note .cn-write-note-accessory-tag .cn-icon {
+    background-position: -516px -101px;
+}
+
+.cn-write-note .accessory-tag .cn-icon {
+    background-position: -516px -132px;
+}
+
+.cn-write-note .accessory-tag:hover .cn-icon {
+    background-position: -516px -164px;
+}
+
+.cn-write-note .cn-write-note-accessory-attachment .cn-icon {
+    background-position: -132px -101px;
+}
+
+.cn-write-note .accessory-attachment .cn-icon {
+    background-position: -132px -132px;
+}
+
+.cn-write-note .accessory-attachment:hover .cn-icon {
+    background-position: -132px -164px;
+}
+
+.cn-write-note .cn-write-note-accessory-topic .cn-icon {
+    background-position: -453px -102px;
+}
+
+.cn-write-note .accessory-topic .cn-icon {
+    background-position: -453px -133px;
+}
+
+.cn-write-note .accessory-topic:hover .cn-icon {
+    background-position: -453px -165px;
+}
+
+.cn-write-note .cn-write-note-plaintext {
+    padding-top: 6px;
+}
+
+.cn-accessory-content .cn-note-dm {
+    margin-top: 12px;
+}
+
+.cn-accessory-content .cn-note-dm label {
+    padding-left: 6px;
+}
+
+.cn-accessory-content .cn-attachment-summary {
+    margin-bottom: 5px;
+    min-height: 20px;
+    overflow: hidden;
+    padding: 5px 5px 5px 10px;
+}
+
+.cn-attachment-summary > div {
+    border-top: 1px solid #E4E4E4;
+    height: 27px;
+    line-height: 27px;
+}
+
+.cn-attachment-summary > div:first-child {
+    border: 0 none;
+}
+
+.cn-attachment-summary span {
+    display: block;
+    float: left;
+}
+
+.cn-upload-process .cn-attachment-filename {
+    background-image: url(../../images/main/loading.gif?t=${build.timestamp});
+    background-repeat: no-repeat;
+    padding-left: 30px;
+}
+
+.cn-attachment-summary .cn-attachment-filename {
+    width: 75%;
+}
+
+.cn-attachment-summary .cn-attachment-filename span,
+.cn-attachment-summary .cn-attachment-unlinked .cn-attachment-filename a {
+    display: none;
+}
+
+.cn-attachment-summary .cn-attachment-filename a,
+.cn-attachment-summary .cn-attachment-unlinked .cn-attachment-filename span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-attachment-summary .cn-attachment-filesize {
+    padding-right: 2%;
+    text-align: right;
+    width: 18%;
+}
+
+.cn-attachment-summary .cn-attachment-remove {
+    width: 5%;
+}
+
+.cn-attachment-summary .cn-attachment-remove .cn-icon {
+    background-position: -132px -195px;
+    margin: 0;
+}
+
+.cn-attachment-summary > div:hover .cn-icon {
+    background-position: -132px -227px;
+}
+
+.cn-attachment-summary .cn-attachment-remove .cn-icon:hover {
+    background-position: -132px -259px;
+} 
+
+.cn-write-note-accessory-attachment form {
+    visibility: hidden;
+}
+
+.cn-write-note-accessory-attachment form input {
+    width: 0;
+}
+
+.cn-write-note-accessory-attachment.cn-custom-upload form {
+    display: block;
+    margin-top: 10px;
+    overflow: hidden;
+    visibility: visible;
+}
+
+.cn-write-note-accessory-attachment.cn-custom-upload form input {
+    width: auto;
+    height: 25px;    
+}
+
+.cn-write-note-accessory-attachment #cn-upload-button {
+    margin-top: 5px;
+}
+
+.cn-write-note-accessory-attachment.cn-custom-upload #cn-upload-button {
+    display: none;    
+}
+
+/* relative positioning to make ExpandingTextarea work correctly because the textarea
+ has a width of 100% which the ExpandingTextarea surrogate copies*/
+.cn-write-note .cn-write-note-plaintext .cn-write-note-editor-textarea-wrapper {
+    position: relative;
+}
+
+.cn-content-edit .cn-write-note .cn-write-note-plaintext {
+    padding-top: 25px;
+}
+
+.cn-write-note {
+    max-height: 0px;
+    transition: max-height 1s ease-in;
+    -moz-transition: max-height 1s ease-in;
+    -webkit-transition: max-height 1s ease-in;
+}
+
+.cn-write-note.cn-write-note-render-style-simulate {
+    /** higher max height so the transition looks better in firefox (tinymce toolbar not scrolled separately) */
+    max-height: 100px;
+}
+
+.cn-write-note.cn-write-note-render-style-full,
+.cn-write-note.cn-write-note-render-style-minimal {
+    max-height: 8000px;
+    overflow: hidden;
+}
+
+.cn-write-note-editor-expand {
+    background-position: -135px -295px;
+    height: 18px;
+    width: 18px;
+}
+
+.cn-write-note-editor-expand:hover {
+    background-position: -135px -359px;
+}
+
+
+.cn-write-note-editor-activate-full {
+    display: none;
+    float: right;
+}
+
+.cn-write-note-render-style-minimal .cn-write-note-editor-activate-full {
+	display: block;
+}
+.cn-write-note.cn-write-note-render-style-minimal .cn-write-note-plaintext .cn-write-note-editor-textarea-wrapper {
+	margin-right: 20px;
+} 
+
+.cn-write-note-editor,
+.cn-write-note-editor-simulate,
+.cn-write-note-cancel-full,
+.cn-write-note-accessories-full,
+.cn-write-note-accessories-minimal {
+	display: none;
+}
+
+.cn-write-note-render-style-full .cn-write-note-editor,
+.cn-write-note-render-style-full .cn-write-note-cancel-full,
+.cn-write-note-render-style-minimal .cn-write-note-editor {
+	display: block;
+}
+
+.cn-write-note-render-style-simulate .cn-write-note-editor-simulate {
+    display: block;
+}
+
+.cn-write-note-render-style-full .cn-write-note-accessories-full {
+    display: block;
+    margin-top: 5px;
+}
+
+.cn-write-note-render-style-minimal .cn-write-note-accessories-minimal {
+    display: block;
+    height: 35px;
+}
+
+.cn-write-note-accessories-minimal .cn-buttons {
+    margin-top: 10px;
+}
+
+.cn-write-note-tabs {
+    margin-bottom: 6px;
+    text-align: left;
+    zoom: 1;
+}
+/* relative position for overText positioning that does not get messed up when
+ the tinyMCE is resized */
+.cn-write-note-container {
+    clear: both;
+    position: relative;
+    zoom: 1;
+}
+
+.cn-write-note .cn-container-note {
+    width: 450px;
+}
+
+.cn-container-note table {
+    margin: 0;
+    padding: 0;
+}
+
+.cn-container-note td.label {
+    padding: 0.25em 10px 0.25em 0;
+    font-size: 10px;
+    text-align: right;
+    color: #888888;
+}
+
+.cn-container-note td.value {
+    font-size: 10px;
+}
+
+.cn-container-note td.value a {
+    color: #000;
+}
+
+.cn-container-note td.value a:hover {
+    text-decoration: line-through;
+}
+
+.cn-container-note td.value .cn-write-note-summary-direct img {
+    padding-left: 5px;
+    vertical-align: middle;
+    margin-top: -4px;
+}
+
+.cn-container-tag .cn-box-left,.cn-container-blog .cn-box-left,.cn-container-user .cn-box-left {
+    margin-top: 15px;
+}
+
+.cn-container-blog dl {
+    margin: 0;
+    margin-top: 15px;
+    margin-left: 11px;
+    padding: 0;
+}
+
+.cn-container-blog dt {
+    padding: 0.25em 0;
+    font-size: 10px;
+}
+
+.cn-container-user .cn-input-line {
+    position: relative;
+    padding-right: 170px;
+}
+
+.cn-container-user .cn-note-dm {
+    color: #888;
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 2px;
+}
+
+.cn-container-user .cn-note-dm .cn-check {
+    float: left;
+    margin-right: 10px;
+}
+
+.cn-container-attachment .cn-link-clear,
+.cn-container-blog .cn-link-clear,.cn-container-user .cn-link-clear {
+    padding-left: 20px;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    zoom: 1;
+    
+}
+
+.cn-link-group-container {
+    display: inline;
+}
+
+.cn-write-note .cn-note-summary-wrapper {
+    height: 30px;
+    position: relative;
+}
+
+.cn-write-note .cn-note-summary-wrapper .cn-note-summary-place-holder {
+    float: right;
+    width: 108px; /* width of the button */
+}
+
+.cn-write-note .cn-buttons {
+    float: right;
+}
+
+.cn-write-note-status {
+    float: left;
+    line-height: 28px;
+    min-height: 25px;
+    zoom: 1;
+}
+
+.cn-write-note-status .cn-note-autosave-message,
+.cn-write-note-status .cn-cancel {
+    font-size: 11px;
+}
+
+.cn-write-note-status .cn-note-autosave-message {
+    color: #888888;
+}
+
+.cn-write-note .cn-write-note-status .cn-icon.cn-cancel {
+    background-position: -129px -225px;
+    float: right;
+    height: 18px;
+    margin-right: 0;
+    padding-left: 2px;
+    padding-top: 7px;
+    width: 18px;
+}
+
+.cn-write-note .cn-write-note-status .cn-icon.cn-cancel:hover {
+    background-position: -129px -257px;
+}
+
+.cn-write-note .mceEditor table.mceLayout {
+    width: 100% !important;
+}
+
+.cn-write-note .cn-container-attachment,
+.cn-write-note .cn-container-tag,
+.cn-write-note .cn-container-blog,
+.cn-write-note .cn-container-user {
+    width: 100%;
+}
+
+.cn-write-note .cn-container-attachment,
+.cn-write-note .cn-container-tag,
+.cn-write-note .cn-container-blog,
+.cn-write-note .cn-container-user {
+    min-height: 47px;
+}
+
+.cn-write-note .cn-img-cancel {
+    background-attachment: scroll;
+    background-color: transparent;
+    background-position: 0 0px;
+    background-repeat: no-repeat;
+    height: 18px;
+    position: absolute;
+    right: 0;
+    top: 5px;
+    width: 18px;
+}
+
+#mbCloseLink ,
+.cn-write-note .cn-img-cancel {
+    background-image: url(../../images/icons/icons-map.png?t=${build.timestamp});
+    background-position: -199px -6px;
+    background-repeat: repeat;
+}
+
+#mbCloseLink:hover ,
+.cn-write-note .cn-img-cancel:hover {
+    background-position: -199px -70px;
+}
+
+.cn-write-note-container .cn-border input {
+    width: 94%;
+}
+
+.CreateNoteDefaultWidget .ajax-loading {
+    background-color: #f8f8f8;
+}
+
+/* settings popup*/
+
+.cn-note-editor-advanced-settings {
+    max-width: 480px;
+}

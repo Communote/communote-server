@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.messaging.MessagerConnectorConfigImpl" table="mc_config" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">mc_config_seq</param>
+                                                           </generator>
+        </id>
+        <property name="type" type="com.communote.server.persistence.messaging.MessagerConnectorTypeEnum">
+            <column name="type" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="properties" type="java.lang.String">
+            <column name="properties" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="onlyIfAvailable" type="boolean">
+            <column name="only_if_available" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="priority" type="java.lang.Integer">
+            <column name="priority" 
+                     not-null="true" unique="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

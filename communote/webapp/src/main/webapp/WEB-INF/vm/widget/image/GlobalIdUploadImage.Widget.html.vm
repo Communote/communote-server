@@ -1,0 +1,53 @@
+#* @vtlvariable name="widget" type="com.communote.server.web.fe.widgets.image.GlobalIdUploadImageWidget" *#
+#cnRenderMessages()
+#widgetMetadata(${widget.ResponseMetadata})
+#set($targetWidth = $widget.getIntParameter('targetWidth'))
+#set($targetHeight = $widget.getIntParameter('targetHeight'))
+#set($entityId = $widget.getParameterEscaped('entityId'))
+#set($imageType = $widget.getParameterEscaped('imageType'))
+#if($widget.isBanner())
+    #set($imageUrl = $urlTool.imageForBanner(${entityId}))
+#else
+    #set($imageUrl = $urlTool.imageForProfile(${entityId}))
+#end
+<div class="cn-form-container cnt-entity-${imageType}">
+    <form class="upload" method="post">
+        <fieldset>
+            <input type="hidden" name="widgetAction" value="upload_image"/>
+            <input type="hidden" name="entityId" value="${entityId}"/>
+            <input type="hidden" name="imageType" value="$escTool.xmlSimple(${widget.getParameter('imageType')})"/>
+            <input type="hidden" name="targetWidth" value="${targetWidth}"/>
+            <input type="hidden" name="targetHeight" value="${targetHeight}"/>
+
+            <div class="cn-field-50">
+                <div class="cnt-entity-${imageType}">
+                    <img class="cn-profile-image" alt=""
+                     src="${imageUrl}"/>
+                 </div>
+                <input type="file" accept="image/*" name="file" id="${widget.WidgetId}_image_upload" size="14"/>
+            </div>
+            <div class="cn-field-50 cn-upload-tip cn-last">
+                <h4 class="cn-tip">#t('widget.globalid-upload-image.tips.title')</h4>
+                <div class="cn-tip-content">
+                    <p><span class="cn-tip-label">#t('widget.globalid-upload-image.tips.max-size'):</span>
+                        <span>$widget.getMaxUploadSize()<span></p>
+    
+                    <p><span class="cn-tip-label">#t('widget.globalid-upload-image.tips.formats'):</span>
+                        <span>bmp, gif, jpg, png</span>
+                    </p>
+    
+                    <p><span class="cn-tip-label">#t("widget.globalid-upload-image.tips.resolution"):</span>
+                        <span>${targetWidth}px * ${targetHeight}px</span></p>
+                </div>
+                <div class="cn-field-50">
+                    <input class="cn-button control-set-default" name="reset_default"
+                           type="button" #if($widget.isDefaultImage())
+                           disabled="disabled" #end
+                           value="#t('widget.globalid-upload-image.reset')" onfocus="this.blur()"
+                           onclick="#jsCurrentWidget().setDefault()"/>
+                </div>
+            </div>
+        </fieldset>
+        <span class="cn-clear"><!-- ie --></span>
+    </form>
+</div>

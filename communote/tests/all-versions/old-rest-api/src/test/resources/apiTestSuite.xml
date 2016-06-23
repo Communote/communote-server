@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Tagging Core API Testsuite" verbose="1">
+
+    <test name="userApi">
+		<classes>
+			<class name="com.communote.server.web.api.service.user.UserApiTest" />
+		</classes>
+	</test>
+
+	<test name="blogApi">
+		<classes>
+			<class name="com.communote.server.web.api.service.blog.BlogApiTest" />
+		</classes>
+	</test>
+
+	<test name="postApi">
+		<classes>
+			<class name="com.communote.server.web.api.service.PostApiTest" />
+		</classes>
+	</test>
+
+	<test name="filterApi">
+		<classes>
+			<class name="com.communote.server.web.api.service.filter.PostFilterApiTest" />
+			<class name="com.communote.server.web.api.service.filter.UserFilterApiTest" />
+		</classes>
+	</test>
+	
+	<test name="xmppAuth">
+        <classes>
+            <class name="com.communote.server.web.api.service.xmpp.XmppAuthenticationTest" />
+        </classes>
+    </test>
+
+</suite>

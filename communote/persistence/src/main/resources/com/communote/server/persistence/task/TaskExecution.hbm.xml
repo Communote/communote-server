@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.task.TaskExecutionImpl" table="core_task_execs" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">core_task_execs_seq</param>
+                                                           </generator>
+        </id>
+        <property name="instanceName" type="java.lang.String">
+            <column name="instance_name" 
+                     not-null="true" unique="false"/>
+        </property>
+        <many-to-one name="task" class="com.communote.server.model.task.TaskImpl" foreign-key="core_task_execs_TASK_FKC" cascade="none" lazy="proxy" fetch="select">
+            <column name="TASK_FK" not-null="true" unique="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

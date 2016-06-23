@@ -1,0 +1,87 @@
+<div class="cn-form-container">
+    <div class="panel">
+        <h4>$fmtTool.message("client.security") &gt; <span>$fmtTool.message("client.security.permissions")</span></h4>
+    </div>
+    <div class="wrapper last">
+        <div class="layer">
+            <form id="something_unique" action="update" method="post">
+                #cnRenderMessages()
+                <input type="hidden" id="${widget.widgetId}_form_action" name="action" value="update"/>
+                <fieldset class="blogsettings">
+                    <h5>$fmtTool.message("client.security.permissions.blog.title")</h5>
+
+                    <div class="check">
+                        <input type="checkbox" id="allowAllReadWriteForUsers"
+                               name="allowAllReadWriteForUsers" #if("$allowAllReadWriteForUsers" == "true")
+                               checked="checked" #end
+                               onchange="if (this.getProperty('checked')) { ${escTool.D}('resetGlobalAccess').setProperty('disabled', 'disabled'); } else {${escTool.D}('resetGlobalAccess').removeProperty('disabled');};"/>
+                        <label for="allowAllReadWriteForUsers">$fmtTool.message("client.security.permissions.user.allow.read.write")</label>
+                        <span class="clear"><!-- --></span>
+                    </div>
+                    <div class="check">
+                        <input type="checkbox" id="resetGlobalAccess"
+                               name="resetGlobalAccess" #if("$allowAllReadWriteForUsers" == "true")
+                               disabled="disabled" #end/>
+                        <label for="resetGlobalAccess">$fmtTool.message("client.security.permissions.user.allow.read.write.reset")</label>
+                        <span class="clear"><!-- --></span>
+                    </div>
+                    <div class="check">
+                        <input type="checkbox" id="allowTopicCreateForAllUsers"
+                               name="allowTopicCreateForAllUsers" #if("$allowTopicCreateForAllUsers" == "true") checked="checked" #end />
+                        <label for="allowTopicCreateForAllUsers">$fmtTool.message("client.security.permissions.allow.topic.create.for.all.users")</label>
+                        <span class="clear"><!-- --></span>
+                    </div>
+                    <div class="check">
+                        <input type="checkbox" id="createPersonalTopic"
+                               name="createPersonalTopic" #if("$createPersonalTopic" == "true") checked="checked" #end />
+                        <label for="createPersonalTopic">$fmtTool.message("client.security.permissions.create.personal.topic")</label>
+                        <span class="clear"><!-- --></span>
+                    </div>
+                </fieldset>
+                <fieldset class="blogsettings sequently">
+                    <h5>$fmtTool.message("client.security.permissions.public.access.title")</h5>
+
+                    <div>$fmtTool.message("client.security.permissions.public.access.help")</div>
+                    <div class="check">
+                        <input type="checkbox" id="allowPublicAccess"
+                               name="allowPublicAccess" #if("$allowPublicAccess" == "true") checked="checked" #end />
+                        <label for="allowPublicAccess">$fmtTool.message("client.security.permissions.public.access.label")</label>
+                        <span class="clear"><!-- --></span>
+                    </div>
+                </fieldset>
+                <fieldset class="blogsettings sequently">
+                    <h5>$fmtTool.message("client.security.permissions.default.blog.title")</h5>
+
+                    <div>$fmtTool.message("client.security.permissions.default.blog.hint")</div>
+                    <div class="cn-container-blog">
+                        <div class="check">
+                            <input type="checkbox" id="activateDefaultBlog"
+                                   name="activateDefaultBlog" #if("${activateDefaultBlog}" == "true")
+                                   checked="checked" #end
+                                   onclick="if($(activateDefaultBlog).checked == false){document.getElementById('defaultBlogChooser').style.display = 'none';} else {document.getElementById('defaultBlogChooser').style.display = 'block';}"/>
+                            <label for="activateDefaultBlog">$fmtTool.message("client.security.permissions.default.activate.label")</label>
+                            <span class="clear"><!-- --></span>
+                        </div>
+                        <div class="cn-border" id="defaultBlogChooser" #if("${activateDefaultBlog}" == "false")
+                             style="display: none" #end>
+                            <input class="cn-default-blog" value="$escTool.xmlSimple(${defaultBlogTitle})"
+                                   id="defaultBlog" name="defaultBlog" type="text" autocomplete="off"
+                                   placeholder="$fmtTool.message('client.security.permissions.no.default.blog.hint')"/>
+                            <input type="hidden" value="${defaultBlogId}" id="defaultBlogId" name="defaultBlogId"
+                                   type="text"/>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="actionbar actionbar-general">
+                    <div class="button-gray main">
+                        <input type="submit" name="button"
+                               value="$fmtTool.message("client.security.permissions.button")"
+                               title="$fmtTool.message("client.security.permissions.button")"/>
+                    </div>
+                    <span class="clear"><!-- --></span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>

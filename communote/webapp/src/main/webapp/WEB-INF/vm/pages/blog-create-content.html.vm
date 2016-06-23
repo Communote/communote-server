@@ -1,0 +1,82 @@
+#if($paramTool.exists('parentTopicId'))
+    #set($parentTopic = $communoteTool.blogs.getBlog($paramTool.getNumber('parentTopicId')))
+    #set($link=$urlTool.render("portal/topic-create?viewId=details&parentTopicId=$paramTool.get('parentTopicId')"))
+#else
+    #set($link=$urlTool.render("portal/topic-create?viewId=details"))
+#end
+<div id="cn-two-column-layout">
+    <div id="cn-sidebar-bg"></div>
+    <div id="cn-sidebar">
+        <div id="cn-vertical-navigation-wrapper">
+            #if($parentTopic)
+                <div id="cn-navigation-back"><a href="$urlTool.blog($parentTopic.alias)" class="cn-button"><span><span class="cn-arrow-back">&laquo;</span>#t('blog.management.back.button.to.topic')</span></a></div>
+            #else
+                <div id="cn-navigation-back"><a href="$urlTool.render('portal/topics')" class="cn-button"><span><span class="cn-arrow-back">&laquo;</span>#t('blog.management.back.button.to.overview')</span></a></div>
+            #end
+            <div id="cn-main-navigation">
+                <div class="navigation-item details active" id="createTopic_navigation_item_details">
+                    <a href="$link"
+                       onclick="communote.linkHandler.open('$link', {}); return false;"><span>#t('blog.about.headline')</span></a>
+                </div>
+                <div class="navigation-item">
+                    <a class="cn-disabled"><span>#t('blog.management.images.title')</span></a>
+                </div>
+                <div class="navigation-item">
+                    <a class="cn-disabled"><span>#t('blog.member.management.edit.title')</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="cn-view-wrapper">
+        <div id="cn-view-header"></div>
+        <div id="cn-view-content">
+            <div id="cn-main"></div>
+            <div id="cn-filterbar"></div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    (function () {
+        var contextDefs, viewDefs, widgetDefs;
+        contextDefs = {};
+        contextDefs.topicCreate = ['details'];
+        viewDefs = {};
+        viewDefs.topicCreate = {
+            visibleWidgets: [ 'GlobalIdShowBannerImage' ]
+        };
+        viewDefs.topicCreate_details = {
+            parentViewId: 'topicCreate',
+            previousViewAction: 'hide',
+            visibleWidgets: [ 'BlogManagement' ]
+        };
+        widgetDefs = {};
+        widgetDefs.GlobalIdShowBannerImage = communote.configuration.factory.createShowBannerWidgetDef('#cn-view-header', '#cn-header-mobile .cn-center', 'mainPageContextManagement');
+        #if($parentTopic)
+            widgetDefs.GlobalIdShowBannerImage.settings.title = '$escTool.javascriptInline("#t_args('blog.create.header.subtopic', $parentTopic.title)")';
+        #else
+            widgetDefs.GlobalIdShowBannerImage.settings.title = '$escTool.javascriptInline("#t('blog.create.header')")';
+        #end
+        widgetDefs['BlogManagement'] = {
+            widgetType: 'BlogManagementWidget',
+            containerSelector: '#cn-main',
+            settings: {
+                createMode: true,
+                cancelUrl: '/portal/topics'
+            }
+        };
+        #if($parentTopic)
+            widgetDefs['BlogManagement'].settings.parentTopicId = $parentTopic.Id;
+        #end
+        
+        #if($paramTool.exists('toplevelTopic'))
+            widgetDefs['BlogManagement'].settings.toplevelTopic = $paramTool.getBoolean('toplevelTopic', false);
+        #end
+
+        communote.configuration.mainPageContexts = contextDefs;
+        communote.configuration.mainPageViewManagerConfig = {
+            views: viewDefs,
+            widgets: widgetDefs
+        };
+    })();
+</script>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.user.NavigationItemImpl" table="user_navigation_item" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">user_navigation_item_seq</param>
+                                                           </generator>
+        </id>
+        <property name="data" type="com.communote.server.external.hibernate.usertypes.HibernateStringClobType">
+            <column name="data" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="itemIndex" type="int">
+            <column name="item_index" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="lastAccessDate" type="java.sql.Timestamp">
+            <column name="last_access_date" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="name" type="java.lang.String">
+            <column name="name" 
+                     not-null="true" unique="false"/>
+        </property>
+        <many-to-one name="owner" class="com.communote.server.model.user.User" foreign-key="user_navigation_item_OWNER_FKC" lazy="proxy" fetch="select">
+            <column name="OWNER_FK" not-null="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

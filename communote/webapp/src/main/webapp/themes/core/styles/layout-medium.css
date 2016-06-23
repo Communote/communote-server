@@ -1,0 +1,184 @@
+body {
+    background-color: #F5F5F5;
+    background-image: url("../images/main/bg-crude.png?t=${build.timestamp}");
+    margin: 0;
+    padding: 0;    
+}
+
+#cn-communote-medium {
+    font-size: 12px;
+    margin: 0 auto;
+    max-width: 740px;
+    padding-top: 20px;
+    position: relative;
+}
+
+#cn-communote-medium #cn-body-wrapper {
+    background-color: #FFFFFF;
+    border-color: #DBDBDB #DBDBDB #F5F5F5;
+    border-style: solid;
+    border-width: 1px 1px 2px;
+    box-shadow: 0 1px 0 #DBDBDB;
+    -moz-box-shadow: 0 1px 0 #DBDBDB;
+    -webkit-box-shadow: 0 1px 0 #DBDBDB;
+    margin: 0 auto 20px auto;
+}
+
+#cn-communote-medium #cn-container-top {
+    padding: 15px 25px;
+}
+
+#cn-header #cn-header-content {
+    height: auto;
+    min-height: 50px;
+    text-align: center;
+    width: 100%;
+}
+
+#cn-communote-medium #cn-header h1 {
+    color: #888888;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 10px 5px 0 0;
+    padding: 0;
+    width: 100%;
+}
+
+*+html #cn-communote-medium #cn-header h1 {
+    margin: 10px 25px;
+    width: 177px;
+}
+
+#cn-communote-medium #cn-header img {
+    margin: 10px auto 0;
+    max-height: 40px;
+    max-width: 320px;
+}
+
+#cn-communote-medium .cn-headline h1 {
+    font-size: 22px;    
+}
+
+#cn-communote-medium .cn-line.cn-teaser {
+    margin-bottom: 20px;
+}
+
+#cn-communote-medium h3.cn-headline {
+    margin-top: 30px;
+}
+
+#cn-communote-medium .cn-label {
+    clear: both;
+    float: left;
+    font-size: 12px;
+    line-height: 20px;
+    width: 250px;
+}
+
+#cn-communote-medium .cn-inputTxt, #cn-communote-medium .cn-inputPwd, #cn-communote-medium .cn-select {
+    float: left;
+}
+
+#cn-communote-medium .cn-help-text {
+    width: 300px;
+}
+
+#cn-communote-medium .cn-form-phone-country {
+    width: 3.5em;
+}
+
+#cn-communote-medium .cn-form-phone-area {
+    width: 4.7em;
+}
+
+#cn-communote-medium .cn-form-phone-number {
+    width: 12.5em;
+}
+
+#cn-communote-medium .static-page-section {
+	margin-bottom: 10px;
+}
+
+#cn-communote-medium .imprint-page-content,
+#cn-communote-medium .terms-page-content {
+    padding: 10px;
+}
+
+#cn-communote-medium .termsOfUse {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#cn-communote-medium pre {
+    white-space: pre-wrap;    
+}
+
+#cn-communote-medium #cn-footer-communote {
+    margin: auto;
+    padding-left: 5px;
+}
+
+#cn-communote-medium .passwordContainer .cn-smallline {
+    width: 49.99%;
+    float: left;
+    clear: none;
+}
+
+#cn-communote-medium .passwordContainer .cn-pwd-strength {
+    float: left;
+    height: 20px;
+    margin-bottom: 10px;
+    margin-left: 0;
+    position: relative;
+    top: 10px;
+}
+
+#cn-communote-medium .cn-line {
+    clear: both;
+    margin: 10px auto 5px;
+}
+
+#cn-communote-medium .cn-form-container .cn-buttons {
+    margin-right: 60px;
+}
+
+#cn-communote-medium .cn-form-container .cn-field-100, #cn-communote-medium .cn-form-container .cn-field-50, #cn-communote-medium .cn-form-container .cn-field-25 {
+    width: 50%;
+}
+
+.cn-form-container #cn-url-client-container .cn-error {
+    display: inline-block;    
+}
+
+#cn-communote-medium.cn-page-client-registration .cn-form-container .cn-field-100 {
+    width: 100%;
+}
+
+.cn-page-client-registration #newClientName {
+    width: 92.9%;
+}
+
+#cn-communote-medium.cn-page-client-registration .cn-field-100 .cn-url {
+    float: none;
+    width: 100%;
+}
+
+.cn-page-client-registration  #cn-url-client {
+    float: left;
+    font-size: 14px;
+    line-height: 28px;
+    width: 37%;
+}
+
+.cn-page-client-registration  #newClientId {
+    width: 55.9%;
+}
+
+#cn-communote-medium.cn-page-client-registration h1 {
+    margin-bottom: 20px;
+}
+
+.cn-help-container {
+    color: #888888;
+    padding-bottom: 10px;   
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.external.ExternalObjectImpl" table="core_external_object" dynamic-insert="false" dynamic-update="false">
+        <cache usage="read-write" />
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">core_external_object_seq</param>
+                                                           </generator>
+        </id>
+        <property name="externalSystemId" type="java.lang.String">
+            <column name="external_system_id" 
+                     not-null="true" unique="false"
+                      unique-key="uniqueExternalObject"/>
+        </property>
+        <property name="externalId" type="java.lang.String">
+            <column name="external_id" 
+                     not-null="true" unique="false"
+                      unique-key="uniqueExternalObject"/>
+        </property>
+        <property name="externalName" type="java.lang.String">
+            <column name="external_name" 
+                     not-null="false" unique="false"/>
+        </property>
+        <set name="properties" order-by="EXTERNAL_OBJECT_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <key foreign-key="core_external_object_prop_EXTC">
+                <column name="EXTERNAL_OBJECT_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.external.ExternalObjectProperty"/>
+        </set>
+    </class>
+</hibernate-mapping>

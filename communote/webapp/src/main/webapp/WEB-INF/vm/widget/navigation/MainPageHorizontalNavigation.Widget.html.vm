@@ -1,0 +1,24 @@
+#* @vtlvariable name="widget" type="com.communote.server.web.fe.widgets.navigation.MainPageHorizontalNavigationWidget" *#
+#* @vtlvariable name="singleResult" type="java.lang.String[]" *#
+#set( $idPrefix = "${widget.WidgetId}_${widget.ContextId}_")
+<div class="cn-horizontal-navigation-wrapper">
+    <div id="${widget.WidgetId}_toolbar_wrapper" class="cn-horizontal-navigation-toolbar-wrapper"></div>
+    <div id="${widget.WidgetId}_option_list" class="cn-horizontal-navigation-option-list" style="display:none">
+        <select>
+            #foreach( $viewId in $singleResult )
+            #set($viewTitle = $widget.getLabel(${viewId}))
+                <option value="${viewId}">${viewTitle}</option>
+            #end
+        </select>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    <div id="${widget.WidgetId}_tab_bar" class="cn-horizontal-navigation-tab-bar">
+        #foreach( $viewId in $singleResult )
+        #set($viewTitle = $widget.getLabel(${viewId}))
+            <a id="${idPrefix}${viewId}" class="control-horizontal-navigation-item"  href="javascript:;" onclick="widgetController.getWidget('${widget.WidgetId}').activateView('${viewId}'); return false;" title="${viewTitle}"><span>${viewTitle}</span></a>
+        #end
+        <span class="cn-clear"></span>
+    </div>
+    <span class="cn-clear"><!-- --></span>
+    <div class="cn-horizontal-navigation-bottom"></div>
+</div>

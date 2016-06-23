@@ -1,0 +1,68 @@
+.activity {
+    margin-right: 3em;
+}
+
+.activity-short {
+    border-bottom: 1px solid #C1C1C1;
+    height: 30px;
+    line-height: 30px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.activity-arrow {
+    background-image: url("../images/arrow-right.png");
+    background-attachment: scroll;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: block;
+    float: left;
+    height: 14px;
+    width: 12px;
+    margin-right: 10px;
+    margin-top: 8px;
+}
+
+.activity-arrow:hover {
+    background-image: url("../images/arrow-right-hover.png");
+}
+
+.activity-short.open .activity-arrow {
+    background-image: url("../images/arrow-bottom.png");
+}
+
+.activity-short.open .activity-arrow:hover {
+    background-image: url("../images/arrow-bottom-hover.png");
+}
+
+.activity-name {
+    float: left;
+    color: #005599;
+}
+
+.activity-short.open .activity-name {
+    color: #424242;
+}
+
+.activity-status {
+    float: right;
+}
+
+.activity-status .active {
+    color: #2F6310;
+}
+
+.activity-status .deinstalled {
+    color: #FA8502;
+}
+
+.activity-status .inactive {
+    color: #A31B02;
+}
+
+.activity-detail {
+    clear: both;
+    margin-left: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}

@@ -1,0 +1,75 @@
+#aboutUserProfileWrapper .cn-infocard-container {
+    margin-top: 20px;
+}
+
+#aboutUserProfileWrapper .cn-left {
+    float: left;
+    margin-right: 20px;
+}
+
+#aboutUserProfileWrapper .cn-follow {
+    margin: 10px 0;
+    padding: 0;
+    width: 200px;
+    font-size: 14px;
+    color: #888888;
+    text-align: center;
+}
+
+#aboutUserProfileWrapper .cn-right {
+    float: left;
+    max-width: 400px;
+    min-width: 200px;
+    position: relative;
+}
+
+#aboutUserProfileWrapper .cn-right .cn-fullname {
+    font-size: 20px;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+#aboutUserProfileWrapper .cn-right .cn-company {
+    color: #888888;
+    margin: 0;
+}
+
+#aboutUserProfileWrapper .cn-right table {
+    float: left;
+    margin-bottom: 0px; /* remove default margin */
+    margin-top: 20px;
+    width: 100%;
+    border-spacing: 0px;
+}
+
+#aboutUserProfileWrapper .cn-right td {
+    padding-bottom: 20px;
+}
+
+#aboutUserProfileWrapper .cn-right .group td {
+    padding-bottom: 0;
+}
+
+#aboutUserProfileWrapper .cn-right td.cn-label {
+    padding: 0px;
+    font-size: 13px;
+    width: 100px;
+    line-height: 18px;
+}
+
+#aboutUserProfileWrapper .cn-right td.cn-value {
+    line-height: 18px;
+}
+
+#aboutUserProfileWrapper .cn-button {
+    height: 32px;
+    width: auto;
+}
+
+#aboutUserProfileWrapper .cn-actions {
+    text-align: right;
+}
+
+#aboutUserProfileWrapper .tags span  {
+    margin-bottom: 0;
+}

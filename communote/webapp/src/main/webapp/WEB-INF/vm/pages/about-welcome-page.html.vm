@@ -1,0 +1,3 @@
+#set($contentTemplate = '/WEB-INF/vm/pages/about-welcome-page-content.html.vm')
+#set($pageTitle = "#t('blog.about.page.title') &ndash; $escTool.xmlSimple(${communoteTool.CurrentClientName})")
+#parse('/WEB-INF/vm/layout/medium_page.html.vm')

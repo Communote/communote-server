@@ -1,0 +1,62 @@
+#set($locale=$communoteTool.getCurrentUserLocale($request))
+<div id="cn-two-column-layout">
+    <div id="cn-sidebar-bg"></div>
+    <div id="cn-sidebar">
+        <div id="cn-vertical-navigation-wrapper">
+            <div id="cn-navigation-back">
+                <a href="$urlTool.render('portal/home')" class="cn-button">
+                    <span><span class="cn-arrow-back">&laquo;</span>#t('service.back')</span>
+                </a>
+            </div>
+            <div id="cn-main-navigation">
+                #foreach($section in $pageSections)
+                <div class="navigation-item">
+                    <a href="#${section.Id}"><span>${section.getShortTitle($locale, $request)}</span></a>
+                </div>
+                #end
+            </div>
+        </div>
+    </div>
+    <div id="cn-view-wrapper">
+        <div id="cn-view-header"></div>
+        <div id="cn-view-content">
+            <div id="cn-main">
+                <div id="cn-list-service">
+                    #foreach($section in $pageSections)
+                    <div class="cn-list-service-section">
+                        <h2 id="${section.Id}" class="cn-headline">${section.getTitle($locale, $request)}</h2>
+                        #if($section.isContentTemplate())
+                        #parse($renderTool.getVelocityTemplateLocation(${section.getContentTemplateName()}))
+                        #else
+                        <div class="${section.Id}">${section.getContent($locale, $request)}</div>
+                        #end
+                    </div>
+                    #end
+                </div>
+            </div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    </div>
+</div>
+## provide the widget configuration
+<script type="text/javascript">
+(function(){
+    var widgetDefs = {};
+    var viewDefs = {};
+    viewDefs.serviceLegal = {
+        visibleWidgets: [ 'GlobalIdShowBannerImage' ]
+    };
+    widgetDefs.GlobalIdShowBannerImage = communote.configuration.factory.createShowBannerWidgetDef('#cn-view-header', '#cn-header-mobile .cn-center', 'mainPageContextManagement', "#t('service.legalnotice')");
+    
+    communote.configuration.mainPageViewManagerConfig = {
+        views: viewDefs,
+        widgets: widgetDefs
+    };
+    communote.configuration.mainPageContexts = {serviceLegal: []};
+    communote.configuration.mainPageContextManagerOptions = {
+        defaultContextId: 'serviceLegal'
+    };
+    communote.configuration.disableDefaultActivateContextLinkHandlers = true;
+    // activate view
+})();
+</script>

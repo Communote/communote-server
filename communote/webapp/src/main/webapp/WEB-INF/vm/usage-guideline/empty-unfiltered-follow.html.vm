@@ -1,0 +1,5 @@
+<div class="cn-guideline-howto">
+    <h2>#t('usage.guideline.howto.follow.title')</h2>
+    #t('usage.guideline.howto.follow')
+    #t_args('usage.guideline.howto.follow.example', $urlTool.renderStaticBase(true, false, $!communoteTool.CurrentClientId))
+</div>

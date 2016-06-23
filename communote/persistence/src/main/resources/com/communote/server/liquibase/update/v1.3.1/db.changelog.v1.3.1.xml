@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.3.1/db.changelog.v1.3.1.xml">
+    <changeSet author="unknown" id="KENMEI-2465_Index_for_better_performance_postgresql" context="client" dbms="postgresql">
+        <sql><![CDATA[
+             CREATE INDEX core_note_creation_date_index ON core_note (creation_date desc);
+             CREATE INDEX user_user_email_index ON user_user(email asc);
+             CREATE INDEX user_profile_first_name_index ON user_profile(first_name asc);
+             CREATE INDEX user_profile_last_name_index ON user_profile(last_name asc);
+             CREATE INDEX core_blog_title_index ON core_blog(title asc);
+             CREATE INDEX core_blog_name_identifier_index ON core_blog(name_identifier asc);
+        ]]></sql>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-2465_Index_for_better_performance_mysql" context="client" dbms="mysql">
+        <sql><![CDATA[
+             CREATE INDEX core_note_creation_date_index ON core_note (creation_date desc);
+             CREATE INDEX user_user_email_index ON user_user(email(100) asc);
+             CREATE INDEX user_profile_first_name_index ON user_profile(first_name(100) asc);
+             CREATE INDEX user_profile_last_name_index ON user_profile(last_name(100) asc);
+             CREATE INDEX core_blog_title_index ON core_blog(title(100) asc);
+             CREATE INDEX core_blog_name_identifier_index ON core_blog(name_identifier(100) asc);
+        ]]></sql>
+    </changeSet>
+
+</databaseChangeLog>

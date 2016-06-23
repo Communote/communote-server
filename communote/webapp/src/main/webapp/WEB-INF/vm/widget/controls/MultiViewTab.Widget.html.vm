@@ -1,0 +1,13 @@
+<div id="cn-list-tabbar">
+        #foreach( $tabId in $widget.tabIds )
+            #set( $tabStyle = "" )
+            #if($widget.hiddenTabs.contains($tabId))
+              #set( $tabStyle = "display:none" )
+            #end
+            <a class="cn-tab-entry  #if($tabId == $widget.activeTabId) $widget.activeTabCssClassSuffix #end" id="${tabId}" style="${tabStyle}" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').activateTab('${tabId}'); return false;" title="${widget.tabId2Title.get($tabId)}">${widget.tabId2Title.get($tabId)}</a>
+        #end
+    <span class="cn-clear"><!-- --></span>
+</div>
+<div class="tab-content">
+    <div id="${widget.widgetId}-content-placeholder"></div>
+</div>

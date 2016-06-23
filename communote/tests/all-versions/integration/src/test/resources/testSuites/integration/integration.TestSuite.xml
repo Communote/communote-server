@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Integration Test Suite" verbose="0" thread-count="1">
+    <parameter name="skipDatabaseGeneration" value="true"/>
+    <parameter name="skipApplicationInitializing" value="true"/>
+    <test name="Communote Integrationstests - Initialization Test">
+        <!-- This test initializes the database and application. -->
+        <parameter name="skipDatabaseGeneration" value="false"/>
+        <parameter name="skipApplicationInitializing" value="false"/>
+        <classes>
+            <class name="com.communote.server.test.SimpleCommunoteIntegrationTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - 1st Wave">
+        <classes>
+            <class name="com.communote.server.test.CommunoteIntegrationTestTest"/>
+            <class name="com.communote.server.core.vo.query.ContentTypeFilterTest"/>
+            <class name="com.communote.server.core.note.DirectMessageTest"/>
+            <class name="com.communote.server.core.note.DiscussionViewDirectMessageTest"/>
+            <class name="com.communote.server.core.note.DiscussionTest"/>
+            <class name="com.communote.server.core.follow.FollowTest"/>
+            <class name="com.communote.server.persistence.blog.NoteDaoTest"/>
+            <class name="com.communote.server.core.vo.query.note.NoteQueryDefinitionTest"/>
+            <class name="com.communote.server.core.property.PropertyManagementTest"/>
+            <class name="com.communote.server.core.note.NoteConverterTest"/>
+            <class name="com.communote.server.core.task.RunScheduledTasksJobTest"/>
+            <class name="com.communote.server.core.vo.query.note.NoteQueryTest"/>
+            <class name="com.communote.server.core.vo.query.TaggingCoreItemQueryDefinitionTestForDiscussionFilterMode"/>
+            <class name="com.communote.server.core.note.NoteManagementTest"/>
+            <class name="com.communote.server.core.note.NoteManagementTestForMove"/>
+            <class name="com.communote.server.core.note.NoteManagementTestForTags"/>
+            <class name="com.communote.server.service.NoteServiceTest"/>
+            <class name="com.communote.server.persistence.user.UserDaoTest"/>
+            <class name="com.communote.server.core.config.ConfigurationManagementTest"/>
+            <class name="com.communote.server.core.image.caching.ImageDiskCacheTest" />
+            <class name="com.communote.server.core.image.ImageManagementTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - 2st Wave">
+        <classes>
+            <class name="com.communote.server.core.attachment.ResourceStoringManagementTest"/>
+            <class name="com.communote.server.core.note.CrosspostNotificationTest"/>
+            <class name="com.communote.server.core.security.masterdata.MasterDataManagementTest"/>
+            <class name="com.communote.server.core.user.UserProfileManagementTest"/>
+            <class name="com.communote.server.core.security.IpRangeFilterManagementTest"/>
+            <class name="com.communote.server.web.api.service.post.PostCounterApiControllerTest"/>
+            <class name="com.communote.server.core.plugin.PluginPropertyManagementTest"/>
+            <class name="com.communote.server.service.UserNoteEntityServiceTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - Tags">
+        <classes>
+            <class name="com.communote.server.core.tag.TagManagementTest"/>
+            <class name="com.communote.server.core.vo.query.TagFilterTest"/>
+            <class name="com.communote.server.core.vo.query.tag.TagQueryDefinitionTestForTags"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - Tasks">
+        <classes>
+            <class name="com.communote.server.persistence.tasks.TaskDaoTest"/>
+            <class name="com.communote.server.persistence.tasks.TaskExecutionDaoTest"/>
+            <class name="com.communote.server.core.task.TaskManagementTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - XMPP">
+        <classes>
+            <class name="com.communote.server.core.messaging.connector.xmpp.XMPPPatternUtilsTest"/>
+            <class name="com.communote.server.core.messaging.connector.xmpp.XMPPConnectorTest"/>
+            <class name="com.communote.server.core.messaging.connector.xmpp.XMPPPacketListenerTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - LDAP">
+        <classes>
+            <class name="com.communote.server.core.security.ClientManagementLdapTest"/>
+            <class name="com.communote.server.core.common.ldap.LdapGroupSearchTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - External">
+        <classes>
+            <class name="com.communote.server.core.external.ExternalObjectManagementTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - Topics">
+        <classes>
+            <class name="com.communote.server.core.blog.BlogManagementTest"/>
+            <class name="com.communote.server.core.blog.BlogManagementTest2"/>
+            <class name="com.communote.server.core.blog.BlogRightsTest"/>
+            <class name="com.communote.server.core.blog.BlogRightsHierarchicalGroupsTest"/>
+            <class name="com.communote.server.persistence.blog.BlogDaoTest"/>
+            <class name="com.communote.server.core.vo.query.blog.BlogQueryTest"/>
+            <class name="com.communote.server.core.blog.BlogManagementTestForTags"/>
+            <class name="com.communote.server.core.blog.BlogManagementTestForToplevelTopics"/>
+            <class name="com.communote.server.core.vo.query.blog.BlogQueryDefinitionTestForTags"/>
+            <class name="com.communote.server.core.blog.BlogRightsManagementTest"/>
+            <class name="com.communote.server.web.api.service.blog.BlogApiControllerTest"/>
+            <class name="com.communote.server.core.external.BlogRightsSynchronizerTest"/>
+            <class name="com.communote.server.core.vo.query.tag.BlogTagQueryDefinitionTestForTags"/>
+            <class name="com.communote.server.persistence.blog.ResolvedTopicToTopicDaoTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - Security">
+        <classes>
+            <class name="com.communote.server.core.security.SecurityManagementTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - Query">
+        <classes>
+            <class name="com.communote.server.core.vo.query.filter.PropertyFilterCommunoteIntegrationTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - Notes">
+        <classes>
+            <class name="com.communote.server.core.vo.query.note.SimpleNoteListItemToDiscussionNoteDataConverterTest"/>
+            <class name="com.communote.server.core.vo.query.note.NoteQueryTestForPublicUser"/>
+            <class name="com.communote.server.core.note.NoteManagementTestForAttachments"/>
+            <class name="com.communote.server.core.note.NoteManagementTestForRepost"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - User">
+        <classes>
+            <class name="com.communote.server.core.user.UserManagementIntegrationTest"/>
+            <class name="com.communote.server.core.user.UserManagementTest"/>
+            <class name="com.communote.server.core.user.UserManagementTest2"/>
+            <class name="com.communote.server.core.user.TermsOfUseTest"/>
+            <class name="com.communote.server.core.user.UserManagementTestForTags"/>
+            <class name="com.communote.server.core.user.group.UserGroupSynchronizerTest"/>
+            <class name="com.communote.server.core.image.impl.UserImageProviderTest"/>
+            <class name="com.communote.server.persistence.blog.UserToBlogRoleMappingDaoTest"/>
+            <class name="com.communote.server.persistence.user.UserNotePropertyDaoTest"/>
+            <class name="com.communote.server.core.vo.query.user.UserTagQueryDefinitionTestForTags"/>
+            <class name="com.communote.server.core.user.UserServiceTest"/>
+            <class name="com.communote.server.service.UserPreferenceServiceTest"/>
+            <class name="com.communote.server.service.NavigationItemServiceTest"/>
+        </classes>
+    </test>
+    <test name="Communote Integrationstests - Groups">
+        <classes>
+            <class name="com.communote.server.core.user.group.GroupManagementTest"/>
+            <class name="com.communote.server.persistence.user.group.ExternalUserGroupDaoTest"/>
+        </classes>
+    </test>
+    <test name="Communote Intregrationstest - Slow tests">
+        <classes>
+            <class name="com.communote.server.core.security.AuthenticationFailedLockoutTest"/>
+        </classes>
+    </test>
+    <test name="Communote Intregrationstest - Retrievel tests">
+        <classes>
+            <class name="com.communote.server.core.user.UserRetrievalTest"/>
+            <class name="com.communote.server.core.tag.TagCloudRetrievalTest"/>
+        </classes>
+    </test>
+    <test name="Communote Intregrationstest - Activity tests">
+        <classes>
+            <class name="com.communote.plugins.activity.base.task.DeleteActivitiesNoteQueryParametersTest"/>
+            <class name="com.communote.plugins.activity.base.task.DeleteActivitiesTaskHandlerTest"/>
+        </classes>
+    </test>
+    <test name="Communote Intregrationstest - Security tests">
+        <classes>
+            <class name="com.communote.server.core.security.SystemUserTest"/>
+        </classes>
+    </test>
+    <test name="Communote Intregrationstest - Filesystem and Storing tests">
+        <classes>
+            <class name="com.communote.server.core.attachment.FilesystemConnectorTest"/>
+        </classes>
+    </test>
+</suite>

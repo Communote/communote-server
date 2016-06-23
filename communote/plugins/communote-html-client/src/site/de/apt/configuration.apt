@@ -1,0 +1,99 @@
+﻿Konfiguration
+
+  Über die Widget Parameter kann das Widget angepasst werden. Die Parameter werden zur Widget URL als Parameter angefügt (z. B. http://communote-url/microblog/global/portal/mobile?fiPreselectedTopics=automotive&edShowCreate=false).
+
+* Widget Parameter
+
+  Die folgenden Parameter werden unterstützt:
+
+*--+--+--+--+
+|| Parameter Name || Mögliche Werte || Vorgabewert || Beschreibung |
+*--+--+--+--+
+| <<Editor\ (ed)>> | | |
+*--+--+--+--+
+| edShowCreate | true/false | true | Anzeigen des Editorbereichs zum Erstellen neuer Nachrichten |
+*--+--+--+--+
+| edInitLines | 1 ... 50 | 2 | Die Höhe des Eingabebereichs bei leerem Textfeld (in Zeilen) |
+*--+--+--+--+
+| edShowTopicChooser | true/false | true | Anzeige einer Themenauswahlelements, um einen Zielthema zum Schreiben auszuwählen |
+*--+--+--+--+
+| edTopicList | | - | Kommaseparierte Liste mit Themenaliasen, die in dem Themenauswahlelement angezeigt werden dürfen. |
+| | | | Standard: alle in denen der Nutzer schreiben darf |
+*--+--+--+--+
+| edPreselectedTopic | | - | Ein Thema, das bereits zum Schreiben vorausgewählt wurde |
+*--+--+--+--+
+| edShowTag | true/false | false | Anzeigemöglichkeit eines Eingabefeldes für Schlagworte |
+*--+--+--+--+
+| edShowTagField | true/false | false | Anzeige eines Eingabefeldes für Schlagworte (Communote Version 2.2) |
+*--+--+--+--+
+| edAddDefaultTags | | - | Eine kommaseparierte Liste von Schlagwörtern, die an die Nachrichten standardmäßig angefügt werden |
+*--+--+--+--+
+| edShowUpload | true/false | true für die mobile Seite, sonst false |Anzeige des Dateiuploads an Beiträgen (Communote Version 2.2) |
+*--+--+--+--+
+| <<Nachrichtenstrom\ (msg)>> |
+*--+--+--+--+
+| msgShowMessages | true/false | true | Anzeige des Nachrichtenstroms zum Lesen und Beantworten von Nachrichten |
+*--+--+--+--+
+| msgShowEdit | true/false | true | Anzeige des Aktionslinks "bearbeiten" für Nachrichten |
+*--+--+--+--+
+| msgShowReply | true/false | true | Anzeige des Aktionslinks "antworten" für Nachrichten |
+*--+--+--+--+
+| msgShowDelete | true/false | true | Anzeige des Aktionslinks "löschen" für Nachrichten |
+*--+--+--+--+
+| msgShowLike | true/false | true | Anzeige des Aktionslinks "mögen" für Nachrichten |
+*--+--+--+--+
+| msgShowFavor | true/false | true | Anzeige des Aktionslinks "favorisieren" für Nachrichten |
+*--+--+--+--+
+| msgShowAuthorImg | true/false | true | Anzeige des Profilfotos an Beiträgen |
+*--+--+--+--+
+| msgMaxCount | 0 ... 50 | 10 | Anzahl an Beiträgen, die auf einmal geladen werden |
+*--+--+--+--+
+| msgShowViews | all/follow/me/favorites | all | Die verfügbaren Sichten für den Nachrichtenstrom (kommasepariert)  |
+*--+--+--+--+
+| msgViewSelected | all/follow/me/favorites | all | Bei Angabe mehrerer Sichten, kann eine Sicht vorausgewählt werden |
+*--+--+--+--+
+| msgFollowButton | true/false | true | Anzeige eines Buttons, um einem Thema zu folgen |
+*--+--+--+--+
+| msgHomeButton | true/false | false | Anzeige eines Buttons, um die vollständige Anwendung in einem neuen Fenster zu öffnen |
+*--+--+--+--+
+| <<Filter\ (fi)>> |
+*--+--+--+--+
+| fiShowFilter | true/false | true | Anzeige des gesamten Filterbereichs |
+*--+--+--+--+
+| fiShowSearch | true/false | true | Anzeige der Stichwortsuche für Nachrichten |
+*--+--+--+--+
+| fiShowTopic | true/false | true | Anzeige des Themenfilters für Nachrichten |
+*--+--+--+--+
+| fiShowTagCloud | true/false | true | Anzeige der Schlagwortwolke zur Filterung von Nachrichten |
+*--+--+--+--+
+| fiShowAuthor | true/false | true | Anzeige des Autorenfilters für Nachrichten |
+*--+--+--+--+
+| fiPreselectedSearch | | - | Vorbelegung der Stichwortsuche mit Textinhalten |
+*--+--+--+--+
+| fiPreselectedTopics | | - | Kommaseparierte Liste mit Themenaliasen, die in dem Themenfilter angezeigt werden dürfen.  |
+| | | | Standard: alle in denen der Nutzer lesen darf |
+*--+--+--+--+
+| fiPreselectedTopicIds | | - | Wie fiPreselectedTopics, jedoch eine kommaseparierte Liste mit Themen-IDs |
+*--+--+--+--+
+| fiPreselectedTagIds | | - | Kommaseparierte Liste mit Schlagwort-IDs zur Vorbelegung des Schlagwortfilters |
+*--+--+--+--+
+| fiPreselectedAuthors | | - | Kommaseparierte Liste mit Nutzeraliases zur Vorbelegung des Nutzerfilters |
+*--+--+--+--+
+| fiPreselectedAuthorIds | | - | Kommaseparierte Liste mit Nutzer-IDs zur Vorbelegung des Nutzerfilters |
+*--+--+--+--+
+| fiPreselectedNoteId | | - | Die ID einer Nachricht zur Vorbelegung des Nachrichtenfilters |
+*--+--+--+--+
+| fiTopicPageSize | 1 ... 50 | 10 | Anzahl der Themen pro Seite im Filter |
+*--+--+--+--+
+| fiAuthorPageSize | 1 ... 50 | 14 | Anzahl der Autoren pro Seite im Filter |
+*--+--+--+--+
+| <<Aktivitäten\ (ac)>> |
+*--+--+--+--+
+| acShow | true/false | true | Anzeigen der Aktivitäten im Nachrichtenstrom (Communote Version 2.2) |
+*--+--+--+--+
+| acShowFilter | true/false | true | Zeigt den Aktivitätenfilter (Communote Version 2.2) |
+*--+--+--+--+
+| <<Sonstiges>> |
+*--+--+--+--+
+| utcTimeZoneOffset | -720 ... +840 | 0 | Angabe des Zeitzonenversatzes in Minuten |
+*--+--+--+--+

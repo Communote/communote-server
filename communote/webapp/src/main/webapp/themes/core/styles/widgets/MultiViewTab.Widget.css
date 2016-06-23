@@ -1,0 +1,26 @@
+.cn-tab-entry,.cn-tab-first-entry,.mootabs_title a {
+    padding: 8px 10px 5px 10px;
+    float: left;
+}
+
+#cn-list-tabbar {
+	border-bottom-color: #d9d9d9;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
+
+.cn-tab-active,.mootabs_title a.active {
+    background-color: #ffffff;
+	border-color: #FF9A55 #D9D9D9 #D9D9D9;
+	border-radius: 3px 3px 0px 0px;
+    -moz-border-radius: 3px 3px 0px 0px;
+    -webkit-border-radius: 3px 3px 0px 0px;
+    border-right: 1px solid #D9D9D9;
+    border-style: solid;
+    border-width: 3px 1px 1px;
+    box-shadow: 0 1px 7px -2px #CECECE;
+    -moz-box-shadow: 0 1px 7px -2px #CECECE;
+    -webkit-box-shadow: 0 1px 7px -2px #CECECE;
+    margin-bottom: -2px;
+    padding: 5px 9px 8px;
+}

@@ -1,0 +1,75 @@
+#set($widgetInstance = "#jsCurrentWidget()")
+<div class="usergroup-member-list" style="padding: 15px;">
+    <h5>#t("client.user.group.management.group.content")</h5>
+        <div class="cn-filter-container block">
+            <h6 class="subheadline">
+                #t("widget.user.management.searchbox.display")
+            </h6>
+            <select id="ShowAnzElementsSelect" size="1"
+                onchange="var selected = document.id(this).getSelected()[0]; if (selected) {${widgetInstance}.changeNumberOfShownMembers(selected.get('value'));}">
+                <option value="10" #if($widget.getLongParameter('maxCount', 0) == '10')selected="selected"#end>
+                    10&nbsp;#t("widget.user.group.management.searchbox.members")
+                </option>
+                <option value="25" #if($widget.getLongParameter('maxCount', 0) == '25')selected="selected"#end>
+                    25&nbsp;#t("widget.user.group.management.searchbox.members")
+                </option>
+                <option value="50" #if($widget.getLongParameter('maxCount', 0) == '50')selected="selected"#end>
+                    50&nbsp;#t("widget.user.group.management.searchbox.members")
+                </option>
+                <option value="100" #if($widget.getLongParameter('maxCount', 0) == '100')selected="selected"#end>
+                    100&nbsp;#t("widget.user.group.management.searchbox.members")
+                </option>
+            </select>
+            <span class="clear"></span>
+    </div>
+    <fieldset class="group-content">
+        <div class="table-container">
+            <div class="table-header">
+                <div class="column w60"><span>#t("widget.user.management.profile.name")</span></div>
+                <div class="column w40"><span>#t("widget.user.management.profile.alias")</span></div>
+            </div>
+            <div class="table-content">
+                    #if(!$list.isEmpty())
+                        #foreach($item in $list)
+                            <div id="member_${item.id}" class="row icon-row"
+                                 onmouseover="mOverAddHoverClass(this);"
+                                 onmouseout="mOutRemoveHoverClass(this);">
+                                <div class="column w60" title="$escTool.xmlSimple($item.DisplayName)">
+                                    #if(!$item.isGroup())
+                                        <img src="$urlTool.userImage($item.id, $fieldTool.get('com.communote.server.model.user.ImageSizeType.SMALL'))" width="25" height="25" />
+                                        <span>$escTool.xmlSimple($stringTool.truncateMiddle($item.ShortDisplayName,45,'...'))</span>
+                                    #else
+                                        <span class="group icon"></span>
+                                        <span>$escTool.xmlSimple($stringTool.truncateMiddle($item.ShortDisplayName,45,'...'))</span>
+                                    #end
+                                </div>
+                                <div class="column w35" title="${item.Alias}">
+                                    <span>$stringTool.truncateMiddle($item.Alias,25,'...')</span>
+                                </div>
+                                <span class="clear"><!-- ie --></span>
+                                <div class="toolbox">
+                                    #if(!$isExternalGroup)
+                                        <a href="javascript:;" 
+                                                class="usergroup-member-delete"  
+                                                onclick="return ${widgetInstance}.removeGroupMember($item.Id)">
+                                            #t("button.delete")
+                                        </a>
+                                    #end
+                                </div>
+                            </div>
+                        #end
+                    #else
+                        <div class="row">
+                            <div class="column w100">
+                                <i>#t("client.user.group.management.group.members.none")</i>
+                            </div>
+                            <span class="clear"><!-- ie --></span>
+                        </div>
+                    #end
+            </div>
+        </div>
+        <div class="spacer">&nbsp;</div>
+        #parse('/WEB-INF/vm/common/paging-widget.html.vm')
+        <span class="clear"><!-- ie --></span>
+    </fieldset>
+</div>

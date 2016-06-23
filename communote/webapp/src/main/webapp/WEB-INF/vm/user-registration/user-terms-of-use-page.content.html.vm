@@ -1,0 +1,37 @@
+#parse('/WEB-INF/vm/macros-cn-controls.vm')
+<div id="cn-container">
+    <div class="cn-headline">
+        <h1>#t('user.register.terms.heading')</h1>
+    </div>
+    <div class="cn-line">
+        <p>#t('user.register.terms.description')</p>
+    </div>
+    <form action="" class="cn-form-container" method="post" onkeypress="return submitFormWithEnter(this, 'springcmd', '_finish', event);">
+        <input type="hidden" id="springcmd" name="springcmd" />
+        <input type="hidden" name="send" value="acceptTermsSend" />
+       
+        #cnErrorMessage('command.termsAgreed')<br />
+        <fieldset>
+            <div class="cn-headline">
+                <h2>#t('user.register.terms.legend')</h2>
+            </div>
+            <div class="termsOfUse cn-line">
+                $communoteTool.messages.getTermsOfUse($request)
+            </div>
+            <div class="cn-line">
+                <input type="radio" class="cn-inputChb" id="cb_terms_agree" name="termsAgreed" value="true" />
+                <label for="cb_terms_agree">#t('user.register.terms.agree')</label>
+                <br />
+                <input type="radio" class="cn-inputChb" id="cb_terms_deny" name="termsAgreed" value="false" />
+                <label for="cb_terms_deny">#t('user.register.terms.deny')</label>
+            </div>
+            <div class="cn-line">
+                <div class="cn-buttons">
+                    <input type="submit" id="_finish" name="_finish" class="cn-button main" value="#t('button.finish')" />
+                    <input type="submit" id="_cancel" name="_cancel" class="cn-button" value="#t('button.cancel')" />
+                </div>
+                <span class="cn-clear"><!-- --></span>
+            </div>
+        </fieldset>
+    </form>
+</div>

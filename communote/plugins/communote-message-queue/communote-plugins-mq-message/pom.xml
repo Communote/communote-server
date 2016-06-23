@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.communote.plugins</groupId>
+        <artifactId>communote-plugins-mq-parent</artifactId>
+        <version>3.4-SNAPSHOT</version>
+        <relativePath>../communote-plugins-mq-parent/pom.xml</relativePath>
+    </parent>
+    <groupId>com.communote.plugins.mq</groupId>
+    <artifactId>communote-plugins-mq-message</artifactId>
+    <name>Communote - Plugins - Message Queue - Message</name>
+    <packaging>bundle</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.communote.server</groupId>
+            <artifactId>communote-server-core-impl</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Embed-Dependency>jms-api</Embed-Dependency>
+                        <Export-Package>
+                            com.communote.plugins.mq.message.base.message,
+                            com.communote.plugins.mq.message.base.handler,
+                            com.communote.plugins.mq.message.base.data.security,
+                            com.communote.plugins.mq.message.base.data.status,
+                            !*
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,137 @@
+/*ie6 old*/
+#communote {
+    z-index: 1;
+}
+
+#communote .actionbar {
+    margin-left: 23px;
+}
+
+#communote .button-blue {
+    background-image: url(../../themes/core/images/misc/button_blue-left.gif);
+}
+#communote .button-blue input {
+    background-image: url(../../themes/core/images/misc/button_blue-right.gif);
+}
+#communote .button-gray ,
+.TB_window .button-gray {
+    background-position: 3px 0;
+    background-image: url(../../themes/core/images/misc/button_gray-left.gif);
+}
+#communote .button-right {
+    padding-left: 0px;
+    background-position: 4px 0; 
+}
+#communote .button-gray input ,
+#communote .button-gray a ,
+.TB_window .button-gray input ,
+.TB_window .button-gray a {
+    line-height: 15px;
+    background-image: url(../../themes/core/images/misc/button_gray-right.gif);
+}
+
+#communote .button-gray a {
+    width: 140px; 
+}
+
+.TB_window .button-gray input {
+    padding-top: 2px;
+}
+.TB_window .button-left input {
+    width: 58px;
+    margin-left: -25px;
+}
+.TB_window .button-right {
+    margin-right: 0px;
+}
+.TB_window .button-right input {
+    margin-right: 25px;
+}
+
+/******/
+
+#communote #header {
+    z-index: 1;
+}
+
+#communote #header .logo img {
+    display: block;
+}
+#communote .logo {
+    width: 955px;
+}
+
+#communote #main {
+    z-index: 2;
+}
+
+/******/
+
+#communote .ie6-minHeight {
+    display: block;
+    float: right;
+    margin: 0;
+    border: 0 none;
+    padding: 0;
+    width: 1px;
+    height: 150px;
+    overflow: hidden;
+}
+
+/******/
+
+#communote #communote-south {
+    z-index: 2;
+}
+
+/******/
+/*** FORM Design ***/
+/******/
+#communote form {
+    margin: 0px;
+    padding: 0px;
+}
+#communote fieldset {
+    height: 350px;
+}
+#communote fieldset legend {
+    margin: 0 0 10px -30px;
+}
+#communote .form-container div.check input {
+    margin-top: -0.15em;
+}
+#communote .form-container div.checkbox {
+    height: 1.85em;
+    line-height: 1.85em;
+}
+#communote .form-container div.checkbox input {
+    margin-top: -0.1em;
+}
+
+
+/******/
+/*** Installer ***/
+/******/
+#communote #reports .error-report pre ,
+#communote #reports .warning-report pre ,
+#communote #reports .success-report pre {
+    width: 518px;
+    overflow: auto;
+}
+
+
+/******/
+/*** Other ***/
+/******/
+.ajax-loading {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: alpha(opacity =           50);
+    width: 100%;
+    min-height: 100px;
+}
+
+.ajax-loading div.ajax-loading-image {
+    min-height: 100px;
+}
+
+ 

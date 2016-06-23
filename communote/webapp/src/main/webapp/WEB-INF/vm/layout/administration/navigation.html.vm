@@ -1,0 +1,42 @@
+<div class="navigation-area">
+    <div class="wrapper last">
+        #set($currentMenu = $administrationTool.getAccountMenu())
+        <div id="admin-menu-account">
+            #foreach($category in $currentMenu.getCategories())
+                #set($isCurrentCategory = $menuEntry.getCategory().getId() == $category.getId())
+                #if($category.hasChildren())
+                    <div id="$category.getId()">
+                        <h4>${category.getLocalizedLabel($currentLocale)}</h4>
+                        #foreach($categoryEntry in $category.getChildren())
+                            <a class="link#if(${isCurrentCategory} && $categoryEntry.getId() == $menuEntry.getEntry().getId()) active#end" href="$categoryEntry.renderPageUrl($request)">${categoryEntry.getLocalizedLabel($currentLocale)}</a>
+                        #end
+                    </div>
+                #end 
+            #end
+        </div>
+        #set($currentMenu = $administrationTool.getSystemMenu())
+        <div id="admin-menu-system">
+            #foreach($category in $currentMenu.getCategories())
+                #set($isCurrentCategory = $menuEntry.getCategory().getId() == $category.getId())
+                #if($category.hasChildren())
+                    <div id="$category.getId()">
+                        <h4>${category.getLocalizedLabel($currentLocale)}</h4>
+                        #foreach($categoryEntry in $category.getChildren())
+                            <a class="link#if(${isCurrentCategory} && $categoryEntry.getId() == $menuEntry.getEntry().getId()) active#end" href="$categoryEntry.renderPageUrl($request)">${categoryEntry.getLocalizedLabel($currentLocale)}</a>
+                        #end
+                    </div>
+                #end 
+            #end
+        </div>
+    </div>
+    #set($extensionCategory = $administrationTool.getExtensions())
+    #if($extensionCategory.hasChildren())
+        #set($isCurrentCategory = $menuEntry.getCategory().getId() == $extensionCategory.getId())
+        <div id="admin-menu-extensions">
+            <h4>${extensionCategory.getLocalizedLabel($currentLocale)}</h4>
+            #foreach($categoryEntry in $extensionCategory.getChildren())
+                <a class="link#if(${isCurrentCategory} && $categoryEntry.getId() == $menuEntry.getEntry().getId()) active#end" href="$categoryEntry.renderPageUrl($request)">${categoryEntry.getLocalizedLabel($currentLocale)}</a>
+            #end
+        </div>
+    #end
+</div>

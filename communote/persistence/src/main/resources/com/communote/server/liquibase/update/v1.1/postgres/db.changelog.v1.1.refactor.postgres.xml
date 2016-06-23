@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.1/postgres/db.changelog.v1.1.refactor.postgres.xml">
+
+<changeSet id="mt2846_postgresql" author="unknown" context="client" dbms="postgresql">
+	<preConditions>
+		<changeSetExecuted id="mt2846_global_id_checksum_v2" author="unknown" changeLogFile="de/communardo/kenmei/database/update/v1.1/db.changelog.v1.1.refactor.xml"/>
+	</preConditions>
+	<comment>MT 2846: CR 119 - Refactoring Post Backend - postgresql</comment>
+	
+	<dropTable tableName="core_author"/>
+	<dropTable tableName="core_institution"/>
+	<dropTable tableName="core_resource2source"/>
+	<dropTable tableName="core_site"/>
+	<dropTable tableName="core_source_meta"/>
+	<dropTable tableName="core_source"/>
+	
+	<dropSequence sequenceName="core_source_seq" />
+	<dropSequence sequenceName="core_source_meta_seq" />
+	
+	<dropForeignKeyConstraint baseTableName="core_uti" constraintName="core_uti_resource_fkc" />
+	<dropForeignKeyConstraint baseTableName="core_uti" constraintName="core_uti_user_fkc" />
+	<dropForeignKeyConstraint baseTableName="core_utp" constraintName="core_utpifkc" />
+	<dropForeignKeyConstraint baseTableName="core_utr" constraintName="core_utrifkc" />
+	<dropForeignKeyConstraint baseTableName="core_utr2tag" constraintName="core_tag_user_tagged_items_fkc" />
+	<dropForeignKeyConstraint baseTableName="core_utr2tag" constraintName="core_uti_tags_fkc" />
+	
+	<dropForeignKeyConstraint baseTableName="core_uti2user_to_notify" constraintName="core_uti_users_to_be_notifiedc" />
+	<dropForeignKeyConstraint baseTableName="core_uti2user_to_notify" constraintName="user_user_user_tagged_items_fc" />
+	<dropForeignKeyConstraint baseTableName="core_resource" constraintName="core_resource_content_text_rec" />
+
+	<dropPrimaryKey tableName="core_resource" constraintName="core_resource_pkey"/>
+	<dropPrimaryKey tableName="core_utr2tag" constraintName="core_utr2tag_pkey"/>
+	<dropPrimaryKey tableName="core_uti" constraintName="core_uti_pkey"/>
+	<dropPrimaryKey tableName="core_uti2user_to_notify" constraintName="core_uti2user_to_notify_pkey"/>
+	
+	<!-- global id table -->
+	<createTable tableName="core_global_id">
+		<column name="ID" type="BIGINT"><constraints nullable="false" primaryKey="true"/> </column>
+		<column name="GLOBAL_IDENTIFIER" type="varchar(300)" ><constraints nullable="false" unique="true"/> </column>
+	</createTable>
+ 	<!-- pg specific --><createSequence sequenceName="core_global_id_seq"/>
+ 	
+ 	
+ 	 <!-- resources and attachments -->
+ 	 <createTable tableName="core_attachment">
+		<column name="ID" type="BIGINT" ><constraints nullable="false" primaryKey="true"/> </column>
+		<column name="CONTENT_IDENTIFIER" type="varchar(1024)" ><constraints nullable="false"/> </column>
+		<column name="REPOSITORY_IDENTIFIER" type="varchar(1024)" ><constraints nullable="false"/> </column>
+		<column name="NAME" type="varchar(1024)" ><constraints nullable="false"/> </column>
+		<column name="GLOBAL_ID_FK" type="BIGINT" ><constraints unique="true"/> </column>
+		<column name="NOTE_FK" type="BIGINT" ></column>								
+ 	 </createTable>
+ 	 
+ 	 <!-- db specific code part -->
+ 	 <sqlFile path="com/communote/server/liquibase/update/v1.1/postgres/mt2486_delete_attachment_postgres.sql" />
+ 	 
+	<dropColumn tableName="core_resource" columnName="LABEL"/>
+	<dropColumn tableName="core_resource" columnName="LANGUAGE"/>
+	<dropColumn tableName="core_resource" columnName="CREATION_DATE"/>
+	<dropColumn tableName="core_resource" columnName="URL"/>
+	<dropColumn tableName="core_resource" columnName="CONTENT_IDENTIFIER"/>
+	<dropColumn tableName="core_resource" columnName="REPOSITORY_IDENTIFIER"/>
+	<dropColumn tableName="core_resource" columnName="TEXT_RESOURCE_FK"/>
+	 
+	<sqlFile path="com/communote/server/liquibase/update/v1.1/postgres/mt2486_delete_old_resources_postgres.sql" />
+	
+	<dropColumn tableName="core_resource" columnName="class"/>
+	
+ 	<renameTable oldTableName="core_resource" newTableName="core_content"/>
+ 	<!-- pg specific --><renameTable oldTableName="core_resource_seq" newTableName="core_content_seq"/>
+ 	<addNotNullConstraint tableName="core_content" columnName="content"/>
+ 	
+ 	<!-- the note -->
+ 	<sqlFile path="com/communote/server/liquibase/update/v1.1/postgres/mt2486_delete_utr_postgres.sql" />
+ 	
+ 	<renameTable oldTableName="core_uti" newTableName="core_note"/>
+ 	<!-- pg specific --><renameTable oldTableName="core_uti_seq" newTableName="core_note_seq"/>
+	<addColumn tableName="core_note"><column name="GLOBAL_ID_FK" type="BIGINT"></column></addColumn>
+	<addColumn tableName="core_note"><column name="DIRECT" type="BOOLEAN"></column></addColumn>
+	<addColumn tableName="core_note"><column name="STATUS" type="varchar(1024)"></column></addColumn>
+	<addColumn tableName="core_note"><column name="VERSION" type="BIGINT"></column></addColumn>
+	<addColumn tableName="core_note"><column name="BLOG_FK" type="BIGINT"></column></addColumn>
+    <addColumn tableName="core_note"><column name="PARENT_FK" type="BIGINT"></column></addColumn>
+ 	<addColumn tableName="core_note"><column name="ORIGIN_FK" type="BIGINT"></column></addColumn>
+ 	<renameColumn tableName="core_note" oldColumnName="RESOURCE_FK" newColumnName="CONTENT_FK"/>
+  		
+	<sqlFile path="com/communote/server/liquibase/update/v1.1/postgres/mt2486_update_note_postgres.sql" />
+	
+	<addNotNullConstraint tableName="core_note" columnName="DIRECT"/>
+	<addNotNullConstraint tableName="core_note" columnName="STATUS"/>
+	<addNotNullConstraint tableName="core_note" columnName="VERSION"/>
+	
+	<dropTable tableName="core_utp"/>
+	<dropTable tableName="core_utr"/>
+	
+	<renameTable oldTableName="core_utr2tag" newTableName="core_notes2tag"/>
+	<renameColumn tableName="core_notes2tag" oldColumnName="USER_TAGGED_ITEMS_FK" newColumnName="NOTES_FK"/>
+	
+	<addColumn tableName="core_blog"><column name="GLOBAL_ID_FK" type="BIGINT"></column></addColumn>
+	<addColumn tableName="core_tag"><column name="GLOBAL_ID_FK" type="BIGINT"></column></addColumn>
+	<addColumn tableName="user_user"><column name="GLOBAL_ID_FK" type="BIGINT"></column></addColumn>
+	
+	<!-- blog -->
+	<dropTable tableName="core_tag_category2blog"/>
+	<dropColumn tableName="core_tag_clearance" columnName="user_group_fk"/> 
+	
+	<!-- user -->
+	<createTable tableName="FAVORITE_NOTES2KENMEI_USERS">
+		<column name="KENMEI_USERS_FK" type="BIGINT"><constraints nullable="false"/></column>
+		<column name="FAVORITE_NOTES_FK" type="BIGINT"><constraints nullable="false"/></column>
+	</createTable>
+	
+	<addPrimaryKey tableName="FAVORITE_NOTES2KENMEI_USERS" columnNames="KENMEI_USERS_FK,FAVORITE_NOTES_FK" />
+	
+	<renameTable oldTableName="core_uti2user_to_notify" newTableName="core_notes2user_to_notify"/>
+	<renameColumn tableName="core_notes2user_to_notify" oldColumnName="USER_TAGGED_ITEMS_FK" newColumnName="NOTES_FK"/>
+	
+	<renameColumn tableName="news_widget_feed" oldColumnName="TAGGING_USER_FK" newColumnName="KENMEI_USER_FK"/>
+	<renameColumn tableName="security_code" oldColumnName="TAGGING_USER_FK" newColumnName="KENMEI_USER_FK"/>
+	<renameColumn tableName="security_user_auth_failed_status" oldColumnName="TAGGING_USER_FK" newColumnName="KENMEI_USER_FK"/>
+	<renameColumn tableName="user_authorities" oldColumnName="TAGGING_USER_FK" newColumnName="KENMEI_USER_FK"/>
+	
+	<dropColumn tableName="user_group" columnName="DESCRIPTION"/>
+	<dropColumn tableName="user_group" columnName="VISIBILITY_TYPE"/>
+	<dropColumn tableName="user_group" columnName="GROUP_TYPE"/>
+	<dropColumn tableName="user_group" columnName="TITLE"/>
+	
+	<!-- constraints primary key -->
+	<addPrimaryKey tableName="core_content" constraintName="core_content_pkey" columnNames="id" />
+	<addPrimaryKey tableName="core_note" constraintName="core_note_pkey" columnNames="id" />
+	<addPrimaryKey tableName="core_notes2tag" constraintName="core_notes2tag_pkey" columnNames="notes_fk, tags_fk" />
+	<addPrimaryKey tableName="core_notes2user_to_notify" constraintName="core_notes2user_to_notify_pkey" columnNames="notes_fk, users_to_be_notified_fk" />
+	
+	<!-- foregin key, unique -->
+	<addForeignKeyConstraint constraintName="core_attachment_NOTE_FKC" baseTableName="core_attachment" baseColumnNames="NOTE_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_attachment_GLOBAL_ID_FKC" baseTableName="core_attachment" baseColumnNames="GLOBAL_ID_FK" referencedTableName="core_global_id" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_blog_GLOBAL_ID_FKC" baseTableName="core_blog" baseColumnNames="GLOBAL_ID_FK" referencedTableName="core_global_id" referencedColumnNames="ID" />
+
+	<addUniqueConstraint tableName="core_blog" constraintName="core_blog_global_id_fk_key" columnNames="global_id_fk" />
+	<addUniqueConstraint tableName="core_note" constraintName="core_note_content_fk_key" columnNames="content_fk" />
+	<addUniqueConstraint tableName="core_note" constraintName="core_note_global_id_fk_key" columnNames="global_id_fk" />
+
+
+	<addForeignKeyConstraint constraintName="core_note_PARENT_FKC" baseTableName="core_note" baseColumnNames="PARENT_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_note_CONTENT_FKC" baseTableName="core_note" baseColumnNames="CONTENT_FK" referencedTableName="core_content" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_note_USER_FKC" baseTableName="core_note" baseColumnNames="USER_FK" referencedTableName="user_user" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_note_ORIGIN_FKC" baseTableName="core_note" baseColumnNames="ORIGIN_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_note_BLOG_FKC" baseTableName="core_note" baseColumnNames="BLOG_FK" referencedTableName="core_blog" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_note_GLOBAL_ID_FKC" baseTableName="core_note" baseColumnNames="GLOBAL_ID_FK" referencedTableName="core_global_id" referencedColumnNames="ID" />
+	
+	<addForeignKeyConstraint constraintName="core_note_TAGS_FKC" baseTableName="core_notes2tag" baseColumnNames="TAGS_FK" referencedTableName="core_tag" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_tag_NOTES_FKC" baseTableName="core_notes2tag" baseColumnNames="NOTES_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_note_USERS_TO_BE_NOTIFIEC" baseTableName="core_notes2user_to_notify" baseColumnNames="USERS_TO_BE_NOTIFIED_FK" referencedTableName="user_user" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="user_user_NOTES_FKC" baseTableName="core_notes2user_to_notify" baseColumnNames="NOTES_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_tag_GLOBAL_ID_FKC" baseTableName="core_tag" baseColumnNames="GLOBAL_ID_FK" referencedTableName="core_global_id" referencedColumnNames="ID" />
+	
+	<addUniqueConstraint tableName="core_tag" constraintName="core_tag_global_id_fk_key" columnNames="global_id_fk" />
+	
+	<dropForeignKeyConstraint baseTableName="news_widget_feed" constraintName="news_widget_feed_tagging_userc"/>
+	<addForeignKeyConstraint constraintName="news_widget_feed_KENMEI_USER_C" baseTableName="news_widget_feed" baseColumnNames="KENMEI_USER_FK" referencedTableName="user_user" referencedColumnNames="ID" />		
+
+	<addForeignKeyConstraint constraintName="user_user_favorite_notes_fkc" baseTableName="FAVORITE_NOTES2KENMEI_USERS" baseColumnNames="FAVORITE_NOTES_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+	<addForeignKeyConstraint constraintName="core_note_kenmei_users_fkc" baseTableName="FAVORITE_NOTES2KENMEI_USERS" baseColumnNames="KENMEI_USERS_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+
+	<addUniqueConstraint tableName="user_user" constraintName="user_user_global_id_fk_key" columnNames="global_id_fk" />
+
+	<addForeignKeyConstraint constraintName="user_user_global_id_fkc" baseTableName="user_user" baseColumnNames="global_id_fk" referencedTableName="core_global_id" referencedColumnNames="ID" />
+	
+	<sqlFile path="com/communote/server/liquibase/update/v1.1/postgres/mt2486_insert_global_ids_postgres.sql" />
+</changeSet>
+
+</databaseChangeLog>

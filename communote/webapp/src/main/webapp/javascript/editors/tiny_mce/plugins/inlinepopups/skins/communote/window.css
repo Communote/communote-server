@@ -1,0 +1,432 @@
+/* Clearlooks 2 */
+
+/* Reset */
+.communote,.communote div,.communote span,.communote a {
+    vertical-align: baseline;
+    text-align: left;
+    position: absolute;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    font-family: Arial,sans-serif;
+    font-size: 12px;
+    color: #000;
+    text-decoration: none;
+    font-weight: normal;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    display: block
+}
+
+/* General */
+.communote {
+    position: absolute;
+    direction: ltr;
+    border-color: #ddd;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+.communote .mceWrapper {
+    position: static;
+}
+
+.mceEventBlocker {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%
+}
+
+.communote .mcePlaceHolder {
+    border: 1px solid #000;
+    background: #888;
+    top: 0;
+    left: 0;
+    opacity: 0.5;
+    -ms-filter: 'alpha(opacity=50)';
+    filter: alpha(opacity = 50)
+}
+
+.communote_modalBlocker {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.6;
+    -ms-filter: 'alpha(opacity=60)';
+    filter: alpha(opacity = 60);
+    display: none
+}
+
+/* Top */
+.communote .mceTop,.communote .mceTop div {
+    top: 0;
+    width: 100%;
+    height: 27px
+}
+
+.communote .mceTop .mceLeft {
+    width: 6px;
+}
+
+.communote .mceTop .mceCenter {
+    right: 6px;
+    width: 100%;
+    height: 23px;
+    clip: rect(auto, auto, auto, 12px)
+}
+
+.communote .mceTop .mceRight {
+    right: 0;
+    width: 6px;
+    height: 23px;
+}
+
+.communote .mceTop span {
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 23px;
+    font-weight: bold
+}
+
+.communote .mceFocus .mceTop .mceLeft {
+    
+}
+
+.communote .mceFocus .mceTop .mceCenter {
+    
+}
+
+.communote .mceFocus .mceTop .mceRight {
+    
+}
+
+.communote .mceFocus .mceTop span {
+    background-color: #e8e8e8;
+    height: 27px;
+    color: #000;
+    text-align: left;
+    padding-left: 7px;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+/* Middle */
+.communote .mceMiddle,.communote .mceMiddle div {
+    top: 0
+}
+
+.communote .mceMiddle {
+    width: 100%;
+    height: 100%;
+    clip: rect(27px, auto, auto, auto);
+    background-color: #FFF;
+}
+
+.communote .mceMiddle .mceLeft {
+    left: 0;
+    width: 5px;
+    height: 100%;
+}
+
+.communote .mceMiddle span {
+    top: 23px;
+    left: 5px;
+    width: 100%;
+    height: 100%;
+    background: #FFF
+}
+
+.communote .mceMiddle .mceRight {
+    right: 0;
+    width: 5px;
+    height: 100%;
+}
+
+/* Bottom */
+.communote .mceBottom,.communote .mceBottom div {
+    height: 6px
+}
+
+.communote .mceBottom {
+    left: 0;
+    bottom: 0;
+    width: 100%
+}
+
+.communote .mceBottom div {
+    top: 0
+}
+
+.communote .mceBottom .mceLeft {
+    left: 0;
+    width: 5px;
+}
+
+.communote .mceBottom .mceCenter {
+    left: 5px;
+    width: 100%;
+}
+
+.communote .mceBottom .mceRight {
+    right: 0;
+    width: 5px;
+}
+
+.communote .mceBottom span {
+    display: none
+}
+
+.communote .mceStatusbar .mceBottom,.communote .mceStatusbar .mceBottom div {
+    height: 23px
+}
+
+.communote .mceStatusbar .mceBottom .mceLeft {
+    
+}
+
+.communote .mceStatusbar .mceBottom .mceCenter {
+    
+}
+
+.communote .mceStatusbar .mceBottom .mceRight {
+    
+}
+
+.communote .mceStatusbar .mceBottom span {
+    display: block;
+    left: 7px;
+    font-family: Arial, Verdana;
+    font-size: 11px;
+    line-height: 23px
+}
+
+/* Actions */
+.communote a {
+    width: 29px;
+    height: 16px;
+    top: 3px;
+}
+
+.communote .mceClose {
+    right: 6px;
+}
+
+.communote .mceMin {
+    display: none;
+    right: 68px;
+}
+
+.communote .mceMed {
+    display: none;
+    right: 37px;
+}
+
+.communote .mceMax {
+    display: none;
+    right: 37px;
+}
+
+.communote .mceMove {
+    display: none;
+    width: 100%;
+    cursor: move;
+}
+
+.communote .mceMovable .mceMove {
+    display: block;
+}
+
+.communote .mceFocus .mceClose {
+    right: 6px;
+}
+
+.communote .mceFocus .mceMin {
+    right: 68px;
+}
+
+.communote .mceFocus .mceMed {
+    right: 37px;
+}
+
+.communote .mceFocus .mceMax {
+    right: 37px;
+}
+
+.communote .mceFocus .mceClose:hover {
+    right: 6px;
+}
+
+.communote .mceFocus .mceClose:hover {
+    right: 6px;
+}
+
+.communote .mceFocus .mceMin:hover {
+    right: 68px;
+}
+
+.communote .mceFocus .mceMed:hover {
+    right: 37px;
+}
+
+.communote .mceFocus .mceMax:hover {
+    right: 37px;
+}
+
+/* Resize */
+.communote .mceResize {
+    top: auto;
+    left: auto;
+    display: none;
+    width: 5px;
+    height: 5px;
+}
+
+.communote .mceResizable .mceResize {
+    display: block
+}
+
+.communote .mceResizable .mceMin,.communote .mceMax {
+    display: none
+}
+
+.communote .mceMinimizable .mceMin {
+    display: block
+}
+
+.communote .mceMaximizable .mceMax {
+    display: block
+}
+
+.communote .mceMaximized .mceMed {
+    display: block
+}
+
+.communote .mceMaximized .mceMax {
+    display: none
+}
+
+.communote a.mceResizeN {
+    top: 0;
+    left: 0;
+    width: 100%;
+    cursor: n-resize
+}
+
+.communote a.mceResizeNW {
+    top: 0;
+    left: 0;
+    cursor: nw-resize
+}
+
+.communote a.mceResizeNE {
+    top: 0;
+    right: 0;
+    cursor: ne-resize
+}
+
+.communote a.mceResizeW {
+    top: 0;
+    left: 0;
+    height: 100%;
+    cursor: w-resize;
+}
+
+.communote a.mceResizeE {
+    top: 0;
+    right: 0;
+    height: 100%;
+    cursor: e-resize
+}
+
+.communote a.mceResizeS {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    cursor: s-resize
+}
+
+.communote a.mceResizeSW {
+    bottom: 0;
+    left: 0;
+    cursor: sw-resize
+}
+
+.communote a.mceResizeSE {
+    bottom: 0;
+    right: 0;
+    cursor: se-resize
+}
+
+/* Alert/Confirm */
+.communote .mceButton {
+    font-weight: bold;
+    bottom: 10px;
+    width: 80px;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    text-align: center;
+    outline: 0
+}
+
+.communote .mceMiddle .mceIcon {
+    left: 15px;
+    top: 35px;
+    width: 32px;
+    height: 32px
+}
+
+.communote .mceAlert .mceMiddle span,.communote .mceConfirm .mceMiddle span {
+    background: transparent;
+    left: 60px;
+    top: 35px;
+    width: 320px;
+    height: 50px;
+    font-weight: bold;
+    overflow: auto;
+    white-space: normal
+}
+
+.communote a:hover {
+    font-weight: bold;
+}
+
+.communote .mceAlert .mceMiddle,.communote .mceConfirm .mceMiddle {
+    background: #D6D7D5
+}
+
+.communote .mceAlert .mceOk {
+    left: 50%;
+    top: auto;
+    margin-left: -40px
+}
+
+.communote .mceAlert .mceIcon {
+    
+}
+
+.communote .mceConfirm .mceOk {
+    left: 50%;
+    top: auto;
+    margin-left: -90px
+}
+
+.communote .mceConfirm .mceCancel {
+    left: 50%;
+    top: auto
+}
+
+.communote .mceConfirm .mceIcon {
+    
+}

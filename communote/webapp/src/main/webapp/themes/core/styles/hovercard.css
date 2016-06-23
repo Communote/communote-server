@@ -1,0 +1,184 @@
+.hovercard {
+    max-width: 300px;
+    min-height: 100px;
+    min-width: 200px;
+    z-index: 1;
+}
+
+.hovercard .tip {
+    background-color: #FFFFFF;
+    border: 1px solid #DEDEDE;
+    box-shadow: 0 4px 5px -3px #CECECE;
+    -moz-box-shadow: 0 4px 5px -3px #CECECE;
+    -webkit-box-shadow: 0 4px 5px -3px #CECECE;
+}
+
+.hovercard .hovercard-info {
+    padding: 7px;
+}
+
+.hovercard .hovercard-image {
+    float: left;
+    margin-right: 15px;
+}
+
+.hovercard.topic-hover-card .hovercard-image img {
+    height: 54px;
+    width: 72px;
+}
+
+/* min and max width w.r.t. border, padding, margin and size of surrounding containers and previous
+ sibling to match min and max of .hovercard container*/
+.hovercard .hovercard-details {
+    float: left;
+    min-width: 119px;
+    max-width: 219px;
+}
+.hovercard.topic-hover-card .hovercard-details {
+    max-width: 195px;
+}
+
+.hovercard .hovercard-tags {
+    margin-top: 7px;
+}
+
+.hovercard .hovercard-tags .cn-icon {
+    background-position: -72px -328px;
+    height: 16px;
+    width: 16px;
+}
+
+.hovercard .hovercard-tags .cn-icon-label {
+    height: 16px;
+    padding-left: 6px;
+}
+
+.hovercard .hovercard-actions {
+    background-color: #F5F5F5;
+    padding: 7px;
+}
+
+.hovercard.tip-above .tip-bottom {
+    height: 10px;
+}
+
+.hovercard.tip-above .hovercard-border-shadow {
+    border-color: #D9D9D9 transparent transparent transparent;
+    border-style: solid;
+    border-width: 10px;
+    bottom: -11px;
+    height: 0;
+    left: 30px;
+    position:absolute;
+    width: 0;
+}
+
+.hovercard.tip-above .hovercard-border {
+    border-color: #F6F3F0 transparent transparent transparent;
+    border-style: solid;
+    border-width: 10px;
+    bottom: -9px;
+    left: 30px;
+    height: 0;
+    position: absolute;
+    width: 0;
+}
+
+.hovercard.tip-below .tip-top {
+    height: 10px;
+}
+
+.hovercard.tip-below .hovercard-border-shadow {
+    border-color: transparent transparent #D9D9D9 transparent;
+    border-style: solid;
+    border-width: 10px;
+    top: -10px;
+    height: 0;
+    left: 30px;
+    position: absolute;
+    width: 0;
+}
+
+.hovercard.tip-below .hovercard-border {
+    border-color: transparent transparent #FFFFFF transparent;
+    border-style: solid;
+    border-width: 10px;
+    top: -9px;
+    left: 30px;
+    height: 0;
+    position: absolute;
+    width: 0;
+}
+
+.hovercard .hovercard-details .hovercard-heading,
+.hovercard .hovercard-details .hovercard-entry,
+.hovercard .hovercard-tags {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hovercard .hovercard-details .hovercard-entry,
+.hovercard #topicHoverCardDescription {
+    font-size: 11px;
+}
+
+.hovercard .hover-card-more .cn-button-look {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.hovercard a.cn-button-look .cn-icon {
+    height: 18px;
+    margin-top: 6px;
+    width: 18px;
+}
+
+.hovercard a.cn-button-look .cn-icon-label {
+    padding-left: 4px;
+}
+
+.hovercard .cn-menu {
+    float: right;
+}
+
+.hovercard a.cn-button-look .cn-arrow {
+    background-position: -394px -329px;
+    display: inline-block;
+    float: none;
+    height: 12px;
+    margin-left: 3px;
+    margin-top: 0px;
+    width: 12px;
+}
+
+.hovercard .cn-menu:hover a.cn-button-look .cn-arrow {
+    background-position: -458px -362px;
+}
+
+.hovercard .cn-menu:hover a.cn-button-look .cn-icon-label {
+    color: #E66914;    
+}
+
+.hovercard .cn-menu-list {
+    margin-top: 26px;
+    white-space: nowrap;
+    z-index: 12;
+}
+
+.hovercard .cn-menu-list .cn-link {
+    border: 0 none;
+    font-size: 12px;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.hovercard .tip-loading .tip-text {
+    background-image: url(../images/main/loading.gif?t=${build.timestamp});
+    background-position: 10px 50%;
+    background-repeat: no-repeat;
+    padding-left: 44px;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}

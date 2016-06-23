@@ -1,0 +1,26 @@
+@charset "utf-8";
+
+/* (header( ... */
+#communote #header {
+    background-color: #FFFFFF;
+    background-image: url(../../themes/core/images/misc/gradient_header-menu.png);
+    background-repeat: repeat-x;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #CCCCCC;
+    height: 120px;
+}
+#communote #header .logo {
+    padding-left: 25px;
+    height: 120px;
+    background-image: url("../../themes/core/images/misc/header_graphic1.png");
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: 350px 26px;
+    z-index: 1;
+}
+#communote #header .logo img {
+    border: 0 none;
+    margin-top: 48px;
+}
+/* ... )header) */

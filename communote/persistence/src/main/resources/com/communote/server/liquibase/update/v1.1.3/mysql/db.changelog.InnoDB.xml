@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.1.3/db.changelog.v1.1.3.xml">
+    <changeSet id="InnoDB" author="unknown" context="client" dbms="mysql">
+        <comment>This change set changes all tables to InnoDB and restores the foreign key constraints.</comment>
+        <sqlFile path="com/communote/server/liquibase/update/v1.1.3/mysql/InnoDB_Preparations.sql" />
+        <sqlFile path="com/communote/server/liquibase/update/v1.1.3/mysql/InnoDB_Drop_Indexes.sql" />
+        <sqlFile path="com/communote/server/liquibase/update/v1.1.3/mysql/InnoDB_Change_Engine.sql" />
+        <sqlFile path="com/communote/server/liquibase/update/v1.1.3/mysql/InnoDB_Drop_Foreign_Keys.sql" />
+        <sqlFile path="com/communote/server/liquibase/update/v1.1.3/mysql/InnoDB_Add_Foreign_Keys.sql" />
+    </changeSet>
+</databaseChangeLog>

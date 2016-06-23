@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.config.ConfigurationImpl" table="configuration" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">configuration_seq</param>
+                                                           </generator>
+        </id>
+        <set name="settings" order-by="CONFIGURATION_FK" lazy="false" fetch="select" inverse="false" cascade="delete">
+            <key foreign-key="configuration_setting_CONFIGUC">
+                <column name="CONFIGURATION_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.config.Setting"/>
+        </set>
+        <many-to-one name="clientConfig" class="com.communote.server.model.config.ClientConfigurationImpl" foreign-key="configuration_CLIENT_CONFIG_FC" cascade="delete" lazy="false" fetch="join">
+            <column name="CLIENT_CONFIG_FK" not-null="false" unique="true"/>
+        </many-to-one>
+        <set name="externalSystemConfigurations" order-by="CONFIGURATION_FK" lazy="false" fetch="join" inverse="false" cascade="delete">
+            <key foreign-key="configuration_external_sys_COC">
+                <column name="CONFIGURATION_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.config.ExternalSystemConfiguration"/>
+        </set>
+    </class>
+</hibernate-mapping>

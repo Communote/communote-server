@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.blog.UserToBlogRoleMappingImpl" table="core_role2blog" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">core_role2blog_seq</param>
+                                                           </generator>
+        </id>
+        <property name="blogId" type="java.lang.Long">
+            <column name="blog_id" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="userId" type="java.lang.Long">
+            <column name="user_id" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="numericRole" type="int">
+            <column name="numeric_role" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="externalSystemId" type="java.lang.String">
+            <column name="external_system_id" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="grantedByGroup" type="boolean">
+            <column name="granted_by_group" 
+                     not-null="true" unique="false"/>
+        </property>
+        <set name="grantingGroups" table="core_role2blog_granting_group" order-by="GRANTING_GROUPS_FK" lazy="true" fetch="select" inverse="false" cascade="none">
+            <key foreign-key="user_group_USER_TO_BLOG_ROLE_C">
+                <column name="USER_TO_BLOG_ROLE_MAPPINGS_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.user.group.Group" foreign-key="core_role2blog_GRANTING_GROUPC">
+                <column name="GRANTING_GROUPS_FK"/>
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

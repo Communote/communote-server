@@ -1,0 +1,10 @@
+<div id="cn-footer-communote" class="version-info">
+    #set($applicationInfo = $communoteTool.getApplicationInformation())
+    #if($authzTool.noneGranted('ROLE_KENMEI_USER'))
+        <a id="topbar-about" href="$urlTool.render('/user/about.do')">#t('portal.menu.about.title')</a>
+    #elseif($authzTool.anyGranted('ROLE_KENMEI_USER'))
+        <a id="topbar-about" href="$urlTool.render('/portal/service/legal')">#t('portal.menu.about.title')</a>
+    #end
+    <br/>
+    #t('portal.footer.version') ${applicationInfo.buildNumberWithType}, ${applicationInfo.buildTime}
+</div>

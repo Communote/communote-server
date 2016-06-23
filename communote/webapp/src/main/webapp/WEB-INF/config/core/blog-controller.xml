@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+    <bean id="startpageRegistry" class="com.communote.server.web.commons.controller.StartpageRegistry">
+        <property name="defaultStartpage" value="/portal/home" />
+    </bean>
+
+    <bean id="widgetFactoryRegistry" class="com.communote.server.web.fe.widgets.extension.WidgetFactoryRegistry" />
+
+    <bean id="widgetExtensionManagementRepository" class="com.communote.server.web.fe.widgets.extension.WidgetExtensionManagementRepository" />
+
+    <bean id="jsMessagesRegistry" class="com.communote.server.web.commons.i18n.JsMessagesRegistry" lazy-init="true" />
+    <bean id="velocityTemplateManager" class="com.communote.server.web.commons.view.velocity.VelocityTemplateManager" >
+        <constructor-arg><ref bean="velocityConfig"/></constructor-arg>
+        <constructor-arg><value>/WEB-INF/velocity-toolbox.xml</value></constructor-arg>
+    </bean>
+
+    <bean id="microblogLoginController" class="com.communote.server.web.fe.portal.login.AuthenticateUserController">
+        <property name="loginView">
+            <value>main.microblog.portal.home.welcome</value>
+        </property>
+        <property name="loginFailedView">
+            <value>main.microblog.portal.home.welcome</value>
+        </property>
+        <property name="authenticationSuccessHandler" ref="communoteAuthenticationSuccessHandler"/>
+    </bean>
+
+    <bean id="microblogHomeController" parent="initialFiltersViewController">
+        <property name="contentTemplate" value="/WEB-INF/vm/pages/main-content.html.vm" />
+        <property name="page" value="main" />
+        <property name="selectedMenu" value="home" />
+        <property name="javaScriptCategories">
+            <array>
+                <value>tinyMCE</value>
+                <value>communote-core</value>
+                <value>portal</value>
+            </array>
+        </property>
+        <property name="permalinkIdsToRecognize">
+            <set>
+                <util:constant static-field="com.communote.server.core.blog.export.PermalinkGenerator.PERMA_ID_TAGS" />
+            </set>
+        </property>
+    </bean>
+
+    <bean id="attachmentUploadController" class="com.communote.server.web.fe.portal.blog.controller.AttachmentUploadController">
+    </bean>
+
+    <bean id="actionParamMethodResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+        <property name="paramName" value="action" />
+    </bean>
+
+    <bean id="deleteBlogPostController" class="com.communote.server.web.fe.portal.blog.controller.DeleteBlogPostController">
+        <property name="methodNameResolver" ref="actionParamMethodResolver" />
+    </bean>
+
+    <bean id="noteExportController" class="com.communote.server.web.fe.portal.blog.controller.NoteExportController">
+    </bean>
+
+    <bean id="blogSelectionController" class="com.communote.server.web.fe.portal.blog.controller.BlogSelectionBoxController" />
+
+    <bean id="blogController" class="com.communote.server.web.fe.portal.blog.controller.BlogController" />
+
+    <bean id="blogManagementValidator" class="com.communote.server.web.fe.portal.blog.validator.BlogManagementValidator" />
+
+    <bean id="startingController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view">
+            <value>main.microblog.portal.starting</value>
+        </property>
+    </bean>
+
+    <bean id="showBlogsController" parent="initialFiltersViewController">
+        <property name="contentTemplate" value="/WEB-INF/vm/pages/main-content.html.vm" />
+        <property name="page" value="main" />
+        <property name="selectedMenu" value="blogs" />
+        <property name="filtersFoundSelectedMenu" value="home" />
+        <property name="javaScriptCategories">
+            <array>
+                <value>tinyMCE</value>
+                <value>communote-core</value>
+                <value>portal</value>
+            </array>
+        </property>
+        <property name="permalinkIdsToRecognize">
+            <set>
+                <util:constant static-field="com.communote.server.core.blog.export.PermalinkGenerator.PERMA_ID_TOPICS" />
+                <util:constant static-field="com.communote.server.core.blog.export.PermalinkGenerator.PERMA_ID_NOTES" />
+            </set>
+        </property>
+    </bean>
+
+    <bean id="createBlogController" parent="initialFiltersViewController" class="com.communote.server.web.fe.portal.blog.controller.CreateBlogViewController">
+        <property name="contentTemplate" value="/WEB-INF/vm/pages/blog-create-content.html.vm" />
+        <property name="page" value="topicCreate" />
+        <property name="selectedMenu" value="blogs" />
+    </bean>
+
+    <bean id="editBlogController" parent="velocityViewController" class="com.communote.server.web.fe.portal.blog.controller.EditBlogViewController">
+        <property name="contentTemplate" value="/WEB-INF/vm/pages/blog-edit-content.html.vm" />
+        <property name="page" value="topicEdit" />
+        <property name="selectedMenu" value="blogs" />
+    </bean>
+
+    <bean id="showUsersController" class="com.communote.server.web.fe.portal.user.controller.UserViewController" parent="velocityViewController">
+        <property name="selectedMenu" value="people" />
+        <property name="contentTemplate" value="/WEB-INF/vm/pages/main-content.html.vm" />
+        <property name="page" value="main" />
+        <property name="javaScriptCategories">
+            <array>
+                <value>tinyMCE</value>
+                <value>communote-core</value>
+                <value>portal</value>
+            </array>
+        </property>
+        <property name="permalinkIdsToRecognize">
+            <set>
+                <util:constant static-field="com.communote.server.core.blog.export.PermalinkGenerator.PERMA_ID_USERS" />
+            </set>
+        </property>
+        <property name="currentUserFoundSelectedMenu" value="profile" />
+    </bean>
+
+    <bean id="showTagsController" parent="initialFiltersViewController">
+        <property name="selectedMenu" value="overview" />
+        <property name="contentTemplate" value="/WEB-INF/vm/pages/main-content.html.vm" />
+        <property name="page" value="main" />
+        <property name="javaScriptCategories">
+            <array>
+                <value>tinyMCE</value>
+                <value>communote-core</value>
+                <value>portal</value>
+            </array>
+        </property>
+        <property name="permalinkIdsToRecognize">
+            <set>
+                <util:constant static-field="com.communote.server.core.blog.export.PermalinkGenerator.PERMA_ID_TAGS" />
+            </set>
+        </property>
+    </bean>
+
+    <bean id="editProfileController" parent="velocityViewController" class="com.communote.server.web.fe.portal.user.controller.UserProfileController">
+        <property name="contentTemplate" value="/WEB-INF/vm/pages/user-edit-content.html.vm" />
+        <property name="page" value="userEdit" />
+        <property name="selectedMenu" value="profile" />
+        <property name="redirectUrl" value="/portal/user-edit" />
+    </bean>
+
+    <bean id="blogHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true" />
+        <property name="mappings">
+            <props>
+                <prop key="/**/starting">startingController</prop>
+                <prop key="/microblog/*/portal/authenticate*">microblogLoginController</prop>
+                <prop key="/microblog/*/portal/home*">microblogHomeController</prop>
+                <prop key="/microblog/*/portal/topic-create">createBlogController</prop>
+                <prop key="/microblog/*/portal/topic-edit">editBlogController</prop>
+                <prop key="/microblog/*/portal/topics/**">showBlogsController</prop>
+                <prop key="/microblog/*/portal/users/**">showUsersController</prop>
+                <prop key="/microblog/*/portal/tags/**">showTagsController</prop>
+                <prop key="/microblog/*/portal/user-edit">editProfileController</prop>
+                <prop key="/microblog/*/blog/attachmentUpload*">attachmentUploadController</prop>
+                <prop key="/microblog/*/blog/control/*">blogSelectionController</prop>
+                <prop key="/microblog/*/blog/default/*">blogController</prop>
+
+                <prop key="/microblog/*/blog/deletePost*">deleteBlogPostController</prop>
+                <prop key="/microblog/*/topic/export*">noteExportController</prop>
+                <prop key="/microblog/*/rss/get*">noteExportController</prop>
+                <prop key="/microblog/*/rsswidgets/blog/ChronologicalPostList.widget">noteExportController</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

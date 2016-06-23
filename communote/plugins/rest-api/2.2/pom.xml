@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.communote.plugins</groupId>
+		<artifactId>communote-plugins-parent</artifactId>
+        <version>3.4-SNAPSHOT</version>
+        <relativePath></relativePath>
+    </parent>
+
+    <groupId>com.communote.plugins</groupId>
+    <artifactId>communote-rest-api-2.2</artifactId>
+    <packaging>pom</packaging>
+    <name>Communote - Plugins - Rest-Api - 2.2 - Build</name>
+    <description>This Plugin Provides the Rest Api Extension for Communote</description>
+    <profiles>
+        <profile>
+            <id>no-mda</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>model</module>
+                <module>implementation</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>mda</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>model-generator</module>
+                <module>model</module>
+                <module>implementation</module>
+                <module>client</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>mda-pure</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>model-generator</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>doc</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>doc</module>
+            </modules>
+        </profile>
+    </profiles>
+
+    <properties>
+        <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+				<groupId>com.communote.server</groupId>
+				<artifactId>communote-server-persistence</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.communote.server</groupId>
+                <artifactId>communote-server-core-impl</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.communote.plugins</groupId>
+                <artifactId>communote-plugins-core</artifactId>
+                <scope>provided</scope>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

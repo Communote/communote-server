@@ -1,0 +1,7 @@
+<%@ include file="/WEB-INF/jsp/common/include.jsp"%>
+<%-- prints errors stored with .reject("message.key")
+	requirement: must be wrapped within <spring:hasBindErrors name="commandBeanName"></spring:hasBindErrors>
+ --%>
+<c:forEach var="err" items="${errors.globalErrors}">
+	<span class="error"><fmt:message key="${err.code}" /></span><br />
+</c:forEach>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.config.ExternalSystemConfiguration" table="configuration_external_sys" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">configuration_external_sys_seq</param>
+                                                           </generator>
+        </id>
+        <property name="allowExternalAuthentication" type="boolean">
+            <column name="allow_external_authentication" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="systemId" type="java.lang.String">
+            <column name="system_id" 
+                     not-null="true" unique="true"/>
+        </property>
+        <property name="primaryAuthentication" type="boolean">
+            <column name="primary_authentication" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="synchronizeUserGroups" type="boolean">
+            <column name="synchronize_user_groups" 
+                     not-null="true" unique="false"/>
+        </property>
+        <joined-subclass name="com.communote.server.model.config.ConfluenceConfigurationImpl" table="configuration_confluence" dynamic-insert="false" dynamic-update="false" abstract="false">
+            <key foreign-key="configuration_confluenceIFKC">
+                <column name="ID"/>
+            </key>
+            <property name="authenticationApiUrl" type="java.lang.String">
+                <column name="authentication_api_url" 
+                     not-null="true" unique="false"/>
+            </property>
+            <property name="imageApiUrl" type="java.lang.String">
+                <column name="image_api_url" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="adminLogin" type="java.lang.String">
+                <column name="admin_login" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="adminPassword" type="java.lang.String">
+                <column name="admin_password" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="serviceUrl" type="java.lang.String">
+                <column name="service_url" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="permissionsUrl" type="java.lang.String">
+                <column name="permissions_url" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="basePath" type="java.lang.String">
+                <column name="base_path" 
+                     not-null="false" unique="false"/>
+            </property>
+        </joined-subclass>
+        <joined-subclass name="com.communote.server.model.config.LdapConfigurationImpl" table="configuration_ldap" dynamic-insert="false" dynamic-update="false" abstract="false">
+            <key foreign-key="configuration_ldapIFKC">
+                <column name="ID"/>
+            </key>
+            <property name="url" type="java.lang.String">
+                <column name="url" 
+                     not-null="true" unique="false"/>
+            </property>
+            <property name="managerPassword" type="java.lang.String">
+                <column name="manager_password" 
+                     not-null="true" unique="false"/>
+            </property>
+            <property name="managerDN" type="java.lang.String">
+                <column name="manager_d_n" 
+                     not-null="true" unique="false"/>
+            </property>
+            <property name="userIdentifierIsBinary" type="boolean">
+                <column name="user_identifier_is_binary" 
+                     not-null="true" unique="false"/>
+            </property>
+            <property name="saslMode" type="java.lang.String">
+                <column name="sasl_mode" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="serverDomain" type="java.lang.String">
+                <column name="server_domain" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="queryPrefix" type="java.lang.String">
+                <column name="query_prefix" 
+                     not-null="false" unique="false"/>
+            </property>
+            <property name="dynamicMode" type="boolean">
+                <column name="dynamic_mode" 
+                     not-null="true" unique="false"/>
+            </property>
+            <many-to-one name="groupSyncConfig" class="com.communote.server.model.config.LdapGroupSyncConfigurationImpl" foreign-key="configuration_ldap_GROUP_SYNCC" cascade="all" lazy="false" fetch="select">
+                <column name="GROUP_SYNC_CONFIG_FK" not-null="false" unique="true"/>
+            </many-to-one>
+            <many-to-one name="userSearch" class="com.communote.server.model.config.LdapSearchConfigurationImpl" foreign-key="configuration_ldap_USER_SEARCC" cascade="all" lazy="false" fetch="select">
+                <column name="USER_SEARCH_FK" not-null="true" unique="true"/>
+            </many-to-one>
+        </joined-subclass>
+    </class>
+</hibernate-mapping>

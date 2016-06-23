@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- dummy web application context for integration tests -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <bean class="com.communote.server.web.WebServiceLocator"></bean>
+
+    <bean id="dynamicUrlHandlerMapping" class="com.communote.server.web.commons.controller.DynamicUrlHandlerMapping">
+        <property name="servletContext" ><bean class="org.springframework.mock.web.MockServletContext" /></property>
+    </bean>
+
+    <bean id="jsConcatenatedResourceStore"
+        class="com.communote.server.web.commons.resource.impl.ConcatenatedResourceStoreImpl"
+        init-method="init">
+        <constructor-arg>
+            <map></map>
+        </constructor-arg>
+        <constructor-arg value="text/javascript" />
+        <constructor-arg value=".js" />
+        <constructor-arg value="-min" />
+    </bean>
+
+    <bean id="cssConcatenatedResourceStore"
+        class="com.communote.server.web.commons.resource.impl.ConcatenatedResourceStoreImpl"
+        init-method="init">
+        <constructor-arg>
+            <map></map>
+        </constructor-arg>
+        <constructor-arg value="text/css" />
+        <constructor-arg value=".css" />
+        <constructor-arg value="-min" />
+        <constructor-arg value="cssCategoryResource" />
+    </bean>
+
+    <bean id="jsMessagesRegistry" class="com.communote.server.web.commons.i18n.JsMessagesRegistry" lazy-init="true" />
+    <bean id="authenticationManager" class="org.springframework.security.authentication.ProviderManager">
+        <!-- need at least one authentication provider -->
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.authentication.TestingAuthenticationProvider" />
+            </list>
+        </constructor-arg>
+    </bean>
+    <bean id="communoteAuthenticationSuccessHandler" class="com.communote.server.web.external.spring.security.CommunoteAuthenticationSuccessHandler" />
+    
+    <bean id="widgetFactoryRegistry" class="com.communote.server.web.fe.widgets.extension.WidgetFactoryRegistry" />
+    <bean id="widgetExtensionManagementRepository" class="com.communote.server.web.fe.widgets.extension.WidgetExtensionManagementRepository" />
+</beans>

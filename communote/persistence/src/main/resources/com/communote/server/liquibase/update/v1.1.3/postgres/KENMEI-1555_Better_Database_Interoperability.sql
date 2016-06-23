@@ -1,0 +1,13 @@
+ALTER TABLE security_code               ALTER code              TYPE varchar(255);
+ALTER TABLE core_blog                   ALTER NAME_IDENTIFIER   TYPE varchar(255);
+ALTER TABLE core_global_id              ALTER GLOBAL_IDENTIFIER TYPE varchar(255);
+ALTER TABLE core_processed_utp_mail     ALTER MAIL_MESSAGE_ID   TYPE varchar(255);
+ALTER TABLE core_tag                    ALTER NAME              TYPE varchar(255);
+ALTER TABLE custom_messages             ALTER KEY               TYPE varchar(255);
+ALTER TABLE iprange_channel             ALTER TYPE              TYPE varchar(255);
+ALTER TABLE iprange_filter_channel      ALTER CHANNELS_FK       TYPE varchar(255);
+ALTER TABLE md_country                  ALTER COUNTRY_CODE      TYPE varchar(255);
+ALTER TABLE md_language                 ALTER LANGUAGE_CODE     TYPE varchar(255);
+ALTER TABLE user_client                 ALTER CLIENT_ID         TYPE varchar(255);
+ALTER TABLE user_user                   ALTER EMAIL             TYPE varchar(255);
+ALTER TABLE user_user                   ALTER ALIAS             TYPE varchar(255);

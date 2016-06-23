@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.1.3/db.changelog.v1.1.3.xml">
+         
+    <changeSet id="mt3277_1_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: add user_entity and copy users</comment>
+        
+        <createTable tableName="user_entity">
+            <column name="ID" type="BIGINT" autoIncrement="true"><constraints nullable="false" primaryKey="true"/> </column>
+            <column name="GLOBAL_ID_FK" type="BIGINT" ><constraints nullable="false" unique="true"/> </column>
+        </createTable>
+        <sql>
+            INSERT INTO user_entity (ID, GLOBAL_ID_FK) (SELECT ID, GLOBAL_ID_FK FROM user_user);
+        </sql>
+        
+        <dropColumn columnName="GLOBAL_ID_FK" tableName="user_user"/>
+        <addForeignKeyConstraint constraintName="user_entity_global_id_fkc" baseTableName="user_entity" baseColumnNames="GLOBAL_ID_FK" referencedTableName="core_global_id" referencedColumnNames="ID" />
+        <addForeignKeyConstraint constraintName="user_userifck" baseTableName="user_user" baseColumnNames="ID" referencedTableName="user_entity" referencedColumnNames="ID" />
+    </changeSet>
+    
+    <changeSet id="mt3277_2_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: remove obsolete security codes</comment>
+        <dropTable tableName="security_membership_code"/>
+        <dropTable tableName="security_invite_code"/>
+    </changeSet>
+    
+    <changeSet id="mt3277_3_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: copy all_can_x rights from group to blog</comment>
+        <addColumn tableName="core_blog">
+            <column name="ALL_CAN_READ" type="BOOLEAN"></column>
+            <column name="ALL_CAN_WRITE" type="BOOLEAN"></column>
+        </addColumn>
+        <sql>
+	        CREATE TEMPORARY TABLE core_blog_tmp (id BIGINT, ALL_CAN_READ TINYINT(4), ALL_CAN_WRITE TINYINT(4));
+	        INSERT INTO core_blog_tmp(id, all_can_read, all_can_write) (
+	            SELECT core_blog.id, user_group.ALL_CAN_READ, user_group.ALL_CAN_WRITE
+	            FROM core_blog LEFT JOIN user_group ON blogging_user_group_fk = user_group.id);
+            UPDATE core_blog SET ALL_CAN_READ=true WHERE core_blog.id in (select id from core_blog_tmp where ALL_CAN_READ=true);
+            UPDATE core_blog SET ALL_CAN_READ=false WHERE core_blog.id in (select id from core_blog_tmp where ALL_CAN_READ=false);
+            UPDATE core_blog SET ALL_CAN_WRITE=true WHERE core_blog.id in (select id from core_blog_tmp where ALL_CAN_WRITE=true);
+            UPDATE core_blog SET ALL_CAN_WRITE=false WHERE core_blog.id in (select id from core_blog_tmp where ALL_CAN_WRITE=false);
+            DROP TABLE core_blog_tmp;
+        </sql>
+    </changeSet>
+    
+    <changeSet id="mt3277_4_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: add blogs to group member</comment>
+        <addColumn tableName="user_group_member">
+            <column name="BLOG_FK" type="BIGINT"><constraints nullable="true"/></column>
+        </addColumn>
+        <sql>
+            UPDATE user_group_member SET BLOG_FK=(SELECT ID FROM core_blog WHERE blogging_user_group_fk=user_group_fk) WHERE EXISTS (SELECT ID FROM core_blog WHERE blogging_user_group_fk=user_group_fk);
+        </sql>
+    </changeSet>
+    
+    <changeSet id="mt3277_5_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: group member to blog member</comment>
+        <dropForeignKeyConstraint baseTableName="user_group_member" constraintName="user_group_member_user_fkc" />
+        <dropForeignKeyConstraint baseTableName="user_group_member" constraintName="user_group_member_user_group_c" />
+        <dropColumn tableName="user_group_member" columnName="IS_ACTIVATED" />
+        <dropColumn tableName="user_group_member" columnName="USER_GROUP_FK" />
+        
+        <sql>
+           -- drop all entries where there is no blog (old groups)
+           DELETE FROM user_group_member WHERE BLOG_FK IS NULL;
+        </sql>
+        
+        <renameTable oldTableName="user_group_member" newTableName="core_blog_member" />
+        <renameColumn tableName="core_blog_member" oldColumnName="USER_GROUP_ROLE" newColumnName="ROLE" columnDataType="varchar(1024)" />
+        <renameColumn tableName="core_blog_member" oldColumnName="USER_FK" newColumnName="KENMEI_ENTITY_FK" columnDataType="BIGINT" />
+        
+        <addColumn tableName="core_blog_member">
+            <column name="SOURCE" type="varchar(1024)"><constraints nullable="true"/></column>
+        </addColumn>
+        
+        <addForeignKeyConstraint constraintName="core_blog_member_kenmei_entitc" baseTableName="core_blog_member" baseColumnNames="KENMEI_ENTITY_FK" referencedTableName="user_entity" referencedColumnNames="ID" />
+        <addForeignKeyConstraint constraintName="core_blog_member_blog_fkc" baseTableName="core_blog_member" baseColumnNames="BLOG_FK" referencedTableName="core_blog" referencedColumnNames="ID" />
+        <addNotNullConstraint tableName="core_blog_member" columnName="BLOG_FK" columnDataType="BIGINT" />
+        <addNotNullConstraint tableName="core_blog_member" columnName="ROLE" columnDataType="varchar(1024)" />
+        <addNotNullConstraint tableName="core_blog_member" columnName="KENMEI_ENTITY_FK" columnDataType="BIGINT" />
+    </changeSet>
+    
+    <changeSet id="mt3277_6_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: cleanup core_blog</comment>
+        <dropForeignKeyConstraint baseTableName="core_blog" constraintName="core_blog_blogging_user_groupc" />
+        <dropColumn tableName="core_blog" columnName="blogging_user_group_fk" />
+    </changeSet>
+    
+    <changeSet id="mt3277_7_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: fix user_group</comment>
+        <dropColumn tableName="user_group" columnName="class"/>
+        <dropColumn tableName="user_group" columnName="ALL_CAN_READ"/>
+        <dropColumn tableName="user_group" columnName="ALL_CAN_WRITE"/>
+        <delete tableName="user_group"></delete>
+        <addColumn tableName="user_group">
+            <column name="ALIAS" type="varchar(300)"><constraints nullable="false" unique="true"/></column>
+        </addColumn>
+        <addColumn tableName="user_group">
+            <column name="NAME" type="varchar(1024)"><constraints nullable="false" /></column>
+        </addColumn>
+        <addColumn tableName="user_group">
+            <column name="DESCRIPTION" type="text" ><constraints nullable="true" /></column>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="user_groupifkc" baseTableName="user_group" baseColumnNames="ID" referencedTableName="user_entity" referencedColumnNames="ID" />
+    </changeSet>
+    
+    <changeSet id="mt3277_8_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: add helper table for fast blog role lookup</comment>
+        <createTable tableName="core_role2blog">
+            <column name="ID" type="BIGINT" autoIncrement="true"><constraints nullable="false" primaryKey="true"/></column>
+            <column name="BLOG_ID" type="BIGINT"><constraints nullable="false" /></column>
+            <column name="USER_ID" type="BIGINT"><constraints nullable="false" /></column>
+            <column name="NUMERIC_ROLE" type="INTEGER"><constraints nullable="false" /></column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="mt3277_9_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: fill core_role2blog</comment>
+        <sql>
+            -- copy current blog memberships to core_role2blog
+            INSERT INTO core_role2blog (BLOG_ID, USER_ID, NUMERIC_ROLE) (SELECT blog_fk, kenmei_entity_fk, 1 FROM core_blog_member WHERE role='VIEWER');
+            INSERT INTO core_role2blog (BLOG_ID, USER_ID, NUMERIC_ROLE) (SELECT blog_fk, kenmei_entity_fk, 2 FROM core_blog_member WHERE role='MEMBER');
+            INSERT INTO core_role2blog (BLOG_ID, USER_ID, NUMERIC_ROLE) (SELECT blog_fk, kenmei_entity_fk, 3 FROM core_blog_member WHERE role='MANAGER');
+        </sql>
+    </changeSet>
+
+    <changeSet id="mt3277_10_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: allow several granting groups</comment>
+        <createTable tableName="core_role2blog_granting_group">
+            <column name="USER_TO_BLOG_ROLE_MAPPINGS_FK" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="GRANTING_GROUPS_FK" type="BIGINT"><constraints nullable="false"/></column>
+        </createTable>
+        <addPrimaryKey tableName="core_role2blog_granting_group" columnNames="USER_TO_BLOG_ROLE_MAPPINGS_FK,GRANTING_GROUPS_FK"/>
+        <addForeignKeyConstraint constraintName="core_role2blog_granting_groupc" baseTableName="core_role2blog_granting_group" baseColumnNames="GRANTING_GROUPS_FK" referencedTableName="user_group" referencedColumnNames="ID" />
+        <addForeignKeyConstraint constraintName="user_group_user_to_blog_role_c" baseTableName="core_role2blog_granting_group" baseColumnNames="USER_TO_BLOG_ROLE_MAPPINGS_FK" referencedTableName="core_role2blog" referencedColumnNames="ID" />
+    </changeSet>
+    
+    <changeSet id="mt3277_11_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: connect entity with group</comment>
+        <createTable tableName="user_group_member">
+            <column name="KENMEI_ENTITY_GROUPS_FK" type="BIGINT"><constraints nullable="false"/></column>
+            <column name="GROUP_MEMBERS_FK" type="BIGINT"><constraints nullable="false"/></column>
+        </createTable>
+        <addPrimaryKey tableName="user_group_member" columnNames="KENMEI_ENTITY_GROUPS_FK,GROUP_MEMBERS_FK"/>
+        <addForeignKeyConstraint constraintName="user_group_group_members_fkc" baseTableName="user_group_member" baseColumnNames="GROUP_MEMBERS_FK" referencedTableName="user_entity" referencedColumnNames="ID" />
+        <addForeignKeyConstraint constraintName="user_entity_kenmei_entity_groc" baseTableName="user_group_member" baseColumnNames="KENMEI_ENTITY_GROUPS_FK" referencedTableName="user_group" referencedColumnNames="ID" />
+    </changeSet>
+    
+    <changeSet id="mt3277_13_mysql" author="unknown" context="client" dbms="mysql">
+        <comment>CR 96 - support for groups: not null constraints for all_can_x rights</comment>
+        <addNotNullConstraint tableName="core_blog" columnName="ALL_CAN_READ" defaultNullValue="0" columnDataType="BOOLEAN" />
+        <addNotNullConstraint tableName="core_blog" columnName="ALL_CAN_WRITE" defaultNullValue="0" columnDataType="BOOLEAN" />
+    </changeSet>
+</databaseChangeLog>

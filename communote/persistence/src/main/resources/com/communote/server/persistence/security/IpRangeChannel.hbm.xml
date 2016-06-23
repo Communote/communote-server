@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.security.IpRangeChannelImpl" table="iprange_channel" dynamic-insert="false" dynamic-update="false">
+        <id name="type" type="java.lang.String" unsaved-value="null">
+            <column name="TYPE"/>
+                        <generator class="assigned">
+                                        </generator>
+        </id>
+        <property name="enabled" type="boolean">
+            <column name="enabled" 
+                     not-null="true" unique="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

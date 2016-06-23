@@ -1,0 +1,113 @@
+.navigation-area-chooser {
+    margin-bottom: 12px;
+    margin-top: 5px;
+}
+.navigation-area-chooser .cn-border {
+    border-color: #B7B7B7;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
+    font-size: 14px;
+    height: 30px;
+    padding: 0px;
+    width: 198px;
+}
+
+.navigation-area-chooser input {
+    background-color: transparent;
+    border: 0 none;
+    box-shadow: 1px 1px 2px #EEEEEE inset;
+    font-size: 14px;
+    height: 30px;
+    line-height: 28px;
+    margin: 0;
+    padding: 1px 8px;
+    width: 146px;
+}
+
+.navigation-area-chooser .overTxtLabel {
+    padding-left: 8px;
+    padding-top: 8px;
+}
+
+.navigation-area-chooser .cn-chooser-toggle.cn-icon {
+    background-position: -352px -322px;
+    float: right;
+}
+
+.navigation-area-chooser .cn-chooser-toggle.cn-icon:hover {
+    background-position: -352px -354px;
+    cursor: pointer;
+}
+
+.navigation-area-chooser.open .cn-chooser-toggle.cn-icon {
+    background-position: -416px -354px;
+}
+
+.cn-chooser-menu-wrapper {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.09);
+}
+
+.cn-chooser-menu {
+    background-color: #FFFFFF;
+    border-color: #C7C7C7;
+    border-style: solid;
+    border-width: 1px;
+    margin-top: -1px;
+    min-width: 188px;
+    padding-bottom: 8px;
+    text-align: left;
+}
+.cn-chooser-menu .cn-chooser-no-items-message {
+    color: #737373;
+    font-size: 11px;
+    margin: 10px;
+}
+.cn-chooser-menu .cn-chooser-category-items {
+    padding-left: 0px;
+}
+
+.cn-chooser-menu .cn-chooser-category-items li {
+    list-style-image: none;
+    list-style-type: none;
+    white-space: nowrap;
+}
+
+.cn-chooser-menu .cn-chooser-category-items li img {
+    padding-right: 10px;
+}
+
+ul.cn-chooser-category-items {
+	margin: 0;
+	padding: 0;
+    list-style: none;
+}
+
+div.cn-chooser-category-title {
+    border-bottom: 1px dotted #A9A9A9;
+    color: #888888;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 10px;
+    text-transform: uppercase;
+}
+
+ul.cn-chooser-category-items .cn-chooser-category-item {
+    color: #005599;
+    cursor: pointer;
+    font-weight: normal;
+    line-height: 18px;
+    max-width: 500px;
+    min-width: 200px;
+    overflow: hidden;
+    padding: 3px 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+ul.cn-chooser-category-items .cn-chooser-category-item img {
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+ul.cn-chooser-category-items .cn-chooser-category-item:hover {
+	color: #E66914;
+}

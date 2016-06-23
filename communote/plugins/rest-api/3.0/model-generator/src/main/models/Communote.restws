@@ -1,0 +1,2701 @@
+webservice Communote {
+    doc "This is a restful webservice for the communote microblogging system.";
+
+    mime-types {
+        "application/json" {
+            extensions {  "json" };
+        }
+    };
+
+    version v3_0 {
+        doc "This is the current stable version of the REST web service.";
+    };
+
+    /**
+     * Global filter parameters
+     */
+    parameter-group filterParameters {
+        doc "This is a filter group for all resources. You can apply any of this filters in a get list request.";
+
+        integer offset {
+            doc "Specifies the offset of the list to return results for. <<Default Value>> is 0";
+            methods { list, post };
+        };
+        integer maxCount {
+            doc "Specifies the maximum amount of items in the resulting list. <<Default Value>> is 10. <<Note:>> Using it for retrieving the topic list the following parameter is required: <<<topicListType=LAST_MODIFIED>>>!";
+            methods { list, post    };
+        };
+        integer checkAtLeastMoreResults{
+            doc "With this parameter it is possible to define a number of additional entities, which should be loaded when requesting data. These will be used to build information for paging, endless scrolling etc..";
+            methods {list, post };
+        }
+    };
+
+    /**
+     * Timeline Resources Filterparameter
+     */
+    parameter-group timelineFilterParameters {
+            doc "This is a filter group for all timeline resources (timelinenote, timelinetopic, timelineuser, timelinetag). You can apply any of this filters in a list request.";
+
+            string[] f_contentIds {
+                doc "Filters for notes with attachments with one of the given content identifiers. <<Since Communote version 3.3>>";
+                methods { list, post };
+            };            
+            long f_discussionId {
+                doc "Filters notes which are part of the specified discussion. If the discussion identifier is set the sort mode change from chronological (newest first) to threaded view style. Additional the discussion depth is set.";
+                methods { list, post };
+            };
+            boolean f_showFollowedItems {
+                doc "Filters notes which are followed by the user.";
+                methods { list, post };
+            };
+            boolean f_showNotesForMe {
+                doc "Filters notes which are addressed for the current user.";
+                methods { list, post };
+            };
+            long[] f_topicIds {
+                doc "Filters for notes with a topic being part of the given identifiers.";
+                methods { list, post };
+            };
+            string[] f_topicAliases {
+                doc "Filters for notes with topics being part of the given aliases.";
+                methods { list, post };
+            };
+            long[] f_topicIdsToExclude {
+                doc "Filters for notes NOT being part of the given topic identifiers.";
+                methods { list, post };
+            };
+            long[] f_tagIds{
+                doc "Filters for notes having all the tags assigned. The tag identifier refers to the tag database identifier.";
+                methods { list, post };
+            };
+            string f_tagPrefix {
+                doc "Filters for notes containing at least one tag starting with the given string.";
+                methods { list, post };
+            };
+            long[] f_userIds {
+                doc "Filters for notes with an author matching one of the given user identifiers.";
+                methods { list, post };
+            };
+            string[] f_userAliases {
+                doc "Filters for notes with an author matching one of the given user aliases.";
+                methods { list, post };
+            };
+            date f_startDate {
+                doc "Filters for notes being written after the specified date.";
+                methods { list, post };
+            };
+            date f_endDate {
+                doc "Filters for notes being written before or on the given date. <<Note:>> The specified day is included. If this day should be excluded, subtract 24 hours (86.400.000 ms) from f_endDate.";
+                methods { list, post };
+            };
+            string f_userSearchString{
+                doc "Filters for notes with an authors alias, last name or first name matching one of the given search string.";
+                methods { list, post };
+            };
+            string f_noteSearchString {
+                doc "Filters for notes containing the given string. <<Note:>> The results may vary depending on the Communote database used.";
+                methods { list, post };
+            };
+            string f_fullTextSearchString {
+                doc "Filters for notes where either the note content, the tags of the note or the name of the author contains the given string.";
+                methods { list, post };
+            };
+            long f_parentNoteId {
+                doc "Filters for notes with the specified parent's note id and the parent note itself.";
+                methods { list, post };
+            };
+            string[] f_repositoryIds {
+                doc "Filters for notes with attachments with the given repository identifiers. The order must match to the given f_contentIds parameter. <<Since Communote version 3.3>>";
+                methods { list, post };
+            };            
+            boolean f_showDirectMessages {
+                doc "Filters for notes which are direct messages.";
+                methods { list, post };
+            };
+            boolean f_showFavorites {
+                doc "Filters for notes which are marked as favorite.";
+                methods { list, post };
+            };
+            boolean f_includeComments {
+                doc "Specifies whether comments (or answers) of notes are included in the resulting list.";
+                methods { list, post };
+            };
+            string f_propertyFilter {
+                doc "Array of properties to filter for. The array is build like this: <FILTER_1, FILTER_2, ..., FILTER_3> where every FILTER looks like <&#123;&#34;name&#34;:&#34;Example&#34;,&#34;value&#34;:[0:Property, 1:Group, 2:Key, 3:Value, 4:MatchMode, 5:Negate (Optional)]&#125;>, whereas <Property> can be one of <Note, Entity, Dummy> and <MatchMode> can be one of <EQUALS>, <STARTS_WITH>, <ENDS_WITH>, <CONTAINS>, <NOT_EQUALS>. <Negate> is optional (default = false) can be <true> or <false>. <<Note:>> Every filter value has to be escaped with double quotes &#34;. <<Example:>> &#123;&#34;name&#34;:&#34;Image&#34;,&#34;value&#34;:[&#34;Note&#34;,&#34;com.communote&#34;,&#34;contentTypes.image&#34;,&#34;image&#34;,&#34;EQUALS&#34;]&#125;";
+                methods { list, post };
+            };
+            string f_topicAccess {
+                doc "Filter for notes which can be accessed at least by the given access level.";
+                methods { list, post };
+                constants {
+                    "manager"       {doc "Lists all topics of which the user is the manager.";},
+                    "read"          {doc "Lists all topics of which the user has  read access.";},
+                    "write"         {doc "Lists all topics of which the user has write access.";}
+                };
+            };
+            boolean f_showOnlyDiscussions {
+                doc "Show only the discussion.";
+                methods { list, post };
+            };
+            boolean f_showOnlyRootNotes {
+                doc "Show only root notes.";
+                methods { list, post };
+            };
+            boolean f_showDiscussionParticipation {
+                doc "Filter for discussions, the current user has participated in.";
+                methods { list, post };
+            };
+            long f_targetTopicId {
+                doc "Id of the topic to filter for.";
+                methods { list, post };
+            };
+            long f_noteId {
+                doc "Id of the note to filter for.";
+                methods { list, post };
+            };
+            boolean f_topicRelated {
+                doc "Specifies whether the results have to be topic/utp related.";
+                methods { list, post };
+            };
+
+            long f_retrieveOnlyNotesBeforeId {
+                doc "Only retrieve notes with a smaller id. Can only be used in conjunction with f_retrieveOnlyNotesBeforeDate.";
+                methods { list, post };
+            }
+            long f_retrieveOnlyNotesBeforeDate {
+                doc "Only retrieve notes created before this date. Can only be used in conjunction with f_retrieveOnlyNotesBeforeId.";
+                methods { list, post };
+            }
+            long f_retrieveOnlyNotesAfterId {
+                doc "Only retrieve notes with a later id. Can only be used in conjunction with f_retrieveOnlyNotesAfterDate.";
+                methods { list, post };
+            }
+            long f_retrieveOnlyNotesAfterDate{
+                doc "Only retrieve notes created after this date. Can only be used in conjunction with f_retrieveOnlyNotesAfterId.";
+                methods { list, post };
+            }
+    };
+
+    /**
+     * Begin with the definition of the topic resource
+     */
+    resource Topic {
+        doc "This resource represents a topic. Topics are used for categorising notes into different topics. Topics have a right managment. That means that not everybody can read the notes of a topic. After creation of a topic the user can set the read and write rights to the topic.";
+        doc post "By sending a HTTP-POST request with all mandatory attributes, the server <<creates>> a new topic resource and returns the topicId.";
+        doc put "By sending a HTTP-PUT request with edited attributes, the server <<edits>> the topic resource and returns the topicId.";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested topic resource with the following attributes.";
+        doc list "By sending a HTTP-GET request, the server <<returns>> a list of all requested topic resources with the following attributes. Additional there are two meta datas in the response. First with the number of all found elements and secound whether there are more available elements.";
+        doc delete "By sending a HTTP-DELETE request, the server <<deletes>> the specified topic resource.";
+
+        /**
+         * Begin with the definition of the topic specific parameters
+         */
+        parameters {
+            string topicIdentifier{
+                doc "Topic lists have different views. These view can result from rights issues or usage issues. This requires a value to specify the type of list you want to request, using the defined constant values. <<Default Value>> is \"ID\"";
+                methods {
+                    get, post, put, delete
+                };
+                constants {
+                    "ID"        {doc "Topic Identifier is an Id";},
+                    "ALIAS"     {doc "Topic Identifier is an Alias.";}
+                };
+            };
+            string topicListType {
+                doc "Topic lists have different views. These view can result from rights issues or usage issues. This requires a value to specify the type of list you want to request, using the defined constant values. <When topicListType is MOST_USED or LAST_USED there are no meta data in the response.>";
+                methods { list! };
+                constants {
+                    "MANAGER"        {doc "Lists all topics of which the user is the manager.";},
+                    "READ"             {doc "Lists all topics of which the user has the read access.";},
+                    "WRITE"            {doc "Lists all topics of which the user has the write access.";},
+                    "MOST_USED"     {doc "Lists all topics which are used mostly by the user.";},
+                    "LAST_USED"     {doc "Lists all topics chronical depending one the time of the last usage by the user.";},
+                    "LAST_MODIFIED" {doc "Lists all topics chronical depending one the time of the last modification by the user.";}
+                };
+            };
+            boolean f_showFollowedItems {
+                doc "Filters topics which are followed.";
+                methods { list  };
+            };
+            string f_titleSearchString {
+                doc "Filters topics with string in title.";
+                methods { list    };
+            };
+            string[] f_tags {
+                doc "Filters topics which contain every single tag.";
+                methods { list    };
+            };
+            long[] f_topicIds {
+                doc "Filters topics which contain the specified identifier.";
+                methods { list    };
+            };
+            long[] f_topicIdsToExclude {
+                doc "Filters topics whose identifier is specified to be excluded.";
+                methods { list };
+            };
+            string[] f_topicAliases {
+                doc "Filters topics which contain the specified aliases";
+                methods { list };
+            };
+            string f_tagPrefix {
+                doc "Filters topics whose tags start with the specified string.";
+                methods { list };
+            };
+            string f_externalObjectSystemId {
+                doc "Filters topics which have an external object with the given system id. If f_externalObjectId is also set both must match the same external object. Only works for topicListType=READ, WRITE or MANAGE.";
+                methods { list };            
+            };
+            string f_externalObjectId {
+                doc "Filters topics which have an external object with the given external id. If f_externalObjectSystemId is also set both must match the same external object. Only works for topicListType=READ, WRITE or MANAGE.";
+                methods { list };            
+            };
+        }
+
+        /**
+         * Begin with the definition of the topic specific attributes
+         */
+        attributes {
+            Tag[] tags {
+                doc "These tags are uses for searching with a tag cloud.";
+                methods { post, put, get, list };
+            };
+
+            string title {
+                doc "Is the name of the topic.";
+                methods { post!, put, get, list };
+            };
+
+            string description {
+                doc "What is this topic about.";
+                methods { post, put, get, list };
+            };
+
+            string topicId {
+                doc "The key value to identify a topic.";
+                methods { put!, get!, list, delete! };
+            };
+
+            string alias {
+                doc "Is the alias to identify the topic. It is needed for the topic creation and can be used on a change request. <<Default Value>> is the formatted title.";
+                methods { post, put, get, list };
+            };
+
+            boolean createSystemNotes{ 
+                doc "Denotes whether system notes will be created in this topic. If true special activity notes are created automatically in this topic if the access rights are changed.";
+                methods { get, list };
+            };
+
+            string topicEmail{
+                doc "This is the mailing address of a topic, which enables the user to send regular e-mail to a topic";
+                methods { get, list };
+            };
+
+            date lastModificationDate {
+                doc "The timestamp of the last modification of the topic. This only reflects changes to the title, alias, description, the createSystemNotes flag and the assigned tags.";
+                methods { get, list };
+            };
+
+            boolean isFollow {
+                doc "Indicates whether the topic is followed by the user. ";
+                methods { get, list };
+            };
+
+            boolean allCanWrite {
+                doc "Indicates whether everybody is allowed to publish a note within this topic or not. <<Default Value>> is false.";
+                methods { post, put };
+            };
+
+            boolean allCanRead {
+                doc "Indicates whether everybody is allowed to read notes from this topic or not. <<Default Value>> is false.";
+                methods { post, put };
+            };
+
+            string userRole {
+                doc "Indicates the rule of the user within this topic.";
+                methods { get, list };
+            };
+
+            Property[] properties {
+                doc "Properties of topic. Properties are key value pairs.";
+                methods { post, put };
+            };
+
+            ExternalObject[] externalObjects {
+                doc "External objects of topic.";
+                methods { post, put };
+            };
+
+            RoleExternal[] roleExternals {
+                doc "External roles of topic.";
+                methods { post, put };
+            };
+
+            Role[] roles {
+                doc "Roles of topic.";
+                methods { post, put };
+            };
+
+            ChildTopic[] children {
+                doc "List of direct children";
+                methods { get, list}
+            };
+            
+            string profileImageId {
+                doc "Identifier of the profile image of the topic";
+                methods { get, list}
+            };
+            string profileImageVersion {
+                doc "A string reflecting the version of the profile image. The string will change each time the profile image is updated. This value could for instance be used in the URL to the image to get the latest version from the server and not an outdated one from the client's cache. <<Since Communote version 3.2>>";
+                methods { get, list}
+            };
+            date lastProfileImageModificationDate {
+                doc "Deprecated: use profileImageVersion instead. Timestamp of the last modification of the profile image. Can be used in the image URL to get the latest image and an old one from the client's cache.";
+                methods { get, list };
+            };
+            string bannerImageId {
+                doc "Identifier of the banner image of the topic";
+                methods { get, list}
+            };
+            string bannerImageVersion {
+                doc "A string reflecting the version of the banner image. The string will change each time the banner image is updated. This value could for instance be used in the URL to the image to get the latest version from the server and not an outdated one from the client's cache.";
+                methods { get, list}
+            };
+            date lastBannerImageModificationDate {
+                doc "Deprecated: use bannerImageVersion instead. Timestamp of the last modification of the banner image. Can be used in the image URL to get the latest image and an old one from the client's cache.";
+                methods { get, list };
+            };
+            date crawlLastModificationDate {
+                doc "The timestamp of the last modification of the topic which in contrast to lastModificationDate does also take changes to the access rights into account. <<Since Communote version 3.3>>";
+                methods { get, list };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id topicId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups {
+            versiongroup_3_0 for v3_0{
+                parameter-groups{ filterParameters};
+                parameters{topicIdentifier, topicListType, f_topicAliases, f_topicIds, f_topicIdsToExclude, f_showFollowedItems, f_tags, f_tagPrefix, f_titleSearchString, f_externalObjectSystemId, f_externalObjectId};
+                attributes{topicId, children, lastModificationDate, topicEmail, createSystemNotes, description, tags, alias, title, userRole, isFollow, properties, allCanWrite, allCanRead, externalObjects, roleExternals, roles, profileImageId, profileImageVersion, lastProfileImageModificationDate, bannerImageId, bannerImageVersion, lastBannerImageModificationDate, crawlLastModificationDate};
+            }
+        };
+
+        resource ChildTopic {
+            doc "This resource can be used to add or remove direct child topics for the given topic."
+            parameters {
+                string parentTopicIdentifier{
+                    doc "Define the type the topics id is send, using one of the defined constant values. <<Default Value>> is \"ID\"";
+                    methods { post, delete};
+                    constants {
+                        "ID"        {doc "Topic Identifier is an Id";},
+                        "ALIAS"     {doc "Topic Identifier is an Alias.";}
+                    };
+                };
+            }
+
+            attributes {
+                long childTopicId {
+                    doc "Id of the child topic.";
+                    methods { post!, delete! };
+                };
+            }
+
+            id childTopicId;
+
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    parameters { parentTopicIdentifier };
+                    attributes { childTopicId };
+                }
+            };
+        }
+        /**
+         * Define the ExternalObject Resource
+         */
+        resource ExternalObject {
+            doc "Resource to assign external object privileges to an internal topic.";
+            doc list "By sending a HTTP-GET request, the server <<returns>> a list of all external object of the topic is returned. If topicId 0 is used and the parameters f_externalSystemId and f_externalObjectId are provided, ExternalObjects over all topics are considered (even if no access is allowed).";
+
+            /**
+             * Begin with the definition of the external object specific parameters
+             */
+            parameters {
+                string topicIdentifier{
+                    doc "Topic lists have different views. These view can result from rights issues or usage issues. This requires a value to specify the type of list you want to request, using the defined constant values. <<Default Value>> is \"ID\"";
+                    methods {
+                        get, list, post, put, delete
+                    };
+                    constants {
+                        "ID"        {doc "Topic Identifier is an Id";},
+                        "ALIAS"     {doc "Topic Identifier is an Alias.";}
+                    };
+                };
+            }
+
+            /**
+             * Begin with the definition of the right specific attributes
+             */
+            attributes {
+                long externalObjectId {
+                    doc "Internal identifier of external object.";
+                    methods { get!, list, post, put!, delete };
+                };
+                string name {
+                    doc "Name of external object.";
+                    methods { get, list, post, put };
+                };
+                string externalSystemId {
+                    doc "Identifier of the external system.";
+                    methods { get, list, post!, put, delete };
+                };
+                string externalId {
+                    doc "Identifier of the external object in external system.";
+                    methods { get, list, post!, put, delete };
+                };
+                long topicIdOfExternalObject {
+	                doc "The key value to identify a topic. Only set if topic independent filtering is used (topicId=0 in url).";
+	                methods { post, put, get, list };
+	            };
+	            string topicAliasOfExternalObject {
+	                doc "Is the alias to identify the topic. It is needed for the topic creation and can be used on a change request. Only set if topic independent filtering is used (topicId=0 in url).";
+	                methods { post, put, get, list };
+	            };
+            }
+
+            /**
+             * Define the internal identifier of external object
+             */
+            id externalObjectId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    parameters { topicIdentifier };
+                    attributes { externalObjectId, name, externalSystemId, externalId, topicIdOfExternalObject, topicAliasOfExternalObject };
+                }
+            };
+        };
+
+        /**
+         * Define the property resource a subresource of topic
+         */
+        resource Property {
+            doc "Resource for setting a property. It is a sub resource of a topic.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server <<creates>> a new property resource and returns null.";
+
+            /**
+             * Begin with the definition of the property specific attributes
+             */
+            attributes {
+                long propertyId {
+                    doc "KeyGroup of the property.";
+                    methods { get };
+                };
+
+                string keyGroup {
+                    doc "KeyGroup of the property.";
+                    methods { get!, list!, post! };
+                };
+
+                string key {
+                    doc "Key of the property.";
+                    methods { get!, list!, post! };
+                };
+
+                string value {
+                    doc "Value of property for specific key.";
+                    methods { get, post };
+                };
+            }
+
+            /**
+             * Define the identifier
+             */
+            id propertyId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { propertyId, keyGroup, key, value };
+                }
+            };
+        };
+
+        /**
+         * Define the follow resource a subresource of topic
+         */
+        resource Follow {
+            doc "Resource for setting a follow. It is a sub resource of a topic.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server sets the follow status for specified user and returns null.";
+
+            /**
+             * Begin with the definition of the follow specific attributes
+             */
+            attributes {
+                long followId {
+                    doc "Dummy attribute to identify resource.";
+                    property dummy "Dummy attribute because resource don`t need an identifier.";
+                    methods { list, post, delete  };
+                };
+
+                boolean follow {
+                    doc "follow status of the topic for the user. <<Default Value>> is false.";
+                    methods { list, post };
+                };
+            }
+
+            /**
+             * Define the identifier
+             */
+            id followId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { followId, follow };
+                }
+            };
+        };
+
+        /**
+         * Define the rights resource
+         */
+        resource Right {
+            doc "Resource for setting a right. It is a sub resource of a topic.";
+            doc put "By sending a HTTP-PUT request with edited attributes, the server <<edits>> the rights of topic and returns null.";
+
+            /**
+             * Begin with the definition of the right specific attributes
+             */
+            attributes {
+                long right {
+                    doc "Dummy Parameter to identify the right resource.";
+                    property dummy "Dummy attribute because resource don`t need an identifier.";
+                    methods { get, put };
+                };
+                boolean allCanWrite {
+                    doc "Indicates whether everybody is allowed to publish a note within this topic or not. <<Default Value>> is false.";
+                    methods { get, put };
+                };
+                boolean allCanRead {
+                    doc "Indicates whether everybody is allowed to read notes from this topic or not. <<Default Value>> is false.";
+                    methods { get, put };
+                };
+                boolean publicAccess {
+                    doc "Specifies whether this topic is public accessibly. <<Default Value>> is false.";
+                    methods { get, put };
+                };
+                long[] managingUserIds {
+                    doc "User identifier with managing access to topic.";
+                    methods { get };
+                };
+                long[] readingUserIds {
+                    doc "User identifier with reading access to topic.";
+                    methods { get };
+                };
+                long[] writingUserIds {
+                    doc "User identifier with writing access to topic.";
+                    methods { get };
+                };
+            }
+
+            /**
+             * Define the topic role ID
+             */
+            id right;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { right, allCanWrite, allCanRead, publicAccess, managingUserIds, readingUserIds, writingUserIds };
+                }
+            };
+        };
+
+        /**
+         * Define the role resource
+         */
+        resource Role {
+            doc "Resource for setting a topic role. It is a sub resource of a topic.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server sets the role of topic for an user or group and returns null.";
+            doc list "By sending a HTTP-GET request the server will return a list of all roles for the topic. <<Since Communote version 3.3>>"
+
+            /**
+             * Begin with the definition of the external object specific parameters
+             */
+            parameters {
+                string topicIdentifier{
+                    doc "Topic lists have different views. These view can result from rights issues or usage issues. This requires a value to specify the type of list you want to request, using the defined constant values. <<Default Value>> is \"ID\"";
+                    methods {
+                        get, list, post, put, delete
+                    };
+                    constants {
+                        "ID"        {doc "Topic Identifier is an Id";},
+                        "ALIAS"     {doc "Topic Identifier is an Alias.";}
+                    };
+                };
+            }
+
+            /**
+             * Begin with the definition of the role specific attributes
+             */
+            attributes {
+
+                string role {
+                    doc "Role for the user access to a topic. <<Default Value>> is \"NONE\".";
+                    methods { post! };
+                    constants {
+                        "NONE"      {doc "A topic member with the NONE role has no access to the topic.";},
+                        "MANAGER"   {doc "A topic member with the MANAGER role has read, write and management access to a topic."; },
+                        "MEMBER"    {doc "A topic member with the MEMBER role has read and write access to a topic."; },
+                        "VIEWER"    {doc "A topic member with the VIEWER role only has read access to a topic."; }
+                    };
+                };
+
+                long entityId {
+                    doc "The identifier of the user or a group.";
+                    methods { post, list };
+                };
+                
+				boolean isGroup  {
+                    doc "True if the entity is a group, false if it is a user. <<Since Communote version 3.3>>";
+                    methods { list };
+                };
+
+                string userAlias {
+                    doc "The alias of the user.";
+                    methods { post, list };
+                };
+
+                string groupAlias {
+                    doc "The alias of the group.";
+                    methods { post, list };
+                };
+                
+                string displayName {
+                    doc "The display name for the user or group, includes both the full name and alias. <<Since Communote version 3.3>>";
+                    methods { list };
+                };
+                
+                string shortDisplayName {
+                    doc "A shorter version of the display name for the user or group, includes only the name, or if not set only the alias. <<Since Communote version 3.3>>";
+                    methods { list };
+                };
+
+                long roles {
+                    doc "Dummy Parameter to identify the roles resource.";
+                    property dummy "Dummy attribute because resource don`t need an identifier.";
+                    methods { get, post };
+                };
+            }
+
+            /**
+             * Define the topic role ID
+             */
+            id roles;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    parameters { topicIdentifier };
+                    attributes { roles, role, entityId, userAlias, groupAlias, isGroup, displayName, shortDisplayName };
+                }
+            };
+        };
+
+        /**
+         * Define the external role resource
+         */
+        resource RoleExternal {
+            doc "Resource for setting a topic role for an external system in combination with an external object. It is a sub resource of a topic. <<Default Value>> is \"NONE\".";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server sets the role of topic for an external system in combination with an external object and an external user or group and returns null.";
+
+            /**
+             * Begin with the definition of the external object specific parameters
+             */
+            parameters {
+                string topicIdentifier{
+                    doc "Topic lists have different views. These view can result from rights issues or usage issues. This requires a value to specify the type of list you want to request, using the defined constant values. <<Default Value>> is \"ID\"";
+                    methods {
+                        get, list, post, put, delete
+                    };
+                    constants {
+                        "ID"        {doc "Topic Identifier is an Id";},
+                        "ALIAS"     {doc "Topic Identifier is an Alias.";}
+                    };
+                };
+            }
+
+            /**
+             * Begin with the definition of the topic specific attributes
+             */
+            attributes {
+                long roleExternal {
+                    doc "Dummy Parameter to identify the rolesexternal resource.";
+                    property dummy "Dummy attribute because resource don`t need an identifier.";
+                    methods { get, post };
+                };
+
+                string externalUserId {
+                    doc "The identifier of the external user.";
+                    methods { post };
+                };
+
+                string externalGroupId {
+                    doc "The identifier of the external group.";
+                    methods { post };
+                };
+
+                string externalId {
+                    doc "The identifier of external object.";
+                    methods { post! };
+                };
+
+                string externalSystemId {
+                    doc "The external system identifier.";
+                    methods { post! };
+                };
+
+                string role {
+                    doc "Role for the user access to a topic.";
+                    methods { post! };
+                    constants {
+                        "NONE"      {doc "A topic member with the NONE role has no access to the topic.";},
+                        "MANAGER"   {doc "A topic member with the MANAGER role has read, write and management access to a topic."; },
+                        "MEMBER"    {doc "A topic member with the MEMBER role has read and write access to a topic."; },
+                        "VIEWER"    {doc "A topic member with the VIEWER role only has read access to a topic."; }
+                    };
+                };
+            }
+
+            /**
+             * Define the topic role ID
+             */
+            id roleExternal;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    parameters { topicIdentifier };
+                    attributes {roleExternal, role, externalUserId, externalGroupId, externalSystemId, externalId };
+                }
+            };
+        };
+
+        /**
+         * Define the role bulk resource for external
+         */
+        resource RoleBulkExternal {
+            doc "Resource for setting a bulk of topic roles for an external system in combination with an external object. It is a sub resource of a topic.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server sets roles of topic for an external system in combination with an external object and an external users or groups and returns null.";
+
+            /**
+             * Begin with the definition of the topic specific parameters
+             */
+            parameters {
+                RoleBulkExternalTopicRight[] topicRights {
+                    doc "rights for user or group as array with json objects ";
+                    methods { post! };
+                };
+
+                string externalId {
+                    doc "The identifier of external object.";
+                    methods { post! };
+                };
+
+                string externalSystemId {
+                    doc "Identifier for the external system (like \"DefaultLDAP\", \"DefaultSharePoint\", \"DefaultConfluence\").";
+                    methods { post! };
+                };
+            }
+
+            /**
+             * Begin with the definition of the topic specific attributes
+             */
+            attributes {
+                long roleBulkExternal {
+                    doc "Dummy Parameter to identify the rolesbulkexternal resource.";
+                    property dummy "Dummy attribute because resource don`t need an identifier.";
+                    methods { get };
+                };
+            }
+
+            /**
+             * Define the topic role bulk ID
+             */
+            id roleBulkExternal;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    parameters{ topicIdentifier, topicRights, externalSystemId, externalId };
+                    attributes { roleBulkExternal };
+                }
+            };
+
+            /**
+             * Define the role bulk resource for external
+             */
+            resource RoleBulkExternalTopicRight {
+                doc "Resource for setting a bulk of topic roles for an external system. It is a sub resource of a RoleBulkExternal and is used only as container for serial- and deserialization.";
+
+                property dummy "Specifies that resource is an dummy an is only needed for serial- and deserializing!"
+
+                /**
+                 * Begin with the definition of the topic specific attributes
+                 */
+                attributes {
+                    string externalUserId {
+                        doc "rights for user or group as array with json objects";
+                        methods { get };
+                    };
+
+                    string externalGroupId {
+                        doc "rights for user or group as array with json objects";
+                        methods { get };
+                    };
+
+                    string role {
+                        doc "Role for the user access to a topic.";
+                        methods { get! };
+                        constants {
+                            "MANAGER"   {doc "A topic member with the MANAGER role has read, write and management access to a topic."; },
+                            "MEMBER"    {doc "A topic member with the MEMBER role has read and write access to a topic."; },
+                            "VIEWER"    {doc "A topic member with the VIEWER role only has read access to a topic."; }
+                        };
+                    };
+                }
+
+                /**
+                 * Define the topic role bulk ID
+                 */
+                id externalUserId;
+
+                /**
+                 * Define the versioning of the attributes
+                 */
+                version-groups{
+                    versiongroup_3_0 for v3_0{
+                        attributes { externalUserId, externalGroupId, role };
+                    }
+                };
+            };
+
+        };
+    };
+
+    /**
+     * Begin with the definition of the user resource
+     */
+    resource User {
+        doc "This is the resource to define the users within the system.";
+        doc put "By sending a HTTP-PUT request with edited attributes, the server <<edits>> the user resource and returns the userId.";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested user resource with the following attributes.";
+        doc list "By sending a HTTP-GET request, the server <<returns>> a list of all requested user resources with the following attributes. Additional there are two meta datas in the response. First with the number of all found elements and secound whether there are more available elements.";
+
+        /**
+         * Begin with the definition of the user specific parameters
+         */
+        parameters{
+            string searchString {
+                doc "Searching users information for a substring. Searching in alias, lastname and firstname.";
+                methods { list    };
+            };
+
+            string f_userAlias {
+                doc "Get user information by alias. When get user by alias is set, there no meta datas in the response";
+                methods { list    };
+            };
+        }
+
+        /**
+         */
+        attributes {
+            date lastModificationDate {
+                doc "This is the date on which the user change some personal profil information.";
+                methods { get, list    };
+            };
+
+            string lastName {
+                doc "This is the surname of the user.";
+                methods { put, get, list };
+            };
+
+            string firstName {
+                doc "This is the firstname of the user.";
+                methods { put, get, list };
+            };
+
+            string alias {
+                doc "This is the alias of the user. It is also used for authentication.";
+                methods { get, list };
+            };
+
+            long userId {
+                doc "The identifier of the user.";
+                methods { put!, get!, list };
+            };
+
+            string languageLocale {
+                doc "This is the locale of the user.";
+                methods { get, list };
+            };
+
+            string timeZoneId {
+                doc "This is the identifier of the time zone where the user is.";
+                methods { get, list };
+            };
+
+            string salutation {
+                doc "The salutation of the user will be used within notification messages.";
+                methods { get, list };
+            };
+            
+            string profileImageVersion {
+                doc "A string reflecting the version of the profile image. The string will change when the profile image is updated or another image provider is used. This value could for instance be used in the URL to the image to get the latest version from the server and not an outdated one from the client's cache. <<Since Communote version 3.2>>";
+                methods { get, list };
+            };
+
+            date lastPhotoModificationDate{
+                doc "Deprecated: use profileImageVersion instead. The date of the last modification of the user profile image.";
+                methods { get, list };
+            };
+
+            string phoneCountryCode {
+                doc "Country code of the user phone number.";
+                methods { get, list };
+            }
+            string phoneAreaCode {
+                doc "Area code of the user phone number.";
+                methods { get, list };
+            }
+            string phoneNumber {
+                doc "Number of the user phone number.";
+                methods { get, list };
+            }
+            string faxCountryCode {
+                doc "Country code of the user fax number.";
+                methods { get, list };
+            }
+            string faxAreaCode {
+                doc "Area code of the user fax number.";
+                methods { get, list };
+            }
+            string faxNumber{
+                doc "Number of the user fax number.";
+                methods { get, list };
+            }
+
+            string company {
+                doc "The users company.";
+                methods { get, list };
+            }
+
+            string position {
+                doc "The users position.";
+                methods { get, list };
+            }
+
+            Tag[] tags {
+                doc "Indicates whether the tags with witch the user is taged.";
+                methods { put, get, list };
+            };
+
+            boolean isFollow {
+                doc "Indicates whether the author is followed by the user.";
+                methods { get, list };
+            };
+
+            Property[] properties {
+                doc "Properties of user. Properties are key value pairs.";
+                methods { post, put };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id userId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+            versiongroup_3_0 for v3_0{
+                parameter-groups{ filterParameters};
+                parameters{ searchString, f_userAlias};
+                attributes{ userId, alias, firstName, lastModificationDate, lastName, isFollow, languageLocale, salutation, profileImageVersion, lastPhotoModificationDate, tags, properties, timeZoneId, phoneCountryCode, phoneAreaCode, phoneNumber, faxCountryCode, faxAreaCode, faxNumber, company, position};
+            }
+        };
+
+        /**
+         * Define the follow resource a subresource of user
+         */
+        resource Follow {
+            doc "Resource for setting a follow. It is a sub resource of a user.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server sets the follow status for specified user and returns null.";
+
+            /**
+             * Begin with the definition of the follow specific attributes
+             */
+            attributes {
+                long followId {
+                    doc "Dummy attribute to identify resource.";
+                    property dummy "Dummy attribute because resource don`t need an identifier.";
+                    methods { list, post, delete  };
+                };
+                boolean follow {
+                    doc "follow status of the user for the current user. <<Default Value>> is false.";
+                    methods { list, post };
+                };
+            }
+
+            /**
+             * Define the identifier
+             */
+            id followId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { followId, follow };
+                }
+            };
+        };
+
+        /**
+         * Define the image resource, a sub resource of a user
+         */
+        resource Image {
+            doc "This is an image resource. It is a sub resource of a user.";
+            doc get "By sending a HTTP-GET request, the server <<returns>> a stream containing the image as binary.";
+            doc list "HTTP-GET request for retrieving a list of images is not supported yet.";
+
+            /**
+             * Begin with the definition of the topic specific attributes
+             */
+            attributes {
+                string size {
+                    doc "This is the size of of the image.";
+                    methods { get! };
+                    constants {
+                        "SMALL"        {doc "Returns an image of small size (25x25).";},
+                        "MEDIUM"    {doc "Returns an image of medium size (50x50)."; },
+                        "LARGE"        {doc "Returns an image of large size (100x100)."; }
+                    };
+                };
+            }
+
+            /**
+             * Define the image ID
+             */
+            id size;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes{ size };
+                }
+            };
+        };
+
+        /**
+         * Define the property resource a subresource of user
+         */
+        resource Property {
+            doc "Resource for setting a property. It is a sub resource of a user.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server <<creates>> a new property resource and returns null.";
+
+            /**
+             * Begin with the definition of the property specific attributes
+             */
+            attributes {
+                long propertyId {
+                    doc "KeyGroup of the property.";
+                    methods { get };
+                };
+
+                string keyGroup {
+                    doc "KeyGroup of the property.";
+                    methods { get!, list!, post! };
+                };
+
+                string key {
+                    doc "Key of the property.";
+                    methods { get!, list!, post! };
+                };
+
+                string value {
+                    doc "Value of property for specific key.";
+                    methods { get, post };
+                };
+            }
+
+            /**
+             * Define the identifier
+             */
+            id propertyId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { propertyId, keyGroup, key, value };
+                }
+            };
+        };
+
+        resource UserPreference {
+            doc "Resource for retrieving and setting user preferences. Whatever user id or preference id you use, this will always return results for the current user."
+            doc post "Method to set values of a specific preference."
+            doc get "Method to get values of a specific preference."
+
+            parameters {
+               string f_className {
+                   doc "Filter for this preferences."
+                   methods {get}
+               }
+            }
+
+            attributes {
+                long preferenceId {
+                    doc "Id of the preference, this can be ignored as it is ignored from backend.";
+                    methods { get, put };
+                };
+
+                string className {
+                    doc "Name of the implementing class.";
+                    methods { get, put! };
+                };
+
+                Preference[] preferences{
+                    doc "The values of the preferences"
+                    methods { get, put }
+                }
+            }
+
+            /**
+             * Define the identifier
+             */
+            id preferenceId;
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    parameters { f_className }
+                    attributes { preferenceId, className, preferences };
+                }
+            };
+            /**
+             * Define the Preference resource a subresource of user
+             */
+            resource Preference {
+                doc "Resource for preference maps. It is a sub resource of Preferences, but can't be called directly.";
+
+                /**
+                 * Begin with the definition of the property specific attributes
+                 */
+                attributes {
+                    long preferenceEntryId {
+                        doc "Id of the preference, this can be ignored.";
+                    };
+
+                    string key {
+                        doc "Key of the preference.";
+                    };
+
+                    string value {
+                        doc "Value of peference for specific key.";
+                    };
+                }
+
+                /**
+                 * Define the identifier
+                 */
+                id preferenceEntryId;
+
+                /**
+                 * Define the versioning of the parameters and attributes
+                 */
+                version-groups{
+                    versiongroup_3_0 for v3_0{
+                        attributes { preferenceEntryId, key, value };
+                    }
+                };
+            };
+        };
+
+        resource Observation {
+          doc "This resource can be used to check the state if the users observations.";
+
+            parameters {
+                long[] f_observations {
+                    doc "Observations to get results for, If null or empty all observations will be checked.";
+                    methods { list };
+                };
+                long f_lastCheckDate {
+                    doc "Date the last check was done.";
+                    methods { list };
+                };
+            }
+            attributes {
+                long observationId {
+                    doc "Id of the observation";
+                    methods { get };
+                };
+                long count {
+                    doc "Number of notes written since the last check date for this observation";
+                    methods { get };
+                };
+                long checkDate {
+                    doc "Date the check was done.";
+                    methods { get };
+                }
+
+            }
+
+            id observationId;
+
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    parameters{ f_observations, f_lastCheckDate };
+                    attributes{ observationId, count, checkDate };
+                }
+            };
+        };
+
+        resource NavigationItem {
+            doc "This resource can be used to handle navigation items.";
+
+            parameters {
+                long[] f_navigationItemIds {
+                doc "Observations to get results for, If null or empty all observations will be checked.";
+                methods { list };
+                };
+            }
+            attributes {
+                long navigationItemId {
+                    doc "Id of the navigation item";
+                    methods { put, get, delete };
+                };
+                integer index {
+                    doc "Index of the item";
+                    methods { post, put };
+                };
+                string data {
+                    doc "Paylod of the item. Note: this is a JSON object formatted as string";
+                    methods { post, put };
+                };
+                string name {
+                    doc "Name of the item";
+                    methods { post, put };
+                };
+                long lastAccessDate {
+                    doc "The last access date as long.";
+                    methods { post, put }
+                }
+            }
+
+            id navigationItemId;
+
+            version-groups {
+                versiongroup_3_0 for v3_0 {
+	                parameters{ f_navigationItemIds };
+	                attributes{ navigationItemId, index, data, lastAccessDate, name };
+                }
+           	};
+        };
+        
+        resource ExternalLogin {
+            doc "This resource can be used to handle the external logins. <<Since Communote version 3.3>>";
+            
+            attributes {
+                long databaseId {
+                    doc "Backend database id";
+                    methods { list };
+                };
+                string externalSystemId {
+                    doc "The identifier of the external system this login belongs to, e.g. DefaultLDAP, DefaultConfluence";
+                    methods { list };
+                };
+                string externalLoginId {
+                    doc "The login id for the user in the external system.";
+                    methods { list };
+                };
+                string permanentId {
+                    doc "The permanent identifier of the external login.";
+                    methods { list };
+                };
+                ExternalProperty[] properties {
+                	doc "Properties for the external login.";
+                    methods { list };
+                }
+            }
+
+            id databaseId;
+
+            version-groups {
+                versiongroup_3_0 for v3_0 {
+	                attributes{ databaseId, externalSystemId, externalLoginId, permanentId, properties };
+                }
+           	};
+           	
+       	    /**
+			 * Define the property resource a subresource of the extern login
+			 */
+			resource ExternalProperty {
+			    doc "Resource for setting a property. It is a sub resource of a external login, cannot be set, only returned with ExternalLogin resource. <<Since Communote version 3.3>>";
+			
+			    /**
+			     * Begin with the definition of the property specific attributes
+			     */
+			    attributes {
+			        long propertyId {
+			            doc "Dummy Id of the property.";
+			            methods { get };
+			        };
+			
+			        string keyGroup {
+			            doc "KeyGroup of the property.";
+			            methods { get };
+			        };
+			
+			        string key {
+			            doc "Key of the property.";
+			            methods { get };
+			        };
+			
+			        string value {
+			            doc "Value of property for specific key.";
+			            methods { get };
+			        };
+			    }
+			
+			    /**
+			     * Define the identifier
+			     */
+			    id propertyId;
+			
+			    /**
+			     * Define the versioning of the parameters and attributes
+			     */
+			    version-groups{
+			        versiongroup_3_0 for v3_0{
+			            attributes { propertyId, keyGroup, key, value };
+			        }
+			    };
+			};
+				   	
+        };
+
+    };
+
+
+    /**
+     * Begin with the definition of the note resource
+     */
+    resource Note {
+        doc "This is the resource for a note.";
+        doc post "By sending a HTTP-POST request with all mandatory attributes, the server <<creates>> a new note resource and returns the noteId.";
+        doc put "By sending a HTTP-PUT request with edited attributes, the server <<edits>> the note resource and returns the noteId.";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested note resource with the following attributes.";
+
+        /**
+         * Begin with the definition of the note specific parameters
+         */
+        parameters {
+            boolean isHtml {
+                doc "Depracated. Use {{{../resources/timelinenote.html#TimelineNote_Resource}TimelineNote Resource}} List instead.";
+                methods { post, put};
+            };
+            boolean filterHtml {
+                doc "Depracated. Use {{{../resources/timelinenote.html#TimelineNote_Resource}TimelineNote Resource}} List instead.";
+                methods { get };
+            };
+            integer maxTextLength {
+                doc "Depracated. Use {{{../resources/timelinenote.html#TimelineNote_Resource}TimelineNote Resource}} List instead.";
+                methods { post, put};
+            };
+            boolean publish {
+                doc "Should note publish or is an auto saved note draft. <<Default Value>> is true.";
+                methods { post, put };
+            };
+            long autosaveNoteId {
+                doc "Identifier of auto save note draft.";
+                methods { post, put };
+            };
+            string[] crossPostTopicAliases {
+                doc "Topic aliases to save note in different topics as cross post.";
+                methods { post, put };
+            };
+            string attachmentUploadSessionId{
+                doc "Session identifier of an session attribute witch contains attachmentIds to upload.";
+                methods { put, post };
+            }
+        }
+
+        /**
+         * Begin with the definition of the note specific attributes
+         */
+        attributes{
+            long noteId {
+                doc "Identifier of the note";
+                methods { post, put!, get!, delete! };
+            };
+
+            string text {
+                doc "The message text of the note.";
+                methods { post, put, get};
+            };
+
+            boolean isDirectMessage {
+                doc "Indicates whether the note is a direct message or a normal message. <<Default Value>> is false.";
+                methods { post, get};
+            };
+
+            boolean isNoteForMe {
+                doc "Indicates whether the note is a addressed to the current user.";
+                methods { get };
+            };
+
+            boolean isMentionTopicReaders {
+                doc "Indicates that this note addresses all readers of the topic."
+                methods { get };
+            };
+            boolean isMentionTopicAuthors {
+                doc "Indicates that this note addresses all users with at least one note within the topic."
+                methods { get };
+            };
+            boolean isMentionTopicManagers {
+                doc "Indicates that this note addresses all managers of the the topic."
+                methods { get };
+            };
+            boolean isMentionDiscussionAuthors {
+                doc "Indicates that this note addresses all participants of the discussion this note is part of."
+                methods { get };
+            };
+
+            string[] usersToNotify {
+                doc "Specifies the aliases of users which are @-addressed in this message.";
+                methods { post, put, get };
+            };
+            
+            long[] usersToNotifyIds {
+                doc "Specifies the user ids of users which are @-addressed in this message. <<Since Communote version 3.3>>";
+                methods { get };
+            };            
+
+            string[] followedItems {
+                doc "Indicates whether the note is part of a followed <<<author>>>, <<<topic>>> or <<<discussion>>>.";
+                methods { get };
+            };
+
+            boolean isFavorite {
+                doc "Specifies whether the note is marked as a favorite.";
+                methods { get };
+            };
+
+            boolean isLike {
+                doc "Specifies whether the note is marked as a like.";
+                methods { get };
+            };
+
+            integer numberOfComments {
+                doc "Number of comments (also called replys or children).";
+                methods { get };
+            };
+
+            Tag[] tags {
+                doc "Tags with witch the note is tagged.";
+                methods { post, put, get };
+            };
+
+            long parentNoteId {
+                doc "The identifier of the parent note.";
+                methods { post, get };
+            };
+
+            date creationDate {
+                doc "Creation date of a note";
+                methods { get };
+            };
+
+            date lastModificationDate {
+                doc "The timestamp when a note was last modified by the author. Modification covers changes to the content, mentions, the added tags and attachments.";
+                methods { get };
+            };
+
+            long topicId{
+                doc "Is the identifier of the topic where this note will be published";
+                methods { post!, put!, get };
+            };
+
+            Attachment[] attachments {
+                doc "Contains all attachment resources of the note.";
+                methods { get };
+            };
+
+            long[] attachmentIds {
+                doc "Identifier of the note's attachments";
+                methods { get, post, put };
+            };
+
+            string topicName{
+                doc "This is the name of the topic in witch the note was posted.";
+                methods { get };
+            };
+
+            string userName{
+                doc "This is the alias of the author.";
+                methods { get };
+            };
+
+            string lastName {
+                doc "This is the surname of the author.";
+                methods { get };
+            };
+
+            string firstName {
+                doc "This is the firstname of the author.";
+                methods { get };
+            };
+
+            long userId{
+                doc "It the identifier of the author.";
+                methods { get };
+            };
+
+            Property[] properties {
+                doc "Properties of note. Properties are key value pairs.";
+                methods { post, put };
+            };
+
+            long noteVersion {
+                doc "Current version of note.";
+                methods { get, put, post };
+            };
+
+            /**
+             * Discussion BEGIN
+             */
+            integer discussionDepth {
+                doc "It the amount of replies within a discussion.";
+                methods { get };
+            };
+
+            string discussionPath {
+                doc "Returns the path of the discussions.";
+                methods { get };
+            };
+
+            long discussionId {
+                doc "Is the id of the whole discussion.";
+                methods { get };
+            };
+            /**
+             * Discussion END
+             */
+             date crawlLastModificationDate {
+                doc "The timestamp of the last modification of the note which in contrast to lastModificationDate is also updated when the access rights of the topic are changed or the note is moved into another topic. <<Since Communote version 3.3>>";
+                methods { get, list };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id noteId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+             versiongroup_3_0 for v3_0{
+                parameters{ isHtml, maxTextLength, filterHtml, publish, autosaveNoteId, crossPostTopicAliases, attachmentUploadSessionId};
+                attributes{ text, numberOfComments, tags, parentNoteId, isDirectMessage, isNoteForMe, usersToNotify, usersToNotifyIds, followedItems, isFavorite, isLike, creationDate, lastModificationDate, topicId, topicName, userName, firstName, lastName, userId, noteId, discussionDepth, discussionPath, discussionId, attachmentIds, attachments, properties, noteVersion, isMentionTopicReaders, isMentionTopicAuthors, isMentionTopicManagers, isMentionDiscussionAuthors, crawlLastModificationDate };
+            }
+        };
+
+        /**
+         * Define the favorite resource a subresource of note
+         */
+        resource Favorite {
+            doc "Resource for setting a favorite. It is a sub resource of a note.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server sets the favorite status for specified note and returns null.";
+
+            /**
+             * Begin with the definition of the favorite specific attributes
+             */
+            attributes {
+                long favoriteId {
+                    doc "Dummy attribute to identify resource.";
+                    property dummy "Dummy attribute because resource don`t need an identifier.";
+                    methods { list, post, delete  };
+                };
+
+                boolean favorite {
+                    doc "favorite status of the note for the user. <<Default Value>> is false.";
+                    methods { list, post };
+                };
+            }
+
+            /**
+             * Define the identifier
+             */
+            id favoriteId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { favoriteId, favorite };
+                }
+            };
+        };
+
+        /**
+         * Define the like resource a subresource of note
+         */
+        resource Like {
+            doc "Resource for setting a like. It is a sub resource of a note.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server sets the like status for specified note and returns null.";
+
+            /**
+             * Begin with the definition of the like specific attributes
+             */
+            attributes {
+                long likeId {
+                    doc "Dummy attribute to identify resource.";
+                    property dummy "Dummy attribute because resource don`t need an identifier.";
+                    methods { list, post, delete };
+                };
+
+                boolean like {
+                    doc "like status of the note for the user. <<Default Value>> is false.";
+                    methods { list, post };
+                };
+
+                TimelineUser[] users {
+                    doc "Specifies the users who likes the note inclusive the current user when he likes the note.";
+                    methods { list };
+                }
+            }
+
+            /**
+             * Define the identifier
+             */
+            id likeId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { likeId, like, users };
+                }
+            };
+        };
+
+        /**
+         * Define the property resource a subresource of note
+         */
+        resource Property {
+            doc "Resource for setting a property. It is a sub resource of a note.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server <<creates>> a new property resource and returns null.";
+
+            /**
+             * Begin with the definition of the property specific attributes
+             */
+            attributes {
+                long propertyId {
+                    doc "KeyGroup of the property.";
+                    methods { get };
+                };
+
+                string keyGroup {
+                    doc "KeyGroup of the property.";
+                    methods { get!, list!, post! };
+                };
+
+                string key {
+                    doc "Key of the property.";
+                    methods { get!, list!, post! };
+                };
+
+                string value {
+                    doc "Value of property for specific key.";
+                    methods { get, post };
+                };
+            }
+
+            /**
+             * Define the identifier
+             */
+            id propertyId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { propertyId, keyGroup, key, value };
+                }
+            };
+        };
+
+    };
+
+    /**
+     * Define the attachment resource
+     */
+    resource Attachment {
+        doc "This resource represents an attachment of a note.";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested attachment resource with the following attributes. To get the attachment as binary, set parameter <<<getAttachmentAsBinary=true>>>.";
+        doc post "By sending a HTTP-POST request with all mandatory attributes, the server <<creates>> a new attachment resource and returns a list of current uploaded attachments.";
+
+        contenttypes { multipart/form-data, application/octet-stream }
+
+        /**
+         * Begin with the definition of the attachment specific parameters
+         */
+        parameters {
+            boolean getAttachmentAsBinary {
+                doc "Returns the attachment as binary file. <<Default Value>> is false.";
+                methods { get };
+            };
+
+            string attachmentUploadSessionId {
+                doc "Session identifier for session attribute.";
+                methods { post! };
+            }
+
+            boolean isBase64 {
+                doc "File attribute is base64 encoded.";
+                methods { post };
+            }
+        }
+
+        /**
+         * Begin with the definition of the attachment specific attributes
+         */
+        attributes{
+            long attachmentId {
+                doc "Is the Id of the attachment.";
+                methods { get!, delete };
+            };
+            
+            long noteId {
+                doc "The ID of the associated note. <<Since Communote version 3.3>>";
+                methods { get};
+            };
+
+            string fileName {
+                doc "This is the name of the file.";
+                methods { get, post };
+            };
+
+            string fileType {
+                doc "Is the type of the file might be represented by a file extension.";
+                methods { get, post };
+            };
+
+            long contentLength {
+                doc "This is the size of the attachment messured in byte.";
+                methods { get };
+            };
+            
+			string contentId {
+                doc "The content identifier. Depends on the associated repository identified by repositoryConnectorId. <<Since Communote version 3.3>>";
+                methods { get };
+            };
+            
+           	string repositoryConnectorId {
+                doc "The identifier of the repository the content is stored in. <<Since Communote version 3.3>>";
+                methods { get };
+            };
+            date crawlLastModificationDate {
+                doc "Convenience attribute which returns the same as the attribute crawlLastModificationDate of the associated note. <<Since Communote version 3.3>>";
+                methods { get, list };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id attachmentId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+            versiongroup_3_0 for v3_0{
+                parameters { getAttachmentAsBinary, attachmentUploadSessionId, isBase64 };
+                attributes { attachmentId, noteId, fileName, fileType, contentLength, contentId, repositoryConnectorId, crawlLastModificationDate };
+            }
+        };
+
+        resource Preview{
+            doc "This resource presents the preview for the given attachment"
+            doc get "By sending a HTTP-GET request, the server <<returns>> a binary preview for the given attachment. Note, that currently only images supports previews."
+
+            contenttypes { application/octet-stream }
+
+            attributes{
+                long previewId{
+                    doc "Is the Id of the attachment.";
+                    methods { get! };
+                };
+            }
+
+            /** Can be ignored, as the id of the parent resource will be used. */
+            id previewId;
+
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes{ previewId }
+                }
+            }
+        };
+    };
+
+    /**
+     * TIMELINE RESOURCES
+     */
+
+    /**
+     * Define the user resource
+     */
+    resource TimelineUser {
+        doc "This resource represents a user of a note.";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested timeline user resource with the following attributes.";
+        doc list "By sending a HTTP-GET request, the server <<returns>> a list of all requested timeline user resources with the following attributes. The list will contain all users which are authors of the last 1000 notes matching the filter parameters. Additional there are two meta datas in the response. First with the number of all found elements and secound whether there are more available elements.";
+
+        /**
+         * Begin with the definition of the user specific attributes
+         */
+        attributes{
+            long userId{
+                doc "Is the identifier of the user.";
+                methods { list };
+            };
+            string alias{
+                doc "This is the identifier name of the user. If user is permanently disabled or completly deleted alias is null. The \"permanently disabled\" status discribes that user is anonymized and notes for user existing in database.";
+                methods { list };
+            };
+            string lastName{
+                doc "This is the lastname of the user.";
+                methods { list };
+            };
+            string firstName{
+                doc "This is the firstname of the user.";
+                methods { list };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id userId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+            versiongroup_3_0 for v3_0{
+                parameter-groups{ filterParameters,  timelineFilterParameters};
+                attributes { userId, alias, lastName, firstName};
+            }
+        };
+    };
+
+    /**
+     * Define the topic resource
+     */
+    resource TimelineTopic {
+        doc "This resource represents a topic of a note.";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested timeline topic resource with the following attributes.";
+        doc list "By sending a HTTP-GET request, the server <<returns>> a list of all requested timeline topic resources with the following attributes. The list will contain all topics which are part of the last 1000 notes matching the filter parameters. Additional there are two meta datas in the response. First with the number of all found elements and secound whether there are more available elements.";
+
+        /**
+         * Begin with the definition of the topic specific attributes
+         */
+        attributes{
+            long topicId{
+                doc "Is the Id of the topic.";
+                methods { list };
+            };
+            string alias{
+                doc "This is the alias of the topic.";
+                methods { list };
+            };
+            string title{
+                doc "This is the title of the topic.";
+                methods { list };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id topicId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+            versiongroup_3_0 for v3_0{
+                parameter-groups{ filterParameters,  timelineFilterParameters};
+                attributes { topicId, alias, title };
+            }
+        };
+    };
+
+    /**
+     * Define the tag resource
+     */
+    resource TimelineTag {
+        doc "This resource represents a tag of a note.";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested timeline tag resource with the following attributes.";
+        doc list "By sending a HTTP-GET request, the server <<returns>> a list of all requested timeline tag resources with the following attributes. The resulting list of tags will contain all tags of the last 1000 notes matching the filter parameters. The list can be used to show a tag cloud. Additional there are two meta datas in the response. First with the number of all found elements and secound whether there are more available elements.";
+
+        parameters {
+            boolean hideSelectedTags {
+                doc "If set, the selected tags will be excluded from the result.";
+                methods { list };
+            };
+
+            string tagCloudMode {
+                doc "Mode of the tag cloud. Must be one of 'PopularTags', 'MyTags' or 'SomeTags'";
+                methods { list };
+            };
+
+            integer numberOfLastDays {
+                doc "Parameter for the number of last days to consider (e.g. only retrieve the tags of the last 7 days).";
+                methods { list };
+            };
+        }
+
+
+        /**
+         * Begin with the definition of the tag specific attributes
+         */
+        attributes{
+            long tagId{
+                doc "Is the Id of the tag.";
+                methods { list };
+            };
+            string name{
+                doc "This is the name of the file.";
+                methods { list };
+            };
+            integer rank{
+                doc "This is the name of the file.";
+                methods { list };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id tagId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+            versiongroup_3_0 for v3_0{
+                parameter-groups{ filterParameters,  timelineFilterParameters};
+                parameters { hideSelectedTags, tagCloudMode, numberOfLastDays };
+                attributes { tagId, name, rank };
+            }
+        };
+    };
+
+    /**
+     * Get Timeline of Notes
+     */
+    resource TimelineNote {
+        doc "This resource represents the timeline of notes.";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested timeline note resource with the following attributes.";
+        doc post "By sending a HTTP-POST request, the server <<returns>> a list of all requested timeline note resources with the following attributes Additional there are two meta datas in the response, use it in case the query parameters exceed the supported length. First with the number of all found elements and secound whether there are more available elements.";
+        doc list "By sending a HTTP-GET request, the server <<returns>> a list of all requested timeline note resources with the following attributes Additional there are two meta datas in the response. First with the number of all found elements and secound whether there are more available elements.";
+        
+
+        /**
+         * Begin with the definition of the attachment specific parameters
+         */
+        parameters {
+            boolean filterHtml {
+                doc "Specifies whether the timeline resources response is formatted as plain text or with HTML tags.";
+                methods { get, list, post };
+            };
+            integer maxTextLength {
+                doc "Specifies the length of the note text to retrieve a list of timeline resources with a cut off text for better list representation.";
+                methods { get, list, post };
+            };
+        }
+
+        /**
+         * Begin with the definition of the attachment specific attributes
+         */
+        attributes{
+            long noteId{
+                doc "Is the identifier of an note.";
+                methods { get!, list, post };
+            };
+            string text {
+                doc "The message of the note.";
+                methods { get, list, post };
+            };
+            string shortText {
+                doc "The short message of note.";
+                methods { get, list, post };
+            };
+            date creationDate {
+                doc "The date of creation of note.";
+                methods { get, list, post };
+            };
+            TimelineUser author {
+                doc "Contains the author of note.";
+                methods { get, list, post };
+            };
+            TimelineUser[] usersToNotify {
+                doc "Contains all notifyed users.";
+                methods { get, list, post };
+            };
+            integer numberOfChildNotes {
+                doc "Number of all child notes.";
+                methods { get, list, post };
+            };
+            TimelineNoteTag[] tags {
+                doc "Tags of the note.";
+                methods { get, list, post };
+            };
+            string[] userNoteProperties {
+                doc "Specifies properties of the current user. Multiple markers can be set.";
+                methods { get, list, post };
+                constants {
+                    "FAV"       {doc "Mark for note is favor of current user.";},
+                    "LIKE"      {doc "Mark that the current user like this note.";},
+                    "NOTIFY"     {doc "Mark that the current user is notify in this note.";}
+                };
+            };
+            boolean isDirectMessage {
+                doc "Indicates whether the note is a direct message or a normal message.";
+                methods { get, list, post };
+            };
+
+            boolean isMentionTopicReaders {
+                doc "Indicates that this note addresses all readers of the topic."
+                methods { get };
+            };
+            boolean isMentionTopicAuthors {
+                doc "Indicates that this note addresses all users with at least one note within the topic."
+                methods { get };
+            };
+            boolean isMentionTopicManagers {
+                doc "Indicates that this note addresses all managers of the the topic."
+                methods { get };
+            };
+            boolean isMentionDiscussionAuthors {
+                doc "Indicates that this note addresses all participants of the discussion this note is part of."
+                methods { get };
+            };
+
+            integer numberOfLikes {
+                doc "Number of users who like this note.";
+                methods { get, list, post };
+            };
+            string[] rights {
+                doc "Specifies the possibilities what the user can do with this note.";
+                methods { get, list, post };
+                constants {
+                    "CAN_EDIT"       {doc "Mark that the user can edit this note.";},
+                    "CAN_REPLY"      {doc "Mark that the user can reply this note.";},
+                    "CAN_DELETE"     {doc "Mark that the user can delete this note.";}
+                };
+            };
+            Attachment[] attachments {
+                doc "Contains all attachment resources.";
+                methods { get, list, post };
+            };
+            TimelineTopic topic {
+                doc "Contains the topic where the not was posted.";
+                methods { get, list, post };
+            };
+            TimelineNoteDiscussion discussion {
+                doc "Contains information of the current discussion, where the note is parent or discussion part.";
+                methods { get, list, post };
+            };
+			long parentNoteId {
+                doc "Note identifier of the parent note. Is null when note is parent.";
+                methods { get, list, post };
+            };
+            Property[] properties {
+                doc "Properties of note. Properties are key value pairs.";
+                methods { post, put };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id noteId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+            versiongroup_3_0 for v3_0{
+                parameter-groups{ filterParameters,  timelineFilterParameters};
+                parameters{ filterHtml, maxTextLength };
+                attributes { noteId, text, shortText, creationDate, author, usersToNotify, numberOfChildNotes, tags, userNoteProperties, isDirectMessage, numberOfLikes, rights, attachments, topic, discussion, properties, parentNoteId, isMentionTopicReaders, isMentionTopicAuthors, isMentionTopicManagers, isMentionDiscussionAuthors };
+            }
+        };
+
+        /**
+         * Define the property resource a subresource of note
+         */
+        resource Property {
+            doc "Resource for setting a property. It is a sub resource of a note.";
+            doc post "By sending a HTTP-POST request with all mandatory attributes, the server <<creates>> a new property resource and returns null.";
+
+            /**
+             * Begin with the definition of the property specific attributes
+             */
+            attributes {
+                long propertyId {
+                    doc "KeyGroup of the property.";
+                    methods { get };
+                };
+
+                string keyGroup {
+                    doc "KeyGroup of the property.";
+                    methods { get!, list!, post! };
+                };
+
+                string key {
+                    doc "Key of the property.";
+                    methods { get!, list!, post! };
+                };
+
+                string value {
+                    doc "Value of property for specific key.";
+                    methods { get, post };
+                };
+            }
+
+            /**
+             * Define the identifier
+             */
+            id propertyId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { propertyId, keyGroup, key, value };
+                }
+            };
+        };
+
+        /**
+         * Define the timeline note discussion resource
+         */
+        resource TimelineNoteDiscussion {
+            doc "This resource represents an discussion of a timeline note. This resource conduce only for parsing of discussion in timeline note.";
+
+            /**
+             * Begin with the definition of the timeline note discussion specific attributes
+             */
+            attributes{
+                long discussionId{
+                    doc "Is the identifier of the current discussion.";
+                    methods { get };
+                };
+                integer depth{
+                    doc "This is the depth of the current note in discussion. Is only set if timeline notes filtered for discussionId";
+                    methods { get };
+                };
+                integer numberOfDiscussionNotes{
+                    doc "Number of all notes in the discussion.";
+                    methods { get };
+                };
+            }
+
+            /**
+             * Define the resource ID
+             */
+            id discussionId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { discussionId, depth, numberOfDiscussionNotes};
+                }
+            };
+        };
+
+        /**
+         * Define the timeline note tag resource
+         */
+        resource TimelineNoteTag {
+            doc "This resource represents an tag of a timeline note. This resource conduce only for parsing of discussion in timeline note.";
+
+            /**
+             * Begin with the definition of the timeline note tag specific attributes
+             */
+            attributes{
+                long tagId{
+                    doc "Is the identifier of tag.";
+                    methods { get, list };
+                };
+                string name{
+                    doc "This is the name of tag.";
+                    methods { get, list };
+                };
+            }
+
+            /**
+             * Define the resource ID
+             */
+            id tagId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { tagId, name };
+                }
+            };
+        };
+    };
+
+    /**
+     * Define the tagstore taglist resource
+     */
+    resource Tag{
+        doc "This resource represents tag inside of an tag store.";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested the specified tag resource. There are two ways to get the tag. When the tag identifier in the url was set, the api search for this tag in the database. But when the tag identifier is set 0 then tagStoreTagId and tagStoreAlias must been specified to find the tag.";
+
+        /**
+         * Begin with the definition of the tag store specific attributes
+         */
+        attributes{
+            long tagId{
+                doc "Is the identifier of the tag.";
+                methods { get, put, delete };
+            };
+
+            long newTagId {
+              doc "Used, when a tag is removed to assing all notes to the new tag.";
+              methods { delete };
+            };
+            string tagStoreAlias{
+                doc "This is the identifier of the tagstore.";
+                methods { get, put };
+            };
+            string tagStoreTagId{
+                doc "This is the identifier of tag inside tagstore.";
+                methods { get, put };
+            };
+            string tagStoreType{
+                doc "Type of tag store (BLOG, NOTE, ENTITY). Default type is NOTE.";
+                methods { put };
+            };
+            string languageCode{
+                doc "This is the language code of tag.";
+                methods { get, put };
+            };
+            string name{
+                doc "This is the name of tag.";
+                methods { get, put };
+            };
+            string defaultName{
+                doc "This is the name of tag.";
+                methods { get, put! };
+            };
+
+            boolean renameTag {
+               doc "If set, it is only possible to edit the default name. Also only managers and system users may use this.";
+               methods { put };
+            }
+
+            string description{
+                doc "This is the description of tag.";
+                methods { get, put };
+            };
+            boolean isFollow {
+                doc "Indicates whether the topic is followed by the user. ";
+                methods { get, list };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id tagId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+            versiongroup_3_0 for v3_0{
+                attributes { renameTag, tagId, newTagId, tagStoreAlias, tagStoreTagId, tagStoreType, languageCode, name, description, defaultName, isFollow};
+            }
+        };
+
+    };
+
+    /**
+     * Define the tagstore taglist resource
+     */
+    resource TagStoreTagList {
+        doc "This resource represents an list of tagstores with taglists.";
+
+        property dummy "Specifies that resource is an dummy an is only needed for serial- and deserializing!"
+
+        /**
+         * Begin with the definition of the tag store specific attributes
+         */
+        attributes{
+            string tagStoreAlias{
+                doc "This is the alias of the tagStore. If tag store alias was not found then the internal note tagStore is the fallback.";
+                methods { get, list };
+            };
+            TagStoreTag[] tags{
+                doc "This is the name of the tagStore.";
+                methods { get, list };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id tagStoreAlias;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+            versiongroup_3_0 for v3_0{
+                attributes { tagStoreAlias, tags };
+            }
+        };
+
+        /**
+         * Define the tag store tag resource
+         */
+        resource TagStoreTag {
+            doc "This resource represents an tag of an tag store.";
+
+            /**
+             * Begin with the definition of the tag store tag specific attributes
+             */
+            attributes{
+                long tagId{
+                    doc "Is the Id of an tag.";
+                    methods { get, list };
+                };
+                string name{
+                    doc "This is the name of an tag.";
+                    methods { get, list };
+                };
+                string description{
+                    doc "This is the description of an tag.";
+                    methods { get, list };
+                };
+                string tagStoreTagId{
+                    doc "Is the Id of an tag in parent tagStore.";
+                    methods { get, list };
+                };
+            }
+
+            /**
+             * Define the resource ID
+             */
+            id tagId;
+
+            /**
+             * Define the versioning of the parameters and attributes
+             */
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                    attributes { tagId, name, description, tagStoreTagId};
+                }
+            };
+        };
+
+    };
+
+
+    /**
+     * Define the tagstore taglist resource
+     */
+    resource TagSuggestionList {
+        doc "This resource represents an list of tagstores with taglists.";
+
+        parameters {
+            string tagStoreType{
+                doc "Type of tag store (BLOG, NOTE, ENTITY). Default type is NOTE.";
+                methods { list };
+            };
+            string[] f_suggestionAliases{
+                doc "Filter suggestion aliases.";
+                methods { list };
+            };
+            string[] f_suggestionProviderAliases{
+                doc "Filter suggestion provider aliases.";
+                methods { list };
+            }
+            boolean assignedTagsOnly{
+                doc "Filter or assign tags.";
+                methods { list };
+            }
+        }
+
+        /**
+         * Begin with the definition of the tag store specific attributes
+         */
+        attributes{
+            long tagSuggestionId{
+                doc "Dummy parameter to identify the suggestion resource.";
+                property dummy "Dummy attribute because resource don`t need an identifier.";
+                methods { list };
+            };
+
+            string name{
+                doc "Name of suggestion.";
+                methods { list };
+            };
+            string alias{
+                doc "Alias of suggestion.";
+                methods { list };
+            };
+            string providerAlias{
+                doc "Alias of suggestion provider.";
+                methods { list }; 
+            };
+            Tag[] tags{
+                doc "Tags of suggestion.";
+                methods { list };
+            };
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id tagSuggestionId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups{
+            versiongroup_3_0 for v3_0{
+                parameter-groups{ filterParameters,  timelineFilterParameters};
+                parameters{ tagStoreType, f_suggestionAliases, f_suggestionProviderAliases, assignedTagsOnly};
+                attributes { tagSuggestionId, name, alias, providerAlias, tags };
+            }
+        };
+
+    };
+    
+	resource Group {
+        doc "This resource represents a group. Groups have a set of members which can be a user or another group. <<Since Communote version 3.3>>";
+        doc get "By sending a HTTP-GET request, the server <<returns>> the requested group resource with the following attributes.";
+
+        /**
+         * Begin with the definition of the group specific parameters
+         */
+        parameters {
+            string groupIdentifier {
+                doc "Define the type the group id is send, using one of the defined constant values. <<Default Value>> is \"ID\"";
+                methods { get };
+                constants {
+                    "ID"        { doc "Group Identifier is an Id"; },
+                    "ALIAS"     { doc "Group Identifier is an Alias."; }
+                };
+            };
+        }
+
+        /**
+         * Begin with the definition of the topic specific attributes
+         */
+        attributes {
+
+            string name {
+                doc "Is the name of the group.";
+                methods { get };
+            };
+
+            string description {
+                doc "What is this group about.";
+                methods { get };
+            };
+
+            string groupId {
+                doc "The key value to identify a group.";
+                methods { get! };
+            };
+
+            string alias {
+                doc "Is the alias to identify the group.";
+                methods { get };
+            };
+
+            string externalSystemId {
+                doc "If the group is imported from an external repository this value identifies the system the group is from, e.g. DefaultLDAP.";
+                methods { get };
+            };
+            
+            string externalId {
+                doc "If the group is imported from an external repository this value identifies the id within the external system. The actual value depdens on the configuration of the external system.";
+                methods { get };
+            }
+
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id groupId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups {
+            versiongroup_3_0 for v3_0 {
+                parameters { groupIdentifier };
+                attributes { groupId, name, alias, description, externalSystemId, externalId };
+            }
+        };
+
+        resource Member {
+            doc "Members of the group. Only returns the members for local groups. <<Since Communote version 3.3>>"
+            doc get "By sending a HTTP-GET request, the server <<returns>> the members of the local group with the following attributes.";
+            
+	        parameters {
+	        	string groupIdentifier {
+	                doc "Define the type the group id is send, using one of the defined constant values. <<Default Value>> is \"ID\"";
+	                methods { list };
+	                constants {
+	                    "ID"        { doc "Group Identifier is an Id"; },
+	                    "ALIAS"     { doc "Group Identifier is an Alias."; }
+	                };
+	            }
+	            
+	        }
+
+            attributes {
+                long entityId {
+                    doc "Id of entity.";
+                    methods { list };
+                };
+                
+                boolean isGroup {
+                    doc "true if it is a group or false if it is a user.";
+                    methods { list };
+                }
+            }
+
+            id entityId;
+
+            version-groups{
+                versiongroup_3_0 for v3_0{
+                	parameters { groupIdentifier };
+                    attributes { entityId, isGroup };
+                }
+            };
+        };
+        
+    };
+    
+	resource LastModificationDate {
+        doc "This resource represents the crawl last modification date of an entity. <<Since Communote version 3.3>>";
+        doc list "By sending a HTTP-GET request, the server <<returns>> a list of all entities of the given type with the last modified date.";
+
+        /**
+         * Begin with the definition of the group specific parameters
+         */
+        parameters {
+            string type {
+                doc "Define the type of the entities to return.";
+                methods { list };
+                constants {
+                    "TOPIC"      { doc "Type to return all topics."; },
+                    "ATTACHMENT" { doc "Type to return all attachments."; },
+                    "NOTE"       { doc "Type to return all notes."; }
+                };
+            };
+        }
+
+        /**
+         * Begin with the definition of specific attributes
+         */
+        attributes {
+
+            long entityId {
+                doc "Id of the entity.";
+                methods { list };
+            };
+
+            date lastModificationDate {
+                doc "Represents the date when the entity was last modified.";
+                methods { list };
+            };
+
+        }
+
+        /**
+         * Define the resource ID
+         */
+        id entityId;
+
+        /**
+         * Define the versioning of the parameters and attributes
+         */
+        version-groups {
+            versiongroup_3_0 for v3_0 {
+                parameters { type };
+                attributes { entityId, lastModificationDate };
+            }
+        };
+        
+    };
+};

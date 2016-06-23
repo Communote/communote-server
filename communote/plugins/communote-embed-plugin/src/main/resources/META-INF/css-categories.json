@@ -1,0 +1,37 @@
+{
+    "definitions": [
+        {
+            "categoryName": "cnt-embed",
+            "coreResources": [
+                        "/themes/core/styles/layout-common.css",
+                        "/themes/core/styles/layout-form.css",
+                        "/styles/frameworks/smoothbox.css",
+                        "/styles/frameworks/roar/roar.css",
+                        "/styles/frameworks/datepicker/datepicker.css",
+                        "/styles/frameworks/mediabox/mediaboxAdv-Dark.css",
+                        "/styles/frameworks/mediabox/mediabox-custom.css",
+                        "/themes/core/styles/hovercard.css",
+                        "/themes/core/styles/page-header.css",
+                        "/themes/core/styles/AutoCompleter.css",
+                        "/themes/core/styles/TextboxList.css",
+                        "/themes/core/styles/widgets/HorizontalNavigation.Widget.css",
+                        "/themes/core/styles/widgets/CreateNote.Widget.css",
+                        "/themes/core/styles/widgets/ChronologialPostList.Widget.css",
+                        "/themes/core/styles/widgets/SearchBox.Widget.css",
+                        "/themes/core/styles/widgets/FilteredBy.Widget.css",
+                        "/themes/core/styles/widgets/BlogList.Widget.css",
+                        "/themes/core/styles/widgets/TagCloud.Widget.css",
+                        "/themes/core/styles/widgets/AuthorFilter.Widget.css",
+                        "/themes/core/styles/widgets/ContentType.Widget.css",
+                        "/themes/core/styles/widgets/Period.Widget.css",
+                        "/themes/core/styles/images.css",
+                        "/javascript/editors/tiny_mce_communote_theme/styles/ui.css",
+                        "/javascript/editors/tiny_mce_external_plugins/suggestions/css/suggestions.css"
+            ],
+            "pluginResources": ["styles/embed-content.css"]
+        }
+    ],
+    "extensions": {
+        "portal": ["styles/embed-portal-extension.css"]
+    } 
+}

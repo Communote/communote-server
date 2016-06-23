@@ -1,0 +1,192 @@
+#cn-header {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #EEEEEE;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.07);
+    -webkit-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.07);
+    height: 50px;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+	zoom: 1;
+	z-index: 5;
+}
+
+#cn-header .cn-link {
+    color: #888888;
+    font-size: 12px;
+    margin: 23px 0 0 30px;
+    padding: 0 5px 9px;
+    transition: color 0.3s ease 0s;
+    -webkit-transition: color 0.3s ease 0s;
+    -moz-transition: color 0.3s ease 0s;
+    -o-transition: color 0.3s ease 0s;
+}
+
+#cn-header:hover .cn-link {
+    color: #005599;
+}
+
+#cn-header .cn-link:hover {
+    color: #E66914;
+}
+
+#cn-header #cn-header-logo {
+    height: 40px;
+    left: 0;
+    padding: 5px 0 5px 5px;
+    position: absolute;
+    width: 220px;
+}
+
+#cn-header #cn-header-logo img {
+	max-height: 40px;
+	max-width: 220px;
+	vertical-align: text-bottom;
+}
+
+#cn-header-info {
+	font-size: 11px;
+}
+
+#cn-header #cn-header-navigation {
+    bottom: 0;
+    left: 225px;
+    margin-left: 20px;
+    max-width: 960px;
+    min-width: 690px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+#cn-header #cn-header-navigation #cn-toplink-service a.cn-active,
+#cn-header #cn-header-navigation .cn-bar.cn-active {
+	border-bottom: 4px solid #FF9A55;
+	color: #E66914;
+}
+
+#cn-header #cn-service-navigation {
+    float: left;
+    margin-right: 3%;
+    text-align: right;
+    width: 66%;
+}
+
+#cn-header #cn-profile-navigation {
+    float: right;
+    font-size: 14px;
+    height: 34px;
+    padding-top: 16px;
+    text-align: left;
+    width: 30%;
+}
+
+#cn-header #cn-profile-navigation .cn-bar {
+    margin-left: 0;
+    position: relative;
+}
+
+#cn-header #cn-profile-navigation .cn-bar {
+    border-width: 4px;
+    line-height: 20px;
+    border-bottom: 4px solid transparent;
+}
+
+#cn-header #cn-toplink-service {
+    position: relative;
+    float: right;
+}
+
+#cn-header #cn-navigation-profile {
+	float: right;
+}
+
+#cn-header #cn-navigation-profile.cn-active {
+	border-bottom: 4px solid #FF9A55;		
+}
+
+#cn-header .cn-menu {
+	float: right;
+	max-width: 220px;
+}
+
+#cn-header .cn-bar.cn-active .cn-menu .cn-arrow {
+	height: 29px;
+}
+
+#cn-header #cn-profile-navigation .cn-bar .cn-menu a.cn-link {
+    float: left;
+    font-size: 12px;
+    line-height: 28px;
+    margin: 0;
+    max-width: 130px;
+    overflow: hidden;
+    padding: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#cn-header .cn-bar img {
+    float: right;
+    margin-right: 15px;
+    margin-top: 4px;
+}
+
+#cn-header .cn-menu .cn-arrow {
+    background-position: -353px -292px;
+    cursor: pointer;
+    display: block;
+    float: right;
+    margin-left: 10px;
+    margin-top: 1px;
+    padding: 0 4px;
+    width: 25px;
+}
+
+#cn-header:hover .cn-arrow {
+    background-position: -353px -324px;
+}
+
+#cn-header .cn-menu:hover .cn-arrow {
+    background-position: -418px -357px;
+    border-color: #DEDEDE #DEDEDE #FFFFFF;
+    border-radius: 3px 3px 0 0;
+    border-style: solid;
+    border-width: 1px;
+    padding: 0 3px;
+}
+
+#cn-header #cn-profile-navigation .cn-active .cn-menu:hover .cn-arrow {
+	background-color: #FFFFFF;
+}
+				
+#cn-header .cn-menu:hover .cn-menu-list {
+	display: block;
+}
+
+
+#cn-header .cn-menu-list {
+    clear: both;
+    margin-top: -1px;
+    min-width: 125px;
+    width: 100%;
+}
+
+#cn-header .cn-menu-list li {
+    height: 25px;
+    padding-bottom: 3px;
+    padding-left: 6px;
+    padding-top: 3px;
+}
+
+#cn-header #cn-profile-navigation .cn-bar .cn-menu .cn-menu-list li a {
+    max-width: none;
+    width: 100%;
+}
+
+#cn-header .cn-menu-list li#cn-logout {
+	border-top: 1px dotted #A9A9A9;
+    padding-bottom: 0;
+}

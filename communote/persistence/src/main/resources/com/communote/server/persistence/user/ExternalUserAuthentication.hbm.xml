@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.user.ExternalUserAuthenticationImpl" table="user_external_auth" dynamic-insert="false" dynamic-update="false">
+        <cache usage="read-write" />
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">user_external_auth_seq</param>
+                                                           </generator>
+        </id>
+        <property name="externalUserId" type="java.lang.String">
+            <column name="external_user_id" 
+                     not-null="true" unique="true"
+                      unique-key="ug_ext_auth"/>
+        </property>
+        <property name="systemId" type="java.lang.String">
+            <column name="system_id" 
+                     not-null="true" unique="false"
+                      unique-key="ug_ext_auth"/>
+        </property>
+        <property name="permanentId" type="java.lang.String">
+            <column name="permanent_id" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="additionalProperty" type="com.communote.server.external.hibernate.usertypes.HibernateStringClobType">
+            <column name="additional_property" 
+                     not-null="false" unique="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

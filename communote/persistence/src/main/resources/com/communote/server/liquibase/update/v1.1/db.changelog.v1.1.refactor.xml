@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.1/db.changelog.v1.1.refactor.xml">
+
+<changeSet id="mt2846_global_id_v3" author="unknown" runOnChange="true" dbms="postgresql">
+	<preConditions onFail="MARK_RAN">
+        <and>
+            <not>
+                <!-- do not run if the installer initialized the db because the installer creates the id -->
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/install/postgres/db.changelog.init-db.postgres.xml" author="unknown" id="initialize-database-schema_v1"/>
+            </not>
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.1.4/db.changelog.v1.1.4.xml" author="unknown" id="KENMEI_1555_Rename_reserved_keywords"/>
+            </not>
+		    <sqlCheck expectedResult="0"> select count(*) from configuration_setting where key = 'kenmei.unique.client.identifer';
+            </sqlCheck>
+        </and>
+	</preConditions>
+	<comment>MT 2846: CR 119 - Refactoring Post Backend: Global Id</comment>
+	<insert tableName="configuration_setting" >
+		<column name="key"   value="kenmei.unique.client.identifer"></column>
+		<column name="value" value="${kenmei.unique.client.identifer}"></column>
+	</insert>
+</changeSet>
+
+<changeSet id="mt2846_global_id_v3_mysql" author="unknown" runOnChange="true" dbms="mysql">
+	<preConditions onFail="MARK_RAN">
+        <and>
+            <not>
+                <!-- do not run if the installer initialized the db because the installer creates the id -->
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/install/mysql/db.changelog.init-db.mysql.xml" author="unknown" id="initialize-database-schema_mysql_v1"/>
+            </not>
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v1.1.4/db.changelog.v1.1.4.xml" author="unknown" id="KENMEI_1555_Rename_reserved_keywords"/>
+            </not>
+            <sqlCheck expectedResult="0"> select count(*) from configuration_setting where `key` = 'kenmei.unique.client.identifer';
+            </sqlCheck>
+        </and>
+	</preConditions>
+	<comment>MT 2846: CR 119 - Refactoring Post Backend: Global Id</comment>
+	<insert tableName="configuration_setting" >
+		<column name="key"   value="kenmei.unique.client.identifer"></column>
+		<column name="value" value="${kenmei.unique.client.identifer}"></column>
+	</insert>
+</changeSet>
+
+<changeSet id="mt2846_global_id_checksum_v2" author="unknown" context="client" runOnChange="true">
+	<preConditions>
+		<or>
+			<changeSetExecuted id="mt2846_global_id_v3" author="unknown" changeLogFile="de/communardo/kenmei/database/update/v1.1/db.changelog.v1.1.refactor.xml"/>
+			<changeSetExecuted id="mt2846_global_id_v3_mysql" author="unknown" changeLogFile="de/communardo/kenmei/database/update/v1.1/db.changelog.v1.1.refactor.xml"/>
+		</or>
+	</preConditions>
+	<comment>MT 2846: CR 119 - Refactoring Post Backend: Global Id, Configuration, Checksum</comment>
+	<sql>
+	-- add the configuration foreign key
+	update configuration_setting set configuration_fk = 
+	(select min(id) from configuration) where configuration_fk is null;
+	</sql>
+</changeSet>
+
+<changeSet id="mt2846_user_external_auth" author="unknown" context="client">
+	<comment>MT 2846: CR 119 - Refactoring Post Backend - Rename external user auth</comment>
+	<renameTable oldTableName="user_authentication" newTableName="user_external_auth"/>
+	<renameColumn tableName="user_external_auth" oldColumnName="tagging_user_fk" newColumnName="kenmei_user_fk" columnDataType="BIGINT"/>
+	
+	<dropForeignKeyConstraint baseTableName="user_external_auth" constraintName="user_authentication_TAGGING_UC"/>
+	<addForeignKeyConstraint constraintName="user_external_auth_kenmei_usec" baseTableName="user_external_auth" baseColumnNames="kenmei_user_fk" referencedTableName="user_user" referencedColumnNames="id"/>
+</changeSet>
+
+<changeSet id="mt2846_remove_module_status" author="unknown" context="client">
+	<comment>MT 2846: CR 119 - Refactoring Post Backend - Remove module status</comment>
+	<!-- config -->	
+	<dropColumn tableName="configuration_client" columnName="module_status_micro_blog"/>
+	<dropColumn tableName="configuration_client" columnName="module_status_tagging_server"/>
+		
+	<!-- client -->
+	<dropColumn tableName="user_client_creation" columnName="module_status_tagging_server"/>
+	<dropColumn tableName="user_client_creation" columnName="module_status_micro_blog"/>
+</changeSet>
+
+<include
+	file="com/communote/server/liquibase/update/v1.1/mysql/db.changelog.v1.1.refactor.mysql.xml" />
+<include
+	file="com/communote/server/liquibase/update/v1.1/postgres/db.changelog.v1.1.refactor.postgres.xml" />
+
+<changeSet id="mt2846_favorite_users" author="unknown" context="client">
+	<preConditions>
+	<or>
+		<changeSetExecuted id="mt2846_postgresql" author="unknown" changeLogFile="de/communardo/kenmei/database/update/v1.1/postgres/db.changelog.v1.1.refactor.postgres.xml"/>
+		<changeSetExecuted id="mt2846_mysql_20" author="unknown" changeLogFile="de/communardo/kenmei/database/update/v1.1/mysql/db.changelog.v1.1.refactor.mysql.xml"/>
+	</or>
+	</preConditions>
+	<comment>MT 2846: CR 119 - Refactoring Post Backend - Favorite users</comment>
+	<renameTable oldTableName="FAVORITE_NOTES2KENMEI_USERS" newTableName="core_users2favorite_notes"/>
+</changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    #set($themeName = 'core')
+    <head>
+    #parse( '/WEB-INF/vm/layout/main_head.html.vm' )
+    <script type="text/javascript">
+(function(window){
+    var initConfig;
+    var communote = window.communote;
+    if (!communote) {
+        window.communote = communote = {};
+    }
+    if (!communote.utils) {
+        communote.utils = {};
+    }
+    if (!communote.configuration) {
+        communote.configuration = {};
+    }
+    initConfig = communote.configuration.init;
+    if (!initConfig) {
+        communote.configuration.init = initConfig = {};
+    }
+    initConfig.widgetFramework = false;
+    initConfig.activateDefaultContext = false;
+    initConfig.processLocation = false;
+})(this);
+</script>
+     </head>
+    <body>
+    </body>
+</html>

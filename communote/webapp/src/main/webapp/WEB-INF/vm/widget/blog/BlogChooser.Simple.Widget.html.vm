@@ -1,0 +1,9 @@
+<div class="cn-chooser">
+    <div class="cn-border control-autocompleter-position-source">
+        <input id="cn-chooser-input" class="cn-info" type="text" autocomplete="off" placeholder="$fmtTool.message('blog.overview.chooser.placeholder')" />
+        <div id="cn-chooser-icons">
+            <a class="cn-chooser-add" href="$urlTool.render('/portal/blog-create')" title="#t('blog.create.button')"></a>
+        </div>
+    </div>
+    <span class="cn-clear"><!-- --></span>
+</div>

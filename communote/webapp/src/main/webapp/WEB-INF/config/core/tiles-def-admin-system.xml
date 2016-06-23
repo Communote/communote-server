@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE tiles-definitions PUBLIC
+ "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+ "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+
+    <!-- system -->
+    <definition name="main.microblog.client.management.system.application.server" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/application/server.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.management.system.application.virusscanning" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/application/virus-scanner.jsp" />
+    </definition>
+    
+    <definition name="main.microblog.client.management.system.application.certificate" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/application/certificate.jsp" />
+    </definition>
+    
+    <definition name="main.microblog.client.management.system.application.cacheinvalidation" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/application/cache-invalidation.jsp" />
+    </definition>
+
+    <!-- communication -->
+    <definition name="main.microblog.client.management.system.communication.mail.in" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/communication/mail_in.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.management.system.communication.mail.out" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/communication/mail_out.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.management.system.communication.xmpp" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/communication/xmpp.jsp" />
+    </definition>
+
+    <!-- logging -->
+    <definition name="main.microblog.client.management.system.logging.overview" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/logging/logging-overview.jsp" />
+    </definition>
+
+    <!-- extensions -->
+    <definition name="main.microblog.client.management.system.extensions.overview" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/extensions/extensions-overview.jsp" />
+    </definition>
+    
+    <!-- content -->
+    <definition name="main.microblog.client.management.system.content.file.storage" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/content/file_storage.jsp" />
+    </definition>
+
+    <definition name="main.microblog.client.management.system.content.file.upload" extends="main.microblog.client.wrapper">
+        <put name="innerContent" value="/WEB-INF/jsp/user/system/content/file_upload.jsp" />
+    </definition>
+</tiles-definitions>

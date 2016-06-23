@@ -1,0 +1,36 @@
+div.autocompleter-wrapper {
+    background-color: #FFFFFF;
+	border-color: #DDDDDD;
+    border-style: none solid solid solid;
+    border-width: 0 1px 1px 1px;
+    text-align: left;
+}
+
+div.autocompleter-wrapper .autocompleter-loading-overlay {
+	background-color: #EEEEEE;
+	opacity: 0.4;
+}
+
+ul.autocompleter-choices-wrapper {
+	margin: 0;
+	padding: 0;
+    list-style: none;
+}
+div.autocompleter-category-wrapper .autocompleter-category-title {
+    background-color: #DDDDDD;
+    border-color: #ABABAB;
+	border-style: none none solid none;
+    border-width: 0 0 1px 0;
+}
+
+ul.autocompleter-choices-wrapper .autocompleter-choice {
+    padding-left: 4px;
+    cursor: pointer;
+    font-weight: normal;
+    white-space: nowrap;
+    color: #005599;
+}
+
+ul.autocompleter-choices-wrapper .autocompleter-choice.autocompleter-choice-focused {
+	color: #E66914;
+}

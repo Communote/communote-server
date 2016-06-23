@@ -1,0 +1,46 @@
+#cnRenderMessages()
+<form>
+	<p>
+	#t('client.profile.config.group.description')
+	</p>
+	<fieldset class="registration">
+	   <h5>#t('client.profile.config.group.registration')</h5>
+		<div class="checkbox">
+		    <input type="checkbox" id="createExternalGroupAutomatically" name="createExternalGroupAutomatically"
+            #if($createExternalGroupAutomatically == 'true') checked #end/>
+		    <label for="createExternalGroupAutomatically">#t('client.profile.config.group.external.create')</label>
+		    <span class="clear"><!-- Empty --></span>
+		</div>
+        <span class="clear"><!-- Empty. --></span>
+	</fieldset>
+    <fieldset class="synchronization">
+        <h5>#t('client.profile.config.group.synchronization.title')</h5>
+        #t('client.profile.config.group.synchronization.description')
+        <div class="line">
+            <div class="w100 long">
+                <div class="label">
+                    #cnLabel('syncInterval' 'client.profile.config.group.sync.interval' true '')
+                </div>
+                <div class="input">
+                    <input type="number" min="1" id="syncInterval" name="syncInterval" value="$syncInterval"/> #t('client.profile.config.group.sync.interval.minutes')
+                </div>
+            <span class="clear"><!-- Empty --></span>
+            </div>
+       </div>
+	</fieldset>
+    <div class="info">$fmtTool.message("form.info.required.fields")</div>
+    <div class="actionbar actionbar-general">
+        #if($communoteTool.client.isGlobalClient())
+        <div class="button-gray left">
+            <button name="fullsync" type="button" onclick="#jsCurrentWidget().startFullSynchronisation()">#t('client.profile.config.group.sync.button')</button></div>
+        #end
+        <div class="button-gray main">
+            <input type="submit" class="button" name="send1"
+                value="$fmtTool.message('client.profile.config.group.button')" />
+        </div>
+        <span class="clear"> <!-- -->
+        </span>
+    </div>
+    <input type="hidden" name="updateConfiguration" id="updateConfiguration" value="true" />
+</form>
+<span class="clear"><!-- Empty. --></span>

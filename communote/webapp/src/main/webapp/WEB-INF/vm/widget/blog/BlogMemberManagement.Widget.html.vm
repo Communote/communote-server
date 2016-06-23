@@ -1,0 +1,258 @@
+#if($widget.hasAccess())
+    #set($widgetInstance = "#jsCurrentWidget()")
+    #if ($isBlogManager && $editMode)
+        #set($isManager = true)
+        #set($wrapperClass = 'cn-form-container')
+    #else
+        #set($isManager = false)
+        #set($wrapperClass = 'cn-infocard-container')
+    #end
+    <div class="cn-blog-details-access-wrapper $wrapperClass">
+        #if( $isManager )
+        <div class="cn-form-info">
+            #t("blog.member.management.description")
+        </div>
+        #end
+        <div class="cn-blog-details-block cn-blog-details-tableheader">
+            <div class="cn-col12">#t('blog.member.management.list.header.member')</div>
+            <div class="cn-col3">#t('blog.member.management.list.header.role')</div>
+            <span class="cn-clear"><!-- ie --></span>
+        </div>
+        #if( $isManager )
+            <div class="cn-blog-details-block" id="add-users">
+                <div class="cn-only-mobile">
+                    <strong>#t("blog.member.management.addmember.title")</strong>
+                </div>
+                <div class="cn-col12" id="view-member-role_add">
+                    <input class="cono-text" id="add-member" name="add-right" type="text" maxlength="100" placeholder="#t("blog.member.management.addentity.button.choose")" />
+                    <input id="add-entityId" name="add-entityId" type="hidden" />
+                </div>
+                <div class="cn-col3">
+                    <select class="role" name="blogaccess" id="add-role" size="1">
+                        #foreach($option in $userGroupRoleLiterals)
+                            <option value="${option}" #if(${option} == 'MEMBER') selected="selected" #end >
+                                    $fmtTool.message("user.group.role.${option.toLowerCase()}")
+                            </option>
+                        #end
+                    </select>
+                </div>
+                <div class="cn-col4">
+                    <div class="cn-bar" id="save-member-role_add" style="display:none;">
+                        <a href="javascript:;" class="cn-link" onclick="${widgetInstance}.addEntity(); return false;">#t('blog.member.management.addentity.button.save')</a>
+                        <a href="javascript:;" class="cn-link cn-last-child" onclick="${widgetInstance}.resetAddEntity(); return false;">#t('blog.member.management.addentity.button.reset')</a>
+                    </div>
+                </div>
+                <span class="cn-clear"><!-- ie --></span>
+            </div>
+        #end
+        #if( $widget.blog.allCanRead || $widget.blog.allCanWrite || $widget.allCanReadWriteAllowed)
+            <div class="cn-blog-details-block cn-blog-details-member-table" id="all-users">
+                <div class="cn-col1">
+                    <span class="cn-icon" title="#t('blog.member.management.allusers')"><!-- Icon --></span>
+                </div>
+                <div class="cn-col2">
+                    <strong>#t('blog.member.management.allusers')</strong>
+                </div>
+                <form onsubmit="return false;">
+                <div class="cn-col3" id="view-member-role_all">
+                    #if($widget.allCanReadWriteAllowed && $isManager)
+                    <select name="blog" class="editValue role" id="change-member_all" size="1" onchange="${widgetInstance}.showHideEditActions(this, 'all', true);">
+                                <option value="NONE" >#t('user.group.role.none')</option>
+                        #foreach($option in $userGroupRoleLiterals)
+                            #if(${option} != 'MANAGER')
+                                <option value="${option}"
+                                    #if(${option} == $widget.allUserGroupRole)
+                                        selected="selected"
+                                    #end
+                                    >
+                                    $fmtTool.message("user.group.role.${option.toLowerCase()}")
+                                </option>
+                            #end
+                        #end
+                    </select>
+                    #else
+                        <span class="storedValue">
+                            <strong>
+                                #if(!${widget.allUserGroupRole})
+                                    #t('user.group.role.none')
+                                    #else
+                                        ${roles.get($widget.allUserGroupRole)}
+                                #end
+                            </strong>
+                        </span>
+                    #end
+                </div>
+                </form>
+                    <div class="cn-col4">
+                    #if( $isManager )
+                        <div class="cn-bar" id="modify-member-role_all">
+                            <a href="javascript:;" class="cn-link cn-last-child" onclick="${widgetInstance}.setAllUserRole('NONE'); return false;">$fmtTool.message("blog.member.management.list.delete.member")</a>
+                        </div>
+                    #end
+                    #if($widget.allCanReadWriteAllowed)
+                        <div class="cn-bar" id="save-member-role_all" style="display:none;">
+                            <a href="javascript:;" class="cn-link" onclick="${widgetInstance}.saveAllUserRoleClick(); return false;">$fmtTool.message("blog.member.save.role.button.label")</a>
+                            <a href="javascript:;" class="cn-link cn-last-child" onclick="return ${widgetInstance}.showHideEditActions(this, 'all', false);">$fmtTool.message("blog.member.management.addentity.button.reset")</a>
+                        </div>
+                    #end
+                    </div>
+                <span class="cn-clear"><!-- ie --></span>
+            </div>
+        #end
+        #set( $currentUserId = $communoteTool.CurrentUserId )
+        #foreach( $blogRoleEntity in $list )
+            <div class="cn-blog-details-block cn-blog-details-member-table">
+                <div class="cn-col1">
+                    #if($blogRoleEntity.entity.type == 'USER')
+                        <img src="$urlTool.userImage(${blogRoleEntity.entity.entityId}, $fieldTool.get('com.communote.server.model.user.ImageSizeType.MEDIUM'))" width="32px" height="32px" alt="" />
+                    #else 
+                        <span class="cn-icon user-group"><!-- leer --></span>
+                    #end
+                </div>
+                <div class="cn-col2">
+                    #set($entityDisplayName =  ${blogRoleEntity.Entity.DisplayName})
+                    <span class="displayName" title="$escTool.xmlSimple($entityDisplayName)">
+                        #if($isManager)
+                            $escTool.xmlSimple($stringTool.truncateMiddle($entityDisplayName ,30,"..."))
+                        #else
+                            $escTool.xmlSimple($stringTool.truncateMiddle($entityDisplayName ,65,"..."))
+                        #end
+                    </span>
+                </div>
+                <form onsubmit="return false;">
+                <div class="cn-col3" id="view-member-role_${blogRoleEntity.entity.entityId}">
+                    #if($isManager && (${blogRoleEntity.roles.size()} == 1 && !${blogRoleEntity.roles.get(0).externalSystemId}))
+                        <select name="blog" class="editValue role" id="change-member_${blogRoleEntity.entity.entityId}" size="1" onchange="${widgetInstance}.showHideEditActions(this, '${blogRoleEntity.entity.entityId}', true);">
+                            #foreach($option in $userGroupRoleLiterals)
+                                <option value="${option}" #if(${option} == $blogRoleEntity.grantedBlogRole)selected="selected"#end >
+                                        $fmtTool.message("user.group.role.${option.toLowerCase()}")
+                                </option>
+                            #end
+                        </select>
+                    #else
+                        <span class="storedValue">${roles.get($blogRoleEntity.grantedBlogRole)} #if(${blogRoleEntity.roles.size()} > 1)(${blogRoleEntity.roles.size()})#end</span>
+                    #end
+                </div>
+                </form>
+                #if(!(${blogRoleEntity.roles.size()} > 1 || ${blogRoleEntity.roles.get(0).externalSystemId}))
+                    #if($isManager)
+                    <div class="cn-col4">
+                        <div class="cn-bar" id="modify-member-role_${blogRoleEntity.entity.entityId}">
+                            #if($blogRoleEntity.entity.entityId == $currentUserId)
+                                <a href="javascript:;" class="cn-link cn-last-child" onclick="E('onBlogMemberSelfDelete', '${blogRoleEntity.entity.entityId}')">#t('blog.member.management.list.delete.member')</a>
+                            #else
+                                <a href="javascript:;" class="cn-link cn-last-child" onclick="E('onBlogMemberDelete', '${blogRoleEntity.entity.entityId}')">#t('blog.member.management.list.delete.member')</a>
+                            #end
+                        </div>
+                        <div class="cn-bar" id="save-member-role_${blogRoleEntity.entity.entityId}" style="display:none;">
+                            #if(${blogRoleEntity.entity.entityId} == $currentUserId)
+                                <a href="javascript:;" class="cn-link" onclick="return E('onBlogMemberSelfSaveClick', {alias: '${blogRoleEntity.entity.alias}', id: ${blogRoleEntity.entity.entityId} })">#t('blog.member.save.role.button.label')</a>
+                                <a href="javascript:;" class="cn-link cn-last-child" onclick="return ${widgetInstance}.showHideEditActions(this, '${blogRoleEntity.entity.entityId}', false)">#t('blog.member.management.addentity.button.reset')</a>
+                            #else
+                                <a href="javascript:;" class="cn-link" onclick="return E('onBlogMemberSaveClick', {alias: '${blogRoleEntity.entity.alias}', id: ${blogRoleEntity.entity.entityId} })">$fmtTool.message("blog.member.save.role.button.label")</a>
+                                <a href="javascript:;" class="cn-link cn-last-child" onclick="return ${widgetInstance}.showHideEditActions(this, '${blogRoleEntity.entity.entityId}', false)">$fmtTool.message("blog.member.management.addentity.button.reset")</a>
+                            #end
+                        </div>
+                    </div>
+                    #end
+                #else
+                <div class="cn-col4">
+                    <div class="cn-bar" id="view-systems_${blogRoleEntity.entity.entityId}">
+                        <a href="javascript:;" class="cn-link" onclick="return ${widgetInstance}.toggleSystems(this,'${blogRoleEntity.entity.entityId}')">$fmtTool.message("blog.member.management.details.show")</a>
+                    </div>
+                </div>
+                #end
+                <span class="cn-clear"><!-- --></span>
+                #if(${blogRoleEntity.roles.size()} > 1 || ${blogRoleEntity.roles.get(0).externalSystemId})
+                    <div class="cn-hidden" id="sub_view-systems_${blogRoleEntity.entity.entityId}">
+                        #foreach( $blogRoleEntityRole in $blogRoleEntity.roles )
+                            <div class="cn-col1">
+                                &nbsp;
+                            </div>
+                            
+                            <div class="cn-col2 cn-system">
+                                #if(!${blogRoleEntityRole.externalSystemId})
+                                $fmtTool.message("blog.member.management.sublist.label.local")
+                                #else
+                                $fmtTool.message("blog.member.management.sublist.label.external", $communoteTool.getDisplayNameForExternalObject($request, $!{blogRoleEntityRole.externalSystemId})) 
+                                #end
+                            </div>
+
+                                #if($isManager && !${blogRoleEntityRole.externalSystemId})
+                                <form onsubmit="return false;">
+                                    <div class="cn-col3" id="sub_view-member-role_${blogRoleEntity.entity.entityId}" >
+                                        <select name="sub_blog" class="editValue role" id="change-member_${blogRoleEntity.entity.entityId}" size="1" onchange="${widgetInstance}.showHideEditActions(this, '${blogRoleEntity.entity.entityId}', true);">
+                                            #foreach($option in $userGroupRoleLiterals)
+                                                <option value="${option}" #if(${option} == ${blogRoleEntityRole.blogRole.value})selected="selected"#end >
+                                                        $fmtTool.message("user.group.role.${option.toLowerCase()}")
+                                                </option>
+                                            #end
+                                        </select>
+                                    </div>
+                                </form>
+                                 #else
+                                <div class="cn-col3">
+                                    $fmtTool.message("user.group.role.${blogRoleEntityRole.blogRole.value.toLowerCase()}")
+                                </div>
+                                #end
+                                #if($isManager)
+                                <div class="cn-col4">
+                                    #if(!${blogRoleEntityRole.externalSystemId})
+                                    <div class="cn-bar" id="sub_modify-member-role_${blogRoleEntity.entity.entityId}">
+                                        #if($blogRoleEntity.entity.entityId == $currentUserId)
+                                            <a href="javascript:;" class="cn-link cn-last-child" onclick="E('onBlogMemberSelfDelete', '${blogRoleEntity.entity.entityId}')">#t('blog.member.management.list.delete.member')</a>
+                                        #else
+                                            <a href="javascript:;" class="cn-link cn-last-child" onclick="E('onBlogMemberDelete', '${blogRoleEntity.entity.entityId}')">#t('blog.member.management.list.delete.member')</a>
+                                        #end
+                                    </div>
+                                    <div class="cn-bar" id="sub_save-member-role_${blogRoleEntity.entity.entityId}" style="display:none;">
+                                        #if(${blogRoleEntity.entity.entityId} == $currentUserId)
+                                            <a href="javascript:;" class="cn-link" onclick="return E('onBlogMemberSelfSaveClick', {alias: '${blogRoleEntity.entity.alias}', id: ${blogRoleEntity.entity.entityId} })">#t('blog.member.save.role.button.label')</a>
+                                            <a href="javascript:;" class="cn-link cn-last-child" onclick="return ${widgetInstance}.showHideEditActions(this, '${blogRoleEntity.entity.entityId}', false)">#t('blog.member.management.addentity.button.reset')</a>
+                                            #else
+                                                <a href="javascript:;" class="cn-link" onclick="return E('onBlogMemberSaveClick', {alias: '${blogRoleEntity.entity.alias}', id: ${blogRoleEntity.entity.entityId} })">$fmtTool.message("blog.member.save.role.button.label")</a>
+                                                <a href="javascript:;" class="cn-link cn-last-child" onclick="return ${widgetInstance}.showHideEditActions(this, '${blogRoleEntity.entity.entityId}', false)">$fmtTool.message("blog.member.management.addentity.button.reset")</a>
+                                        #end
+                                    </div>
+                                    #else
+                                    &nbsp;
+                                    #end
+                                </div>
+                                 #end
+                        #end
+                    </div>
+                #end
+                <span class="cn-clear"><!-- --></span>
+            </div>
+        #end
+        #if( $widget.pageInformation && $widget.pageInformation.countPages > 1 )
+            <div class="cn-blog-details-block">
+                #parse( "/WEB-INF/vm/common/paging-widget.html.vm" )
+            </div>
+        #end
+        #if($widget.getBooleanParameter("showEditModeToggle", true))
+            #if($isManager)
+            <span class="cn-clear"><!-- Emptry --></span>
+            <div class="cn-actions">
+                <div class="cn-buttons">
+                #cnButton('', 'button.close' '' "${widgetInstance}.openEditMode('false');", 'main')
+        </div>
+            </div>
+            #elseif($isBlogManager)
+        <span class="cn-clear"><!-- Emptry --></span>
+            <div class="cn-actions">
+                <div class="cn-buttons">
+                #cnButton('', 'edit.link.edit' '' "${widgetInstance}.openEditMode('true');")
+            </div>
+            </div>
+            #end
+        #end
+        <span class="cn-clear"><!-- Emptry --></span>
+    </div>
+#else
+    #if(${widget.topicExists()})
+        $fmtTool.message('common.error.topic.no.access')
+    #else
+        $fmtTool.message('common.error.topic.not.found')
+    #end
+#end

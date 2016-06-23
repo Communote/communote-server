@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="classpath:de/communardo/kenmei/database/update/v1.0.1/db.changelog.v1.0.1.xml">
+
+	<changeSet id="test10" author="unknown" context="client" dbms="postgresql">
+		<comment>just a test change set</comment>
+		<sql>INSERT INTO configuration_setting
+			(key,value,configuration_fk)
+			VALUES
+			('liquibasetest10','liquibasetest10',
+			(select min(id) from
+			configuration));
+		</sql>
+	</changeSet>
+	
+	<changeSet id="mt2213_1" author="unknown" context="client" dbms="postgresql">
+		<comment>2213: CR 2 - API for Mobile Access and 3rd Systems: Last Modification Date on User profile</comment>
+		<sql>
+	ALTER TABLE user_profile ADD COLUMN LAST_MODIFICATION_DATE TIMESTAMP
+	WITHOUT TIME ZONE;
+	ALTER TABLE user_profile ADD COLUMN LAST_PHOTO_MODIFICATION_DATE TIMESTAMP
+	WITHOUT TIME ZONE;
+	UPDATE user_profile set LAST_MODIFICATION_DATE = CURRENT_TIMESTAMP;
+	ALTER TABLE user_profile ALTER COLUMN LAST_MODIFICATION_DATE SET not null;
+		</sql>
+	</changeSet>
+
+	<changeSet id="mt2213_2" author="unknown" context="client" dbms="postgresql">
+		<preConditions onError="MARK_RAN" onFail="MARK_RAN">
+			<not><tableExists tableName="isNew" /></not>
+		</preConditions>
+		<comment>2213: CR 2 - API for Mobile Access and 3rd Systems: Last Modification Date on User profile</comment>
+		<sql>
+	UPDATE user_profile set LAST_PHOTO_MODIFICATION_DATE = CURRENT_TIMESTAMP where large_image_fk is not null;
+		</sql>
+	</changeSet>	
+	
+	<changeSet id="mt2213_3" author="unknown" context="client" dbms="postgresql">
+		<comment>2213: CR 2 - API for Mobile Access and 3rd Systems: Property for downloading the mobile application</comment>
+		<sql>INSERT INTO configuration_setting
+			(key,value,configuration_fk)
+			VALUES
+			('kenmei.mobile.midp.file.name','communote.jad',
+			(select min(id) from
+			configuration));
+		</sql>
+	</changeSet>
+	
+	<changeSet id="mt2695_1" author="unknown" context="client" dbms="postgresql">
+        <comment>2695: showing the IP range in update dialog the way it was inserted: Keep IPv4 IP range in IPv4 format</comment>
+        <sql>
+    ALTER TABLE iprange_range ADD COLUMN STRING_REPRESENTATION CHARACTER VARYING(1024);
+        </sql>
+    </changeSet>
+    
+    <changeSet id="mt2711_1" author="unknown" context="client" dbms="postgresql">
+		<comment>2711: [CompositeWidget] - CR 18 - Confluence Integration - Optimisation</comment>
+		<sql>INSERT INTO configuration_setting
+			(key,value,configuration_fk)
+			VALUES
+			('kenmei.integration.widget.include.footer.powered.by','true',
+			(select min(id) from
+			configuration));
+		</sql>
+	</changeSet>
+	
+	<changeSet id="mt2773_1" author="unknown" context="client" dbms="postgresql">
+		<preConditions onError="HALT" onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="configuration_sharepoint_auth" schemaName="public" />
+			</not>
+		</preConditions>
+		<comment>2773: CR 19 - Sharepoint integration </comment>
+		<sql>
+		 create table configuration_sharepoint_auth (
+		     ID BIGINT not null,
+		     AUTHENTICATION_API_URL CHARACTER VARYING(1024) not null,
+		     ADMIN_PASSWORD CHARACTER VARYING(1024) not null,
+		     ADMIN_LOGIN CHARACTER VARYING(1024) not null,
+		     primary key (ID)
+		 );
+		 
+		 alter table configuration_sharepoint_auth 
+		     add constraint configuration_sharepoint_authIFKC 
+		     foreign key (ID) 
+		     references configuration_auth_external;
+		</sql>
+	</changeSet>
+	
+
+</databaseChangeLog>

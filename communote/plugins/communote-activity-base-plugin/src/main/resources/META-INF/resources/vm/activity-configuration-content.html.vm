@@ -1,0 +1,117 @@
+##
+## This is used by 
+## com.communote.plugins.activity.base.fe.admin.ActivityAdminController
+##
+<script type="text/javascript">
+	window.addEvent('domready', function(){
+		
+		var list = document.getElements('.activity-detail');
+        var headings = document.getElements('.activity-short');
+        var collapsibles = {};
+        
+        headings.each( function(heading, i) {
+            var collapsible = new Fx.Slide(list[i], { 
+                duration: 200, 
+                transition: Fx.Transitions.linear,
+                onComplete: function(request){ 
+                    var open = request.getStyle('margin-top').toInt();
+                    if(open >= 0) {
+                    	heading.addClass('open');
+                    } else {
+                    	heading.removeClass('open');
+                    }
+                }
+            });
+            collapsibles[i] = collapsible;
+            heading.onclick = function() {
+                collapsible.toggle();
+                return false;
+            }
+            collapsible.hide();
+            
+        });
+	});
+</script>
+#cnRenderMessages($status.Errors)
+<h5>$fmtTool.message("plugins.activity.configuration.title")</h5>
+<div class="form-description">$fmtTool.message("plugins.activity.configuration.description")</div>
+
+#set($isExternalSeperator = false)
+#set($isInternalSeperator = false)
+<form method="post">
+    <div id="activities">
+		#foreach($activity in $activities)
+            #if($activity.Right.isExternal() && !$isExternalSeperator)
+                <h6 class="subheadline">$fmtTool.message('plugins.activity.configuration.subtitle.external')</h6>
+                #set($isExternalSeperator = true)
+            #elseif(!$activity.Right.isExternal() && !$isInternalSeperator)
+                <h6 class="subheadline">$fmtTool.message('plugins.activity.configuration.subtitle.internal')</h6>
+                #set($isInternalSeperator = true)
+            #end
+		    <div class="activity" id="activity-$velocityCount">
+	            <input type="hidden" value="$activity.Right.StaticName" name="activity-staticName-$velocityCount"/>
+	            <input type="hidden" value="$activity.Right.isExternal()" name="activity-external-$velocityCount"/>
+		        <div class="activity-short" id="activity-short-$velocityCount">
+                    <span class="activity-arrow">&nbsp;</span>
+		            <div class="activity-name">
+                    #if( ! $activity.Left)
+                        $escTool.xmlSimple($activity.Right.StaticName)
+                    #else
+                        $escTool.xmlSimple($activity.Left.TemplateName.toString($locale))
+                    #end</div>
+		            <div class="activity-status">
+                    #if( ! $activity.Left)
+	                    <span class="deinstalled">$fmtTool.message('plugins.activity.configuration.deinstalled')</span>
+		            #elseif($activity.Right.isActive())
+	                    <span class="active">$fmtTool.message('plugins.activity.configuration.active')</span>
+	                #else
+	                    <span class="inactive">$fmtTool.message('plugins.activity.configuration.inactive')</span>
+	                #end
+                    </div>
+		        </div>
+		        <div class="activity-detail" id="activity-detail-$velocityCount" style="clear: both;">
+		        #if($activity.Left.Description)
+		            <i>$escTool.xmlSimple($activity.Left.Description)</i>
+		        #end
+		            <div class="cn-field-100">
+		                <div class="cn-check">
+		                    <input type="checkbox" name="activityActivation-$velocityCount" id="activityActivation-$velocityCount" class="cn-inputCheck"
+		                       #if($activity.Right.isActive() && $activity.Left) checked="checked" #end 
+                               #if(!$activity.Left.isDeactivatableByManager()) disabled="disabled" #end/>
+		                    <input type="hidden" value="$activity.Right.isActive()" name="_activityActivation-$velocityCount" />
+		                    <label for="activityActivation-$velocityCount">$fmtTool.message('plugins.activity.configuration.activate')</label>
+		                    <span class="cn-clear"><!-- --></span>
+		                </div>
+		            </div>
+		            <div class="cn-field-100">
+		                <div class="cn-check">
+		                    <input type="checkbox" name="deletableByUser-$velocityCount" id="deletableByUser-$velocityCount" class="cn-inputCheck"
+		                        #if(!$activity.Left.isDeletable()) disabled="disabled" #end
+		                        #if($activity.Right.isDeletableByUser()) checked="checked" #end />
+		                    <label for="deletableByUser-$velocityCount">$fmtTool.message("plugins.activity.configuration.deletable")</label>
+		                    <span class="cn-clear"><!-- --></span>
+		                </div>
+		            </div>
+		            #if($activity.Left.isDeletable())
+	                    <div class="cn-field-100">
+	                       #set($expirationTimeout = $activity.Right.ExpirationTimeout / 86400000)
+	                       $fmtTool.message("plugins.activity.configuration.expiration",
+	                       "<input name='expirationTimeout-$velocityCount' size='5' id='expirationTimeout-$velocityCount' value='$expirationTimeout' />")
+	                    </div>
+                    #end
+		        </div>
+		        <input type="hidden" value="$activity.Right.TemplateId" name="activity-id-$velocityCount"/>
+		    </div>
+		#end
+	</div>
+	<input type="hidden" value="$activities.size()" name="activity-count"/>
+	<div class="actionbar actionbar-general">
+	    <input type="hidden" value="activity-configuration-save" name="action" />
+	    <div class="button-gray main">
+	        <input type="submit"
+	            value="$fmtTool.message('plugins.activity.configuration.button.save')" />
+	    </div>
+	    <span class="clear"><!-- Empty --></span>
+	</div>
+</form>
+<span class="cn-clear"> <!-- Empty --></span>

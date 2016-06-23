@@ -1,0 +1,54 @@
+<%@ include file="/WEB-INF/jsp/common/include.jsp"%>
+<c:if test="${cf:contains(invitationFields, 'EMAILALIAS')}">
+  <div class="w100">
+      <div class="label"><label for="no_auto_complete_emailalias"><fmt:message key="blog.member.invite.form.emailAlias"/><span class="required">*</span></label></div>
+      <div class="input"><input type="text" value="" class="text" name="emailAlias" id="no_auto_complete_emailalias"/></div>
+      <div class="error"><label class="error" for="no_auto_complete_emailalias"><form:errors path="emailAlias" cssClass="error" /></label></div>
+  </div>
+</c:if>
+<c:if test="${cf:contains(invitationFields, 'FIRSTNAME')}">
+ <div class="w50">
+      <div class="label"><label for="no_auto_complete_firstname"><fmt:message key="user.register.firstname" /><span class="required">*</span></label></div>
+      <div class="input"><input type="text" value="" class="text" name="firstName" id="no_auto_complete_firstname"/></div>
+      <div class="error"><label class="error" for="no_auto_complete_firstname"><form:errors path="firstName" cssClass="error"/></label></div>
+ </div>
+</c:if>
+<c:if test="${cf:contains(invitationFields, 'LASTNAME')}">
+ <div class="w50">
+	<div class="label"><label for="no_auto_complete_lastname"><fmt:message key="user.register.lastname" /><span class="required">*</span></label></div>
+	<div class="input"><input type="text" value="" class="text" name="lastName" id="no_auto_complete_lastname"/></div>
+	<div class="error"><label class="error" for="no_auto_complete_lastname"><form:errors path="lastName" cssClass="error"/></label></div>
+ </div>
+</c:if>
+<c:if test="${cf:contains(invitationFields, 'ALIAS')}">      	
+<div class="w50">
+  <div class="label"><label for="no_auto_complete_alias"><fmt:message key="user.register.alias" /><span class="required">*</span></label></div>
+  <div class="input"><input type="text" value="" class="text" name="alias" id="no_auto_complete_alias"/></div>
+  <div class="error"><label class="error" for="no_auto_complete_alias"><form:errors path="alias" cssClass="error"/></label></div>
+</div>
+</c:if>
+<c:if test="${cf:contains(invitationFields, 'EXTERNAL_USERNAME')}">        
+<div class="w50">
+  <div class="label"><label for="no_auto_complete_ext"><fmt:message key="user.register.alias" /><span class="required">*</span></label></div>
+  <div class="input"><input type="text" value="" class="text" name="externalUsername" id="no_auto_complete_ext"/></div>
+  <div class="error"><label class="error" for="no_auto_complete_ext"><form:errors path="externalUsername" cssClass="error"/></label></div>
+</div>
+</c:if>
+<c:if test="${cf:contains(invitationFields, 'EMAIL')}">
+<div class="w50">
+	<div class="label"><label for="no_auto_complete_email"><fmt:message key="user.register.email" /><span class="required">*</span></label></div>
+	<div class="input"><input type="text" value="" class="text" name="email" id="no_auto_complete_email"/></div>
+	<div class="error"><label class="error" for="no_auto_complete_email"><form:errors cssClass="error" path="email" /></label></div>
+</div>
+</c:if>
+<c:if test="${cf:contains(invitationFields, 'LANGUAGECODE')}">
+<div class="w100">
+	<div class="label"><label for="languageCode"><fmt:message key="user.register.language" /><span class="required">*</span></label></div>
+	<div class="input">
+		<jsp:include page="/WEB-INF/jsp/common/language_list_input.jsp">
+	  	    <jsp:param name="path" value="languageCode" />
+		 </jsp:include>
+	</div>
+	<div class="error"><label class="error" for="languageCode"><form:errors path="languageCode" /></label></div>
+</div>
+</c:if>

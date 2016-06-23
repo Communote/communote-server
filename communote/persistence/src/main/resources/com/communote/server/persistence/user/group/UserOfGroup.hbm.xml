@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.user.group.UserOfGroupImpl" table="user_of_group" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">user_of_group_seq</param>
+                                                           </generator>
+        </id>
+        <property name="modificationType" type="com.communote.server.persistence.user.group.UserOfGroupModificationTypeEnum">
+            <column name="modification_type" 
+                     not-null="false" unique="false"/>
+        </property>
+        <many-to-one name="group" class="com.communote.server.model.user.group.Group" foreign-key="user_of_group_GROUP_FKC" lazy="proxy" fetch="select">
+            <column name="GROUP_FK" not-null="true"/>
+        </many-to-one>
+        <many-to-one name="user" class="com.communote.server.model.user.User" foreign-key="user_of_group_USER_FKC" lazy="proxy" fetch="select">
+            <column name="USER_FK" not-null="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

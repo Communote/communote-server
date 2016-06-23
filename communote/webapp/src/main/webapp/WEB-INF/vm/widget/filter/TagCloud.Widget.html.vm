@@ -1,0 +1,67 @@
+#set( $tagCloudHeading = ${widget.getParameter("tagCloudHeadline")})
+    
+#set( $tagCloudFilterPrefix = $escTool.xmlSimple($widget.getAttribute("tagCloudFilterPrefix")))
+#set( $tagCloudTagEntries = $widget.getAttribute("tagCloudHierarchyEntries"))
+#set( $isShowTitle = $widget.showTitle)
+#set( $isShowHistory = $widget.showHistory)
+#set( $mode = $widget.getParameter('mode', 'trend'))
+#widgetMetadata(${widget.ResponseMetadata})
+#if($isShowTitle)
+    <h2>$escTool.xmlSimple(${tagCloudHeading})</h2>
+#end
+
+<div class="cn-filter-tagcloud">
+    <div class="cn-widget-header-toolbar">
+        <ul aria-haspopup="true" class="cn-menu">
+            #if(${mode} == 'trend')
+                <li class="cn-more-actions"><a class="cn-link" href="javascript:;" title="#t_args('blog.filter.tagcloud.menu.trend.hint',[$communoteTool.client.getProperty('NOTES_TO_USE_FOR_TRENDS','1000')])"><span class="cn-icon-label">$fmtTool.message("blog.filter.tagcloud.menu.trend") </span><span class="cn-icon cn-arrow"><!-- &#9660; --></span></a></li>
+            #else
+                <li class="cn-more-actions"><a class="cn-link " href="javascript:;"><span class="cn-icon-label">$fmtTool.message("blog.filter.tagcloud.menu.top50")</span> <span class="cn-icon cn-arrow"><!-- &#9660; --></span></a></li>
+            #end
+            <li>
+                <ul class="cn-menu-list">
+                    #if(${mode} == 'trend')
+                        <li>
+                            <a class="cn-link" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').setMaxElementCount('50', false); return false;">$fmtTool.message("blog.filter.tagcloud.menu.top50")</a>
+                        </li>
+                    #else
+                        <li>
+                            <a class="cn-link  cn-active " href="javascript:;" title="#t_args('blog.filter.tagcloud.menu.trend.hint',[$communoteTool.client.getProperty('NOTES_TO_USE_FOR_TRENDS','1000')])" onclick="widgetController.getWidget('${widget.widgetId}').setMaxElementCount('50', true); return false;">$fmtTool.message("blog.filter.tagcloud.menu.trend")</a>
+                        </li>
+                    #end
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <h3 class="cn-headline">$fmtTool.message("blog.filter.tagcloud.title")</h3>
+    <div class="cn-content">
+        #if ($isShowHistory && ! $tagCloudTagEntries)
+            <div class="tagHistory">
+                <a href="javascript:;" >$fmtTool.message("widget.tag.cloud.reset.filter")</a>
+                ## write tag using c:out and escapeXml to avoid XSS attacks
+                #foreach( $tagEntry in $tagCloudTagEntries )
+                    &gt; <a href="javascript:;" rel="$escTool.xmlSimple($tagEntry.Filter)">$escTool.xmlSimple(${tagEntry.Name})</a>
+                #end
+            </div>
+            <br />
+        #end
+        
+        #if( !$list || $list.size() == 0 )
+            <div class="cn-empty-list">
+                $fmtTool.message("widget.empty.list")
+            </div>
+        #else 
+            <ul class="cn-filter-tagcloud-list control-tagcloud">
+                #foreach( $normalizedTag in $list )
+                    #set( $tagName = $normalizedTag.Item.Name )
+                    #set( $escapedName = $escTool.xmlSimple($tagName) )
+                    <li class="tag${normalizedTag.normalizedRank}"><a 
+                        onclick="return false;" 
+                        rel="$normalizedTag.Item.Id" name="$escapedName"
+                        #if($widget.moreThanOneTagStore())title="#t('tagstore.source'): #t("tagstore.identifier.$normalizedTag.Item.TagStoreAlias")#if($normalizedTag.Item.Locale) ($normalizedTag.Item.Locale)#end"#end
+                        href="$urlTool.tag($normalizedTag.Item.Id)" rel="$!tagCloudFilterPrefix">$escapedName</a></li>
+                #end
+            </ul>
+        #end
+    </div>
+</div>

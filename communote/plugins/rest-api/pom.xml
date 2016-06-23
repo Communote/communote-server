@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>com.communote.plugins</groupId>
+        <artifactId>communote-plugins-parent</artifactId>
+        <version>3.4-SNAPSHOT</version>
+        <relativePath></relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.communote.server.plugins</groupId>
+    <artifactId>communote-rest-api-build</artifactId>
+    <packaging>pom</packaging>
+    <name>Communote - Plugins - Core - Rest-Api - Build</name>
+    <description>This plugins builds the REST Api.</description>
+    <profiles>
+        <profile>
+            <id>api-versions</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>1.3</module>
+                <module>2.2</module>
+                <module>2.4</module>
+                <module>3.0</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>rest-test-plugin</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>test-plugin</module>
+            </modules>
+        </profile>
+    </profiles>
+</project>

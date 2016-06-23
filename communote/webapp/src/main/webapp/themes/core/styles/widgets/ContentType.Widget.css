@@ -1,0 +1,65 @@
+.cn-filter-content .cn-entry-wrapper {
+    display: inline-block;
+    width: 49%;
+}
+
+.cn-filter-content .cn-entry.cn-active {
+    cursor: pointer;
+}
+
+.cn-filter-content .cn-entry.cn-active:hover {
+    text-decoration: line-through;
+}
+
+.cn-filter-content span a {
+    background: no-repeat 0 50%;
+    line-height: 32px;
+}
+
+.cn-filter-content .cn-icon-label {
+    padding-left: 5px;
+}
+
+.ContentTypeWidget .cn-fab-wrapper {
+    border-bottom: 1px dotted #D9D9D9;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.ContentTypeWidget .cn-fab-wrapper .cn-entry {
+    float: left;
+    width: 33%;
+    text-align: center;
+}
+
+.ContentTypeWidget .cn-fab-wrapper .cn-entry.cn-mention .cn-icon {
+    background-position: 0px -128px;
+}
+
+.ContentTypeWidget .cn-fab-wrapper .cn-entry.cn-favorite .cn-icon {
+    background-position: -32px -128px;
+}
+
+.ContentTypeWidget .cn-fab-wrapper .cn-entry.cn-follow .cn-icon {
+    background-position: -64px -128px;
+}
+
+.ContentTypeWidget .cn-fab-wrapper .cn-entry.cn-mention.cn-active .cn-icon,
+.ContentTypeWidget .cn-fab-wrapper .cn-entry.cn-mention:hover .cn-icon {
+    background-position: 0px -160px;
+}
+
+.ContentTypeWidget .cn-fab-wrapper .cn-entry.cn-favorite.cn-active .cn-icon,
+.ContentTypeWidget .cn-fab-wrapper .cn-entry.cn-favorite:hover .cn-icon {
+    background-position: -32px -160px;
+}
+
+.ContentTypeWidget .cn-fab-wrapper .cn-entry.cn-follow.cn-active .cn-icon,
+.ContentTypeWidget .cn-fab-wrapper .cn-entry.cn-follow:hover .cn-icon {
+    background-position: -64px -160px;
+}
+
+.ContentTypeWidget .cn-fab-wrapper .cn-entry span.cn-icon {
+    margin: 0 auto;
+    float: none;
+}

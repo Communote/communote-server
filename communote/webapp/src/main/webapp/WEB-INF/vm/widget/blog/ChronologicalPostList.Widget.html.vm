@@ -1,0 +1,90 @@
+## 
+## $list -> PageableList of com.communote.server.web.fe.widgets.blog.notes.NoteListData
+## $note -> com.communote.server.web.fe.widgets.blog.notes.NoteListData
+##
+#set($widgetInstance = "#jsCurrentWidget()")
+#set($currentUserId = ${communoteTool.CurrentUserId})
+#set($imageMedium = $fieldTool.get('com.communote.server.model.user.ImageSizeType.MEDIUM'))
+#set($nameShort = $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.SHORT'))
+#set($nameMedium = $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.MEDIUM'))
+#set($sourceEmail = $fieldTool.get('com.communote.server.model.note.NoteCreationSource.MAIL'))
+#set($sourceXMPP = $fieldTool.get('com.communote.server.model.note.NoteCreationSource.XMPP'))
+#set($noteMetaTimeFormat = 'short')
+#if($renderStyle == 'COMMENT' || $renderStyle == 'THREAD')
+    #set($noteMetaDateFormat = 'medium')
+#else
+    #set($noteMetaDateFormat = '')
+#end
+
+
+#widgetMetadata(${widget.ResponseMetadata})
+#if(${viewMode} == 'LIST')
+    #parse('/WEB-INF/vm/widget/blog/ChronologicalPostList-Header.Widget.html.vm')
+    #if($list.size() == 0)
+        #if(${widget.getQueryParameters().isFollowingFeedAndUnfiltered()})
+            #parse("/WEB-INF/vm/usage-guideline/empty-unfiltered-follow.html.vm")
+        #elseif(${widget.getQueryParameters().isFavoriteFeedAndUnfiltered()})
+            #parse("/WEB-INF/vm/usage-guideline/empty-unfiltered-favorite.html.vm")
+        #else
+            #if(${widget.getBooleanParameter('showHeader', true)})
+                <div class="control-new-note-placeholder cn-hidden"></div>
+            #end
+            <div class="control-empty-list cn-empty-list">#t('blog.post.empty.list')</div>
+            #if($widget.getParameter('loadMoreMode') != 'paging')
+            <div class="control-loadmore-placeholder cn-list-loadmore-wrapper" style="display:none">
+                <div class="control-loadmore-no-more-data cn-empty-list" style="display:none">
+                    <span>#t('blog.post.list.loadmore.all.loaded')</span>
+                </div>
+            </div>
+            #end
+        #end
+    #else
+        ## initialize the lastDate to avoid rendering the same date separator
+        #if($renderStyle == 'CLASSIC' && $widget.getParameter('loadMoreMode') != 'paging' && $widget.getParameter('retrieveOnlyNotesBeforeDate'))
+            #set( $lastDate = $dateTool.format('short_date', $widget.getLongParameter('retrieveOnlyNotesBeforeDate'), $communoteTool.getCurrentUserLocale($request) , $communoteTool.getCurrentUserEffectiveTimeZone() ) )
+        #end
+        <div class="cn-list-notes-result-set">
+            <div class="${renderStyle}">
+            #if(${widget.getBooleanParameter('showHeader', true)})
+                <div class="control-new-note-placeholder cn-hidden"></div>
+            #end
+            #foreach($note in $list)
+                #parse('/WEB-INF/vm/widget/blog/ChronologicalPostList-List-Note.Widget.html.vm')
+            #end
+            </div>
+        </div>
+        #if($widget.getParameter('loadMoreMode') != 'paging')
+        <div class="control-loadmore-placeholder cn-list-loadmore-wrapper">
+            <div class="control-loadmore-loading-feedback cn-list-loadmore-feedback" style="display:none">
+                <span>#t('blog.post.list.loadmore.loading.feedback')</span>
+            </div>
+            <div class="control-loadmore-no-more-data cn-empty-list" style="display:none">
+                <span>#t('blog.post.list.loadmore.all.loaded')</span>
+            </div>
+            <div class="control-loadmore-limit-reached cn-list-loadmore-manually" #if($widget.getParameter('loadMoreMode')=='append-scroll' || $list.MinNumberOfAdditionalElements==0)style="display:none"#end>
+                <input type="button" class="cn-button" value="#t('blog.post.list.loadmore.manually')" onclick="document.id(this).setStyle('display', 'none');widgetController.getWidget('${widget.WidgetId}').loadMore()"/>
+            </div>
+        </div>
+        #end
+    #end
+    #parse('/WEB-INF/vm/widget/blog/ChronologicalPostList-Footer.Widget.html.vm')
+#elseif(${viewMode} == 'DISCUSSION')
+    #set($commentsList = $list)
+    #parse('/WEB-INF/vm/widget/blog/ChronologicalPostList-Thread_Comment-Single.Widget.html.vm')
+#else
+    ###render single notes (DISCUSSION_NOTE or LIST_NOTE)
+    #if($list.size() != 0)
+        #set($note = $list.get(0))
+        #if(${viewMode} == 'DISCUSSION_NOTE')
+            #parse(${widget.getNoteItemTemplate($note)})
+        #else
+            #if($widget.getBooleanParameter("renderOnlyNote", false))
+                #parse(${widget.getNoteItemTemplate($note)})
+            #else
+                #parse('/WEB-INF/vm/widget/blog/ChronologicalPostList-List-Note.Widget.html.vm')
+            #end
+        #end
+    #end
+#end
+
+

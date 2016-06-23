@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v2.2/db.changelog.v2.2.xml">
+    <changeSet author="Communote" id="KENMEI-4774_Eigenschaften_fuer_Plugins" context="client">
+        <createTable tableName="core_plugin_properties">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="key_group" type="VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_key" type="VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_value" type="text">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_modification_date" type="TIMESTAMP" defaultValueDate="1983-06-19T04:08:23">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB" />
+        </modifySql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4774_Eigenschaften_fuer_Plugins_seq" context="client" dbms="postgresql">
+        <createSequence sequenceName="core_plugin_properties_seq" />
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4774_Eigenschaften_fuer_Plugins_seq_oracle" context="client" dbms="oracle">
+        <createSequence sequenceName="core_plugin_properties_seq" />
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4774_Eigenschaften_fuer_Plugins_autoincrement" context="client" dbms="mysql">
+        <addAutoIncrement tableName="core_plugin_properties" columnName="id" columnDataType="BIGINT" />
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4774_Eigenschaften_fuer_Plugins_unique" context="client">
+        <addUniqueConstraint tableName="core_plugin_properties" columnNames="property_key,key_group" constraintName="plugin_prop_cnst" />
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4774_Column_for_application_property" context="client">
+        <addColumn tableName="core_plugin_properties">
+            <column name="application_property" type="BOOLEAN" defaultValueBoolean="false" />
+        </addColumn>
+    </changeSet>
+	<changeSet author="Communote" id="KENMEI-4781_Refactoring_von_ExternalObjectManagement_v2" context="client">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.2/db.changelog.v2.2.xml" 
+                    author="Communote" id="KENMEI-4781_Refactoring_von_ExternalObjectManagement" />
+            </not>
+        </preConditions>
+        <modifyColumn tableName="core_external_object_prop">
+			<column name="property_key" type="varchar(128)"/>
+		</modifyColumn>
+		<modifyColumn tableName="core_external_object_prop">
+			<column name="property_value" type="varchar(4000)"/>
+		</modifyColumn>
+		<addColumn tableName="core_external_object_prop">
+            <column name="key_group" type="varchar(128)">
+                <constraints nullable="true" />
+            </column>
+		</addColumn>
+		<addColumn tableName="core_external_object_prop">
+            <column name="last_modification_date" type="TIMESTAMP" defaultValueDate="1983-06-19T04:08:23">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <update tableName="core_external_object_prop">
+            <column name="key_group" value="com.communote.plugins.confluence"></column>
+            <where>key_group is null</where>
+        </update>
+        <update tableName="core_external_object_prop">
+            <column name="last_modification_date" valueDate="1983-06-19T04:08:23"></column>
+            <where>last_modification_date is null</where>
+        </update>
+        <!-- MySQL requires the columnDataType -->
+        <addNotNullConstraint tableName="core_external_object_prop" columnName="key_group" columnDataType="varchar(128)"/>
+        <addNotNullConstraint tableName="core_external_object_prop" columnName="last_modification_date" columnDataType="TIMESTAMP"/>
+        <!-- MSSQL is complaining that timestamp isn't the actual type -->  
+        <modifySql dbms="mssql">
+            <replace replace="TIMESTAMP" with="DATETIME"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4781_MSSQL_Datatypes" context="client" dbms="mssql">
+        <sql>
+        ALTER TABLE core_external_object_prop ALTER COLUMN property_key nvarchar(128);
+        ALTER TABLE core_external_object_prop ALTER COLUMN property_value nvarchar(4000);
+        ALTER TABLE core_external_object_prop ALTER COLUMN key_group nvarchar(128);
+        </sql>
+    </changeSet>
+	<changeSet author="Communote" id="KENMEI-3838_Domain_Controller_LDAP_Server_automatisch_ermitteln" context="client">
+		<addColumn tableName="configuration_ldap">
+            <column name="server_domain" type="varchar(255)" />
+            <column name="query_prefix" type="varchar(255)" />
+            <column name="dynamic_mode" type="BOOLEAN" defaultValueBoolean="false" />
+		</addColumn>
+    </changeSet>
+	<changeSet author="Communote" id="KENMEI-3838_Domain_Controller_LDAP_Server_ermitteln_mssql" context="client" dbms="mssql">
+		<dropColumn tableName="configuration_ldap" columnName="server_domain"/>
+		<dropColumn tableName="configuration_ldap" columnName="query_prefix"/>
+        <addColumn tableName="configuration_ldap">
+            <column name="server_domain" type="nvarchar(255)" />
+            <column name="query_prefix" type="nvarchar(255)" />
+		</addColumn>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-3838_Set_Dynamic_Mode_to_false" context="client">
+        <update tableName="configuration_ldap">
+            <column name="dynamic_mode" valueBoolean="false" />
+        </update>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4845-Typen_Spalten_in_MSSQL_nicht_korrekt-v3" dbms="MSSQL">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v2.2/db.changelog.v2.2.xml" 
+                    author="Communote" id="KENMEI-4845-Typen_Spalten_in_MSSQL_nicht_korrekt-v2" />
+            </not>
+        </preConditions>
+     <sql splitStatements="false">
+        DROP INDEX tag_store_asc_idx ON core_tag WITH ( ONLINE = OFF )
+        ALTER TABLE core_tag                DROP CONSTRAINT core_tag_store_idx;
+        ALTER TABLE core_tag                DROP CONSTRAINT DF_core_tag_tag_store_alias;
+        ALTER TABLE core_tag                ALTER COLUMN    tag_store_alias nvarchar(255);
+        ALTER TABLE core_tag                ADD CONSTRAINT core_tag_store_idx UNIQUE NONCLUSTERED (tag_store_tag_id ASC,tag_store_alias ASC);
+        ALTER TABLE core_tag                ADD CONSTRAINT DF_core_tag_tag_store_alias DEFAULT ('DefaultNoteTagStore') FOR tag_store_alias;
+        CREATE NONCLUSTERED INDEX tag_store_asc_idx ON core_tag (tag_store_tag_id ASC, tag_store_alias ASC);
+        
+        ALTER TABLE core_plugin_properties DROP CONSTRAINT  plugin_prop_cnst
+        ALTER TABLE core_plugin_properties  ALTER COLUMN    key_group nvarchar(128);
+        ALTER TABLE core_plugin_properties  ALTER COLUMN    property_key nvarchar(128);
+        ALTER TABLE core_plugin_properties ADD  CONSTRAINT  plugin_prop_cnst UNIQUE NONCLUSTERED (property_key ASC, key_group ASC);
+        
+        ALTER TABLE core_plugin_properties  ALTER COLUMN    property_value nvarchar(max);
+        
+        ALTER TABLE core_plugin_properties  DROP CONSTRAINT DF_core_plugin_properties_last_modification_date;
+        ALTER TABLE core_plugin_properties  ALTER COLUMN    last_modification_date datetime2;
+        
+		declare @name nvarchar(32); 
+		declare @sql nvarchar(1000);
+		
+
+		select @name = O.name from sysobjects AS O left join sysobjects AS T on O.parent_obj = T.id
+		where T.name = 'core_blog_property' and O.name like 'DF__core_blog__last%'
+		if not @name is null
+		begin
+			select @sql = 'ALTER TABLE core_blog_property DROP CONSTRAINT [' + @name + ']'
+			execute sp_executesql @sql
+		end
+
+		select @name = O.name from sysobjects AS O left join sysobjects AS T on O.parent_obj = T.id
+		where T.name = 'user_group_property' and O.name like 'DF__user_grou__last%'
+		if not @name is null
+		begin
+			select @sql = 'ALTER TABLE user_group_property DROP CONSTRAINT [' + @name + ']'
+			execute sp_executesql @sql
+		end
+
+		select @name = O.name from sysobjects AS O left join sysobjects AS T on O.parent_obj = T.id
+		where T.name = 'user_user_property' and O.name like 'DF__user_user__last%'
+		if not @name is null
+		begin
+			select @sql = 'ALTER TABLE user_user_property DROP CONSTRAINT [' + @name + ']'
+			execute sp_executesql @sql
+		end
+
+		select @name = O.name from sysobjects AS O left join sysobjects AS T on O.parent_obj = T.id
+		where T.name = 'user_note_property' and O.name like 'DF__user_note__last%'
+		if not @name is null
+		begin
+			select @sql = 'ALTER TABLE user_note_property DROP CONSTRAINT [' + @name + ']'
+			execute sp_executesql @sql
+		end
+
+		select @name = O.name from sysobjects AS O left join sysobjects AS T on O.parent_obj = T.id
+		where T.name = 'core_note_property' and O.name like 'DF__core_note__last%'
+		if not @name is null
+		begin
+			select @sql = 'ALTER TABLE core_note_property DROP CONSTRAINT [' + @name + ']'
+			execute sp_executesql @sql
+		end
+
+		select @name = O.name from sysobjects AS O left join sysobjects AS T on O.parent_obj = T.id
+		where T.name = 'core_global_binary_prop' and O.name like 'DF__core_glob__last%'
+		if not @name is null
+		begin
+			select @sql = 'ALTER TABLE core_global_binary_prop DROP CONSTRAINT [' + @name + ']'
+			execute sp_executesql @sql
+		end
+
+
+        ALTER TABLE core_blog_property      ALTER COLUMN    last_modification_date datetime2;
+        ALTER TABLE user_group_property     ALTER COLUMN    last_modification_date datetime2;
+        ALTER TABLE core_external_object_prop DROP CONSTRAINT DF_core_external_object_prop_last_modification_date;
+        ALTER TABLE core_external_object_prop ALTER COLUMN  last_modification_date datetime2;
+        ALTER TABLE user_user_property      ALTER COLUMN    last_modification_date datetime2;
+        ALTER TABLE user_note_property      ALTER COLUMN    last_modification_date datetime2;
+        ALTER TABLE core_note_property      ALTER COLUMN    last_modification_date datetime2;
+		ALTER TABLE core_global_binary_prop ALTER COLUMN    last_modification_date datetime2;
+     </sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5019_UniqueConstraint_ExternalGroups_mssql" context="client" dbms="mssql">
+        <sql>
+        ALTER TABLE user_group_external ALTER COLUMN external_id nvarchar(250) NOT NULL;
+        ALTER TABLE user_group_external ALTER COLUMN external_system_id nvarchar(50) NOT NULL;
+        ALTER TABLE user_group_external ADD CONSTRAINT user_group_external_unique_key UNIQUE NONCLUSTERED (external_id ASC, external_system_id ASC)
+        </sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5019_UniqueConstraint_ExternalGroups_postgresql" context="client" dbms="postgresql">
+        <modifyColumn tableName="user_group_external">
+            <column name="external_id" type="varchar(250)"><constraints nullable="false"/></column>
+            <column name="external_system_id" type="varchar(50)"><constraints nullable="false"/></column>
+        </modifyColumn>
+        <addUniqueConstraint tableName="user_group_external" columnNames="external_id,external_system_id" constraintName="user_group_external_unique_key"/>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5019_UniqueConstraint_ExternalGroups_mysql" context="client" dbms="mysql">
+        <modifyColumn tableName="user_group_external">
+            <column name="external_id" type="varchar(250)"><constraints nullable="false"/></column>
+            <column name="external_system_id" type="varchar(50)"><constraints nullable="false"/></column>
+        </modifyColumn>
+        <addUniqueConstraint tableName="user_group_external" columnNames="external_id,external_system_id" constraintName="user_group_external_unique_key"/>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5019_UniqueConstraint_ExternalGroups_oracle" context="client" dbms="oracle">
+        <modifyColumn tableName="user_group_external">
+            <column name="external_id" type="varchar(250)"><constraints nullable="false"/></column>
+            <column name="external_system_id" type="varchar(50)"><constraints nullable="false"/></column>
+        </modifyColumn>
+        <addUniqueConstraint tableName="user_group_external" columnNames="external_id,external_system_id" constraintName="user_group_external_unique_key"/>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4931_Thema einsehbar_obwohl_keine_Berechtigung_pg_2" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0"><![CDATA[
+                SELECT count(*) FROM core_role2blog WHERE granted_by_group=true AND external_system_id = 'DefaultLDAP'; 
+                ]]></sqlCheck>
+            </not>
+        </preConditions>
+        <sqlFile path="com/communote/server/liquibase/update/v2.2/KENMEI-4931_Thema einsehbar_obwohl_keine_Berechtigung_PostgreSQL.sql" />
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4931_Thema einsehbar_obwohl_keine_Berechtigung_mysql_2" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0"><![CDATA[
+                SELECT count(*) FROM core_role2blog WHERE granted_by_group=true AND external_system_id = 'DefaultLDAP'; 
+                ]]></sqlCheck>
+            </not>
+        </preConditions>
+        <sqlFile path="com/communote/server/liquibase/update/v2.2/KENMEI-4931_Thema einsehbar_obwohl_keine_Berechtigung_MySQL.sql" />
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4931_Thema einsehbar_obwohl_keine_Berechtigung_mssql_2" dbms="mssql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0"><![CDATA[
+                SELECT count(*) FROM core_role2blog WHERE granted_by_group=1 AND external_system_id = 'DefaultLDAP'; 
+                ]]></sqlCheck>
+            </not>
+        </preConditions>
+        <sqlFile path="com/communote/server/liquibase/update/v2.2/KENMEI-4931_Thema einsehbar_obwohl_keine_Berechtigung_MSSQL.sql" />
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-4931_Thema einsehbar_obwohl_keine_Berechtigung_oracle_2" dbms="oracle">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="0"><![CDATA[
+                    SELECT count(*) FROM core_role2blog WHERE granted_by_group=1 AND external_system_id='DefaultLDAP'
+                ]]></sqlCheck>
+            </not>
+        </preConditions>
+        <sqlFile path="com/communote/server/liquibase/update/v2.2/KENMEI-4931_Thema einsehbar_obwohl_keine_Berechtigung_Oracle.sql" />
+    </changeSet>
+    
+    <changeSet author="Communote" id="KENMEI-5083_MSSQL_schlechte_Performance_bei_TagCloud-Aufruf_1" context="client" dbms="mssql">
+        <sql><![CDATA[
+            CREATE NONCLUSTERED INDEX core_role2blog_role_idx ON core_role2blog 
+            ( blog_id ASC, user_id ASC, numeric_role ASC ) 
+            WITH (SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF)
+            ON [PRIMARY];
+        ]]>
+        </sql>
+    </changeSet>
+    
+    <changeSet author="Communote" id="KENMEI-4817-Follow-optimieren-Create-Index-2" dbms="mysql,postgresql">
+        <createIndex tableName="core_note2followable" indexName="core_note_follow_items_fk_idx">
+            <column name="FOLLOWABLE_ITEMS_FK"></column>
+        </createIndex>
+        <createIndex tableName="core_note2followable" indexName="core_note_follow_note_fk_idx">
+            <column name="NOTES_FK"></column>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5243-Comparison of external id must be case sensitive" dbms="mysql">
+        <sql><![CDATA[
+            ALTER TABLE user_group_external CHANGE COLUMN external_id external_id VARCHAR(250) BINARY NOT NULL;
+        ]]></sql>
+    </changeSet>
+    
+	<changeSet author="Communote"
+		id="KENMEI-5241-Posgtres-Volltextsuche-sehr-langsam " dbms="postgresql">
+		<preConditions onError="CONTINUE">
+			<customPrecondition
+				className="com.communote.server.core.database.liquibase.FulltextEnabledPrecondition" />
+		</preConditions>
+        <sql><![CDATA[
+            DROP INDEX ft_en_core_content_content_idx;
+			CREATE INDEX ft_simple_core_content_content_idx ON core_content 
+            USING gin(to_tsvector('simple', content));
+            ]]>
+		</sql>
+	</changeSet>
+     <changeSet id="KENMEI-5244_Add_missing_sequence" author="unknown" context="client" dbms="oracle">
+        <createSequence sequenceName="core_external_object_seq" incrementBy="1"/>    
+    </changeSet>
+</databaseChangeLog>

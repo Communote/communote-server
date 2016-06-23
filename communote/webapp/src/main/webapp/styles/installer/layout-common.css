@@ -1,0 +1,265 @@
+@charset "utf-8";
+
+/* allgemeine Definitionen */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #B1ADA2;
+    font-family: verdana, arial, sans-serif;
+    font-size: medium;
+    text-align: center;
+}
+body * {
+    position: relative;
+    color: inherit;
+    font-family: inherit;
+    font-size: medium;
+    text-align: left;
+    z-index: auto;
+    zoom: 1;
+}
+.ajax-loading {
+    background-color: #DDDDDD;
+    opacity: 0.5;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 523;
+    vertical-align: middle;
+}
+.ajax-loading div.ajax-loading-image{
+    background-attachment: scroll;
+    background-image: url(../../themes/core/images/misc/loading_orange.gif);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    min-height: 32px;
+    min-width: 32px;
+    opacity: 1;
+}
+#communote {
+    margin: auto;
+    padding-left: 10px;
+    width: 1010px;
+    background-color: #DDDDDD;
+    background-image: url("../../themes/core/images/misc/gradient_border-left.png");
+    background-attachment: scroll;
+    background-repeat: repeat-y;
+    background-position: 0 0;
+    text-align: left;
+}
+#communote a {
+    text-decoration: none;
+    color: #083B7D;
+}
+#communote a * {
+    color: inherit;
+    background-color: inherit;
+}
+#communote a:hover {
+    color: #FA8502;
+}
+#communote a:active ,
+#communote a:focus ,
+input ,
+button {
+    outline-width: 0; /* don't show the dotted box after click... */
+}
+#communote a:hover * {
+    color: inherit;
+    background-color: inherit;
+}
+#communote a.anchor {
+    float: left;
+/*    border: 0 none;*/
+    line-height: 0;
+}
+
+#communote h1 {
+    margin: 0px 0px 20px 0px;
+    color: #083B7D;
+    font-weight: bold;
+}
+#communote h2 {
+    margin: 0px 0px 10px 0px;
+    color: #083B7D;
+    font-weight: bold;
+}
+
+#communote h3 {
+    /*margin: 0px 0px 10px 0px;
+    color: #083B7D;
+    font-weight: bold;*/
+}
+
+#communote h4 {
+    margin: 15px 0px 10px 0px;
+    font-weight: bold;
+}
+
+#communote h5 {
+    /*margin: 0px 0px 5px 0px;
+    font-weight: bold;*/
+}
+
+#communote h6 {
+    /*margin: 10px 0px 5px 0px;
+    font-weight: bold;*/
+}
+
+#communote dl {
+    margin: 0;
+}
+#communote li {
+    line-height: 1.125em;
+    margin-left: 0;
+}
+#communote select * {
+    font-size: 100.001%;
+}
+#communote .actionbar {
+    margin-right: 30px;
+    margin-left: 25px;
+}
+
+#communote .button-blue {
+    padding-left: 7px;
+    background-color: transparent;
+    background-image: url("../../themes/core/images/misc/button_blue-left.png");
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+#communote .button-blue input {
+    margin: 0;
+    border: 0 none;
+    padding-right: 15px;
+    padding-left: 8px;
+    height: 30px;
+    background-color: transparent;
+    background-image: url("../../themes/core/images/misc/button_blue-right.png");
+    background-attachment: scroll;
+    background-repeat: repeat-x;
+    background-position: 100% 0;
+    color: #FFFFFF;
+    font-size: 68.75%;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+#communote .button-blue input:hover {
+    color: #FA8502;
+}
+#communote .button-gray {
+    padding-left: 6px;
+    background-color: transparent;
+    background-image: url("../../themes/core/images/misc/button_gray-left.png");
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+#communote .button-gray input ,
+#communote .button-gray a {
+    display: block;
+    margin: 0;
+    border: 0 none;
+    height: 27px;
+    min-width: 90px;
+    padding-right: 8px;
+    padding-left: 4px;
+    line-height: 20px;
+    background-color: transparent;
+    background-attachment: scroll;
+    background-image: url("../../themes/core/images/misc/button_gray-right.png");
+    background-repeat: no-repeat;
+    background-position: 100% 0;
+    color: #083B7D;
+    font-size: 68.75%;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+}
+#communote .button-gray a {
+    padding-top:4px;
+}
+#communote .button-gray input:hover ,
+#communote .button-gray a:hover {
+    color: #FA8502;
+}
+#communote fieldset .button-gray input ,
+#communote fieldset .button-gray a {
+    font-size: 84.62%;
+}
+#communote .button-blue ,
+#communote .button-gray {
+    float: right;
+}
+#communote .button-left {
+    float: left;
+    
+}
+#communote .button-right {
+    float: right;
+    margin-left: 10px;
+}
+#communote .hiddenImportant {
+    display: none !important;
+}
+#communote .hidden {
+    display: none;
+    visibility: hidden;
+}
+
+#communote .noEditor {
+    margin-right:5px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #CCCCCC;
+    -moz-border-radius-bottomleft: 3px;
+    -moz-border-radius-bottomright: 3px;
+    -moz-border-radius-topleft: 3px;
+    -moz-border-radius-topright: 3px;
+    padding: 6px;
+    background-color: #FFFFFF;
+    color: #333333;
+    font-size: 81.25%;
+    font-weight: bold;
+}
+#communote #container {
+    padding-right: 10px;
+    width: 1000px;
+    background-color: transparent;
+    background-image: url("../../themes/core/images/misc/gradient_border-right.png");
+    background-attachment: scroll;
+    background-repeat: repeat-y;
+    background-position: 100% 0;
+}
+#communote #content {
+    float: left;
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: #CCCCCC;
+    padding: 18px 0 0 0;
+    width: 668px;
+    background-color: #F8F6F0;
+    background-image: url("../../themes/core/images/misc/background_white.png");
+    background-attachment: scroll;
+    background-repeat: repeat;
+    background-position: 0 0;
+    z-index: 2;
+}
+#communote .successMsg {
+    margin: 0 0 1em 0;
+    border-width: 2px;
+    border-style: dotted;
+    border-color: #FA8502;
+    padding: 0.5em;
+    background-color: #FFFFFF;
+}
+#communote .successMsg dt {
+    font-size: 81.25%;
+}
+
+#communote .clickable {
+    cursor: pointer;
+}

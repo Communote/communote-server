@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <import resource="applicationContext-hibernate.xml"/>
+    <import resource="applicationContext-dataSource.xml"/>
+    <import resource="applicationContext-daos.xml"/>
+    <import resource="applicationContext-services.xml"/>
+    <import resource="applicationContext-commons.xml"/>
+    <import resource="applicationContext-jobs.xml"/>
+</beans>

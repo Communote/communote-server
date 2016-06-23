@@ -1,0 +1,25 @@
+#set($curBlogAlias = $note.Blog.NameIdentifier)
+<div class="cn-meta">
+    <a class="cn-link control-entity-link control-filter-entity-link" href="$urlTool.note($curBlogAlias, $note.id)" data-cnt-entity-details="{ &quot;noteId&quot;: &quot;${note.id}&quot;, &quot;topicId&quot;: &quot;$note.Blog.Id&quot;, &quot;noteTitle&quot;: &quot;$escTool.javascriptInline(${widget.getNoteTitle($note,$request.locale)})&quot;, &quot;topicTitle&quot;: &quot;$escTool.javascriptInline($note.Blog.Title)&quot;}" title="$dateTool.format('full', 'short', $note.creationDate, $widget.CurrentUserLocale, $widget.timeZone)">
+            $dateTool.format($noteMetaDateFormat, $noteMetaTimeFormat, $note.creationDate, $widget.CurrentUserLocale, $widget.timeZone)
+    </a>
+    <a class="cn-link control-entity-link #if(!${renderBlog})cn-last-child#end" title="$authorSignature" href="$urlTool.user($note.User.Alias)" data-cnt-user-id="$note.User.Id">
+            $escTool.xmlSimple($communoteTool.getUserSignature($note.user, $nameShort))
+    </a>
+    #if($renderStyle == 'COMMENT' && $note.Parent && $note.Parent.Id != $note.DiscussionId)
+        <span class="cn-link cn-refer-to">&nbsp;&#9658;&nbsp;</span>
+        <span class="tooltip-wrapper">
+            <a href="$urlTool.note($curBlogAlias, $note.Parent.Id)" class="tooltip cn-link refers-to cn-last-child control-entity-link" rel="$note.Parent.Id">
+             $escTool.xmlSimple($communoteTool.getUserSignature($note.parent.user, $nameShort))
+            </a>
+        </span>
+    #end
+    #if(${renderBlog})
+        #set($curBlogId = $note.Blog.Id)
+        #set($curBlogUrl = $urlTool.blog($curBlogAlias))
+        <a class="cn-link cn-last-child cn-topic-title control-entity-link" href="$curBlogUrl" data-cnt-topic-id="$curBlogId" data-cnt-entity-details="{&quot;alias&quot;: &quot;$note.Blog.Alias&quot;, &quot;title&quot;: &quot;$escTool.javascriptInline($note.Blog.Title)&quot;}">
+            $escTool.xmlSimple($note.Blog.Title)
+        </a>
+    #end
+    <span class="cn-clear"><!-- --></span>
+</div>

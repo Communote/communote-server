@@ -1,0 +1,60 @@
+/* _filterTagcloud.css */
+
+.cn-filter-tagcloud .cn-content {
+    clear: both;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list {
+    margin: 0;
+    padding: 0 0 4px 0;
+    list-style-type: none;
+}
+
+* + html .cn-filter-tagcloud .cn-filter-tagcloud-list {
+    overflow: hidden;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list li {
+    display: inline;
+    font-size: 22px;
+    list-style-type: none;
+    margin-right: 6px;
+    word-wrap: break-word;
+}
+
+* + html .cn-filter-tagcloud .cn-filter-tagcloud-list li {
+    float: left;
+    line-height: 24px;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list li.tag1 {
+    font-size: 10px;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list li.tag2 {
+    font-size: 12px;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list li.tag3 {
+    font-size: 14px;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list li.tag4 {
+    font-size: 16px;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list li.tag5 {
+    font-size: 18px;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list li.tag6 {
+    font-size: 20px;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list li a.cn-selected {
+    cursor: pointer;
+}
+
+.cn-filter-tagcloud .cn-filter-tagcloud-list li a.cn-selected:hover {
+    text-decoration: line-through;
+}

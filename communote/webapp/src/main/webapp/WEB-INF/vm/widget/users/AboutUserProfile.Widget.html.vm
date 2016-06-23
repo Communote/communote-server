@@ -1,0 +1,67 @@
+#if ($singleResult)
+    #set($address = '')
+    #if("$!singleResult.Street" != '')
+        #set($address = $escTool.xmlSimple($singleResult.Street))
+    #end
+    #if("$!singleResult.Zip" != '' || "$!singleResult.City" != '')
+        #set($address = $address + "<br />")
+    #end
+    #if("$!singleResult.Zip" != '')
+        #set($address = $address + $escTool.xmlSimple($singleResult.Zip) + '&nbsp;')
+    #end
+    #if("$!singleResult.City" != '')
+        #set($address = $address + $escTool.xmlSimple($singleResult.City))
+    #end
+    <div class="cn-infocard-container cn-user-profile-info">
+        <div class="cn-left">
+            <img src="$urlTool.userImage(${widget.UserId}, $fieldTool.get('com.communote.server.model.user.ImageSizeType.LARGE'))" /><br />
+        </div>
+        <div class="cn-right cn-infocard-content-group">
+            <p class="cn-fullname">$!escTool.xmlSimple($communoteTool.getUserSignature($singleResult, $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.MEDIUM')))</p>
+            #if("$!singleResult.Company" != '')<p class="cn-company">#if("$!singleResult.Position" != '')$escTool.xmlSimple(${singleResult.Position})#end ($!escTool.xmlSimple($!singleResult.Company))</p>#end
+            <table>
+                #if($address != '')
+                <tr><td class="cn-label">$fmtTool.message('user.profile.address')</td>
+                <td class="cn-value">$address</td></tr>
+                #end
+                #if("$!widget.Phone" != '')
+                <tr #if("$!widget.Phone" != '' && "$!widget.Fax" != '') class="group"#end><td class="cn-label">$fmtTool.message('user.profile.phone')</td>
+                <td class="cn-value">$escTool.xmlSimple($widget.Phone)</td></tr>
+                #end
+                #if("$!widget.Fax" != '')
+                <tr><td class="cn-label">$fmtTool.message('user.profile.fax')</td>
+                <td class="cn-value">$escTool.xmlSimple($widget.Fax)</td></tr>
+                #end
+                #if($singleResult.tags && !$singleResult.tags.isEmpty())
+                    <tr>
+                        <td class="cn-label">$fmtTool.message('user.profile.tags')</td>
+                        <td class="cn-value tags">
+                            #foreach($tag in $singleResult.tags)
+                                <a href="$urlTool.render("portal/users?tagId=$tag.id")">
+                                    <span>$escTool.xmlSimple($tag.name)#if($velocityHasNext),&nbsp;#end</span>
+                                </a>
+                            #end
+                        </td>
+                    </tr>
+                #end
+                <tr><td class="cn-label">$fmtTool.message('user.profile.localtime')</td>
+                <td class="cn-value">$dateTool.format(null, "full", $dateTool.getDate(), $widget.getCurrentUserLocale(), $widget.getTimeZone())</td></tr>
+            </table>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+        <span class="cn-clear"><!-- --></span>
+        <div class="cn-actions">
+            <div class="cn-buttons">
+                #if($widget.getBooleanParameter('showFollowAction', true))
+                    #cnFollowButton("${widget.UserId}", 'User', $widget.currentUserFollowsUser, 'follow.link.follow', '')
+                #end    
+                #if($widget.isCurrentUser())
+                    #cnButton("${widget.WidgetId}ButtonEdit", 'user.profile.about.button.update' '' "(document.location.href=${escTool.S}$urlTool.render('/portal/user-edit',true, true, false)$escTool.S);")
+                #end
+            </div>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    </div>
+#else
+    #t('common.error.user.not.found')
+#end

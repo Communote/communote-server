@@ -1,0 +1,38 @@
+#communote .logo {
+    background-position: 350px 26px;
+}
+
+/* (IE8:IE8.IE7) ... */
+/* * + html ...      */
+* + html .TB_window .button-gray input {
+    padding-top: 2px;
+}
+* + html .TB_window .button-left input {
+    width: 58px;
+    margin-left: -25px;
+}
+* + html .TB_window .button-right {
+    margin-right: 0px;
+}
+* + html .TB_window .button-right input {
+    margin-right: 25px;
+}
+
+/******/
+/*** FORM Design ***/
+/******/
+#communote .form-container div.check input {
+    margin-top: -0.1em;
+}
+
+#communote .form-container div.checkbox input {
+    margin-top: -0.1em;
+}
+
+#communote .popin .form-container .w100.long select {
+    width: 538px;
+}
+
+/******/
+/*** Other ***/
+/******/

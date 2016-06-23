@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    <bean id="internalPathResolver" class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
+
+    <bean id="loginApiController" class="com.communote.server.web.api.service.user.LoginApiController" />
+
+    <bean id="blogApiController" class="com.communote.server.web.api.service.blog.BlogApiController" />
+
+    <bean id="blogRightApiController" class="com.communote.server.web.api.service.blog.BlogRightApiController" />
+
+    <bean id="blogUserRoleApiController" class="com.communote.server.web.api.service.blog.BlogUserRoleApiController" />
+
+    <bean id="inviteUserToBlogApiController" class="com.communote.server.web.api.service.blog.InviteUserToBlogApiController" />
+
+    <bean id="blogPublicAccessApiController" class="com.communote.server.web.api.service.blog.BlogPublicAccessApiController" />
+
+    <bean id="deleteBlogApiController" class="com.communote.server.web.api.service.blog.DeleteBlogApiController" />
+
+    <bean id="deleteExternalObjectsApiController" class="com.communote.server.web.api.service.external.DeleteExternalObjectsApiController" />
+
+    <bean id="postApiController" class="com.communote.server.web.api.service.post.PostApiController">
+        <property name="creationSource" value="API" />
+    </bean>
+
+    <bean id="deletePostApiController" class="com.communote.server.web.api.service.post.DeletePostApiController" />
+
+    <bean id="userApiController" class="com.communote.server.web.api.service.user.UserApiController" />
+
+    <bean id="userPhotoApiController" class="com.communote.server.web.api.service.user.UserPhotoApiController" />
+
+    <bean id="postFilterApiController" class="com.communote.server.web.api.service.filter.PostFilterApiController" />
+
+    <bean id="tagFilterApiController" class="com.communote.server.web.api.service.filter.TagFilterApiController" />
+
+    <bean id="blogFilterApiController" class="com.communote.server.web.api.service.filter.BlogFilterApiController" />
+
+    <bean id="userFilterApiController" class="com.communote.server.web.api.service.filter.UserFilterApiController" />
+
+    <bean id="favoriteApiController" class="com.communote.server.web.api.service.post.FavoriteApiController" />
+
+    <bean id="followApiController" class="com.communote.server.web.api.service.user.FollowApiController" />
+
+    <bean id="attachmentDownloadApiController" class="com.communote.server.web.api.service.post.AttachmentDownloadApiController" />
+    
+    <!-- Belongs to the new REST-API -->
+    <bean id="restApiInformationController" class="com.communote.server.web.commons.servlet.RestApiInformationController" /> 
+
+    <bean id="apiHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true" />
+        <property name="mappings">
+            <props>
+
+                <prop key="/*/*/api/v*/login.json">loginApiController</prop>
+
+                <prop key="/*/*/api/v*/blogs.json">blogApiController</prop>
+                <prop key="/*/*/api/v*/blogs/*.json">blogApiController</prop>
+                <prop key="/*/*/api/v*/deleteBlog/*.json">deleteBlogApiController</prop>
+                <prop key="/*/*/api/v*/blogRights.json">blogRightApiController</prop>
+                <prop key="/*/*/api/v*/blogRoles.json">blogUserRoleApiController</prop>
+                <prop key="/*/*/api/v*/blogInviteUser.json">inviteUserToBlogApiController</prop>
+                <prop key="/*/*/api/v*/blogPublicAccess.json">blogPublicAccessApiController</prop>
+
+                <prop key="/*/*/api/v*/external/deleteExternalObject/*.json">deleteExternalObjectsApiController</prop>
+
+                <prop key="/*/*/api/v*/posts.json">postApiController</prop>
+                <prop key="/*/*/api/v*/posts/*.json">postApiController</prop>
+                <prop key="/*/*/api/v*/posts/favorite/*.json">favoriteApiController</prop>
+                <prop key="/*/*/api/v*/follow.json">followApiController</prop>
+                <prop key="/*/*/api/v*/deletePost/*.json">deletePostApiController</prop>
+
+                <prop key="/*/*/api/v*/users.json">userApiController</prop>
+                <prop key="/*/*/api/v*/users/*.json">userApiController</prop>
+                <prop key="/*/*/api/v*/userPhotos/*">userPhotoApiController</prop>
+
+                <prop key="/*/*/api/v*/filter/tags.json">tagFilterApiController</prop>
+                <prop key="/*/*/api/v*/filter/blogs.json">blogFilterApiController</prop>
+                <prop key="/*/*/api/v*/filter/users.json">userFilterApiController</prop>
+                <prop key="/*/*/api/v*/filter/posts.json">postFilterApiController</prop>
+                <prop key="/*/*/api/v*/filter/postsShort.json">postFilterApiController</prop>
+
+                <prop key="/*/*/api/v*/files/*">attachmentDownloadApiController</prop>
+                
+                <!-- Belongs to the new REST-API -->
+                <prop key="/*/*/api/rest/information">restApiInformationController</prop>
+                <prop key="/*/*/web/rest/information">restApiInformationController</prop>
+
+            </props>
+        </property>
+    </bean>
+
+</beans>

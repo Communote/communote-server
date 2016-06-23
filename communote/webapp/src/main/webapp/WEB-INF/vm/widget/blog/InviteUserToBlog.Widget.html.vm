@@ -1,0 +1,37 @@
+#* @vtlvariable name="widget" type="com.communote.server.web.fe.widgets.blog.InviteUserToBlogWidget" *#
+#* @vtlvariable name="userGroupRoleLiterals" type="java.util.List<java.lang.String>" *#
+#* @vtlvariable name="blogRoles" type="java.util.Map<com.communote.server.model.blog.BlogRole, java.lang.String>" *#
+#* @vtlvariable name="BlogRole" type="com.communote.server.model.blog.BlogRole" *#
+#cnRenderMessages()
+<div class="cn-form-container">
+    <form id="blog-member-invite" onsubmit="widgetController.getWidget('${widget.getWidgetId()}').onBlogMemberInviteClick();return false;">
+        <fieldset>
+            <div class="cn-form-info">
+                #t('blog.member.management.inviteuser.description')
+            </div>
+            #parse('/WEB-INF/vm/common/invite-user-fields.html.vm')
+            <span class="cn-clear"><!-- Empty --></span>
+
+            <div class="cn-field-50">
+                #cnLabel('blogaccess_invite_user' 'blog.member.invite.form.role' false '')
+                <div class="input">
+                    <select name="blogaccess" id="blogaccess_invite_user" class="cn-select" size="1">
+                        #foreach($option in $userGroupRoleLiterals)
+                            <option value="${option}">$blogRoles.get($BlogRole.fromString($option))</option>
+                        #end
+                    </select>
+                </div>
+            </div>
+            <span class="cn-clear"><!-- ie --></span>
+            #cnRequiredNote()
+            <span class="cn-clear"><!-- Empty --></span>
+        </fieldset>
+        <div class="cn-actions">
+            <div class="cn-buttons">
+                #cnButton("create-button", 'blog.member.invite.button.label' '' "
+                    widgetController.getWidget('${widget.getWidgetId()}').onBlogMemberInviteClick();", 'main')
+            </div>
+            <span class="cn-clear"><!-- Empty --></span>
+        </div>
+    </form>
+</div>

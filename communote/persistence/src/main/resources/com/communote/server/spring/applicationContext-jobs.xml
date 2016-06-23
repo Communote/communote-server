@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <bean id="jobTriggers" class="java.util.ArrayList" lazy-init="true">
+        <constructor-arg>
+            <list>
+                <ref bean="databaseRuntimeUpdateJobTrigger" />
+                <ref bean="runScheduledJobsTrigger" />
+                <ref bean="runTaskCleanerTrigger" />
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="expungeMessagesJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean" lazy-init="true">
+        <property name="jobClass" value="com.communote.server.core.mail.fetching.ExpungeMessagesJob" />
+        <property name="durability" value="true" />
+    </bean>
+
+    <bean id="expungeMessagesJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean" lazy-init="true">
+        <property name="jobDetail" ref="expungeMessagesJobDetail" />
+        <property name="startDelay" value="600000" />
+        <property name="repeatCount" value="-1" />
+        <property name="repeatInterval" value="14400000" />
+    </bean>
+
+    <bean id="runScheduledJobsDetails" class="org.springframework.scheduling.quartz.JobDetailBean" lazy-init="true">
+        <property name="jobClass" value="com.communote.server.core.tasks.RunScheduledTasksJob" />
+        <property name="durability" value="true" />
+    </bean>
+
+    <bean id="runScheduledJobsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean" lazy-init="true">
+        <property name="jobDetail" ref="runScheduledJobsDetails" />
+        <property name="startDelay" value="60000" />
+        <property name="repeatCount" value="0" />
+    </bean>
+
+    <bean id="runTaskCleanerJobDetails" class="org.springframework.scheduling.quartz.JobDetailBean" lazy-init="true">
+        <property name="jobClass" value="com.communote.server.core.tasks.TaskExecutionCleanupJob" />
+        <property name="durability" value="true" />
+    </bean>
+    <bean id="runTaskCleanerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean" lazy-init="true">
+        <property name="jobDetail" ref="runTaskCleanerJobDetails" />
+        <property name="startDelay" value="600000" />
+        <property name="repeatCount" value="-1" />
+        <property name="repeatInterval" value="600000" />
+    </bean>
+
+    <bean id="databaseRuntimeUpdateJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean" lazy-init="true">
+        <property name="jobClass" value="com.communote.server.core.database.DatabaseRuntimeUpdateJob" />
+        <property name="durability" value="false" />
+    </bean>
+
+    <bean id="databaseRuntimeUpdateJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean" lazy-init="true">
+        <property name="jobDetail" ref="databaseRuntimeUpdateJobDetail" />
+        <property name="startDelay" value="120000" />
+        <property name="repeatCount" value="0" />
+    </bean>
+
+    <bean id="communoteTaskSchedulingContext" class="com.communote.server.core.tasks.TaskSchedulingContext">
+        <constructor-arg ref="runScheduledJobsTrigger" />
+        <constructor-arg ref="eventDispatcher" />
+    </bean>
+
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" destroy-method="destroy" lazy-init="true">
+        <property name="autoStartup" value="false" />
+        <property name="schedulerContextAsMap">
+            <map>
+                <entry>
+                    <key>
+                        <bean id="com.communote.server.core.tasks.TaskSchedulingContext.KEY_TASK_SCHEDULING_CONTEXT" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+                    </key>
+                    <ref bean="communoteTaskSchedulingContext" />
+                </entry>
+                <entry>
+                    <key>
+                        <bean id="com.communote.server.core.tasks.TaskExecutionCleaner.KEY_TASK_EXECUTION_CLEANER" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+                    </key>
+                    <bean class="com.communote.server.core.tasks.TaskExecutionCleaner" />
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+</beans>

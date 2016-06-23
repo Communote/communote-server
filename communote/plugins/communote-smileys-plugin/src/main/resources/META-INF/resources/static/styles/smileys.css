@@ -1,0 +1,99 @@
+i.smiley {
+    background: url(../images/emoticons.png) no-repeat;
+    width: 20px;
+    height: 20px;
+    margin-left: 1px;
+    margin-right: 1px;
+    margin-bottom: -2px;
+    padding: 0;
+    display: inline-block;
+}
+
+i.smiley.smile {
+    background-position: 0 0;
+}
+
+i.smiley.sad {
+    background-position: -20px 0;
+}
+
+i.smiley.wink {
+    background-position: -40px 0;
+}
+
+i.smiley.tongue {
+    background-position: -60px 0;
+}
+
+i.smiley.cry {
+    background-position: -80px 0;
+}
+
+i.smiley.laugh {
+    background-position: 0 -20px;
+}
+
+i.smiley.grin {
+    background-position: -20px -20px;
+}
+
+i.smiley.think {
+    background-position: -40px -20px;
+}
+
+i.smiley.sleep {
+    background-position: -60px -20px;
+}
+
+i.smiley.amazed {
+    background-position: -80px -20px;
+}
+
+i.smiley.confused {
+    background-position: 0 -40px;
+}
+
+i.smiley.voiceless {
+    background-position: -20px -40px;
+}
+
+i.smiley.nerd {
+    background-position: -40px -40px;
+}
+
+i.smiley.deadpan {
+    background-position: -60px -40px;
+}
+
+i.smiley.crazy {
+    background-position: -80px -40px;
+}
+
+i.smiley.yawn {
+    background-position: 0 -60px;
+}
+
+i.smiley.dig {
+    background-position: -20px -60px;
+}
+
+i.smiley.cake {
+    background-position: -40px -60px;
+}
+
+i.smiley.phew {
+    background-position: -60px -60px;
+}
+
+i.smiley.angry {
+    background-position: -80px -60px;
+}
+
+i.smiley.facepalm {
+    background-position: 0 -80px;
+}
+
+i.smiley.copyright {
+    background-position: -20px -80px;
+    width: 100px;
+}

@@ -1,0 +1,1527 @@
+/*
+    colors:
+    - border:           #aaa
+                        #ddd    // light gray
+                        #ccc
+    - background-color: #fff    // white
+                        #eee    // light gray
+    - color:            #000    // black
+                        #059    // dark blue
+                        #444    // (header autocomplete)
+                        #888    // gray (date)
+                        #aaa    // gray
+                        #ddd    // light gray  (placeholder)
+                        #e66914 // orange
+*/
+
+
+HTML ,
+BODY ,
+#root {
+    margin: 0px;
+    padding: 0px;
+}
+.cntwRoot ,
+.cntwRoot * {
+    margin: 0px;
+    padding: 0px;
+    font-family: verdana,sans-serif;
+    font-size: inherit;
+    color: inherit;
+}
+.cntwRoot {
+    position: relative;
+    min-width: 300px;
+    min-height: 120px;
+    overflow:hidden;
+    color: #000;
+    font-size: 12px;
+}
+.cntwRoot INPUT {
+}
+.cntwRoot .cntwFilterList ,
+.cntwRoot .cntwActivityList ,
+.cntwRoot .cntwReactionList ,
+.cntwRoot .cntwNoteList ,
+.cntwRoot .cntwPipeList {
+    list-style-type:none;
+}
+.cntwRoot .cntwOptionList ,
+.cntwRoot .cntwInfoList {
+    list-style-type:none;
+    overflow:hidden;
+}
+.cntwRoot .cntwItem ,
+.cntwRoot .cntwItemSpacer {
+    float: left;
+}
+.cntwRoot .cntwItem ,
+.cntwRoot .cntwItemSpacer ,
+.cntwRoot .cntwNoteList > LI ,
+.cntwRoot .cntwOptionList > LI ,
+.cntwRoot .cntwInfoList > LI {
+    margin-left: 0px;
+    list-style-type: none;
+}
+.cntwRoot .cntwInfoList .cntwItem ,
+.cntwRoot .cntwOptionList .cntwItem {
+    padding: 0px 5px;
+}
+.cntwRoot .cntwAutoWidth .cntwItem {
+    padding: 0px;
+}
+.cntwRoot .cntwAutoWidth .cntwItem > *{
+    padding: 0px 5px;
+}
+.cntwRoot .cntwInfoList .cntwFirst ,
+.cntwRoot .cntwOptionList .cntwFirst {
+    padding-left: 0px;
+}
+.cntwRoot .cntwPipeList .cntwItem {
+    border-right: 1px solid #ccc;
+}
+.cntwRoot .cntwPipeList .cntwLast {
+    border-width: 0px;
+}
+.cntwRoot .cntwOptionList .cntwAddAttachment ,
+.cntwRoot .cntwOptionList .cntwAddTags {
+    line-height: 1.2em;
+}
+.cntwRoot .cntwOptionList .cntwSelected .cntwFavoriteNote:hover ,
+.cntwRoot .cntwOptionList .cntwSelected .cntwLikeNote:hover{
+    text-decoration: line-through;
+}
+.cntwRoot .cntwOptionList .cntwSelected .cntwFavoriteNote ,
+.cntwRoot .cntwOptionList .cntwSelected .cntwLikeNote {
+    color: #424242;
+}
+.cntwRoot .cntwOptionList .cntwOptionList {
+    display: none;
+}
+.cntwRoot .cntwOptionList .cntwOptionList .cntwItem {
+    float: none;
+}
+.cntwRoot .cntwPopupOptionList .cntwSelected:hover {
+    text-decoration:line-through;
+}
+.cntwRoot .cntwPopupOptionList {
+    background-color: #fff;
+    border: 1px solid #aaa;
+    padding: 4px;
+}
+.cntwRoot .cntwFakeTextarea ,
+.cntwRoot INPUT ,
+.cntwRoot TEXTAREA {
+    line-height: 1.25em;
+    resize: none;
+    /* deactivate active border by chrome: */
+    outline: none;
+	width: 98%;
+    border-width: 0px;
+    max-height: 400px;
+}
+
+.cntwRoot .cntwInputField {
+    background-color:#fff;
+}
+.cntwRoot .cntwInputElement > * {
+    margin: 5px;
+}
+.cntwRoot a:link,
+.cntwRoot a:active,
+.cntwRoot a:visited,
+.cntwRoot a:hover {
+    color: #059;
+    text-decoration: none;
+}
+.cntwRoot .cntwLeft {
+    float: left;
+}
+.cntwRoot .cntwAction {
+    color: #059;
+}
+.cntwRoot .cntwClear {
+    clear: both;
+}
+.cntwRoot .cntwHide,
+.cntwRoot .cntwHidden {
+    display:none;
+}
+.cntwRoot .cntwFilterList .cntwItem ,
+.cntwRoot .cntwTabList .cntwItem ,
+.cntwRoot .cntwActivityList .cntwItem ,
+.cntwRoot .cntwReactionList .cntwItem ,
+.cntwRoot .cntwOptionList .cntwItem ,
+.cntwRoot .cntwMenu .cntwItem ,
+.cntwRoot .cntwAction ,
+.cntwRoot .cntwButton ,
+.cntwRoot .cntwSliderOpen ,
+.cntwRoot .cntwSliderClose ,
+.cntwRoot .cntwRemoveFilters {
+    cursor: pointer;
+    color: #059;
+}
+.cntwRoot .cntwFilterList .cntwItem:hover ,
+.cntwRoot .cntwTabList .cntwItem:hover ,
+.cntwRoot .cntwActivityList .cntwItem:hover ,
+.cntwRoot .cntwReactionList .cntwItem:hover ,
+.cntwRoot .cntwOptionList .cntwItem:hover ,
+.cntwRoot .cntwOptionList .cntwItem .cntwOption:hover ,
+.cntwRoot .cntwMenu .cntwItem:hover ,
+.cntwRoot .cntwAction:hover ,
+.cntwRoot .cntwButton:hover ,
+.cntwRoot .cntwSliderOpen:hover ,
+.cntwRoot .cntwSliderClose:hover ,
+.cntwRoot .cntwRemoveFilters:hover {
+    color: #e66914;;
+}
+.cntwRoot .cntwWriteContainer ,
+.cntwRoot .cntwFilterContainer ,
+.cntwRoot .cntwFilterContainer .cntwFloatingSliderArea {
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    background-color: #eee;
+    padding: 8px;
+    box-shadow: 0 1px 2px #bbb;
+}
+.cntwRoot .cntwTopicSelector .cntwSlider {
+    position: relative;
+}
+.cntwRoot .cntwTopicSelector .cntwInputElement {
+    margin-right: 32px;
+}
+.cntwRoot .cntwTopicSelector .cntwFloatingSliderArea {
+    left: -2px;
+    top: 26px;
+    overflow: hidden;
+    clear:both;
+}
+.cntwRoot .cntwMenu .cntwMenu {
+    margin: -1px;
+    padding: 4px 6px;
+    line-height: 16px;
+    background-color: #eee;
+    color: #444;
+}
+.cntwRoot .cntwMenu .cntwItem ,
+.cntwRoot .cntwMenu .cntwItem * {
+    line-height: 16px;
+}
+.cntwRoot .cntwWriteContainer ,
+.cntwRoot .cntwFilterContainer {
+    margin: 0 0 10px 0;
+}
+.cntwRoot .cntwWriteContainer {
+    margin-top: 0;
+}
+.cntwRoot .cntwWriteContainer .cntwTagSelector ,
+.cntwRoot .cntwWriteContainer .cntwAttachmentSelector {
+    display: none;
+    clear: both;
+}
+.cntwRoot .cntwFilterContainer .cntwFloatingSliderArea {
+    border-radius: 0;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: 0 0 0 0;
+    overflow: hidden;
+}
+.cntwRoot .cntwFilterContainer .cntwContainerTopicFilter .cntwFilterList LI{
+    margin-left: 4px;
+}
+.cntwRoot .cntwFloatingSliderArea {
+    width: auto !important;
+}
+.cntwRoot .cntwFloatingSliderArea {
+    display: none;
+}
+.cntwRoot .cntwInputField ,
+.cntwRoot .cntwTopicSelector .cntwFloatingSliderArea {
+    margin-bottom: 4px;
+    clear: both;
+}
+.cntwRoot .cntwInputField {
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-width: 2px 1px 1px 2px;
+    border-top-left-radius: 6px;
+    -webkit-border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    -webkit-border-top-right-radius: 6px;
+    border-style: solid;
+    border-color: #ccc #ddd #ddd #ccc;
+}
+.cntwRoot .cntwOpenSlider {
+    border-bottom-left-radius: 6px;
+    -webkit-border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    -webkit-border-bottom-right-radius: 6px;
+}
+.cntwRoot .cntwInputField .cntwEmpty {
+    color: #ddd;
+}
+.cntwRoot :-moz-placeholder {
+    color: #ddd;
+}
+.cntwRoot ::-webkit-input-placeholder {
+    color: #ddd;
+}
+.cntwRoot :placeholder {
+    color: #ddd;
+}
+.cntwRoot .cntwTopicSelector .cntwDropDownArrow {
+    background-color: transparent;
+    background-image: none;
+    background-position: 5px center;
+    background-repeat: no-repeat;
+    border-left: 1px solid #DDDDDD;
+    float: right;
+    height: 18px;
+    margin: 3px;
+    padding: 0 0 0 7px;
+    width: 18px;
+}
+.cntwRoot .cntwTopicSelector .cntwDropDownArrow.cntwSliderOpen {
+     background-image: url('${refererPath}images/kreis_grau_pfeil_weiss_nach_unten.png');
+}
+.cntwRoot .cntwTopicSelector .cntwDropDownArrow.cntwSliderClose {
+     background-image: url('${refererPath}images/kreis_grau_pfeil_weiss_nach_oben.png');
+}
+.cntwRoot .cntwTopicSelector .cntwOpenSlider {
+    border-bottom-width: 1px;
+}
+.cntwRoot .cntwTopicSelector .cntwOpenSlider .cntwFloatingSliderArea {
+    border-top-width: 0px;
+}
+.cntwRoot .cntwTopicSelector .cntwFloatingSliderArea {
+    background-color: #fff;
+}
+.cntwRoot .cntwWriteOptionList {
+    float: left;
+    overflow: auto;
+    margin-bottom: 4px;
+    margin-left: 4px;
+}
+.cntwRoot .cntwWriteOptionList .cntwItem {
+    font-size: 10px;
+    color: #059;
+}
+
+.cntwRoot .cntwWriteOptionList .cntwItem.cntwSelected {    
+    color: #424242;
+    font-weight:700;
+}
+.cntwRoot .cntwButton ,
+.cntwRoot .cntwButtonList {
+    background-color: #fff;
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-style: solid;
+    border-color: #ccc;
+    border-width: 0px 1px 1px 0px;
+}
+.cntwRoot .cntwButtonList {
+    float: right;
+    margin-top: 4px;
+}
+.cntwRoot .cntwButton {
+    padding: 4px;
+    text-align: center;
+}
+.cntwRoot .cntwButtonList .cntwItem {
+    padding: 2px 5px;
+    color: #059;
+    border-color: #ccc;
+    font-weight: normal;
+}
+.cntwRoot .cntwButtonList .cntwItem .cntwCancelNote {
+    color: #888;
+}
+.cntwRoot .cntwButtonList .cntwItem:hover .cntwCancelNote {
+    color: inherit;
+}
+.cntwRoot .cntwFilterTypeList {
+    float: left;
+    margin-bottom: 4px;
+    margin-left: 4px;
+}
+.cntwRoot .cntwFilterTypeList .cntwItem {
+    font-size: 10px;
+    color: #059;
+    line-height: 1.2em;
+}
+.cntwRoot .cntwFilterTypeList .cntwSelected {
+    color: #424242;
+    font-weight: 700;
+}
+.cntwRoot .cntwWriteOptionList .cntwOptionList:hover .cntwSelected ,
+.cntwRoot .cntwFilterTypeList .cntwOptionList:hover .cntwSelected {
+    text-decoration: none;
+}
+.cntwRoot .cntwWriteOptionList .cntwOptionList .cntwSelected:hover ,
+.cntwRoot .cntwFilterTypeList .cntwOptionList .cntwSelected:hover {
+    color: #e66914;
+    text-decoration: none;
+}
+.cntwRoot .cntwFilterContainer .cntwFilterToggle {
+    float: right;
+    margin-right: 4px;
+}
+.cntwRoot .cntwFilterContainer .cntwFilterToggle .cntwItem {
+    border-width: 0px;
+    padding: 0px;
+    font-size: 10px;
+    text-align: right;
+}
+
+.cntwRoot .cntwFilterFieldContainer{
+    clear: both;
+}
+.cntwRoot .cntwFilterField {
+    clear: left;
+}
+.cntwRoot .cntwFilter {
+    overflow: hidden;
+}
+.cntwRoot .cntwFilter .cntwNoFilter {
+    color: #444;
+    font-size: 11px;
+    margin: 2px 4px 0;
+}
+
+.cntwRoot .cntwInputField .cntwMagnifier {
+    background-image: url('${refererPath}images/searchIcon.png');
+    background-color: transparent;
+    background-position: right center;
+    background-repeat: no-repeat;
+}
+
+.cntwRoot .cntwInputField .cntwMagnifier input {
+	background-color: transparent;
+}
+
+.cntwRoot .cntwFilterField .cntwInputField {
+    white-space: nowrap;
+}
+
+.cntwRoot .cntwFilterField .cntwInputField {
+    clear: left;
+}
+.cntwRoot .cntwFilterField .cntwInputElement {
+    display: inline-block;
+    zoom: 1;  *display: inline;  /* IE7 Hack */
+	width: 99.5%;
+}
+.cntwRoot .cntwFilter .cntwFilterHeader {
+    border-bottom: 1px solid #e0e0e0;
+    overflow: hidden;
+    font-size: 10px;
+}
+.cntwRoot .cntwFilter .cntwFilterTitle {
+    color: #888;
+    float: left;
+}
+.cntwRoot .cntwFilterHeader .cntwFilterTitle {
+    margin-left: 4px;
+    font-size: 12px;
+}
+.cntwRoot .cntwFilterHeader .cntwFilterOptionList {
+    margin-right: 4px;
+}
+.cntwRoot .cntwFilter .cntwFilterList {
+    overflow: hidden;
+    border-top: 1px solid #fff;
+    padding-top: 4px;
+    font-size: 11px;
+}
+.cntwRoot .cntwFilter .cntwFilterOptionList {
+    color: #059;
+    float: right;
+}
+.cntwRoot .cntwFilter UL {
+    list-style-type: none;
+}
+.cntwRoot .cntwTopicFilter .cntwItem {
+    clear: left;
+    color: #059;
+}
+.cntwRoot .cntwTopicFilter .cntwActive {
+    color: #e66914;
+}
+.cntwRoot .cntwTopicFilter .cntwActive:hover {
+    text-decoration: line-through;
+}
+.cntwRoot .cntwTagFilter .cntwFilterList .cntwItem {
+    background-color: #fff;
+    color: #888;
+    margin: 2px 5px;
+    padding: 0px 4px;
+    font-size: 11px;
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+}
+.cntwRoot .cntwTagFilter .cntwFilterList .cntwActive ,
+.cntwRoot .cntwTagFilter .cntwFilterList .cntwItem:hover {
+    background-color: #aaa;
+    color: #fff;
+}
+.cntwRoot .cntwUserFilter {
+    margin-bottom: 0px;
+}
+.cntwRoot .cntwUserFilter .cntwItem {
+    margin: 0px 5px;
+}
+.cntwRoot .cntwUserFilter .cntwItem IMG {
+    width: 40px;
+    max-height: 40px;
+    border: 1px solid #fff;
+}
+.cntwRoot .cntwUserFilter .cntwActive IMG {
+    border-color: #e66914;
+}
+.cntwRoot .cntwUserFilter .cntwScrollerLeft {
+    float: left;
+    background-image: url('${refererPath}images/arrow-left-inactive.png');
+}
+.cntwRoot .cntwUserFilter .cntwScrollerRight {
+    float: right;
+    background-image: url('${refererPath}images/arrow-right-inactive.png');
+}
+.cntwRoot .cntwUserFilter .cntwScrollerLeft ,
+.cntwRoot .cntwUserFilter .cntwScrollerRight {
+    width: 20px;
+    height: 40px;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.cntwRoot .cntwContainerFilterSummary{
+    margin: 4px 0 0;
+}
+.cntwRoot .cntwFilterSummary {
+    font-size: 10px;
+    margin-bottom: 0px;
+}
+.cntwRoot .cntwFilterSummary .cntwFilterList {
+}
+.cntwRoot .cntwFilterSummary .cntwLable {
+    float: left;
+    color: #888;
+    padding-left: 15px;
+    background-image: url('${refererPath}images/trash.png');
+    background-repeat: no-repeat;
+    background-position: center left;
+}
+.cntwRoot .cntwFilterSummary .cntwItem ,
+.cntwRoot .cntwFilterSummary .cntwItemSpacer {
+    margin-left: 4px;
+}
+.cntwRoot .cntwFilterSummary .cntwFilterList .cntwItem:hover {
+    text-decoration: line-through;
+}
+
+/* relative position to ensure that open overlaymenu is moving along */
+.cntwRoot .cntwViewFilter {
+    position: relative;
+    padding-left: 4px;
+    color: #424242;
+}
+.cntwRoot .cntwViewFilter .cntwMenu {
+    padding: 0;
+    text-align: left;
+}
+.cntwRoot .cntwViewFilter .cntwViewFilterSelection {
+    background-image: url('${refererPath}images/arrow_dropdown.png');
+    background-position: right center;
+    background-repeat: no-repeat;
+    margin: 0 1px;
+    padding: 0 15px 0 0;
+}
+
+.cntwRoot .cntwViewFilter .cntwActivityViewFilter{
+	background-image: url('${refererPath}images/activity_unchecked.png');
+    background-position: right center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    display: block;
+    float: right;
+    margin: 0 4px 0 0;
+    padding: 0 25px 2px 0;
+}
+
+.cntwRoot .cntwViewFilter .cntwActivityViewFilter.cntwSelected{
+	background-image: url('${refererPath}images/activity_checked.png');
+}
+
+.cntwRoot .cntwContainerTopicFilter,
+.cntwRoot .cntwContainerTagFilter,
+.cntwRoot .cntwContainerUserFilter,
+.cntwRoot .cntwFilterSummaryArea {
+    margin: 8px 0 0;
+}
+.cntwRoot .cntwTabList .cntwItem,
+.cntwRoot .cntwTabList .cntwFill {
+    color: #059;
+    height: 20px;
+    line-height: 20px;
+    padding: 0px 8px;
+    border: 0px solid #aaa;
+    border-bottom-width: 1px;
+}
+.cntwRoot .cntwTabList .cntwActive {
+    background-color: #fff;
+    border-top-left-radius: 6px;
+    -webkit-border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    -webkit-border-top-right-radius: 6px;
+    border-width: 1px 1px 0px 1px;
+    color: #000;
+}
+.cntwRoot .cntwContainerNoteList {
+    min-height: 3em;
+}
+.cntwRoot .cntwNoteList {
+    clear: both;
+}
+.cntwRoot .cntwNoteList .cntwDate {
+    margin: 4px 0px;
+    color: #888;
+}
+.cntwRoot .cntwNoteList .cntwDateSeparator {
+    clear: both;
+    padding-top: 3px;
+    padding-left: 4px;
+    color: #424242;
+}
+.cntwRoot .cntwNoteList .cntwDateSeparator SPAN {
+    padding: 0 3px 0 0;
+    font-size: 12px;
+}
+
+.cntwRoot .cntwAnswerContainer .cntwNoteContainer{
+    border-top-width: 0px;
+    padding: 2px 0 0;
+}
+.cntwRoot .cntwAnswerContainer .cntwContainerNote:first-child .cntwNoteContainer{    
+    padding: 4px 0 0;
+}
+.cntwRoot .cntwAnswerContainer .cntwContainerNote:first-child .cntwNoteContainer,
+.cntwRoot .cntwNoteContainer {
+    border-top: 1px dotted #aaa;
+}
+.cntwRoot .cntwNoteContainer .cntwNoteBody {
+    margin: 0 4px;
+    padding: 4px 5px 0 0;
+    overflow: hidden;
+}
+.cntwRoot .cntwNoteContainer .cntwIsNotify {
+    margin: 0 4px 0 0;
+    border-left: 4px solid #7fb6d2;
+}
+.cntwRoot .cntwNoteContainer .cntwIsNotify,
+.cntwRoot .cntwAnswerContainer .cntwNoteContainer .cntwNoteBody.cntwIsNotify{
+    border-left: 4px solid #7fb6d2;
+}
+
+.cntwRoot .cntwNoteContainer .cntwIsDirectMessage {
+    margin: 0 4px 0 0;
+}
+.cntwRoot .cntwNoteContainer .cntwIsDirectMessage,
+.cntwRoot .cntwAnswerContainer .cntwNoteContainer .cntwNoteBody.cntwIsDirectMessage{
+    border-left: 4px solid #ed9659;
+}
+
+.cntwRoot .cntwNoteContainer .cntwDiscussionShown {
+    margin: 0 0 23px;
+    position: relative;
+}
+
+.cntwRoot .cntwNoteContainer .cntwOverlay {
+    position: absolute;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    opacity: 0.8;
+    filter: alpha(opacity = 80);
+}
+.cntwRoot .cntwNoteContainer .cntwDiscussionShown .cntwOverlay {
+    display: block;
+}
+.cntwRoot .cntwNoteContainer .cntwDiscussionShown .cntwSocial li div.cntwHideDiscussion {
+    background-image: url("${refererPath}images/bubble-blue.png");
+    background-position: left center;
+    bottom: 0;
+    line-height: 1.75em;
+    padding: 1px 0 2px 20px;
+    position: absolute;
+    right: 4px;
+    z-index: 2;
+}
+.cntwRoot .cntwNoteContainer .cntwDiscussionShown .cntwSocial li:hover div.cntwHideDiscussion {
+	background-image: url("${refererPath}images/bubble-orange.png");
+}
+.cntwRoot .cntwNoteContainer .cntwDiscussionShown .cntwContainerActivityList ,
+.cntwNoteContainer .cntwAnswerContainer .cntwHideDiscussion ,
+.cntwNoteContainer .cntwAnswerContainer .cntwShowDiscussion {
+    display: none;
+}
+
+.cntwRoot .cntwNoteContainer .cntwDiscussionShown .cntwContainerActivityList {
+    visibility: hidden;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwSelected .cntwNoteBody {
+    border-right: 4px solid #888;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwNote{
+    margin: 0px 4px;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwNote .cntwNoteBody{
+    margin: 0px;
+}
+
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwNote {
+    margin: 0 4px 0 21px;
+    border-bottom: 1px solid #E8E8E8; 
+}
+
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwNote {
+    border-bottom: 0px solid #E8E8E8; 
+}
+
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwNote .cntwNoteBody{
+    margin:0px;
+    padding: 0 4px 0 0;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwSelected .cntwNote .cntwNoteBody{
+    padding: 0;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwNoteBody {
+    background-color: #EEEEEE;
+    border-left: 4px solid #EEEEEE;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer {
+     padding: 0 0 2px 1px;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwReplyContainer,
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwLikeList,
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwNoteBody{
+    margin: 0px;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwNoteBody{
+    background-color:#FFFFFF;
+    border-left: 4px solid #FFFFFF;
+}
+.cntwRoot .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwNoteBodyContentContent,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwNoteList .cntwActivity.cntwNoteContainer .cntwNoteBodyContentContent,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwNoteBodyContentContent{
+	min-height: 30px;
+}
+.cntwRoot .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwInfoList .cntwLine,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwInfoList .cntwLine,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwInfoList .cntwLine{
+	display: none;
+}
+.cntwRoot .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwInfoList,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwInfoList,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwInfoList{
+    display: inline;
+}
+.cntwRoot .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwInfoList .cntwTime,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwInfoList .cntwTime,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwInfoList .cntwTime{
+	border-right: 1px solid #AAAAAA;
+    margin: 0 4px 0 0;
+    padding: 0 4px 0 0;
+}
+.cntwRoot .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwMessageShort,
+.cntwRoot .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwMessage,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwMessageShort,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwActivity.cntwNoteContainer .cntwMessage,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwMessageShort,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwMessage {
+	float:left;
+}
+
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwNoteContainer .cntwNoteBodyContentContent{
+	min-height: 52px;
+}
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwNoteContainer .cntwInfoList .cntwLine{
+	display: block;
+}
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwNoteContainer .cntwInfoList .cntwTime{
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwNoteContainer .cntwInfoList{
+	display: block;
+	margin: 0 0 5px;
+}
+
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwNoteContainer .cntwMessageShort,
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwNoteContainer .cntwMessage {
+	float: none;
+}
+.cntwRoot .cntwNoteContainer.cntwActivity .cntwAnswerContainer .cntwContainerNote .cntwAuthorImage IMG,
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwAuthorImage IMG {
+    width: 32px;
+    max-height: 32px;
+    margin: 0;
+}
+.cntwRoot .cntwNoteContainer.cntwActivity .cntwAnswerContainer .cntwContainerNote .cntwAuthorImage{
+	background: none;
+	max-height: 40px;
+	margin: 1px 4px 0 0;
+}
+.cntwRoot .cntwNoteContainer.cntwActivity .cntwAuthorImage,
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwNoteContainer.cntwActivity .cntwAuthorImage {
+	background-image: url("${refererPath}images/activity.png");
+    background-position: left center;
+    background-repeat: no-repeat;
+	max-height: 25px;
+	margin: 1px 4px 0 5px;
+}
+.cntwRoot .cntwNoteContainer.cntwActivity .cntwAuthorImage IMG,
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwActivity .cntwAuthorImage IMG,
+.cntwRoot .cntwNoteContainer.cntwActivity .cntwAnswerContainer .cntwNoteContainer.cntwActivity .cntwAuthorImage IMG {
+    margin: 0 0 0 20px;
+    max-height: 25px;
+    width: 25px;
+}
+.cntwRoot .cntwNoteContainer .cntwAuthorImage {
+    float: left;
+    margin: 1px 4px 0 0;
+    height: 25px;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwAuthorImage IMG,
+.cntwRoot .cntwNoteContainer .cntwAuthorImage IMG {
+    width: 50px;
+    max-height: 50px;
+    display: block;
+}
+.cntwRoot .cntwAnswerContainer .cntwContainerNote:first-child .cntwNoteContainer .cntwNoteMarginLeft,
+.cntwRoot .cntwNoteContainer .cntwNoteMarginLeft {
+    margin-left: 54px;
+}
+.cntwRoot .cntwNoteBodyContent {
+    font-size: 11px;
+}
+.cntwRoot .cntwAnswerContainer .cntwContainerNote .cntwNoteContainer .cntwNoteMarginLeft {
+    margin-left: 34px;
+}
+
+.cntwRoot .cntwAnswerContainer .cntwContainerNote .cntwNoteContainer .cntwStatusIcons {
+    max-width: 32px;
+}
+.cntwRoot .cntwAnswerContainer .cntwContainerNote:first-child .cntwNoteContainer .cntwStatusIcons{
+    max-width: 48px;
+}
+
+
+
+
+* html .cntwRoot .cntwNoteContainer .cntwNoteBodyContent {
+    overflow: hidden;
+}
+.cntwRoot .cntwNoteContainer .cntwSocial {
+    min-height: 16px;
+    line-height: 16px;
+    overflow: hidden;
+    clear: left;
+}
+.cntwRoot .cntwNoteContainer .cntwInfoList {
+    color: #888;
+    font-size: 11px;
+    display: block;
+}
+.cntwRoot .cntwNoteContainer .cntwInfoList .cntwTime {
+    float: left;
+    border-color: #aaa;
+}
+.cntwRoot .cntwNoteContainer .cntwInfoList .cntwLine {
+    margin-left: 28px;
+    overflow: hidden;
+}
+.cntwRoot .cntwNoteContainer .cntwInfoList .cntwAuthor {
+    float: left;
+    margin-left: 4px;
+    border-left: 1px solid #aaa;
+    padding-left: 4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.cntwRoot .cntwNoteContainer .cntwInfoList .cntwTopicName {
+    float: left;
+    margin-left: 4px;
+    border-left: 1px solid #aaa;
+    padding-left: 4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.cntwRoot .cntwNoteContainer .cntwText {
+    margin-bottom: 8px;
+}
+.cntwRoot .cntwNoteContainer .cntwEditContainer ,
+.cntwRoot .cntwNoteContainer .cntwReplyContainer {
+    display: none;
+}
+.cntwRoot .cntwNoteContainer .cntwReplyContainer{
+    margin: 0 0 0 60px;
+}
+.cntwRoot .cntwNoteContainer .cntwActivityList {
+    background-color: #fff;
+    float: left;
+    display: none;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwContainerNote:first-child .cntwActivityList{
+    background-color: #fff;
+}
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwActivityList {
+    background-color: #eee;
+}
+.cntwRoot .cntwNoteContainer .cntwActivityList LI {
+    padding: 0;
+    margin: 0 10px 0 0;
+    top: -2px;
+    position: relative;
+}
+.cntwRoot .cntwNoteBody:hover .cntwActivityList {
+    display: block;
+}
+.cntwRoot .cntwNoteContainer .cntwReactionList {
+    float: right;
+    text-align: left;
+}
+.cntwRoot .cntwNoteContainer .cntwReactionList LI {
+    padding: 0;
+}
+.cntwRoot .cntwNoteContainer .cntwReactionList LI.cntwLast{
+    background-color: #EEEEEE;
+    height: 23px;
+    left: 0;
+    margin: 16px 0 0;
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+    
+}
+
+.cntwRoot .cntwAnswerContainer .cntwNoteContainer .cntwReactionList LI.cntwLast{
+    display: none !important;   
+    background-color:none;
+}
+.cntwRoot .cntwNoteContainer .cntwReactionList LI DIV {
+    margin: 0 0 0 6px;
+}
+.cntwRoot .cntwActivity.cntwNoteContainer .cntwAnswerContainer .cntwNoteBodyContentContent,
+.cntwRoot .cntwNoteContainer .cntwNoteBodyContentContent {
+    min-height: 52px;
+}
+
+.cntwRoot .cntwNoteBodyContent .cntwInfoList,
+.cntwRoot .cntwNoteBodyContent .cntwMessage,
+.cntwRoot .cntwNoteBodyContent .cntwMessageShort,
+.cntwRoot .cntwNoteBodyContent .cntwImages,
+.cntwRoot .cntwNoteBodyContent .cntwAttachments,
+.cntwRoot .cntwNoteBodyContent .cntwUsedTags,
+.cntwRoot .cntwNoteBodyContent .cntwNotifiedUser{
+    margin: 0 0 5px;
+}
+.cntwRoot .cntwNoteContainer .cntwNoteBodyContentContent{
+    cursor: pointer;
+}
+
+.cntwRoot .cntwNoteContainer .cntwMessage {
+    display: none;
+    line-height: 1.3em;
+    cursor: pointer;
+}
+.cntwRoot .cntwNoteContainer .cntwMessageShort {
+    line-height: 1.3em;
+    cursor: pointer ;
+}
+.cntwRoot .cntwNoteContainer .cntwMessage ul ,
+.cntwRoot .cntwNoteContainer .cntwMessage ol ,
+.cntwRoot .cntwNoteContainer .cntwMessageShort ul ,
+.cntwRoot .cntwNoteContainer .cntwMessageShort ol {
+    margin-left: 40px;
+}
+.cntwRoot .cntwNoteContainer .cntwMessageShort:hover .cntwReadMore {
+    color: #E66914;
+}
+.cntwRoot .cntwNoteList .cntwSelected > .cntwNoteBody .cntwAnswers {
+    display: none;
+}
+.cntwRoot .cntwNoteContainer .cntwAttachments .cntwItem {
+    float: none;
+    font-size:11px;
+}
+.cntwRoot .cntwNoteContainer .cntwImages UL {
+    overflow: hidden;
+}
+.cntwRoot .cntwNoteContainer .cntwImages IMG {
+    max-height: 75px;
+    max-width: 100px;
+    margin-right: 5px;
+    margin-bottom: 1px;
+    border:0;
+}
+.cntwRoot .cntwNoteContainer .cntwImages A {
+    display: block;
+    font-size: 11px;
+    min-height: 75px;
+}
+.cntwRoot .cntwNoteContainer .cntwImages A.cntwShowMoreImages{
+    color:#059;
+    float:right;
+    margin-top: 50px;
+    cursor: pointer;
+}
+.cntwRoot .cntwNoteContainer .cntwUsedTags {
+    display: none;
+    margin-top: 0;
+    overflow: hidden;
+}
+.cntwRoot .cntwNoteContainer .cntwUsedTags .cntwItem {
+    padding-right: 1em;
+    color: #888;
+    line-height: 15px;
+    font-size: 11px;
+    font-weight: bold;
+}
+.cntwRoot .cntwNoteContainer .cntwUsedTags .cntwItem + .cntwItem {
+    margin-right: 0.3em;
+    border-radius: 0.6em;
+    -webkit-border-radius: 0.6em;
+    padding: 0 0.3em;
+    background-color: #eee;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.cntwRoot .cntwNoteContainer .cntwAnswerContainer .cntwUsedTags .cntwItem + .cntwItem {
+    background-color: #fff;
+}
+
+.cntwRoot .cntwNoteContainer .cntwNotifiedUser {
+    display: none;
+    margin-top: 0;
+    overflow: hidden;
+}
+.cntwRoot .cntwNoteContainer .cntwNotifiedUser .cntwItem {
+    padding-right: 1em;
+    color: #888;
+    line-height: 15px;
+    font-size: 11px;
+    font-weight: bold;
+}
+.cntwRoot .cntwNoteContainer .cntwNotifiedUser .cntwItem + .cntwItem {
+    font-size: 11px;
+    font-weight: normal;
+}
+.cntwRoot .cntwNoteContainer .cntwActivityList .cntwItem ,
+.cntwRoot .cntwNoteContainer .cntwReactionList .cntwItem {
+    font-size: 11px;
+}
+.cntwRoot UL.cntwReactionList ,
+.cntwRoot UL.cntwReactionList LI {
+    display: block;
+}
+.cntwRoot UL.cntwReactionList LI.cntwHide {
+    display:none;
+}
+.cntwNoteContainer .cntwReactionList LI DIV {
+    background-image: none;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: center left;
+}
+.cntwNoteContainer .cntwReactionList LI DIV.cntwLikes {
+    display: none;
+    height: 16px;
+    padding-left: 20px;
+    background-image: url("${refererPath}images/like-blue.png");
+    background-position: 1px 0;
+}
+.cntwNoteContainer .cntwReactionList LI:hover DIV.cntwLikes {
+    background-image: url("${refererPath}images/like-orange.png");
+}
+.cntwNoteContainer .cntwReactionList LI DIV.cntwAnswers {
+    height: 16px;
+    padding-left: 20px;
+    background-image: url("${refererPath}images/bubble-blue.png");
+    background-position: 0 1px;
+}
+.cntwNoteContainer .cntwReactionList LI:hover DIV.cntwAnswers {
+    background-image: url("${refererPath}images/bubble-orange.png");
+}
+.cntwNoteContainer .cntwReactionList LI DIV.cntwView {
+    display: block;
+}
+.cntwNoteContainer .cntwStatusIcons LI.cntwItem {
+    padding: 0;
+    cursor: default;
+}
+.cntwNoteContainer .cntwStatusIcons LI DIV {
+    display: none;
+    width: 16px;
+    height: 16px;
+    background-image: none;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.cntwNoteContainer .cntwStatusIcons LI DIV.cntwView {
+    display: block;
+}
+.cntwNoteContainer .cntwStatusIcons LI DIV.cntwLike {
+    background-image: url("${refererPath}images/like.png");
+}
+.cntwNoteContainer .cntwStatusIcons LI DIV.cntwFavorite {
+    background-image: url("${refererPath}images/favor.png");
+}
+.cntwNoteContainer .cntwStatusIcons LI DIV.cntwNotify {
+    background-image: url("${refererPath}images/at-me.png");
+}
+.cntwNoteContainer .cntwStatusIcons LI DIV.cntwDirectMessage {
+    background-image: url("${refererPath}images/direct.png");
+}
+.cntwNoteContainer .cntwStatusIcons LI DIV.cntwNoLike ,
+.cntwNoteContainer .cntwStatusIcons LI DIV.cntwNoFavorite ,
+.cntwNoteContainer .cntwStatusIcons LI DIV.cntwNoNotify ,
+.cntwNoteContainer .cntwStatusIcons LI DIV.cntwNoDirectMessage {
+    width: 0;
+}
+.cntwRoot .cntwInfoBox {
+    position: absolute;
+    min-height: 1.5em;
+    display: none;
+}
+.cntwRoot .cntwInfoBox .success,
+.cntwRoot .cntwInfoBox .info,
+.cntwRoot .cntwInfoBox .warn,
+.cntwRoot .cntwInfoBox .error{
+    position: relative;
+    clear: both;
+    overflow: hidden;
+    padding: 3px 3px 1px 25px;
+    min-height: 16px;
+    background-repeat: no-repeat;
+    background-position: 1px 1px;
+}
+.cntwRoot .cntwInfoBox .error {
+    color: #f00;
+    background-image: url('${refererPath}images/fehlermeldung_schliessen.png');
+    background-position: 5px 3px;
+}
+
+.cntwRoot .cntwInfoBox .error div.error{
+    background-image:none;
+}
+
+.cntwRoot .cntwInfoBox .error div.error{
+    padding: 0px;
+}
+
+.cntwRoot .cntwInfoBox .success, .cntwRoot .cntwInfoBox .warn {
+    background-position: 5px 3px;
+}
+
+.cntwRoot .cntwInfoBox .success{
+    background-image: url('${refererPath}images/nachricht_erfolgreich_gesendet.png');
+    color: #0a0;
+}
+
+.cntwRoot .cntwInfoBox .warn{
+    background-image: url('${refererPath}images/fehlermeldung_achtung.png');
+    color: orange;
+}
+
+.cntwRoot .cntwInfoBox .info {
+    color: #888;
+    background-image: url('${refererPath}images/kreis_grau_info.png');
+}
+.cntwRoot .cntwInfoBox .error SPAN:hover {
+    text-decoration: line-through;
+    cursor: pointer;
+}
+.cntwRoot .cntwInfoBox .cntwMessageNoHover SPAN:hover{
+    text-decoration: none;
+    cursor: default;
+}
+.cntwRoot .cntwInfoBox .error UL {
+    list-style-type: none;
+}
+.cntwRoot .cntwFloatingBox {
+    border-width: 1px 2px 2px 1px;
+    border-style: solid;
+    border-color: #ccc #aaa #aaa #ccc;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    padding: 7px 7px 3px 7px;
+    box-shadow: 3px 2px 4px #ccc;
+    background-color: #eee;
+}
+.cntwRoot .cntwFloatingBox .cntwButtonBar {
+    overflow: hidden;
+    margin: 5px 0;
+}
+.cntwRoot .cntwFloatingBox .cntwButtonBar DIV {
+    float: right;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
+    border-color: #ccc;
+    padding: 2px 5px;
+    cursor: pointer;
+    color: #059;
+    background-color: #fff;
+}
+.cntwRoot .cntwFloatingBox .cntwButtonBar DIV.cntwFirst {
+    border-top-left-radius: 5px;
+    -webkit-border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    color: #888;
+}
+.cntwRoot .cntwFloatingBox .cntwButtonBar DIV.cntwLast {
+    border-top-right-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+}
+.cntwRoot .cntwFloatingBox .cntwButtonBar DIV:hover {
+    color: #e66914;
+}
+.cntwRoot .cntwWorkingIndicator {
+    z-index: 5;
+    display: block;
+    width: 100%;
+    height: 30px;
+    background-color: transparent;
+    background-image: url("${refererPath}images/busy.anim_16x16.gif");
+    background-position: 50% 50%;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+}
+.cntwRoot .cntwFooter {
+    border-top: 1px dotted #aaa;
+}
+.cntwRoot .cntwFooter .cntwItem > DIV {
+    padding: 10px;
+    background-color: #eee;
+    text-align: center;
+    border-right: 1px solid #aaa;
+}
+.cntwRoot .cntwFooter .cntwItem + .cntwItem > DIV {
+    border-left: 1px solid #fff;
+}
+.cntwStrikeThrough:hover {
+    text-decoration: line-through;
+}
+.cntwRoot .cntwGrayed {
+    opacity: 0.2;
+    filter: alpha(opacity = 20);
+    color: #000 !important;
+    cursor: default;
+}
+
+.cntwContainerNoteRefresh {
+	margin: 10px 0 0;
+    text-align: center;
+}
+.cntwRoot .cntwNoteRefreshButton {
+    margin: 0 0 8px 0;
+    border-width: 1px 2px 2px 1px;
+    border-style: solid;
+    border-color: #ddd #ccc #ccc #ddd;
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+    padding: 5px;
+    width: 100%;
+    color: #059;
+    text-align: center;
+    background-color: #eee;
+}
+.cntwLineThrough {
+    text-decoration: line-through;
+}
+
+/* autocomplete Styling */
+.ui-autocomplete {
+    cursor: default;
+    position: absolute;
+}
+.ui-autocomplete-scrolling {
+    overflow:auto;
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+.ui-autocomplete-loading {
+    background-image:  url("${refererPath}images/busy.anim_16x16.gif");
+    background-repeat: no-repeat;
+    background-position: 50% 0;
+}
+/*.cntwFilterField .cntwInputField input,*/
+.ui-autocomplete-input {
+    /*min-height: 16px;*/
+    min-height: 14px;
+}
+* html .ui-autocomplete {
+    width: 1px;
+}
+.ui-menu {
+    display: block;
+    float: left;
+    list-style: none outside none;
+    margin: 0;
+    padding: 1px;
+}
+.ui-menu .ui-menu {
+    margin-top: -3px;
+}
+.ui-menu .ui-menu-item {
+    float: none;
+    margin: 0;
+    padding: 0;
+}
+.ui-menu .ui-menu-item A {
+    display: block;
+    line-height: 16px;
+    padding: 0.2em 0.4em;
+    text-decoration: none;
+}
+.ui-menu .cntwAuthorImage{
+    float:left;
+    margin: 0 4px 0;
+}
+.ui-menu .cntwAuthorImage img{
+    width:25px;
+    height:25px;
+}
+.ui-menu .cntwImageItem {
+    clear:both;
+}
+.ui-menu .cntwImageItem a{
+    float:left;
+    line-height:22px;
+}/*
+.ui-autocomplete-category {
+    font-weight: bold;
+    line-height: 1.3em;
+    margin: 0.2em 0 0.2em;
+    padding: 0.2em 0.4em;
+    font-size: 12px;
+    font-family: Arial;
+    color: #005599;
+    float:none;
+    clear:left;
+}*/ 
+.ui-autocomplete-strong {
+    font-weight: bold;
+}
+/* second, third, ... category with more margin */
+.ui-menu-item + .ui-autocomplete-category {
+    margin-top: 0.8em;
+}
+.category-annotation .ui-autocomplete-category {
+    float: none;
+    color: #888;
+    font-size: 10px;
+    font-weight: normal;
+}
+.ui-autocomplete {
+    font-family: Arial;
+    font-size: 12px;
+}
+.ui-autocomplete .ui-autocomplete-category {
+    background-color: #DDDDDD;
+    border-color: #CBCBCB;
+    border-style: none none solid;
+    border-width: 0 0 1px;
+    color: #424242;
+    font-size: 11px;
+    padding: 5px 4px 3px;
+}
+
+.ui-autocomplete .metadata{
+    border-color: #EBEBEB;
+    border-style: solid none none;
+    border-width: 1px 0 0;
+    clear: left;
+    color: #737373;
+    font-size: 10px;
+    margin: 0 0 1px;
+    padding: 3px 0 0 5px;
+}
+
+.ui-widget-content {
+    background: #fff;
+    border: 1px solid #aaa;
+    color: #222222;
+    border-color: rgb(221, 221, 221);
+    border-style: solid;
+    border-width: 1px;
+}
+.ui-widget-content A {
+    font-size: 12px;
+    font-family: Arial;
+    color: #059;
+}
+A.ui-state-hover,
+.cntwRoot A.ui-state-hover {
+    color: #e66914;
+    font-weight: normal;
+}
+
+.cntwTagListContainer ,
+.cntwAttachmentListContainer {
+    margin-left: 4px;
+}
+.cntwTagListContainer .cntwTagList ,
+.cntwAttachmentListContainer .cntwAttachmentList {
+    clear: left;
+    float: left;
+}
+.cntwTagListContainer .cntwTagList LI ,
+.cntwAttachmentListContainer .cntwAttachmentList LI {
+    float: none;
+    display: inline;
+    list-style-type: none;
+    font-size: 10px;
+}
+.cntwTagList .cntwListLabel ,
+.cntwAttachmentList .cntwListLabel {
+    color: #888888;
+}
+.cntwTagList .cntwItem ,
+.cntwAttachmentList .cntwItem {
+    padding-left: 4px;
+    color: #059;
+    cursor: pointer;
+}
+.cntwAttachmentList .cntwItem + .cntwItem::before {
+    content: ", ";
+}
+.cntwTagList .cntwItem:hover ,
+.cntwAttachmentList .cntwAttachmentFile:hover {
+    color: #E66914;
+    text-decoration: line-through;
+}
+
+
+UL.cntwPaging LI {
+    float: left;
+    list-style-type:none;
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+    padding-left: 5px;
+}
+UL.cntwPaging LI.cntwPrePage{
+    background-image: url("${refererPath}images/arrow-left.png");
+    background-repeat: no-repeat;
+
+}
+UL.cntwPaging LI.cntwNextPage{
+    background-image: url("${refererPath}images/arrow-right.png");
+    background-repeat: no-repeat;
+}
+UL.cntwPaging LI.cntwPrePageInactive{
+    background-image: url("${refererPath}images/arrow-left-inactive.png");
+    background-repeat: no-repeat;
+    cursor: default;
+}
+UL.cntwPaging LI.cntwNextPageInactive{
+    background-image: url("${refererPath}images/arrow-right-inactive.png");
+    background-repeat: no-repeat;
+    cursor: default;
+}
+.cntwPager{
+    float: right;
+}
+
+/* Likers List Styling */
+.cntwNote .cntwLikeList {
+    width: 100%;
+}
+
+.cntwRoot .cntwAnswerContainer .cntwContainerNote:first-child .cntwNoteContainer .cntwNote .cntwLikersList,
+.cntwRoot .cntwNoteContainer .cntwNote .cntwLikersList {
+    padding-left: 62px;
+}
+.cntwRoot .cntwAnswerContainer .cntwContainerNote .cntwNoteContainer .cntwNote .cntwLikersList {
+    padding-left: 42px;
+}
+
+.cntwNote .cntwLikersList {
+    background-color: #fff;
+    overflow: hidden;
+}
+.cntwAnswerContainer .cntwContainerNote:first-child .cntwNote .cntwLikersList {
+    background-color: #fff;
+}
+
+.cntwAnswerContainer .cntwNote .cntwLikersList {
+    margin: 0;
+    background-color: #eee;
+    border-top: 1px solid #dedede;
+}
+.cntwNote .cntwLikersList IMG.cntwLikersImage{
+    width: 26px;
+    max-height: 26px;
+    margin: 3px 3px 0 0;
+}
+
+.cntwContainerViewFilter {
+    margin: 0 0 4px;
+}
+.cntwContent .cntwViewFilter,
+.cntwContent .cntwViewFilter A{
+    overflow: visible;
+    font-size: 12px;
+}
+.cntwContent .cntwViewFilter A{
+    border-top: 1px solid #ddd;
+    margin: 0 2px;
+}
+.cntwContent .cntwViewFilter ul li:first-child A{
+    border-top: none;
+}
+
+.cntwFileUpload-inputFile {
+    margin: 4px 0;
+}
+
+/* ie-fix */
+.cntwRoot .cntwWriteContainer ,
+.cntwRoot .cntwContainerFilterContainer ,
+.cntwRoot .cntwFloatingSliderArea .cntwFilterHeader ,
+.cntwRoot .cntwFloatingSliderArea .cntwFilterHeader ,
+.cntwRoot .cntwContainerTopicFilter ,
+.cntwRoot .cntwContainerTagFilter ,
+.cntwRoot .cntwContainerUserFilter ,
+.cntwRoot .cntwNoteContainer ,
+.cntwRoot .cntwNoteContainer .cntwNoteBodyContent ,
+.cntwRoot .cntwNoteContainer .cntwInfoList ,
+.cntwRoot .cntwNoteContainer .cntwMessage ,
+.cntwRoot .cntwNoteContainer .cntwMessageShort ,
+.cntwRoot .cntwNoteContainer .cntwAttachments ,
+.cntwRoot .cntwNoteContainer .cntwUsedTags ,
+.cntwRoot .cntwNoteContainer .cntwNotifiedUser ,
+.cntwRoot .cntwNoteContainer .cntwSocial ,
+.cntwRoot .cntwNoteContainer .cntwOverlay ,
+.cntwRoot .cntwFooter ,
+.cntwRoot .cntwGrayed ,
+.cntwRoot .cntwInfoBox .info ,
+.cntwRoot .cntwInfoBox .cntwButtonBar {
+    zoom: 1;
+}
+/* ie7-fixes for rendering problems with overlays because of z-index bug triggered by positioned parent */
+*+html .cntwTopicSelector .cntwInputField {
+    z-index: 2;
+}
+*+html .cntwContent .cntwViewFilter {
+    z-index: 1;
+}

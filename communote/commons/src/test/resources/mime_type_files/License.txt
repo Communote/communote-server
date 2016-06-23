@@ -1,0 +1,2 @@
+The test resources contains sound from freesound.org:
+- audio_mpeg.mp3 by JohnsonBrandEditing (https://www.freesound.org/people/JohnsonBrandEditing/, sound https://www.freesound.org/people/JohnsonBrandEditing/sounds/173932/)

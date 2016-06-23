@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.3.2/db.changelog.v1.3.2.xml">
+    <changeSet author="UNKNOWN" id="Like-Funktion" context="client">
+        <createTable tableName="user_note_property">
+            <column name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="property_key" type="VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_value" type="VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>
+            <column name="key_group" type="VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_modification_date" type="TIMESTAMP" defaultValueDate="1983-06-19T04:09:23">
+                <constraints nullable="false" />
+            </column>
+            <column name="USER_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="NOTE_FK" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB" />
+        </modifySql>
+    </changeSet>
+    <changeSet author="UNKNOWN" id="Like-Funktion_PostgreSQL" context="client" dbms="postgresql">
+        <addForeignKeyConstraint constraintName="user_note_property_NOTE_FKC" referencedTableName="core_note" baseColumnNames="NOTE_FK" baseTableName="user_note_property"
+            referencedColumnNames="ID" />
+        <addForeignKeyConstraint constraintName="user_note_property_USER_FKC" referencedTableName="user_user" baseColumnNames="USER_FK" baseTableName="user_note_property"
+            referencedColumnNames="ID" />
+        <createSequence sequenceName="user_note_property_seq" />
+    </changeSet>
+    <changeSet author="UNKNOWN" id="Like-Funktion_MySQL" context="client" dbms="mysql">
+        <addForeignKeyConstraint constraintName="user_note_property_NOTE_FKC" referencedTableName="core_note" baseColumnNames="NOTE_FK" baseTableName="user_note_property"
+            referencedColumnNames="ID" />
+        <addForeignKeyConstraint constraintName="user_note_property_USER_FKC" referencedTableName="user_user" baseColumnNames="USER_FK" baseTableName="user_note_property"
+            referencedColumnNames="ID" />
+        <addAutoIncrement tableName="user_note_property" columnName="ID" columnDataType="BIGINT" />
+    </changeSet>
+
+    <!-- workaround because preContidions indexExists does not work for MySQL -->
+    <changeSet author="UNKNOWN" id="KENMEI-2601_Index-fuer-discussion_id-entfernen" context="client" failOnError="false">
+        <dropIndex tableName="core_note" indexName="core_note_discussion_id" />
+    </changeSet>
+
+    <changeSet author="UNKNOWN" id="KENMEI-2601_Index-fuer-discussion_id-anlegen" context="client">
+        <createIndex tableName="core_note" indexName="core_note_discussion_id" >
+            <column name="discussion_id" type="BIGINT" />
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-Blog-Properties" context="client">
+        <createTable tableName="core_blog_property">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="key_group" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_key" type="java.sql.Types.VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="property_value" type="java.sql.Types.CLOB">
+                <constraints nullable="false" />
+            </column>            
+            <column name="blog_fk" type="BIGINT">
+            </column>
+            <column name="last_modification_date" type="TIMESTAMP" defaultValueDate="1983-06-19T04:09:23">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB"/>
+        </modifySql>
+    </changeSet>
+	
+	<changeSet author="unknown" id="KENMEI-Blog-Properties_fkc" context="client">
+        <addForeignKeyConstraint constraintName="core_blog_property_BLOG_FKC" 
+            baseTableName="core_blog_property" baseColumnNames="blog_fk" 
+            referencedTableName="core_blog" referencedColumnNames="id" />
+	</changeSet>
+
+	<changeSet author="unknown" id="KENMEI-Blog-Properties_seq" context="client" dbms="postgresql">
+		<createSequence sequenceName="core_blog_property_seq" />
+	</changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-Blog-Properties_autoincrement" context="client" dbms="mysql">
+        <addAutoIncrement tableName="core_blog_property" columnName="id" columnDataType="BIGINT" />
+    </changeSet>
+
+    <changeSet author="UNKNOWN" id="KENMEI-2616_Index_auf_Tag_lower_name_anlegen_postgresql" context="client" dbms="postgresql">
+        <createIndex tableName="core_tag" indexName="core_tag_lower_name_idx">
+            <column name="lower_name" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="UNKNOWN" id="KENMEI-2616_Index_auf_Tag_lower_name_anlegen_mysql" context="client" dbms="mysql">
+        <sql><![CDATA[
+        CREATE INDEX core_tag_lower_name_idx ON core_tag (lower_name(100));
+        ]]></sql>
+    </changeSet>
+    
+</databaseChangeLog>

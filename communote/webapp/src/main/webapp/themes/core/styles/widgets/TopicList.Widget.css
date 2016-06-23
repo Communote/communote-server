@@ -1,0 +1,96 @@
+.TopicListWidget .cn-list-view {
+    text-align: justify;
+}
+
+.cn-topic-list {
+    overflow: hidden;
+}
+
+.cn-list-blogs-blogs-entry {
+    float: left;
+    font-size: 13px;
+    max-width: 250px;
+    min-width: 170px;
+    overflow: hidden;
+    padding-bottom: 20px;
+    position: relative;
+    width: 33%;
+}
+
+.cn-list-blogs-blogs-entry .cn-tile {
+    display: block;
+    height: 120px;
+    position: relative;
+    width: 160px;
+}
+
+.cn-list-blogs-blogs-entry .cn-add {
+    background-image: url("../../images/main/new-tile.png");
+}
+
+.cn-list-blogs-blogs-entry .cn-left {
+    float: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 160px;
+}
+
+.cn-list-blogs-blogs-entry .cn-left img, .cn-list-blogs-blogs-entry .cn-left .cn-tile {
+    margin-bottom: 5px;
+} 
+
+.cn-list-blogs-blogs-entry .cn-right {
+    bottom: 0px;
+    position: absolute;
+    right: 0px;
+}
+
+.cn-list-blogs-blogs-entry .cn-button-look {
+    background-color: #FFFFFF;
+    background-image: none;
+    border: 0 none;
+    border-radius: 0 0 0 0;
+    box-shadow: none;
+}  
+
+.cn-list-blogs-blogs-entry .cn-right a {
+    display: none;
+}
+
+.cn-list-blogs-blogs-entry:hover .cn-right a, 
+.cn-list-blogs-blogs-entry.cn-list-entry-followed .cn-right a {
+    display: block;
+}
+
+.cn-list-blogs-blogs-entry .cn-right input.cn-button {
+    padding: 0 5px;   
+}
+
+.cn-list .cn-list-blogs-blogs-entry .cn-button-look.cn-button-type-follow-2,
+.cn-list .cn-list-blogs-blogs-entry .cn-button.cn-button-type-gain-access,
+.cn-list .cn-list-blogs-blogs-entry span.cn-already-manager {
+    display: none;
+}
+
+.cn-list .cn-list-blogs-blogs-entry .cn-button-look.cn-button-type-follow-3 {
+    display: none;
+}
+
+.cn-list .cn-list-blogs-blogs-entry:hover .cn-button-look,
+.cn-list .cn-list-blogs-blogs-entry:hover .cn-button,
+.cn-list .cn-list-blogs-blogs-entry:hover span.cn-already-manager {
+    display: inline-block;
+}
+
+.cn-list .cn-list-blogs-blogs-entry {
+    height: 23px;
+    line-height: 23px;
+}
+
+.cn-topic-list .cn-empty-list.help {
+    clear: none;
+    float: left;
+    text-align: left;
+    width: 67%;
+}

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v3.x/db.changelog.v3.0.xml">
+    <changeSet author="Communote" id="KENMEI-4847-TIMESTAMP-without-TimeZone_pg_v3" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <changeSetExecuted changeLogFile="de/communardo/kenmei/database/update/v3.x/db.changelog.v3.0.xml" author="Communote" id="KENMEI-4847-TIMESTAMP-without-TimeZone_pg_2"/>
+            </not>
+        </preConditions>
+        <sql><![CDATA[
+                ALTER TABLE core_blog_property        ALTER COLUMN last_modification_date TYPE timestamp without time zone;
+                ALTER TABLE core_external_object_prop ALTER COLUMN last_modification_date TYPE timestamp without time zone;
+                ALTER TABLE core_global_binary_prop   ALTER COLUMN last_modification_date TYPE timestamp without time zone;
+                ALTER TABLE core_note_property        ALTER COLUMN last_modification_date TYPE timestamp without time zone;
+                ALTER TABLE core_plugin_properties    ALTER COLUMN last_modification_date TYPE timestamp without time zone;
+                ALTER TABLE user_group_property       ALTER COLUMN last_modification_date TYPE timestamp without time zone;
+                ALTER TABLE user_note_property        ALTER COLUMN last_modification_date TYPE timestamp without time zone;
+                ALTER TABLE user_user_property        ALTER COLUMN last_modification_date TYPE timestamp without time zone;
+             ]]></sql>
+    </changeSet>
+    <changeSet id="KENMEI-6192_Themenhierarchien_Umsetzung_blog2blog" author="Communote">
+        <createTable tableName="core_blog2blog">
+            <column name="CHILDREN_FK" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PARENTS_FK" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB"/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="KENMEI-6192_Themenhierarchien_Umsetzung_blog2blog_resolved" author="Communote">
+        <createTable tableName="core_blog2blog_resolved">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="parent_topic_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="child_topic_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="topic_path" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB"/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="KENMEI-6192_Themenhierarchien_Umsetzung_foreign_keys" author="Communote">
+        <addForeignKeyConstraint baseTableName="core_blog2blog"
+                                 baseColumnNames="CHILDREN_FK"
+                                 constraintName="core_blog_CHILDREN_FKC"
+                                 referencedTableName="core_blog"
+                                 referencedColumnNames="ID"/>
+        <addForeignKeyConstraint baseTableName="core_blog2blog"
+                                 baseColumnNames="PARENTS_FK"
+                                 constraintName="core_blog_PARENTS_FKC"
+                                 referencedTableName="core_blog"
+                                 referencedColumnNames="ID"/>
+    </changeSet>
+    <changeSet id="KENMEI-6192_Themenhierarchien_Umsetzung_sequence_oracle" author="Communote" dbms="oracle">
+        <createSequence sequenceName="core_blog2blog_resolved_seq"/>
+    </changeSet>
+    <changeSet id="KENMEI-6192_Themenhierarchien_Umsetzung_sequence_postgresql" author="Communote" dbms="postgresql">
+        <sql><![CDATA[
+            ALTER SEQUENCE core_blog2blog_resolved_id_seq RENAME TO core_blog2blog_resolved_seq;
+        ]]></sql>
+    </changeSet>
+    <changeSet id="KENMEI-6192_Themenhierarchien_Umsetzung_constraint_2" author="Communote">
+        <addUniqueConstraint constraintName="kenmei6192cnstrnt"
+                             tableName="core_blog2blog_resolved"
+                             columnNames="parent_topic_id,child_topic_id,topic_path"/>
+    </changeSet>
+    <changeSet id="KENMEI-6192_Themenhierarchien_Umsetzung_toplevel_flag" author="Communote">
+        <addColumn tableName="core_blog">
+            <column name="toplevel_topic" defaultValueBoolean="false" type="boolean" valueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="KENMEI-6256-NavigationItems" author="Communote">
+        <createTable tableName="user_navigation_item">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="index" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="CLOB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_access_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OWNER_FK" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine InnoDB"/>
+        </modifySql>
+        <modifySql dbms="postgresql">
+            <replace replace="TIMESTAMP WITH TIME ZONE" with="TIMESTAMP WITHOUT TIME ZONE"/>
+        </modifySql>
+        <modifySql dbms="oracle">
+            <replace replace="index" with="item_index"/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="KENMEI-6256-NavigationItems_foreign_keys" author="Communote">
+        <addForeignKeyConstraint baseTableName="user_navigation_item"
+                                 baseColumnNames="OWNER_FK"
+                                 constraintName="user_navigation_item_OWNER_FKC"
+                                 referencedTableName="user_user"
+                                 referencedColumnNames="ID"/>
+    </changeSet>
+    <changeSet id="KENMEI-6256-NavigationItems_sequence_oracle" author="Communote" dbms="oracle">
+        <createSequence sequenceName="user_navigation_item_seq"/>
+    </changeSet>
+    <changeSet id="KENMEI-6256-NavigationItems_sequence_postgresql" author="Communote" dbms="postgresql">
+        <sql><![CDATA[
+            ALTER SEQUENCE user_navigation_item_id_seq RENAME TO user_navigation_item_seq;
+        ]]></sql>
+    </changeSet>
+    <changeSet id="KENMEI-6256-NavigationItems_rename_index" author="Communote" dbms="postgresql,mssql,mysql">
+        <renameColumn tableName="user_navigation_item" oldColumnName="index" newColumnName="item_index"
+                      columnDataType="INT"/>
+    </changeSet>
+    <changeSet id="KENMEI-6256-NavigationItems_add_name" author="Communote">
+        <addColumn tableName="user_navigation_item">
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="KENMEI-6270-ClientAktivierung-Make-The-Git-Hash-Work" author="Communote" context="client">
+        <modifyColumn tableName="user_client">
+            <column name="creation_revision" type="VARCHAR(1024)" />
+        </modifyColumn>
+    </changeSet>
+    
+</databaseChangeLog>

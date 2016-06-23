@@ -1,0 +1,177 @@
+.cn-horizontal-navigation-tab-bar,
+.cn-horizontal-navigation-option-list {
+    line-height: 32px;
+    overflow: hidden;
+}
+.cn-horizontal-navigation-tab-bar {
+	padding-bottom: 6px;
+}
+
+.cn-horizontal-navigation-option-list {
+	padding-top: 4px;
+}
+.cn-horizontal-navigation-option-list select {
+    float: left;
+    padding: 3px;
+    width: 95%;
+}
+
+.cn-horizontal-navigation-tab-bar a {
+    display: block;
+    float: left;
+    margin-right: 10px;
+    padding: 0 8px;
+}
+
+.cn-horizontal-navigation-tab-bar a#HorizontalNavigation_notesOverview_mentions {
+    max-width: 20%;
+}
+
+.cn-horizontal-navigation-tab-bar a#HorizontalNavigation_notesOverview_mentions span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-horizontal-navigation-tab-bar a.active:after, 
+#cn-horizontal-navigation .cn-horizontal-navigation-tab-bar a.active:before {
+    border: medium solid transparent;
+    content: " ";
+    height: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 100%;
+    width: 0;
+}
+
+.cn-horizontal-navigation-tab-bar a.active:after {
+    border-top-color: #EE7F01;
+    border-width: 10px;
+    left: 50%;
+    margin-left: -10px;
+}
+
+.cn-horizontal-navigation-tab-bar a.active {
+    border-bottom: 4px solid #EE7F01;
+    position: relative;
+}
+    
+.cn-horizontal-navigation-toolbar-wrapper {
+    float: right;
+    padding-top: 4px;
+}
+
+.cn-horizontal-navigation-bottom {
+	display: none;
+}
+
+.cn-horizontal-navigation-tab-layout .cn-horizontal-navigation-bottom {
+    border-top: 1px solid #E3E3E3;
+    display: block;
+    margin-top: -7px;
+    padding-bottom: 7px;
+}
+
+.cn-list-settings-bar .cn-menu { 
+    width: 48px;
+    height: 32px;
+}
+
+.cn-list-settings-bar .cn-menu .cn-link.cn-more-actions {
+    color: #888888;
+    font-size: 12px;
+    height: 32px;
+    line-height: 15px;
+    margin-left: 8px;
+    margin-right: 0;
+    margin-top: 0;
+    width: 38px;
+}
+
+.cn-list-settings-bar .cn-menu .cn-link.cn-more-actions .cn-icon {
+    width: 24px;
+}
+
+.cn-list-settings-bar .cn-menu .cn-more-actions .cn-icon {
+    background-position: -101px -4px; 
+}
+
+.cn-list-settings-bar .cn-menu:hover .cn-more-actions .cn-icon {
+    background-position: -101px -68px; 
+}
+
+.cn-list-settings-bar .cn-menu .cn-link.cn-more-actions .cn-icon.cn-arrow {
+    background-position: -394px -292px;
+    float: right;
+    width: 14px;
+}
+
+.cn-list-settings-bar .cn-menu:hover .cn-link.cn-more-actions .cn-icon.cn-arrow {
+    background-position: -458px -358px;
+}
+
+.cn-list-settings-bar .cn-menu-list {
+    border-top: 0 none;
+    margin-top: 31px;
+    min-width: 100px;
+    z-index: 5;
+}
+
+.cn-list-settings-bar .cn-menu-list .cn-link {
+	background-position: 0 55%;
+	font-size: 12px;
+}
+
+
+.viewtype-switch {
+    background-image: url("../../images/icons/icons-map.png?t=${build.timestamp}");
+    background-repeat: repeat;
+    background-size: 576px 416px;
+    display: block;
+    float: left;
+    height: 32px;
+    width: 32px;
+}
+
+.viewtype-switch.CLASSIC {
+    background-position: -224px -4px;
+}
+
+.viewtype-switch.CLASSIC:hover {
+    background-position: -224px -68px;
+}
+
+.viewtype-switch.COMMENT {
+    background-position: -288px -4px;
+}
+
+.viewtype-switch.COMMENT:hover {
+    background-position: -288px -68px;
+}
+
+.viewtype-switch.TOPIC-CLASSIC {
+    background-position: -256px -4px;
+}
+
+.viewtype-switch.TOPIC-CLASSIC:hover {
+    background-position: -256px -68px;
+}
+
+.viewtype-switch.TOPIC-HIERARCHY {
+    background-position: -320px -4px;
+}
+
+.viewtype-switch.TOPIC-HIERARCHY:hover {
+    background-position: -320px -68px;
+}
+
+.cn-list-settings-bar .cn-menu-list .cn-link {
+    line-height: 18px;
+    display: block;
+    margin: 0;
+}
+
+.cn-list-settings-bar .cn-menu {
+	float: left;
+}

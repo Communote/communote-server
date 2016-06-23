@@ -1,0 +1,21 @@
+{
+    "definitions": [
+        {
+            "categoryName": "bookmarklet",
+            "coreResources": [
+                "/styles/frameworks/roar/roar.css",
+                "/styles/frameworks/smoothbox.css",
+                "/themes/core/styles/layout-common.css",
+                "/themes/core/styles/layout-form.css",
+                "/themes/core/styles/layout-main.css",
+                "/themes/core/styles/TextboxList.css",
+                "/themes/core/styles/AutoCompleter.css",
+                "/themes/core/styles/widgets/CreateNote.Widget.css",
+                "/themes/core/styles/images.css",
+                "/javascript/editors/tiny_mce_communote_theme/styles/ui.css",
+                "/javascript/editors/tiny_mce_external_plugins/suggestions/css/suggestions.css"
+            ],
+            "pluginResources": ["styles/bookmarklet.css"]
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+<div id="footer">
+	<p class="footer-message">
+		#if($authzTool.noneGranted('ROLE_KENMEI_USER')) <a id="topbar-about"
+			href="$urlTool.render('/user/about.do')">$fmtTool.message("portal.menu.about.title")</a>
+		| $fmtTool.message("portal.footer.service.text")
+		#elseif($authzTool.anyGranted('ROLE_KENMEI_USER')) <a
+			id="topbar-about" href="$urlTool.render('/portal/service/legal')">$fmtTool.message("portal.menu.about.title")</a>
+		| $fmtTool.message("portal.footer.service.text") #end
+	</p>
+
+	<dl id="version-info">
+		#set($applicationInfo = $communoteTool.getApplicationInformation())
+		<dt class="build">Build:</dt>
+		<dd class="build">${applicationInfo.buildNumberWithType}<br /></dd>
+		<dt class="buildtime">Build-Time:</dt>
+		<dd class="buildtime">${applicationInfo.buildTime}<br /></dd>
+	</dl>
+	<br class="clear" />
+</div>

@@ -1,0 +1,139 @@
+/* _register.css */
+
+#cn-communote-medium a {
+    color: #005599;
+    text-decoration: none;
+    white-space: nowrap;
+    zoom: 1;
+}
+#cn-communote-medium a:hover {
+    color: #e66914;
+}
+
+#cn-communote-medium {
+	margin: 0 auto;
+	padding: 10px;
+    width: 580px;
+	font-size: 12px;
+}
+#cn-communote-medium fieldset {
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+#cn-communote-medium #cn-header {
+    min-width: 0;
+}
+#cn-communote-medium #cn-header img {
+    float: right;
+    margin: 8px 15px;
+}
+#cn-communote-medium #cn-body-wrapper {
+    padding: 0;
+}
+
+#cn-communote-medium #cn-container-top ,
+#cn-communote-medium #cn-container-bottom {
+    position: relative;
+    padding: 25px;
+    zoom: 1;
+}
+#cn-communote-medium #cn-container-top {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #cbcbcb;
+    padding-bottom: 10px;
+}
+#cn-communote-medium #cn-container-bottom {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: #ffffff;
+    padding-top: 10px;
+}
+#cn-communote-medium h1 {
+    float: left;
+    margin: 20px 25px;
+}
+#cn-communote-medium h2 {
+    float: none;
+    margin-bottom: 20px;
+}
+#cn-communote-medium .cn-label {
+    clear: both;
+    float: left;
+    width: 180px;
+    font-size: 12px;
+    XXline-height: 1.7em;
+    line-height: 20px;
+}
+#cn-communote-medium .cn-border {
+    float: right;
+}
+#cn-communote-medium .cn-border input {
+    width: 270px;
+}
+#cn-communote-medium .cn-line {
+    clear: both;
+    margin-bottom: 10px;
+    zoom: 1;
+}
+#cn-communote-medium h3.cn-headline {
+    margin-top: 30px;
+}
+#cn-communote-medium .cn-inputTxt ,
+#cn-communote-medium .cn-inputSel ,
+#cn-communote-medium select {
+    float: left;
+    width: 336px;
+}
+#cn-communote-medium .cn-inputPwd {
+    float: left;
+    width: 140px;
+}
+#cn-communote-medium .cn-pwd-strength {
+    float: right;
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 22px;
+}
+#cn-communote-medium #cn-container-top .cn-buttons {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+}
+#cn-communote-medium #cn-container-bottom .cn-buttons {
+    position: relative;
+    clear: both;
+    float: right;
+    margin: 0;
+}
+#cn-communote-medium .cn-topspace {
+    margin-top: 40px;
+}
+#cn-communote-medium .cn-info {
+    color: #888888;
+}
+#cn-communote-medium .cn-info .cn-bold {
+    font-weight: 700;
+}
+#cn-communote-medium .cn-info ul {
+    margin: 0 0 0 120px;
+    padding: 0;
+}
+#cn-communote-medium #cn-container-bottom {
+    padding-top: 20px;
+}
+#cn-communote-medium .cn-input-error {
+	xdisplay: none;
+}
+#cn-communote-medium .cn-help-hover .cn-help-text {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e66914;
+	top: auto;
+}
+#cn-communote-medium input ,
+#cn-communote-medium select ,
+#cn-communote-medium table {
+		font-size: 12px;
+}

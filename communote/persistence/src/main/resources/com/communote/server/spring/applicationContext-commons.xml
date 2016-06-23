@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <!-- Message source for this context, loaded from localized "messages_xx" files -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename"><value>messages</value></property>
+    </bean>
+
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <!-- need note template resource loader for templates and class path loader for macros; template must be first for performance reasons-->
+            <value>
+                resource.loader=notetemplate, class
+                notetemplate.resource.loader.class=com.communote.server.core.template.velocity.NoteTemplateVelocityResourceLoader
+                notetemplate.resource.loader.cache=true
+                notetemplate.resource.loader.modificationCheckInterval=10
+                class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+                velocimacro.permissions.allow.inline=false
+                velocimacro.library=com/communote/server/core/note/template/macros-note-template.vm
+            </value>
+        </property>
+    </bean>
+
+    <bean id="cacheManager" class="com.communote.server.core.common.caching.eh.EhCacheManager" lazy-init="false">
+        <!-- the default configuration provider as inner bean -->
+        <property name="configurer">
+            <bean class="com.communote.server.core.common.caching.eh.DefaultEhCacheConfigurer" />
+        </property>
+    </bean>
+
+    <bean id="communoteServiceManager" class="com.communote.server.core.service.CommunoteServiceManager" lazy-init="false">
+    </bean>
+
+    <bean id="eventDispatcher" class="com.communote.server.api.core.event.EventDispatcher" lazy-init="false">
+    </bean>
+
+    <bean id="builtInKenmeiServices" class="java.util.ArrayList" lazy-init="true">
+        <constructor-arg>
+            <list>
+                <bean class="com.communote.server.core.messaging.connectors.xmpp.XMPPService" scope="prototype" lazy-init="true">
+                    <constructor-arg>
+                        <bean id="com.communote.server.core.service.BuiltInServiceNames.XMPP_MESSAGING" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+                    </constructor-arg>
+                </bean>
+                <bean class="com.communote.server.core.mail.fetching.MailFetchingService" scope="prototype" lazy-init="true">
+                    <constructor-arg>
+                        <bean id="com.communote.server.core.service.BuiltInServiceNames.MAIL_FETCHING" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+                    </constructor-arg>
+                </bean>
+                <bean class="com.communote.server.core.virusscan.VirusScannerService" scope="prototype" lazy-init="true">
+                    <constructor-arg>
+                        <bean id="com.communote.server.core.service.BuiltInServiceNames.VIRUS_SCANNER" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+                    </constructor-arg>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="timeZoneProvider" class="com.communote.server.core.common.time.TimeZoneProvider" lazy-init="false">
+    </bean>
+
+    <bean id="databaseUpdater" class="com.communote.server.core.database.liquibase.StandaloneLiquibaseDatabaseUpdater" lazy-init="false">
+        <property name="sessionFactoryImplementor" ref="sessionFactory" />
+    </bean>
+
+    <bean id="userService" class="com.communote.server.service.UserService" lazy-init="false">
+        <property name="defaultRepositories">
+            <map>
+                <entry key="DefaultConfluence">
+                    <bean class="com.communote.server.core.external.confluence.ConfluenceUserRepository"></bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <!--bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/ -->
+</beans>

@@ -1,0 +1,115 @@
+.cn-filter-applied .cn-content a {
+    border-color: #888888;
+    clear: both;
+    color: #888888;
+    font-size: 12px;
+    line-height: normal;
+    margin-bottom: 10px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.cn-filter-applied .cn-content a span.cn-icon {
+    height: 24px;
+    margin-right: 13px;
+    width: 24px;
+}
+
+.cn-filter-applied .cn-content a span.cn-icon-label {
+    display: block;
+    line-height: 24px;
+    margin-left: 37px;
+}
+
+.cn-filter-applied .cn-content a span.cn-icon-label span,
+.cn-filter-applied .cono-filter-settings-types .cn-icon-label {
+    border-color: #005599;
+    color: #005599;
+    text-decoration: none;
+}
+
+.cn-filter-applied .cn-content a span.cn-icon-label span:hover,
+.cn-filter-applied .cono-filter-settings-types .cn-icon-label:hover {
+    color: #e66914;
+    cursor: pointer;
+    text-decoration: line-through;
+}
+
+.cono-filter-settings-noteId .cn-icon, .cono-filter-settings-discussionId .cn-icon {
+    background-position: -389px -132px;
+}
+
+.cono-filter-settings-noteId:hover .cn-icon, .cono-filter-settings-discussionId:hover .cn-icon {
+    background-position: -389px -164px;
+}
+
+.cono-filter-settings-workspaces .cn-icon {
+    background-position: -69px -36px;
+}
+
+.cono-filter-settings-workspaces:hover .cn-icon {
+    background-position: -69px -68px;
+}
+
+.cono-filter-settings-userId .cn-icon {
+    background-position: -422px -132px;
+}
+
+.cono-filter-settings-userId:hover .cn-icon {
+    background-position: -422px -164px;
+}
+
+.cono-filter-settings-tagIds .cn-icon {
+    background-position: -517px -132px;
+}
+
+.cono-filter-settings-tagIds:hover .cn-icon {
+    background-position: -517px -164px;
+}
+
+.cono-filter-settings-search-tagPrefix .cn-icon,
+.cono-filter-settings-search-postTextSearchString .cn-icon,
+.cono-filter-settings-search-blogTextSearchString .cn-icon,
+.cono-filter-settings-search-searchString .cn-icon {
+    background-position: -133px -36px;
+}
+
+.cono-filter-settings-search-tagPrefix:hover .cn-icon,
+.cono-filter-settings-search-postTextSearchString:hover .cn-icon,
+.cono-filter-settings-search-blogTextSearchString:hover .cn-icon,
+.cono-filter-settings-search-searchString:hover .cn-icon {
+    background-position: -133px -68px;
+}
+
+.cono-filter-settings-startDate-endDate .cn-icon {
+    background-position: -486px -132px;
+}
+
+.cono-filter-settings-startDate-endDate:hover .cn-icon {
+    background-position: -486px -164px;
+}
+
+.cono-filter-settings-showPostsForMe .cn-icon {
+    background-position: -293px -133px;
+}
+
+.cono-filter-settings-showPostsForMe:hover .cn-icon {
+    background-position: -293px -165px;
+}
+
+.cono-filter-settings-showFavorites .cn-icon {
+    background-position: -325px -133px;
+}
+
+.cono-filter-settings-showFavorites:hover .cn-icon {
+    background-position: -325px -165px;
+}
+
+.cono-filter-settings-showFollowedItems .cn-icon {
+    background-position: -357px -132px;
+}
+
+.cono-filter-settings-showFollowedItems:hover .cn-icon {
+    background-position: -357px -164px;
+}
+

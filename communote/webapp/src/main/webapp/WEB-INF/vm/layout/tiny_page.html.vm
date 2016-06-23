@@ -1,0 +1,30 @@
+##set default CSS and JS category for tiny page
+#if(!$cssCategories)
+    #set($cssCategories = ['layout-tiny'])
+#end
+#if(!$javaScriptCategories)
+    #set($javaScriptCategories = ['communote-core'])
+#end
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>${pageTitle}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="language" content="en" />
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no" />
+        <link rel="shortcut icon" type="image/x-icon" href="$urlTool.render('/favicon.ico', false, false, true)" />
+        #parse('/WEB-INF/vm/common/styles.html.vm')
+        #parse('/WEB-INF/vm/common/scripts.html.vm')
+    </head>
+    <body>
+        <div id="cn-communote-tiny">
+            <div id="cn-body-wrapper">
+                #parse('/WEB-INF/vm/layout/dialog_header.html.vm')
+                #parse($contentTemplate)
+                <span class="cn-clear"><!-- --></span>
+            </div>
+            #parse($renderTool.getVelocityTemplateLocation('core.layout.main.footer'))
+        </div>
+    </body>
+</html>

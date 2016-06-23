@@ -1,0 +1,309 @@
+.datepicker {
+    position: absolute;
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    color: #888888;
+    line-height: normal;
+    width: 220px;
+    height: 165px;
+    padding: 4px;
+    background-color: #FFFFFF;
+    -webkit-box-shadow: 1px 2px 6px #bcbcbc;
+    -khtml-box-shadow: 1px 2px 6px #bcbcbc;
+    -moz-box-shadow: 1px 2px 6px #bcbcbc;
+    box-shadow: 1px 2px 6px #bcbcbc;
+}
+
+/* header
+********************************************************/
+.datepicker .header {
+    background-color: #EEEEEE;
+    border: 1px solid #D9D9D9;
+    height: 25px;
+    padding-top: 1px;
+    position: relative;
+}
+
+.datepicker .header .title {
+    text-align: center;
+    margin: 3px 18px 0 18px;
+}
+
+.datepicker .header .titleText {
+    color: #E66914;
+    font-size: 14px;
+}
+
+.datepicker .header .titleText.title-hover:hover {
+    text-decoration: underline;
+}
+
+.datepicker .header .previous,
+.datepicker .header .next,
+.datepicker .header .closeButton {
+    position: absolute;
+    cursor: pointer;
+    text-indent: -40px;
+    overflow: hidden;
+    width: 16px;
+    height: 16px;
+    top: 4px;
+    background-image: url(../../../themes/core/images/frameworks/datepicker/arrows.png);
+    background-position: left top;
+    background-repeat: no-repeat;
+}
+
+.datepicker .header .previous {
+    left: 4px;
+}
+.datepicker .header .previous:hover {
+    background-position: left bottom;
+}
+.datepicker .header .next {
+    right: 4px;
+    background-position: -17px top;
+}
+.datepicker .header .next:hover {
+    background-position: -17px bottom;
+}
+.datepicker .header .closeButton {
+    display: none;
+    right: 0px;
+    top: 0px;
+    background-position: right top;
+}
+.datepicker .header .closeButton:hover {
+    background-position: right bottom;
+}
+
+/* body
+********************************************************/
+.datepicker .body {
+    position: relative;
+    top: 6px;
+    left: 2px;
+    width: 220px;
+    height: 131px;
+    overflow: hidden;
+}
+
+/* time
+********************************************************/
+.datepicker .time {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.datepicker .time .hour,
+.datepicker .time .separator,
+.datepicker .time .minutes {
+    background: #fff;
+    border: 0px;
+    width: 50px;
+    font-size: 32px;
+    color: #333;
+    border: 1px solid #aaa;
+    position: absolute;
+    top: 18px;
+    text-align: center;
+    padding: 2px;
+}
+
+.datepicker .time .hour {
+    left: 23px;
+}
+.datepicker .time .separator {
+    background: transparent;
+    border: 0px;
+    width: 10px;
+    left: 84px;
+}
+
+.datepicker .time .minutes {
+    left: 103px;
+}
+.datepicker .time .ok {
+    position: absolute;
+    top: 80px;
+    height: 32px;
+    width: 136px;
+    left: 23px;
+    font-size: 20px;
+}
+
+/* days-grid
+********************************************************/
+.datepicker .days .day {
+    border: 1px solid #D9D9D9;
+    float: left;
+    height: 13px;
+    line-height: 14px;
+    margin: 0 2px 2px 0;
+    overflow: hidden;
+    padding-right: 3px;
+    padding-top: 1px;
+    text-align: right;
+    width: 19px;
+}
+
+.datepicker .days .titles {
+    margin-bottom: 1px;
+}
+
+.datepicker .days .titles .title {
+    border: 1px solid transparent;
+    text-align: center;
+    height: 16px;
+    padding-right: 0px;
+    width: 22px;
+    padding-top: 2px;
+}
+
+.datepicker .days .day0 {
+    margin-right: 0;
+}
+
+.datepicker .days .week5 .day {
+    margin-bottom: 0;
+}
+
+/* days-colors
+********************************************************/
+.datepicker .days .week .day {
+    background-color: #FFFFFF;
+    border-color: #BCBCBC;
+    cursor: pointer;
+    color: #005599;
+}
+.datepicker .days .week .day:hover {
+    color: #E66914;
+    border: 1px solid #E66914;
+}
+
+.datepicker .days .week .otherMonth {
+    background: #f2f2f2;
+    color: #4696BE;
+    border: 1px solid #D9D9D9;
+}
+
+.datepicker .days .week .selected {
+    background: #fff;
+    color: #e66914;
+    border: 1px solid #e66914;
+}
+
+/* weeknumber-colors
+********************************************************/
+
+.datepicker .days .day.weeknumber {
+    background-color: transparent;
+    border: 0 none;
+    color: #737373;
+    font-size: 10px;
+    font-weight: normal;
+}
+
+
+.datepicker .days .day.weeknumber:hover {
+    font-weight: normal;
+    color: #737373;
+    border: 0 none;
+    cursor: default;
+}
+
+/* months-grid
+********************************************************/
+.datepicker .months .month {
+    float: left;
+    text-align: center;
+    overflow: hidden;
+    width: 57px;
+    cursor: pointer;
+    background: #fcfcfc;
+    padding-top: 7px;
+    height: 22px;
+    border: 1px solid #737373;
+    color: #005599;
+    margin: 0 2px 2px 0;
+}
+
+.datepicker .months .month3,
+.datepicker .months .month6,
+.datepicker .months .month9,
+.datepicker .months .month12 {
+    margin-right: 0;
+}
+
+.datepicker .months .month10,
+.datepicker .months .month11,
+.datepicker .months .month12 {
+    margin-bottom: 0;
+}
+
+/* months-colors
+********************************************************/
+.datepicker .months .month:hover {
+    color: #E66914;
+    border: 1px solid #E66914;
+}
+
+.datepicker .months .selected {
+    background: #fff;
+    color: #E66914;
+    border: 1px solid #E66914;
+}
+
+/* years-grid
+********************************************************/
+.datepicker .years .year {
+    float: left;
+    text-align: center;
+    overflow: hidden;
+    background: #fcfcfc;
+    width: 32px;
+    cursor: pointer;
+    padding-top: 7px;
+    height: 22px;
+    border: 1px solid #737373;
+    color: #005599;
+    margin: 0 2px 2px 0;
+}
+
+.datepicker .years .year4,
+.datepicker .years .year9,
+.datepicker .years .year14,
+.datepicker .years .year19 {
+    margin-right: 0;
+    width: 34px;
+}
+
+.datepicker .years .year15,
+.datepicker .years .year16,
+.datepicker .years .year17,
+.datepicker .years .year18,
+.datepicker .years .year19 {
+    margin-bottom: 0;
+}
+
+/* years-colors
+********************************************************/
+.datepicker .years .year:hover {
+    color: #E66914;
+    border: 1px solid #E66914;
+}
+
+.datepicker .years .selected {
+    background: #fff;
+    color: #E66914;
+    border: 1px solid #E66914;
+}
+
+/* global
+********************************************************/
+.datepicker .unavailable {
+    cursor: default !important;
+    background: #f0f0f0 !important;
+    color: #ccc !important;
+    border: 1px solid #ccc !important;
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.user.UserAuthority" table="user_authorities" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">user_authorities_seq</param>
+                                                           </generator>
+        </id>
+        <property name="role" type="com.communote.server.persistence.user.UserRoleEnum">
+            <column name="role" 
+                     not-null="true" unique="false"/>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,3 @@
+#set($contentTemplate = '/WEB-INF/vm/pages/terms-of-use-welcome-page-content.html.vm')
+#set($pageTitle = "#t('blog.user.registration.terms.page.title') &ndash; $escTool.xmlSimple(${communoteTool.CurrentClientName})")
+#parse('/WEB-INF/vm/layout/medium_page.html.vm')

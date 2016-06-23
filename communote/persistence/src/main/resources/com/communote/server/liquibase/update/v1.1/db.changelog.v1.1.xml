@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v1.1/db.changelog.v1.1.xml">
+
+	<changeSet id="mt2940_1" author="unknown" context="client">
+		<comment>CR 131: autosave refactoring</comment>
+		<update tableName="core_note">
+			<column name="status" value="AUTOSAVED" />
+			<where>status!='PUBLISHED'</where>
+		</update>
+		<!-- autosave crosspost blogs -->
+		<createTable tableName="core_notes2crossblogs">
+		  <column name="NOTES_FK" type="BIGINT" ><constraints nullable="false"/></column>
+		  <column name="CROSSPOST_BLOGS_FK" type="BIGINT" ><constraints nullable="false"/></column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="core_blog_NOTES_FKC" baseTableName="core_notes2crossblogs" baseColumnNames="NOTES_FK" referencedTableName="core_note" referencedColumnNames="ID" />
+		<addForeignKeyConstraint constraintName="core_note_CROSSPOST_BLOGS_FKC" baseTableName="core_notes2crossblogs" baseColumnNames="CROSSPOST_BLOGS_FK" referencedTableName="core_blog" referencedColumnNames="ID" />
+	</changeSet>
+
+	<changeSet id="mt2945_1" author="unknown" context="client">
+		<comment>CR 109: Post without selecting a blog</comment>
+		<addColumn tableName="configuration_client">
+			<column name="default_blog_fk" type="BIGINT">
+				<constraints unique="true" />
+			</column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName        = "configuration_client_default_c"
+                                 baseTableName         = "configuration_client"
+                                 baseColumnNames       = "default_blog_fk"
+                                 referencedTableName   = "core_blog"
+                                 referencedColumnNames = "id" />
+	</changeSet>
+	
+	<changeSet id="mt2957_1" author="unknown" context="client">
+		<comment>CR 122 - Threaded answers</comment>
+		<addColumn tableName="core_note">
+			<column name="discussion_note_fk" type="BIGINT"></column>
+		</addColumn>
+		<addColumn tableName="core_note">
+			<column name="discussion_path" type="varchar(1024)">
+			</column>
+		</addColumn>		
+	</changeSet>
+	
+	<changeSet id="mt2957_2_postgresql" author="unknown" context="client" dbms="postgresql">
+		<comment>CR 122 - Threaded answers</comment>
+		<sql>
+			update core_note set discussion_note_fk = id;
+			update core_note set discussion_note_fk = parent_fk where parent_fk is not null;
+			
+			update core_note set discussion_path = '/' || id || '/' where parent_fk is null;
+			update core_note set discussion_path = '/' || parent_fk || '/' || id || '/' where parent_fk is not null;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="mt2957_2_mysql" author="unknown" context="client" dbms="mysql">
+		<comment>CR 122 - Threaded answers</comment>
+		<sql>
+			update core_note set discussion_note_fk = id;
+			update core_note set discussion_note_fk = parent_fk where parent_fk is not null;
+			
+			update core_note set discussion_path = CONCAT('/', id, '/') where parent_fk is null;
+			update core_note set discussion_path = CONCAT('/', parent_fk, '/', id, '/') where parent_fk is not null;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="mt2976_1" author="unknown" context="client">
+		<comment>Content Type</comment>
+		
+		<addColumn tableName="core_attachment">
+			<column name="content_type" type="varchar(1024)"></column>
+		</addColumn>
+		
+		<addColumn tableName="core_attachment">
+			<column name="size" type="BIGINT"></column>
+		</addColumn>
+		
+		<addColumn tableName="core_attachment">
+			<column name="status" type="varchar(1024)"></column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="mt2976_2" author="unknown" context="client">
+		<comment>Attachment Status</comment>
+		
+		<sql>
+			update core_attachment set status = 'UPLOADED' where NOTE_FK is null;
+			update core_attachment set status = 'PUBLISHED' where NOTE_FK is not null;
+		</sql>
+	</changeSet>
+	
+	<changeSet id="cr147_1_postgresql" author="unknown" context="client" dbms="postgresql">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+			SELECT COUNT(*)
+			FROM
+				pg_catalog.pg_constraint
+			WHERE conrelid = (SELECT oid FROM pg_class WHERE relname='user_client_creation') AND conname LIKE 'user_client_creation_creator_alias_key';
+			</sqlCheck>
+		</preConditions>
+		<comment>Client Registration without Activation Code</comment>
+		<dropUniqueConstraint tableName="user_client_creation" constraintName="user_client_creation_creator_alias_key" />
+	</changeSet>
+	
+	<changeSet id="make_default_blog_default_postgresql" author="unknown" context="client" dbms="postgresql">
+		
+		<sql>
+		update user_group set all_can_read = true where user_group.id in (
+			select ug.id from user_group ug, core_blog b, configuration_client c 
+			where b.id=default_blog_fk and ug.id=b.blogging_user_group_fk 
+			and exists (
+				select * from configuration_setting s 
+				where key = 'kenmei.client.allow.all.can.read.write.for.all.users' and value = 'true'
+			)
+		);
+		update user_group set all_can_write = true where user_group.id in (
+			select ug.id from user_group ug, core_blog b, configuration_client c 
+			where b.id=default_blog_fk and ug.id=b.blogging_user_group_fk 
+			and exists (
+				select * from configuration_setting s 
+				where key = 'kenmei.client.allow.all.can.read.write.for.all.users' and value = 'true'
+			)
+		);
+		</sql>
+	
+	</changeSet>
+	<changeSet author="unknown" id="rename_sequence_for_external_authentication" dbms="postgresql">
+	   <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0"> select count(*) from pg_catalog.pg_class where relname='user_external_auth_seq'
+            </sqlCheck>
+        </preConditions>
+        <dropSequence sequenceName="user_authentication_seq"/>
+        <sql>
+            create sequence user_external_auth_seq;
+            select setval('user_external_auth_seq', (SELECT max(id)+1 FROM user_external_auth));
+        </sql>
+	</changeSet>
+	
+    <changeSet id="rename_default_blog_alias_1_postgresql" author="unknown" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT
+                    count(*)
+                FROM
+                    core_blog
+                WHERE
+                    name_identifier='public';
+            </sqlCheck>
+        </preConditions>
+        <comment>Renames the blog alias of the default blog, if an alias 'public' not exists.</comment>
+        <sql>
+            UPDATE
+                core_blog
+              SET
+                name_identifier = 'public'
+            WHERE
+                id = (SELECT default_blog_fk FROM configuration_client);
+        </sql>
+    </changeSet>
+    
+    <changeSet id="rename_default_blog_alias_2_postgresql" author="unknown" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT
+                    count(*)
+                FROM
+                    core_blog
+                WHERE
+                    name_identifier = 'custom.message.default.blog'
+                  AND
+                    id = (SELECT default_blog_fk FROM configuration_client);
+            </sqlCheck>
+        </preConditions>
+        <comment>Renames the blog alias of the default blog, if it is still the message key.</comment>
+        <sql>
+            UPDATE
+                core_blog
+              SET
+                name_identifier = 'public' || (SELECT count(*)+1 FROM core_blog WHERE name_identifier LIKE 'public%')
+            WHERE
+                name_identifier = 'custom.message.default.blog'
+              AND
+                id = (SELECT default_blog_fk FROM configuration_client);
+        </sql>
+    </changeSet>
+    
+    
+    <changeSet id="rename_default_blog_alias_1_mysql" author="unknown" context="client" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT
+                    count(*)
+                FROM
+                    core_blog
+                WHERE
+                    name_identifier='public';
+            </sqlCheck>
+        </preConditions>
+        <comment>Renames the blog alias of the default blog, if an alias 'public' not exists.</comment>
+        <sql>
+            UPDATE
+                core_blog
+              SET
+                name_identifier = 'public'
+            WHERE
+                id = (SELECT default_blog_fk FROM configuration_client);
+        </sql>
+    </changeSet>
+    
+    <changeSet id="rename_default_blog_alias_2_mysql" author="unknown" context="client" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT
+                    count(*)
+                FROM
+                    core_blog
+                WHERE
+                    name_identifier = 'custom.message.default.blog'
+                  AND
+                    id = (SELECT default_blog_fk FROM configuration_client);
+            </sqlCheck>
+        </preConditions>
+        <comment>Renames the blog alias of the default blog, if it is still the message key.</comment>
+        <sql>
+            UPDATE
+                core_blog
+              SET
+                name_identifier =  CONCAT('public', (SELECT count(*)+1 FROM core_blog WHERE name_identifier LIKE 'public%'))
+            WHERE
+                name_identifier = 'custom.message.default.blog'
+              AND
+                id = (SELECT default_blog_fk FROM configuration_client);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="mt3096_1"  context="client">
+        <comment>deletes unconnected large user images</comment>
+        <sql>
+            DELETE FROM user_image
+            WHERE 
+                user_image.id NOT IN (SELECT large_image_fk FROM user_profile WHERE large_image_fk IS NOT NULL)
+             AND
+                user_image.id NOT IN (SELECT medium_image_fk FROM user_profile WHERE medium_image_fk IS NOT NULL)
+             AND
+                user_image.id NOT IN (SELECT small_image_fk FROM user_profile WHERE small_image_fk IS NOT NULL);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="mt3178_2_postgresql" context="global" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT
+                    count(*)
+                FROM
+                    configuration_setting
+                WHERE
+                    key = 'kenmei.application.client.approval.automation';
+            </sqlCheck>
+        </preConditions>
+        <comment>Automated Client Approval</comment>
+        <insert tableName="configuration_setting">
+		    <column name="key" value="kenmei.application.client.approval.automation" />
+		    <column name="value" value="false" />
+		</insert>
+    </changeSet>
+    
+    <changeSet author="unknown" id="mt3178_2_mysql" context="global" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT
+                    count(*)
+                FROM
+                    configuration_setting
+                WHERE
+                    `key` = 'kenmei.application.client.approval.automation';
+            </sqlCheck>
+        </preConditions>
+        <comment>Automated Client Approval</comment>
+        <insert tableName="configuration_setting">
+            <column name="key" value="kenmei.application.client.approval.automation" />
+            <column name="value" value="false" />
+        </insert>
+    </changeSet>
+    
+    <changeSet author="unknown" id="mt3187_1" context="client">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="core_note_kenmei_users_fkc" />
+        </preConditions>
+        <comment>Adjust the forein key constraint for kenmei_users_fk.</comment>
+        <dropForeignKeyConstraint constraintName="core_note_kenmei_users_fkc"
+            baseTableName="core_users2favorite_notes" />        
+    </changeSet>
+    
+    <changeSet author="unknown" id="mt3187_2" context="client">
+        <comment>Adjust the forein key constraint for kenmei_users_fk.</comment>
+        <addForeignKeyConstraint constraintName="core_note_kenmei_users_fkc"
+            baseTableName="core_users2favorite_notes" baseColumnNames="kenmei_users_fk"
+            referencedTableName="user_user" referencedColumnNames="id" />            
+    </changeSet>
+        
+    <changeSet author="unknown" id="mt3187_3" context="client">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="core_note_kenmei_users_fkc" />
+        </preConditions>
+        <comment>Drop the forein key constraint for kenmei_users_fk.</comment>
+        <dropForeignKeyConstraint constraintName="core_note_kenmei_users_fkc"
+            baseTableName="core_users2favorite_notes" />        
+    </changeSet>
+    
+    <changeSet author="unknown" id="mt3187_4_postgresql" context="client" dbms="postgresql">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="core_users2favorite_notes" columnName="kenmei_users_fk" />
+        </preConditions>
+        <comment>Adjust core_users2favorite_notes and rename the column kenmei_user_fk to favorite_users_fk.</comment>
+        <renameColumn tableName="core_users2favorite_notes"
+            oldColumnName="kenmei_users_fk" newColumnName="favorite_users_fk" />
+        <addForeignKeyConstraint constraintName="core_note_favorite_users_fkc"
+            baseTableName="core_users2favorite_notes" baseColumnNames="favorite_users_fk"
+            referencedTableName="user_user" referencedColumnNames="id" />            
+    </changeSet>
+    
+    <changeSet author="unknown" id="mt3187_4_mysql" context="client" dbms="mysql">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="core_users2favorite_notes" columnName="kenmei_users_fk" />
+        </preConditions>
+        <comment>Adjust core_users2favorite_notes and rename the column kenmei_user_fk to favorite_users_fk.</comment>
+        <sql>
+            ALTER TABLE core_users2favorite_notes 
+            CHANGE kenmei_users_fk favorite_users_fk BIGINT(20);
+        </sql>
+        <addForeignKeyConstraint constraintName="core_note_favorite_users_fkc"
+            baseTableName="core_users2favorite_notes" baseColumnNames="favorite_users_fk"
+            referencedTableName="user_user" referencedColumnNames="id" />            
+    </changeSet>
+    
+</databaseChangeLog>

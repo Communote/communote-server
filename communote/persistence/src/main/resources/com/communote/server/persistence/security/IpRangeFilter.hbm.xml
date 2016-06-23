@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.security.IpRangeFilterImpl" table="iprange_filter" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">iprange_filter_seq</param>
+                                                           </generator>
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="name" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="enabled" type="boolean">
+            <column name="enabled" 
+                     not-null="true" unique="false"/>
+        </property>
+        <set name="includes" order-by="IP_RANGE_FILTER_IN_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <key foreign-key="ip_range_filter_C_in">
+                <column name="IP_RANGE_FILTER_IN_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.security.IpRangeImpl"/>
+        </set>
+        <set name="channels" table="iprange_filter_channel" order-by="CHANNELS_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <key foreign-key="iprange_channel_IP_RANGE_FILTC">
+                <column name="IP_RANGE_FILTERS_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.security.IpRangeChannelImpl" foreign-key="iprange_filter_CHANNELS_FKC">
+                <column name="CHANNELS_FK"/>
+            </many-to-many>
+        </set>
+        <set name="excludes" order-by="IP_RANGE_FILTER_EX_FK" lazy="true" fetch="select" inverse="false" cascade="delete">
+            <key foreign-key="ip_range_filter_C_ex">
+                <column name="IP_RANGE_FILTER_EX_FK"/>
+            </key>
+            <one-to-many class="com.communote.server.model.security.IpRangeImpl"/>
+        </set>
+    </class>
+</hibernate-mapping>

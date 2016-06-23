@@ -1,0 +1,15 @@
+<div id="cn-container-bottom">
+    <div class="cn-line">
+        #cnRenderInlineMessages()
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    #if("$!showForwardButton" == "" || "$showForwardButton" == "true" )
+    <div class="cn-line">
+        <div class="cn-buttons">
+            #set($targetUrl = $urlTool.renderIfRelative("$!messagesTarget"))
+            #cnButton('forwardButton', 'blog.home.message.button.continue', '', "location.href=${escTool.S}$targetUrl${escTool.S}")
+        </div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    #end
+</div>

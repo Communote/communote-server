@@ -1,0 +1,380 @@
+#**
+ * cnErrorMessage
+ *
+ * print the error message
+ *
+ * @param    springBind         string
+ *#
+#macro(cnErrorMessage $springBind)
+    #if($springBind && $springBind != '')
+        #springBind($springBind)
+        #if($status.errorMessages && !$status.errorMessages.isEmpty())
+	        ##spring.vm: springShowErrors($separator $classOrStyle) - kapselt in SPAN
+	        <div class="cn-error">
+	            #springShowErrors('' 'cn-error-message')
+	            #cnClear()
+	        </div>
+        #end
+    #end
+#end
+
+#macro(cnErrorMarker $springBind)
+	#if($springBind && $springBind != '')
+        #springBind($springBind)
+        #if($status.errorMessages && !$status.errorMessages.isEmpty())
+            <div class="cn-error cn-hidden"><!-- Marker Div --></div>  
+        #end
+    #end
+#end
+
+
+#**
+ * cnLabel
+ *
+ * print the label for an input control
+ *
+ * @param    id                 string
+ * @param    label              string
+ * @param    tooltip            string
+ *#
+#macro(cnLabel $id $label $require $tooltip)
+    #if($label != '')
+        <label class="cn-label" for="$id">#t($label)
+            #if($require == true)<span class="cn-required">*</span>#end
+            #cnTooltip($tooltip)
+        </label>
+    #end
+#end
+
+#**
+* Renders a headline
+* 
+* @param label  string  Key for the headline
+*#
+#macro(cnHeadline $label)
+<div class="cn-headline"><h2>#t($label)</h2><span class="cn-clear"><!-- Empty --></span></div>
+#end
+
+
+#**
+ * cnTooltip
+ *
+ * print an A-tag as tooltip
+ *
+ * @param    tooltip            string
+ *#
+#macro(cnTooltip $tooltip)
+    #if($tooltip != '')
+        <span class="tooltip-wrapper"><a class="tooltip" rel="#t($tooltip)">[?]</a></span>
+    #end
+#end
+
+#macro(cnCheckbox $id $value $label $require $tooltip $springBind)
+	<div class="line">
+	    <div class="w100">
+	        <div class="checkbox">
+	        	#cnErrorMarker($springBind)
+	            <input type="checkbox" name="$id" id="$stringUtils.replace($id,'.','-')" value="true" #if($value)checked="checked"#end />
+	            #if($springBind && $springBind != '')
+	               <input type="hidden" name="_$id" value="_on" />
+	            #end
+	            #cnLabel($stringUtils.replace($id,'.','-') $label $require $tooltip)
+                #cnErrorMessage($springBind)
+	        </div>
+	    </div>
+	    <span class="clear"><!-- --></span>
+	</div>
+#end
+
+#macro(cnRadio $identifier $selectedValue $values $label $require $tooltip $springBind)
+	<div class="line">
+	    <div class="w100">
+	        <div class="radios">
+	        	#t($label)<br />
+	        	#cnErrorMarker($springBind)
+	        	#foreach($value in $values)
+	               <input type="radio" name="$identifier" id="$stringUtils.replace("${identifier}-$value",'.','-')" value="$value" #if($selectedValue == $value)checked="checked"#end />
+	               #cnLabel($stringUtils.replace("${identifier}-$value",'.','-') "${label}.$value" $require $tooltip)
+	               <br />
+                #end
+                #cnErrorMessage($springBind)
+	        </div>
+	    </div>
+	    <span class="clear"><!-- --></span>
+	</div>
+#end
+
+#**
+ * cnInputText
+ *
+ * print the complete text input control with error message, label and tooltip
+ * 
+ * @param    id                 string
+ * @param    value              string
+ * @param    label              string
+ * @param    require            bool
+ * @param    tooltip            string
+ * @param    springbind         string
+ * @param    placeholder        string      Key of the placeholder text.
+ * @param    passwordDisabled   bool        If true, the password field is disabled and must be enabled explicitly.
+ * @param    type               string      Optional type of the form
+ * 
+ *#
+#macro(cnInputText $id $value $label $require $tooltip $springBind $isPassword $placeholder $passwordDisabled $type)
+    #if($id != '')
+        <div class="cn-smallline">
+            #cnLabel($id $label $require $tooltip)
+            #cnErrorMarker($springBind)
+            <input type="#if($isPassword)password#elseif($type)$type#{else}text#end" class="cn-inputTxt" id="$id" name="$id" value="#if(!$passwordDisabled)$!value#end"#if($placeholder) placeholder="#t($placeholder)"#end #if($passwordDisabled)disabled="disabled"#end #if($isPassword)autocomplete="off"#end />
+            #if($passwordDisabled)
+                <input type="hidden" name="passwordChanged" id="passwordChanged" value="false" />
+                <br />
+                <a href="javascript:;" onclick="enableField('$id', 'passwordChanged', this); return false;">#t('client.form.change.password')</a>
+            #end
+            #cnErrorMessage($springBind)
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    #end
+#end
+
+#**
+ * Short input field.
+ * @see cnInputText
+ *#
+#macro(cnInputText_Short $id $value $label $require $tooltip $springBind $isPassword $placeholder $passwordDisabled $type)
+<div class="cn-field-50">#cnInputText($id $value $label $require $tooltip $springBind $isPassword $placeholder $passwordDisabled $type)</div>
+#end
+
+#**
+ * Long input field.
+ * @see cnInputText
+ *#
+#macro(cnInputText_Long $id $value $label $require $tooltip $springBind $isPassword $placeholder $passwordDisabled $type)
+<div class="cn-field-100 cn-long">#cnInputText($id $value $label $require $tooltip $springBind $isPassword $placeholder $passwordDisabled $type)</div>
+#end
+
+
+#**
+ * cnText
+ *
+ * print the complete textarea control with error message, label and tooltip
+ *
+ * @param    id                 string
+ * @param    value              string
+ * @param    label              string
+ * @param    require            bool
+ * @param    tooltip            string
+ * @param    springbind         string
+ * @param    cols               integer     Number of columns.
+ * @param    rows               integer     Number of rows.
+ *#
+#macro(cnText $id $value $label $require $tooltip $springBind $cols $rows)
+    #if($id != '')
+        <div class="cn-smallline">
+            #cnLabel($id $label $require $tooltip)
+            #cnErrorMarker($springBind)
+            <textarea class="cn-textarea" cols="$!cols" rows="$!rows" id="$id" name="$id" >$!value</textarea>
+            #cnErrorMessage($springBind)
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    #end
+#end
+
+
+#**
+ * Long textarea.
+ * @see cnText
+ *#
+#macro(cnText_Long $id $value $label $require $tooltip $springBind $cols $rows)
+<div class="cn-field-100 cn-long">#cnText($id $value $label $require $tooltip $springBind $cols $rows)</div>
+#end
+
+
+#**
+ * cnInputTextRO
+ *
+ * print a readonly text input control with label and tooltip
+ *
+ * @param    id                 string
+ * @param    value              string
+ * @param    label              string
+ * @param    tooltip            string
+ *#
+#macro(cnInputTextRO $id $value $label $tooltip)
+    #if($id != '')
+        <div class="cn-smallline">
+            #cnLabel('' $label false $tooltip)
+            <input type="text" class="cn-inputTxt cn-readonly" readonly="readonly" id="$id" name="$id" value="$value" />
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    #end
+#end
+
+
+#**
+ * cnSelect
+ *
+ * print the complete select control with error message, label and tooltip
+ *
+ * @param    id                 string (= 'languageCode' | 'timeZoneId')
+ * @param    $collection        object (= $communoteTool.languages | $communoteTool.timeZones)
+ * @param    $selected          string
+ * @param    label              string
+ * @param    require            bool
+ * @param    tooltip            string
+ * @param    springbind         string
+ *#
+#macro(cnSelect $id $collection $selected $label $require $tooltip $springBind)
+    #if($id != '')
+        <div class="cn-smallline">
+            #cnLabel($id $label $require $tooltip)
+            #cnErrorMarker($springBind)
+            <select class="cn-select" name="$id" id="$id" #if($disableSelection)disabled="true"#end>
+                #if($includeEmpty)
+                    <option value="">#t('user.profile.country.empty')</option>
+                #end
+                #foreach($option in $collection)
+                    #set($selectionText = $option.name)
+                    #if($id == 'languageCode')
+                        #set($selectionValue = $option.languageCode )
+                    #elseif($id == 'countryCode')
+                        #set($selectionValue = $option.countryCode)
+                    #elseif($id == 'timeZoneId' || $id == 'userProfile.timeZoneId')
+                        #set($selectionValue = $option.timeZoneId)
+                        #set($selectionText = "#t($option.messageKey)")
+                    #else
+                        #set($selectionValue = $option.value )
+                        #set($selectionText = "#t($option.textKey)")
+                    #end
+                    #set($selectionSelected = $selectionValue.equals($selected))
+                    <option value="$selectionValue" #if($selectionSelected)selected="selected"#end>$selectionText</option>
+                #end
+            </select>
+            #cnErrorMessage($springBind)
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    #end
+#end
+
+
+#**
+ * cnInputPasswordSet
+ *
+ * print the complete password input control with error message, label, tooltip and strongth bar
+ *
+ * @param    tooltip            string
+ *#
+#macro(cnInputPasswordSet $tooltip)
+    <div class="passwordContainer">
+        <div class="cn-smallline">
+	        #cnLabel('password' 'user.register.password' true $tooltip)
+	        #cnErrorMarker('command.password')
+	        <input type="password" class="cn-inputPwd" id="password" name="password" onkeyup="updateQualityMeter(this)" autocomplete="off"/>
+	        #cnErrorMessage('command.password')
+	        <div class="cn-pwd-strength">
+	           <table cellpadding="0" cellspacing="0">
+	                <tr>
+	                    <td><span class="progressLabel">#t('user.register.password_strength.low')&nbsp;</span></td>
+	                    <td><div id="progressbar" class="progressbar"><div id="progressbarArrow" class="progressbarArrow"></div></div></td>
+	                    <td><span class="progressLabel">&nbsp;#t('user.register.password_strength.strong')</span></td>
+	                </tr>
+	            </table>
+	        </div>
+	        <span class="cn-clear"><!-- --></span>
+	    </div>
+	    <div class="cn-smallline">
+	        #cnLabel('password2' 'user.register.password2' true '')
+	        #cnErrorMarker('command.password')
+	        <input type="password" class="cn-inputPwd" id="password2" name="password2" autocomplete="off" />
+	        #cnErrorMessage('command.password2')
+	        <span class="cn-clear"><!-- --></span>
+	    </div>
+    </div>
+#end
+
+#**
+ * cnFollowButton
+ *
+ * print an a-Tag follow button
+ *
+ * @param    id                string      the id
+ * @param    type              string      the type of the object to follow
+ * @param    isEnabled         string      true if the use follow the object
+ * @param    labelKey          string      label of the button 
+ *
+ * javascript  in  FollowUtils.js (followButtonClicked())
+ * css         in  layout-common.css (cn-button-look, cn-follow)
+ *#
+#macro(cnFollowButton $id $type $isEnabled $labelKey)
+    <a href="javascript:;"  id="$id" class="cn-button-look cn-follow#if($isEnabled) active#end" 
+    onclick="followUtils.followButtonClicked(this, '${type}', $id); return false;">
+        <span class="cn-icon"><!-- --></span>
+        <span class="cn-icon-label">#t($labelKey)</span>
+    </a>
+#end
+
+#macro(cnButton $id $labelKey $tooltip $onClick $cssClasses)
+    <input type="button" id="$id" name="$id" class="cn-button $!cssClasses" value="#t($labelKey)" onclick="$!onClick" #if($tooltip != '') title="$tooltip" #end/>
+#end
+
+#**
+* Renders error, success and warning messages.
+* @param errors
+*           the bind errors of the spring form
+*#
+#macro(cnRenderMessages $errors)
+    #foreach($successMessage in $successMessages)
+        <div class="roar-notification-container success" style="display: none;">$successMessage</div>
+    #end
+    #foreach($warningMessage in $warningMessages)
+        <div class="roar-notification-container warning" style="display: none;">$warningMessage</div>
+    #end
+    #foreach($errorMessage in $errorMessages)
+        <div class="roar-notification-container error" style="display: none;">$errorMessage</div>
+    #end
+    #if($errors && $errors.hasGlobalErrors())
+        <div class="roar-notification-container error" style="display: none;">
+            #foreach($error in $errors.GlobalErrors)
+               #t($error.Code)
+            #end
+        </div>
+    #end
+#end
+#**
+* Renders error, success and warning messages for inline use.
+*#
+#macro(cnRenderInlineMessages)
+    #foreach($msg in $successMessages)
+        <div class="notify-inline notify-success">${msg}</div>
+    #end
+    #foreach($msg in $infoMessages)
+        <div class="notify-inline notify-info">${msg}</div>
+    #end
+    #foreach($msg in $warningMessages)
+        <div class="notify-inline notify-warning">${msg}</div>
+    #end
+    #foreach($msg in $errorMessages)
+        <div class="notify-inline notify-error">${msg}</div>
+    #end
+    #if($errors && $errors.hasGlobalErrors())
+        #foreach($err in $errors.GlobalErrors)
+            <div class="notify-inline notify-error">$fmtTool.message("${err.Code}")</div>
+        #end
+    #end
+#end
+
+#**
+ * Renders the note, that fields with * are required.
+ *#
+#macro(cnRequiredNote)
+<div class="cn-fieldset-info">$fmtTool.message("form.info.required.fields")</div>
+#end
+
+#macro(cnDiv $classes)
+<div#if($classes) class="$classes"#end>$!bodyContent</div>
+#end
+
+#macro(cnClear)
+<span class="cn-clear"><!-- Empty for IE --></span>
+#end
+

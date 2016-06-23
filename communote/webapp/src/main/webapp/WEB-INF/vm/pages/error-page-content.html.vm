@@ -1,0 +1,16 @@
+<div id="cn-container-bottom">
+    <div class="cn-headline">
+        <h2>#t('error.message.title.error') - $errorCode</h2>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    <div class="cn-line">
+        <p class="notify-error">$errorMessage</p>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    #if($showForwardButton)
+    <div class="cn-buttons">
+        <a class="cn-button" href="$next">#t('button.next')</a>
+    </div>
+    #end
+    <span class="cn-clear"><!-- --></span>
+</div>

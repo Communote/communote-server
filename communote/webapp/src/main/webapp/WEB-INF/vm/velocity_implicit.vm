@@ -1,0 +1,19 @@
+#* @implicitly included *#
+#* @vtlmacrolibrary path="macros.vm" *#
+#* @vtlmacrolibrary path="macros-cn-controls.vm" *#
+
+#* @vtlvariable name="authzTool" type="org.springframework.security.taglibs.velocity.AuthzImpl" *#
+#* @vtlvariable name="communoteTool" type="com.communote.server.core.common.velocity.CommunoteTool" *#
+#* @vtlvariable name="dateTool" type="org.apache.velocity.tools.generic.DateTool" *#
+#* @vtlvariable name="escTool" type="com.communote.common.velocity.EscapeTool" *#
+#* @vtlvariable name="fieldTool" type="org.apache.velocity.tools.generic.FieldTool" *#
+#* @vtlvariable name="fmtTool" type="com.communote.server.web.commons.viewtool.FormatTool" *#
+#* @vtlvariable name="followTool" type="com.communote.server.web.commons.viewtool.FollowTool" *#
+#* @vtlvariable name="numberUtils" type="org.apache.commons.lang.math.NumberUtils" *#
+#* @vtlvariable name="paramTool" type="org.apache.velocity.tools.view.ParameterTool" *#
+#* @vtlvariable name="request" type="javax.servlet.http.HttpServletRequest" *#
+#* @vtlvariable name="stringTool" type="com.communote.common.velocity.StringTool" *#
+#* @vtlvariable name="stringTool" type="com.communote.common.velocity.StringTool" *#
+#* @vtlvariable name="stringUtils" type="org.apache.commons.lang.StringUtils" *#
+#* @vtlvariable name="templateTool" type="com.communote.server.core.template.velocity.NoteTemplateTool" *#
+#* @vtlvariable name="urlTool" type="com.communote.server.web.commons.viewtool.UrlTool" *#

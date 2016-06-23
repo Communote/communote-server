@@ -1,0 +1,229 @@
+body {
+	overflow-x: hidden;
+}
+#cn-embed-main-wrapper,
+#cn-embed-filter-wrapper {
+	-webkit-box-sizing: border-box; /* older iOS */
+    -moz-box-sizing: border-box;    /* older Firefox */
+    box-sizing: border-box;         /* newer Webkit, Firefox, Opera/IE 8+ */
+}
+
+#cn-embed-horizontal-navigation { 
+	font-size: 14px;
+	margin-bottom: 6px;
+}
+#cn-embed-horizontal-navigation .TSWidget {
+	padding-bottom: 8px;
+}
+
+.cn-embed-two-column {
+	white-space: nowrap;
+}
+
+.cn-embed-two-column #cn-embed-main-wrapper {
+	display: inline-block;
+	vertical-align: top;
+	width: 70%;
+	white-space: normal;
+}
+.cn-embed-two-column #cn-embed-filter-wrapper {
+    display: inline-block;
+    margin-top: 6px;
+    padding-left: 15px;
+    vertical-align: top;
+    width: 30%;
+    white-space: normal;
+}
+
+#cn-embed-filter-wrapper .TSWidget {
+	margin-bottom: 20px;
+	font-size: 12px;
+}
+
+#cn-embed-filter-wrapper .TSWidget:last-child {
+	margin-bottom: 0;
+}
+
+#cn-embed-filter-wrapper h3.cn-headline {
+    font-size: 12px;
+    line-height: 20px;
+    padding-bottom: 4px;
+}
+
+/** responsive stuff **/
+.cn-embed-two-column #cn-embed-main-wrapper {
+    transition-property: margin-left;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+}
+.cn-embed-two-column #cn-embed-filter-wrapper {
+    transition-property: width;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+}
+
+@media screen and (max-width: 700px) {
+    
+    .cn-embed-two-column #cn-embed-main-wrapper {
+        margin-left: 0;
+        width: 100%;
+	}
+	
+	.cn-filter-toggle.cn-icon {
+        background-position: -123px -36px;
+    }
+        
+    .cn-content-filtered .cn-filter-toggle.cn-icon,    
+    .cn-open-filter .cn-filter-toggle.cn-icon, 
+    .no-touch .cn-filter-toggle.cn-icon:hover {
+        background-position: -123px -68px;
+    }
+
+}
+@media screen and (min-width: 561px) and (max-width: 700px) {
+    .cn-open-filter.cn-embed-two-column #cn-embed-main-wrapper {
+        margin-left: -40%;
+    }
+    
+    .cn-embed-two-column #cn-embed-filter-wrapper {
+        width: 40%;
+    } 
+}
+@media screen and (min-width: 331px) and (max-width: 560px) {
+    .cn-open-filter.cn-embed-two-column #cn-embed-main-wrapper {
+        margin-left: -60%;
+    }
+    .cn-embed-two-column #cn-embed-filter-wrapper {
+        width: 60%;
+    } 
+}
+@media screen and (max-width: 330px) {
+    .cn-open-filter.cn-embed-two-column #cn-embed-main-wrapper {
+        margin-left: -80%;
+    }
+    .cn-embed-two-column #cn-embed-filter-wrapper {
+        width: 80%;
+    } 
+}
+@media screen and (max-width: 534px) {
+    /** ChronologicalPostList **/
+       /** image gallery: show 2 images in gallery **/
+            #mbMedia .cn-media-pic img {
+                max-height: 75px;
+                max-width: 100px;
+            }
+            
+            #mbMedia .cn-media-pic a {
+                height: 75px;
+                width: 100px;
+            }
+}
+@media screen and (max-width: 750px) {
+	/* Editor */
+    
+        .cn-accessory-label, 
+        .cn-accessory-content {
+            width: 100%;
+        }
+
+    /** Postlist **/
+            
+        .cn-list-overview-blog-entry .cn-left-wrapper {
+            height: 70%; /** TODO this is kind of fuzzy... **/
+        }
+        
+        /** Inline Comments **/
+            
+            .cn-note-has-inline-comments .cn-inline-comments,
+            .cn-thread-view-true .indent-level-1 {
+                margin-left: 4%;
+            }
+            
+            .cn-thread-view-true .indent-level-1 {
+                margin-left: 5%;
+            }
+            
+            .cn-thread-view-true .indent-level-2 {
+                margin-left: 6%;
+            }
+            
+            .cn-thread-view-true .indent-level-3 {
+                margin-left: 7%;
+            }
+            
+            .cn-thread-view-true .indent-level-4 {
+                margin-left: 8%;
+            }
+            
+            .cn-thread-view-true .indent-level-5 {
+                margin-left: 9%;
+            }
+            
+            .cn-thread-view-true .indent-level-6 {
+                margin-left: 10%;
+            }
+            
+            .cn-thread-view-true .indent-level-7 {
+                margin-left: 11%;
+            }
+        @media screen and (max-width: 480px) {
+        
+            .cn-list-overview-blog-entry .cn-actions-container,
+            .cn-inline-comments .cn-list-overview-blog-entry .cn-actions-container {
+                margin-left: 0;
+            }
+            
+            .cn-list-overview-blog-entry .cn-left,
+            .cn-list-overview-blog-entry.cn-mentioned .cn-entry-info-icons,
+            .cn-list-overview-blog-entry.cn-direct .cn-entry-info-icons,
+            .cn-list-blog-entry-wrapper .cn-inline-comments .cn-list-overview-blog-entry .cn-entry-info-icons {
+                width: 32px;
+            }
+        
+            .cn-list-overview-blog-entry .cn-entry-info-author,
+            .cn-list-overview-blog-entry .cn-userpic,
+            .cn-inline-comments .cn-list-overview-blog-entry .cn-entry-info-author,
+            .cn-list-blog-entry-wrapper .cn-inline-comments .cn-list-overview-blog-entry .cn-userpic {
+                height: 32px;
+                width: 32px;
+            }
+            
+            .cn-list-overview-blog-entry .cn-right,
+            .cn-inline-comments .cn-list-overview-blog-entry .cn-right {
+                margin-left: 45px;
+            }
+            
+            .cn-list-overview-blog-entry.cn-mentioned .cn-right,
+            .cn-list-overview-blog-entry.cn-direct .cn-right {
+                min-height: 53px;
+            }
+            
+            .cn-list-overview-blog-entry .cn-entry-info-icons img.cn-icon,
+            .cn-inline-comments .cn-list-overview-blog-entry .cn-entry-info-icons img.cn-icon {
+                margin-left: 8px;
+                margin-right: 8px;
+            }
+            
+            .cn-list-overview-blog-entry.cn-note-repost .cn-note-author {
+                left: 10px;
+                top: 7px;
+            }
+            
+            .cn-list-overview-blog-entry.cn-note-repost .cn-userpic {
+                height: 25px;
+                width: 25px;
+            }
+            
+            .cn-list-overview-blog-entry .cn-click-area {
+                width: 50px;
+            }
+        }
+}
+
+/* IE-8 and other browsers without match media */
+.no-matchMedia body {
+	overflow-x: auto;
+}
+.no-matchMedia .cn-embed-two-column {
+	min-width: 700px;
+}

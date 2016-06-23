@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.config.ClientConfigurationImpl" table="configuration_client" dynamic-insert="false" dynamic-update="false">
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">configuration_client_seq</param>
+                                                           </generator>
+        </id>
+        <property name="logoImage" type="com.communote.server.external.hibernate.usertypes.HibernateByteBlobType" lazy="true">
+            <column name="logo_image" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="lastLogoImageModificationDate" type="java.sql.Timestamp">
+            <column name="last_logo_image_modification_d" 
+                     not-null="false" unique="false"/>
+        </property>
+        <property name="timeZoneId" type="java.lang.String">
+            <column name="time_zone_id" 
+                     not-null="false" unique="false"/>
+        </property>
+        <many-to-one name="defaultBlog" class="com.communote.server.model.blog.Blog" foreign-key="configuration_client_DEFAULT_C" cascade="delete" lazy="proxy" fetch="select">
+            <column name="DEFAULT_BLOG_FK" not-null="false" unique="true"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

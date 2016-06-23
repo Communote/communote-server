@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <bean id="dynamicUrlHandlerMapping" class="com.communote.server.web.commons.controller.DynamicUrlHandlerMapping">
+        <property name="order" value="1" />
+    </bean>
+
+    <bean name="pluginResourceDownloadController" class="com.communote.server.web.commons.view.PluginResourceDownloadController"
+        lazy-init="true" />
+
+    <bean id="pluginHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true" />
+        <property name="mappings">
+            <props>
+                <prop key="/*/*/plugins/**">pluginResourceDownloadController</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/db.changelog.final.xml">
+
+	<!-- set the configuration for those properties that are not yet assigned to the configuration -->
+	<changeSet id="set_configuration_v2" author="unknown" context="client" runAlways="true">
+		<comment>Assign the configuration FK</comment>
+		<sql>
+		-- add the configuration foreign key
+		update configuration_setting set CONFIGURATION_FK = 
+		(select min(ID) from configuration) where CONFIGURATION_FK is null;
+		</sql>
+	</changeSet>
+
+</databaseChangeLog>

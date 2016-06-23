@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <bean id="serverController" class="com.communote.server.web.fe.portal.user.system.application.ServerController">
+        <property name="sessionForm"><value>false</value></property>
+        <property name="commandClass"><value>com.communote.server.web.fe.portal.user.system.application.ServerForm</value></property>
+        <property name="formView"><value>main.microblog.client.management.system.application.server</value></property>
+        <property name="successView"><value>main.microblog.client.management.system.application.server</value></property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.system.application.ServerValidator" />
+        </property>
+    </bean>
+    
+    <bean id="virusScanningController" class="com.communote.server.web.fe.portal.user.system.application.VirusScanningController">
+        <property name="sessionForm"><value>false</value></property>
+        <property name="commandClass"><value>com.communote.server.web.fe.portal.user.system.application.VirusScanningForm</value></property>
+        <property name="formView"><value>main.microblog.client.management.system.application.virusscanning</value></property>
+        <property name="successView"><value>main.microblog.client.management.system.application.virusscanning</value></property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.system.application.VirusScanningValidator" />
+        </property>
+    </bean>
+    
+    <bean id="certificateController" class="com.communote.server.web.fe.portal.user.system.application.CertificateController">
+        <property name="view"><value>main.microblog.client.management.system.application.certificate</value></property>
+    </bean>
+    
+    <bean id="cacheInvalidationController" class="com.communote.server.web.fe.portal.user.system.application.CacheInvalidationController">
+        <property name="sessionForm"><value>false</value></property>
+        <property name="commandClass"><value>com.communote.server.web.fe.portal.user.system.application.CacheInvalidationForm</value></property>
+        <property name="formView"><value>main.microblog.client.management.system.application.cacheinvalidation</value></property>
+        <property name="successView"><value>main.microblog.client.management.system.application.cacheinvalidation</value></property>
+    </bean>
+        
+    <bean id="mailInController" class="com.communote.server.web.fe.portal.user.system.communication.MailInController">
+        <property name="sessionForm"><value>false</value></property>
+        <property name="commandClass"><value>com.communote.server.web.fe.portal.user.system.communication.MailInForm</value></property>
+        <property name="formView"><value>main.microblog.client.management.system.communication.mail.in</value></property>
+        <property name="successView"><value>main.microblog.client.management.system.communication.mail.in</value></property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.system.communication.MailInValidator" />
+        </property>
+    </bean>
+
+    <bean id="mailOutController" class="com.communote.server.web.fe.portal.user.system.communication.MailOutController">
+        <property name="sessionForm"><value>false</value></property>
+        <property name="commandClass"><value>com.communote.server.web.fe.portal.user.system.communication.MailOutForm</value></property>
+        <property name="formView"><value>main.microblog.client.management.system.communication.mail.out</value></property>
+        <property name="successView"><value>main.microblog.client.management.system.communication.mail.out</value></property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.system.communication.MailOutValidator" />
+        </property>
+    </bean>
+    
+     <bean id="xmppController" class="com.communote.server.web.fe.portal.user.system.communication.XmppController">
+        <property name="sessionForm"><value>false</value></property>
+        <property name="commandClass"><value>com.communote.server.web.fe.portal.user.system.communication.XmppForm</value></property>
+        <property name="formView"><value>main.microblog.client.management.system.communication.xmpp</value></property>
+        <property name="successView"><value>main.microblog.client.management.system.communication.xmpp</value></property>
+        <property name="validator"><bean class="com.communote.server.web.fe.portal.user.system.communication.XmppValidator" /></property>
+    </bean>
+    
+    <bean id="loggingOverviewController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view">
+            <value>main.microblog.client.management.system.logging.overview</value>
+        </property>
+    </bean>
+    
+    <bean id="fileStorageController" class="com.communote.server.web.fe.portal.user.system.content.FileStorageController">
+        <property name="sessionForm"><value>false</value></property>
+        <property name="commandClass"><value>com.communote.server.web.fe.portal.user.system.content.FileStorageForm</value></property>
+        <property name="formView"><value>main.microblog.client.management.system.content.file.storage</value></property>
+        <property name="successView"><value>main.microblog.client.management.system.content.file.storage</value></property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.system.content.FileStorageValidator" />
+        </property>
+    </bean>
+
+    <bean id="fileUploadController" class="com.communote.server.web.fe.portal.user.system.content.FileUploadController">
+        <property name="sessionForm"><value>false</value></property>
+        <property name="commandClass"><value>com.communote.server.web.fe.portal.user.system.content.FileUploadForm</value></property>
+        <property name="formView"><value>main.microblog.client.management.system.content.file.upload</value></property>
+        <property name="successView"><value>main.microblog.client.management.system.content.file.upload</value></property>
+        <property name="validator">
+            <bean class="com.communote.server.web.fe.portal.user.system.content.FileUploadValidator" />
+        </property>
+    </bean>
+
+    <bean id="extensionOverviewController" class="com.communote.server.web.commons.controller.SimpleViewController">
+        <property name="view">
+            <value>main.microblog.client.management.system.extensions.overview</value>
+        </property>
+    </bean>
+
+    <bean id="loggingDownloadController" class="com.communote.server.web.fe.portal.download.LoggingDownloadController">
+    </bean>
+    
+    <bean id="systemManagmentHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="alwaysUseFullPath" value="true" />
+        <property name="mappings">
+            <props>
+                <prop key="/*/*/admin/application/general/server*">serverController</prop>
+                <prop key="/*/*/admin/application/general/certificate*">certificateController</prop>
+                <prop key="/*/*/admin/application/general/virus-scanner*">virusScanningController</prop>
+                <prop key="/*/*/admin/application/general/cache-invalidation*">cacheInvalidationController</prop>
+                
+                <prop key="/*/*/admin/application/communication/mail-in*">mailInController</prop>
+                <prop key="/*/*/admin/application/communication/mail-out*">mailOutController</prop>
+                <prop key="/*/*/admin/application/communication/xmpp*">xmppController</prop>
+
+                <prop key="/*/*/admin/application/logging/download*">loggingDownloadController</prop>
+                <prop key="/*/*/admin/application/logging/overview*">loggingOverviewController</prop>
+
+                <prop key="/*/*/admin/application/contents/file-storage*">fileStorageController</prop>
+                <prop key="/*/*/admin/application/contents/file-upload*">fileUploadController</prop>
+
+                <prop key="/*/*/admin/application/extensions/extensions-overview*">extensionOverviewController</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

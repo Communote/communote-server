@@ -1,0 +1,2 @@
+var pluginBuildTimestamp = "${build.timestamp}"; 
+#include("${staticResourcesBasePath}/javascript/cntw-all.js")

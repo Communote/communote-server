@@ -1,0 +1,29 @@
+{
+   "identityContext":{
+      "@class":"com.communote.plugins.mq.message.base.data.security.UserIdentityContext",
+      "identity":{
+         "identity":"@@TOPIC_MANAGER@@",
+         "identityType":"@@IDENTITY_TYPE@@"
+      }
+   },
+   "authentication" : {
+    "@class" : "com.communote.plugins.mq.message.base.data.security.UsernamePasswordAuthentication",
+    "identity" : {
+      "identity" : "@@CNT_AUTHENTICATION_USERNAME@@"
+    },
+    "password" : "@@CNT_AUTHENTICATION_PASSWORD@@"
+   },
+   "replyType":"FULL",
+   "note":{
+      "@class":"com.communote.plugins.mq.message.core.data.note.TemplateNote",
+      "content":"123 Test",
+      "templateId":"com.communote.core.activity.topic_created",
+      "templateProperties":"{\"topicId\":@@TOPIC_ID@@,\"userId\":@@TOPIC_MANAGER_ID@@}",
+      "activity":true,
+      "topics":[
+         {
+            "topicId":@@TOPIC_ID@@
+         }
+      ]
+   }
+}

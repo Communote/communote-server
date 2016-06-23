@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-cascade="none">
+    <class name="com.communote.server.model.tag.TagImpl" table="core_tag" dynamic-insert="false" dynamic-update="false" discriminator-value="TagImpl">
+        <cache usage="read-write" />
+        <id name="id" type="java.lang.Long" unsaved-value="null">
+            <column name="ID"/>
+                        <generator class="native">
+                    <param name="sequence">core_tag_seq</param>
+                                                           </generator>
+        </id>
+        <discriminator column="class" type="string"/>
+        <property name="tagStoreTagId" type="java.lang.String">
+            <column name="tag_store_tag_id" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="defaultName" type="java.lang.String">
+            <column name="default_name" 
+                     not-null="true" unique="false"/>
+        </property>
+        <property name="tagStoreAlias" type="java.lang.String">
+            <column name="tag_store_alias" 
+                     not-null="true" unique="false"/>
+        </property>
+        <many-to-one name="globalId" class="com.communote.server.model.global.GlobalIdImpl" cascade="delete" foreign-key="core_tag_GLOBAL_ID_FKC" lazy="proxy" fetch="select">
+            <column name="GLOBAL_ID_FK" not-null="false"/>
+        </many-to-one>
+        <set name="names" table="core_tag2names" order-by="NAMES_FK" lazy="false" fetch="select" inverse="false" cascade="delete">
+            <cache usage="read-write" />
+            <key foreign-key="custom_messages_TAGS_FKC">
+                <column name="TAGS_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.i18n.MessageImpl" foreign-key="core_tag_NAMES_FKC">
+                <column name="NAMES_FK"/>
+            </many-to-many>
+        </set>
+        <set name="descriptions" table="core_tag2descriptions" order-by="DESCRIPTIONS_FK" lazy="false" fetch="select" inverse="false" cascade="delete">
+            <cache usage="read-write" />
+            <key foreign-key="custom_messages_TAGS_FKC">
+                <column name="TAGS_FK"/>
+            </key>
+            <many-to-many class="com.communote.server.model.i18n.MessageImpl" foreign-key="core_tag_DESCRIPTIONS_FKC">
+                <column name="DESCRIPTIONS_FK"/>
+            </many-to-many>
+        </set>
+        <subclass name="com.communote.server.model.tag.CategorizedTagImpl" discriminator-value="CategorizedTagImpl" dynamic-insert="false" dynamic-update="false" abstract="false">
+            <many-to-one name="category" class="com.communote.server.model.tag.AbstractTagCategoryImpl" cascade="none" foreign-key="CATEGORIZED_TAG_CATEGORY_FKC" lazy="proxy" fetch="select" insert="false" update="false" not-null="false">
+                <column name="CATEGORY_FK" not-null="false"/>
+            </many-to-one>
+        </subclass>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,98 @@
+#* @vtlvariable name="command" type="com.communote.server.web.fe.portal.blog.forms.BlogManagementForm" *#
+#cnRenderMessages()
+#set($widgetId = $escTool.nonWordChars($paramTool.get('widgetId')))
+#set( $widgetInstance = "communote.widgetController.getWidget('${widgetId}')" )
+#set ($showCancelButton = $paramTool.getBoolean('showCancelButton', true))
+<div class="cn-form-container">
+    <form method="POST">
+        <fieldset>
+            <input id="action" type="hidden" name="action" value="$!{command.action}"/>
+            <input type="hidden" name="blogId" value="$!{command.blogId}"/>
+            <input type="hidden" name="emailSuffix" value="$!{command.blogEmailSuffix}"/>
+            <input type="hidden" name="parentTopicId" value="$!{command.parentTopicId}"/>
+            #if($communoteTool.isCurrentUserClientManager())
+                <input type="hidden" name="toplevelTopic" value="$!{command.toplevelTopic}"/>
+            #end
+            <input type="hidden" name="showCancelButton" value="${showCancelButton}"/>
+            ## Create Blog -->
+            #cnInputText_Short('title' $!escTool.xmlSimple($command.Title) 'blog.create.title' true '' 'command.title')
+            #if($command.blogEmailSuffix)
+                #set($toolTipKey = 'blog.create.identifier.explanation')
+                #set($keyupMethod = "onkeyup=${escTool.Q}${widgetInstance}.onBlogAliasKeyUp(this.value)${escTool.Q}")
+            #else
+                #set($toolTipKey = 'blog.create.identifier.explanation.short')
+            #end
+            <div class="cn-field-50 cn-last">
+                #if(!$communoteTool.blogs.hasExternalObjects($command.blogId))
+                    #cnInputText('nameIdentifier' "$!{command.nameIdentifier}${escTool.Q} $!keyupMethod
+                        alt=${escTool.Q}" 'blog.create.identifier' false $toolTipKey 'command.nameIdentifier')
+                #else
+                    <div class="cn-line">
+                        <label for="nameIdentifier" class="cn-label">
+                            #t('blog.create.identifier')
+                    #cnTooltip('blog.create.identifier.explanation.linked')
+                        </label>
+                        <input type="text" alt="" value="$!{command.nameIdentifier}" name="nameIdentifier"
+                               id="nameIdentifier" class="cn-inputTxt cn-readonly" readonly="readonly">
+                        <span class="cn-clear"><!-- --></span>
+                    </div>
+                #end
+            </div>
+            <span class="cn-clear"><!-- Empty --></span>
+            #if($command.blogEmailSuffix)
+                <div class="cn-line">
+                    <label class="cn-label email">
+                        #t('blog.create.email')
+                    #cnTooltip('blog.create.email.tooltip')
+                    </label>
+                    #if($command.nameIdentifier)
+                        <div name="emailText" class="emailText">
+                            <a href="$!{command.blogMailTo}" title="$!{command.blogEmail}">$!{command.blogEmail}</a>
+                        </div>
+                    #else
+                        <div name="emailText" class="emailText" title="#t('blog.create.email.undefined.tooltip')">?
+                        </div>
+                    #end
+                    <span class="cn-clear"><!-- Empty --></span>
+                </div>
+            #end
+            #cnText_Long('description' $!escTool.xmlSimple($command.Description) 'blog.create.description' false '' 'command.description' '' 5)
+            <div class="cn-field-100 cn-long">
+                #set($topicTagList = ${widgetId} + '_tag-textbox-list')
+                <div class="cn-smallline">
+                    #cnLabel($topicTagList 'blog.create.tags' false '')
+                    <input type="text" id="$topicTagList" name="$topicTagList" placeholder="#t('add.resource.tags.hint')" />
+                    <span class="cn-clear"><!-- --></span>
+                </div>
+            </div>
+            #cnInputText_Long('tags' $!escTool.xmlSimple($command.Tags) '' false '' 'command.tags' false '' false 'hidden')
+
+            <div class="cn-field-100">
+                <div class="cn-check">
+                    #springBind( "command.createSystemNotes" )
+                    <input type="checkbox" id="blogdetails_createSystemNotes" name="${status.expression}"
+                           class="cn-inputCheck" #if("$!status.value" == "true") checked="checked" #end />
+                    <input type="hidden" value="on" name="_${status.expression}"/>
+                    <label for="blogdetails_createSystemNotes">#t('blog.create.system.notes')</label>
+                    <span class="cn-clear"><!-- --></span>
+                </div>
+            </div>
+            <span class="cn-clear"><!-- Empty --></span>
+            #cnRequiredNote()
+        </fieldset>
+        <div class="cn-actions">
+            <div class="cn-buttons">
+                #if($command.blogId)
+                    <input type="submit" name="submit" class="cn-button main" value="#t('button.save')"/>
+                #else
+                    <input type="submit" name="submit" class="cn-button main" value="#t('blog.create.button')"/>
+                #end
+                #if(${showCancelButton})
+                    <input type="button" class="cn-button" value="#t('button.cancel')"
+                       onclick="${widgetInstance}.cancelEdit();"/>
+                #end
+            </div>
+        </div>
+        <span class="cn-clear"><!-- ie --></span>
+    </form>
+</div>

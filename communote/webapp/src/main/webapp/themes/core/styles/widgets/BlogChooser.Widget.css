@@ -1,0 +1,13 @@
+.BlogChooserExtended.cn-blog-selected #cn-chooser-input {
+    color: #000000;
+}
+
+.cn-chooser-info.cn-default-blog-selected {
+    visibility: hidden;
+}
+
+#cn-chooser-icons {
+    position: absolute;
+    right: 3px;
+    top: 7px;
+}

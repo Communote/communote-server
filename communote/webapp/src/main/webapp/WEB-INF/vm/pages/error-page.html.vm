@@ -1,0 +1,20 @@
+#if($paramTool.exists('errorCode'))
+    #set($errorCode = $paramTool.get('errorCode'))
+#else
+    #set($errorCode = "#t('error.message.code.unknown')")
+#end
+#if($paramTool.exists('message'))
+    #set($errorMessage = $paramTool.get('message'))
+#else
+    #set($errorMessage = "#t('error.message.code.unknown.description')")
+#end
+#if($paramTool.exists('next'))
+    #set($next = "$urlTool.renderIfRelative($paramTool.get('next'))")
+#else
+    #set($next = "$urlTool.render('/portal/home')")
+#end
+## disable next-button if explicitly set to false
+#set($showForwardButton = $paramTool.get('showForwardButton') != 'false')
+#set($pageTitle = "#t('error.message.title.error') &ndash; $errorCode &ndash; $escTool.xmlSimple(${communoteTool.CurrentClientName})")
+#set($contentTemplate = '/WEB-INF/vm/pages/error-page-content.html.vm')
+#parse('/WEB-INF/vm/layout/tiny_page.html.vm')

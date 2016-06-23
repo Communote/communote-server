@@ -1,0 +1,5 @@
+#set($contentTemplate = '/WEB-INF/vm/login/login_page.content.html.vm')
+#set($pageTitle = "$fmtTool.message('blog.main.page.title') &ndash; $escTool.xmlSimple(${communoteTool.CurrentClientName})")
+#set($javaScriptCategories = ['communote-core', 'login'])
+#set($page = 'login')
+#parse('/WEB-INF/vm/layout/tiny_page.html.vm')

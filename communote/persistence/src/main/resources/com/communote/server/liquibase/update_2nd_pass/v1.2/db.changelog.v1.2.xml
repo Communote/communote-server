@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update_2nd_pass/v1.2/db.changelog.v1.2.xml">
+
+    <changeSet author="unknown" id="KENMEI-1694_Follow-remove_tag_globalIds" context="client">
+        <comment>Remove global IDs from tags</comment>
+        <sql>
+            update core_tag set global_id_fk=null;
+            delete from core_global_id where global_identifier like '%/tag/%';
+        </sql>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1694_Follow-add_tag_globalIds" context="client">
+        <comment>Create the default blog for clients where there is none yet.</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_2.AddGlobalIdToTag"></customChange>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1694_Follow-add_blog_globalIds" context="client">
+        <comment>Create the global Id for blogs where there is none yet.</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_2.AddGlobalIdToBlog"></customChange>
+    </changeSet>
+    
+    <!-- this change set have to be run first,
+         all other tasks using updateLdapConfiguration() should run after this change -->
+    <changeSet author="unknown" id="KENMEI-2104_Ldap_Passwort_verschluesseln" context="client">
+        <comment>encrypts the LDAP manager password</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_2.EncryptLdapPassword"></customChange>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2009_Ldap_config-add_uid_to_mapping" context="client">
+        <comment>Add UID to userSearch property mapping</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_2.AddUidToLdapMapping"></customChange>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2510_confluence_passwort_verschluesseln" context="client">
+        <comment>encrypts the Confluence administrator password</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_2.EncryptConfluencePassword"></customChange>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-2510_sharepoint_passwort_verschluesseln" context="client">
+        <comment>encrypts the Sharepoint administrator password</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_2.EncryptSharepointPassword"></customChange>
+    </changeSet>
+</databaseChangeLog>

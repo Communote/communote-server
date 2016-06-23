@@ -1,0 +1,454 @@
+a {
+    color: #005599;
+    text-decoration: none;
+    white-space: nowrap;
+    zoom: 1;
+}
+
+a:hover {
+    color: #e66914;
+}
+
+hr.cn-line {
+    margin: 0 0 5px 0;
+    border: 0px;
+    border-width: 1px 0;
+    border-style: solid none;
+    border-top-color: #cbcbcb;
+    border-bottom-color: #ffffff;
+    padding: 0;
+    height: 0;
+}
+
+#cn-communote-tiny {
+    font-size: 12px;
+    margin: 0 auto;
+    max-width: 600px;
+    padding-top: 20px;
+    position: relative;
+}
+
+#cn-container-top ,
+#cn-container-bottom {
+    position: relative;
+    padding: 15px;
+    zoom: 1;
+}
+
+#cn-container-top {
+    padding-bottom: 10px;
+}
+
+#cn-container-bottom {
+    padding-top: 10px;
+}
+
+#cn-communote-tiny h1.client-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#cn-communote-tiny .cn-error-message {
+    font-size: 12px;
+    color: #ff0000;
+    text-align: left;
+}
+
+#cn-communote-tiny .cn-ok-message {
+    font-size: 12px;
+    color: #005599;
+    text-align: left;
+}
+
+#cn-communote-tiny .cn-error-message-right {
+    color: #FF0000;
+    font-size: 14px;
+    margin-bottom: 10px;
+    margin-top: 15px;
+    text-align: center;
+}
+
+#cn-communote-tiny .cn-error-message-right+div {
+    border-color: #ff0000;
+}
+
+#cn-communote-tiny div.progressbarArrow {
+    border-width: 2px;
+    border-style: solid;
+    border-color: #888888;
+    height: 11px;
+    left: 0;
+    position: absolute;
+    top: -2px;
+    width: 1px;
+}
+
+#cn-communote-tiny div.progressbar {
+    background-repeat: no-repeat;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #dddddd;
+    height: 11px;
+    position: relative;
+    width: 50px;
+}
+
+#cn-communote-tiny .cn-label {
+    clear: both;
+    color: #888888;
+    float: left;
+    font-size: 13px;
+    line-height: 32px;
+    width: 130px;
+}
+
+#cn-communote-tiny .cn-border {
+    float: right;
+}
+
+#cn-communote-tiny .cn-border input {
+    width: 270px;
+    outline: 0 none;
+}
+
+#cn-communote-tiny #cn-header-content {
+    height: auto;
+    min-height: 50px;
+    text-align: center;
+    width: 100%;
+}
+
+.cn-headline {
+    clear: both;
+    margin-bottom: 10px;
+    zoom: 1;
+}
+
+.cn-line {
+    clear: both;
+    margin: 10px auto;
+    width: 85%;
+}
+
+.cn-line-1 ,
+.cn-line-2 {
+    float: left;
+    margin-bottom: 6px;
+    padding-left: 196px;
+    font-size: 11px;
+    color: #888888;
+}
+
+.cn-line-2 {
+    min-height: 12px;
+}
+
+.cn-line-1 input {
+    margin: 0 3px 0 0;
+    vertical-align: text-bottom;
+}
+
+#cn-communote-tiny h3.cn-headline {
+    margin-top: 30px;
+}
+
+#cn-communote-tiny .cn-inputTxt {
+    float: left;
+    width: 250px;
+}
+
+#cn-communote-tiny .cn-help-hover {
+    float: left;
+}
+
+#cn-communote-tiny .cn-info.cn-topspace40 {
+    border-bottom: 1px dotted #888888;
+    font-size: 11px;
+    font-style: italic;
+    margin-top: 8px;
+}
+
+.cn-help-hover .cn-help-text {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #cbcbcb;
+    padding: 10px;
+    background-color: #ffffff;
+}
+
+.cn-help-hover:hover .cn-help-text {
+    display: block !important;
+}
+
+#cn-container-top .cn-buttons {
+	float:right;
+	
+}
+
+#cn-container-top .cn-buttons .cn-button {
+	min-width: 115px;
+}
+
+#cn-container-bottom .cn-buttons {
+    position: relative;
+    clear: both;
+    float: right;
+    margin: 0;
+}
+
+/* _footer-communote.css */
+#cn-communote-tiny #cn-footer-communote {
+    margin: 0 auto;
+    width: 100%;
+}
+
+#cn-footer-communote div {
+    float: left;
+}
+
+#cn-footer-communote img {
+    margin-bottom: 4px;
+}
+
+#cn-footer-communote dl {
+    float: right;
+    margin: 10px 0 0 0;
+    padding: 0;
+    font-size: 11px;
+    line-height: 18px;
+}
+
+#cn-footer-communote dt {
+    clear: both;
+    float: left;
+    width: 80px;
+}
+
+#cn-footer-communote dd {
+    float: left;
+    margin: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url(../images/main/bg-crude.png?t=${build.timestamp});
+    background-color: #F5F5F5;
+}
+
+a {
+    text-decoration: none;
+    color: #005599;
+}
+
+a:hover {
+    color: #e66914;
+}
+
+a:active ,
+a:visited ,
+a:link {
+    outline: 0 none;
+}
+
+.cn-bar {
+    float: right;
+}
+
+.cn-link {
+    display: block;
+    float: left;
+    margin-right: 10px;
+    border-width: 1px;
+    border-style: none solid none none;
+    border-color: #005599;
+    padding-right: 10px;
+    line-height: 1.2em;
+    font-size: 11px;
+    color: #005599;
+}
+
+.cn-meta .cn-link {
+    border-color: #888888;
+    color: #888888;
+}
+
+.cn-label {
+    display: block;
+    float: left;
+    margin-right: 10px;
+    line-height: 1.2em;
+    font-size: 11px;
+    color: #888888;
+}
+
+.cn-bar .cn-link {
+    border-color: #005599;
+    color: #005599;
+}
+
+.cn-bar .cn-last-child ,
+.cn-action-bar .cn-last-child ,
+.cn-meta .cn-last-child {
+    margin-right: 0 !important;
+    border-right: 0 none !important;
+    padding-right: 0 !important;
+}
+
+a.cn-link:hover {
+    color: #e66914;
+}
+
+a.cn-tab-active ,
+a.cn-active ,
+span.cn-link {
+    color: #424242 !important;
+    cursor: default;
+}
+
+h3.cn-headline {
+    margin: 0 0 10px 0;
+    border-bottom-width: 1px;
+    border-bottom-style: dotted;
+    border-bottom-color: #737373;
+    padding: 0 0 5px 0;
+    font-size: 14px;
+    font-weight: normal;
+    color: #737373;
+}
+
+/* ---------------------- */
+
+#cn-body-wrapper {
+    background-color: #FFFFFF;
+    border-color: #DBDBDB #DBDBDB #F5F5F5;
+    border-style: solid;
+    border-width: 1px 1px 2px;
+    box-shadow: 0 1px 0 #DBDBDB;
+    margin: 0 auto 20px auto;
+    zoom: 1;
+}
+
+#cn-communote #cn-main {
+    margin: 15px 360px 10px 15px;
+}
+
+/* ---------------------- */
+.cn-info-gray {
+    color: #cbcbcb;
+}
+
+input.cn-inputTxt ,
+select.cn-inputSel ,
+textarea.cn-textarea {
+    display: block;
+    width: 99%;
+}
+
+input.cn-inputTxt ,
+select.cn-inputSel ,
+textarea.cn-textarea {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #cbcbcb;
+}
+
+.cn-pref textarea {
+    max-width: 99%;
+    min-width: 99%;
+}
+
+.cn-border {
+    background-image: url(../images/main/input-background.png?t=${build.timestamp});
+}
+
+.cn-border input {
+    border: 0 none;
+    width: 100%;
+    outline: 0 none;
+}
+
+/* _header.css -> dialog-header.css */
+#cn-header {
+    position: relative;
+    zoom: 1;
+}
+
+
+#cn-header img {
+    margin: 10px auto 0;
+    max-height: 40px;
+    max-width: 320px;
+}
+
+#cn-header #cn-logo {
+    padding: 10px 15px 10px 0;
+}
+
+#cn-header #cn-logo img {
+    display: block;
+    margin: 0;
+    width: 120px;
+    height: 40px;
+    background-color: #ffffbb;
+}
+
+#cn-header #cn-topmenu {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+}
+
+#cn-header #cn-topmenu .cn-bar {
+    float: left;
+    margin-left: 15px;
+}
+
+#cn-header #cn-topmenu .cn-link {
+    border: 0 none;
+    font-size: 14px;
+    line-height: 1.5em;
+}
+
+#cn-header #cn-topmenu .cn-logout {
+    float: right;
+    margin-right: 345px;
+    padding: 0 1em;
+}
+
+#cn-header #cn-topmenu-arrow {
+    position: absolute;
+    bottom: -20px;
+    left: 38px;
+    width: 22px;
+    height: 20px;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+/* (CLEARING( ... */
+/* ~~~ (gecko, khtml, webkit, ie7/8( ... */
+span.cn-clear {
+    clear: both;
+    display: block;
+    overflow: hidden;
+    width: 0;
+    height: 0;
+}
+
+/* ~~~ ... )gecko, khtml, webkit, ie7/8) */
+
+/* ... )CLEARING) */
+.notify-error {
+    color: #A31B02;
+    font-size: 14px;
+}
+
+.notify-success {
+    color: #005599;
+    font-size: 14px;
+}

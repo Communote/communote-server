@@ -1,0 +1,41 @@
+#set($defaultBlogEnabled=$communoteTool.blogs.isDefaultBlogEnabled(true, true))
+#if($defaultBlogEnabled)
+	#set($defaultBlog=$communoteTool.blogs.getDefaultBlog())
+	#set($defaultBlogTitle=${defaultBlog.getTitle()})
+	#set($placeholderText=$escTool.xmlSimple($fmtTool.message('blog.post.selection.no.selected.default.blog', ${defaultBlogTitle})))
+#else
+    #set($placeholderText=$fmtTool.message('blog.post.selection.no.selected'))
+#end
+<div class="cn-chooser">
+    <div class="cn-border control-autocompleter-position-source">
+		
+		
+        <input id="cn-chooser-input" type="text" autocomplete="off" placeholder="$placeholderText" />
+        <div id="cn-chooser-icons">
+            <a class="cn-chooser-add" href="$urlTool.render('/portal/blog-create')" title="#t('blog.create.button')"></a>
+            <a class="cn-chooser-dropdown" href="javascript:;" onclick="widgetController.getWidget('${widget.WidgetId}').menuToggle()"></a>
+            <span class="cn-split-functions"><!-- empty --></span>
+            <a class="cn-chooser-info" href="javascript:;" title="#t('blog.overview.menu.preferences.hint')" onclick="E('onShowBlogDetails'); return false;"></a>
+        </div>   
+    </div>
+    <div class="cn-chooser-select-wrapper" style="visibility: hidden">
+        <div class="cn-chooser-select">
+            <ul>
+                #if(${defaultBlogEnabled})
+					#set($defaultBlogId=${defaultBlog.getId()})
+                <li><a href="javascript:;" onclick="E2G('onBlogClick', null, '${defaultBlogId}', {type: 'blog', key: '${defaultBlogId}', title: '$escTool.javascriptInline(${defaultBlogTitle})'});">$escTool.xmlSimple($fmtTool.message('custom.message.default.blog', ${defaultBlogTitle}))</a></li>
+                #end
+                <li id="${widget.WidgetId}_category_mostUsedBlogs" class="cn-chooser-select-category"><a href="javascript:;">$fmtTool.message('blog.post.selection.most.used')</a>
+                    <ul><li>&nbsp;</li></ul>
+                </li>
+                <li id="${widget.WidgetId}_category_myBlogs" class="cn-chooser-select-category"><a href="javascript:;">$fmtTool.message('blog.post.selection.my.blogs')</a>
+                    <ul><li>&nbsp;</li></ul>
+                </li>
+                <li id="${widget.WidgetId}_category_lastUsedBlogs" class="cn-chooser-select-category"><a href="javascript:;">$fmtTool.message('blog.post.selection.last.used')</a>
+                    <ul><li>&nbsp;</li></ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <span class="cn-clear"><!-- --></span>
+</div>

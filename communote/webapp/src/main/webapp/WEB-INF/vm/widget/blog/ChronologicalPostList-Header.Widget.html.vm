@@ -1,0 +1,23 @@
+## 
+## $list -> PageableList of com.communote.server.web.fe.widgets.blog.notes.NoteListData
+## $note -> com.communote.server.web.fe.widgets.blog.notes.NoteListData
+##
+#if($widget.getBooleanParameter('showHeader', false))
+	<div class="cn-list-notes-header">
+	   <div class="cn-list-tools">
+            <div class="new-messages-reminder" onclick="var cpl=widgetController.getWidget('${widget.WidgetId}'); cpl.resetLoadMoreState();cpl.refresh();" style="display: none">
+                <div id="cn-list-refresh">
+                    <input type="button" class="cn-button" value="#t('blog.post.list.autorefresh')" />
+                </div>
+                <span class="cn-clear"><!-- empty --></span>
+            </div>
+        </div>
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    #if($widget.getParameter('loadMoreMode') == 'paging')
+    <div>
+        #parse("/WEB-INF/vm/common/paging-widget.html.vm")
+        <span class="cn-clear"><!-- --></span>
+    </div>
+    #end
+#end

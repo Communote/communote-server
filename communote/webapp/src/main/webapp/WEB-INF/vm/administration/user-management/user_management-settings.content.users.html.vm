@@ -1,0 +1,71 @@
+##
+## Used from 
+##     com.communote.server.web.fe.portal.user.client.controller.ClientUserManagementSettingsController
+##
+#cnRenderMessages()
+<form method="post" enctype="multipart/form-data">
+    <fieldset class="generalsettings cn-form-container">
+        <h5>#t('client.configure.user.general')</h5>
+        #cnCheckbox('automaticUserActivation' $clientUserManagementSettingsCommand.automaticUserActivation 'client.profile.config.user.activation' false '' 'clientUserManagementSettingsCommand.automaticUserActivation')
+        #cnCheckbox('noNotifyEmailsToUserWhenExternalAuth' $clientUserManagementSettingsCommand.noNotifyEmailsToUserWhenExternalAuth 'client.profile.config.no.user.notify.when.external.auth' false '' 'clientUserManagementSettingsCommand.noNotifyEmailsToUserWhenExternalAuth')
+        #cnCheckbox('createExternalUserAutomatically' $clientUserManagementSettingsCommand.createExternalUserAutomatically 'client.profile.config.user.external.create' false '' 'clientUserManagementSettingsCommand.createExternalUserAutomatically')
+        #set($userRegistrationEnabled = !$clientUserManagementSettingsCommand.dbAuthenticationAllowed)
+        #cnCheckbox('userRegistrationOnDBAuthAllowed' $clientUserManagementSettingsCommand.userRegistrationOnDBAuthAllowed 'client.profile.config.user.registration.allowed' false 'client.profile.config.user.registration.allowed.hint' 'clientUserManagementSettingsCommand.userRegistrationOnDBAuthAllowed' $userRegistrationEnabled)
+        <div class="select">
+            <label for="defaultLanguage">#t('client.profile.config.user.default.language')</label>
+            #cnErrorMessage('clientUserManagementSettingsCommand.defaultLanguage')
+            #springBind('clientUserManagementSettingsCommand.defaultLanguage')
+            <select id="defaultLanguage" name="${status.expression}" class="control-languageCode">
+                #set( $languagesList = $communoteTool.UsedLanguages )
+                #set( $statusValue = $!status.value)
+                #foreach( $item in $languagesList )
+                    <option value="$item.LanguageCode"#if($item.LanguageCode == $statusValue.toLowerCase()) selected="selected"#end>$item.Name</option>
+                #end
+            </select>
+        </div>
+    </fieldset>
+    <fieldset class="removeclient sequently">
+        <h5>#t('client.configure.user.deletion')</h5>
+        <div class="fieldset-description">#t('client.configure.user.deletion.description')</div>
+        <div class="spacer">&nbsp;</div>
+         #cnCheckbox('allowDisableUserAccount' $clientUserManagementSettingsCommand.allowDisableUserAccount 'client.configure.user.deletion.can.disable' false '' 'clientUserManagementSettingsCommand.allowDisableUserAccount')
+         #cnCheckbox('allowAnonymizeUserAccount' $clientUserManagementSettingsCommand.allowAnonymizeUserAccount 'client.configure.user.deletion.can.anonymize' false '' 'clientUserManagementSettingsCommand.allowAnonymizeUserAccount')
+    </fieldset>
+    <fieldset class="layout-settings cn-form-container">
+        <h5>#t('client.user.management.layout')</h5>
+        <div class="fieldset-description">#t('client.user.management.layout.description')</div>
+        <div class="spacer">&nbsp;</div>
+        <div class="select cn-field-50">
+            <label for="preselectedTab">#t('client.user.management.layout.default.notes.overview.tab')</label>
+            <select id="preselectedTab" name="preselectedTab">
+                <option value="ALL" #if($clientUserManagementSettingsCommand.preselectedTab == 'ALL')selected="selected"#end>#t('client.user.management.layout.default.notes.overview.tab.all')</option>
+                <option value="FOLLOWED" #if($clientUserManagementSettingsCommand.preselectedTab == 'FOLLOWED')selected="selected"#end>#t('client.user.management.layout.default.notes.overview.tab.following')</option>
+                <option value="MY" #if($clientUserManagementSettingsCommand.preselectedTab == 'MY')selected="selected"#end>#t('client.user.management.layout.default.notes.overview.tab.at-user')</option>
+                <option value="FAVOR" #if($clientUserManagementSettingsCommand.preselectedTab == 'FAVOR')selected="selected"#end>#t('client.user.management.layout.default.notes.overview.tab.favorites')</option>
+            </select>
+        </div>
+        <div class="select cn-field-50 cn-last">
+            <label for="preselectedTopicOverviewTab">#t('client.user.management.layout.default.topics.overview.tab')</label>
+            <select id="preselectedTopicOverviewTab" name="preselectedTopicOverviewTab">
+                <option value="DIRECTORY" #if($clientUserManagementSettingsCommand.preselectedTopicOverviewTab == 'DIRECTORY')selected="selected"#end>#t('client.user.management.layout.default.topics.overview.tab.directory')</option>
+                <option value="ALL" #if($clientUserManagementSettingsCommand.preselectedTopicOverviewTab == 'ALL')selected="selected"#end>#t('client.user.management.layout.default.topics.overview.tab.all')</option>
+                <option value="FOLLOWING" #if($clientUserManagementSettingsCommand.preselectedTopicOverviewTab == 'FOLLOWING')selected="selected"#end>#t('client.user.management.layout.default.topics.overview.tab.following')</option>
+            </select>
+        </div>
+        <span class="clear"><!--  --></span>
+        <div class="select">
+            <label for="preselectedView">#t('client.user.management.layout.default.view')</label>
+            <select id="preselectedView" name="preselectedView">
+                <option value="CLASSIC" #if($clientUserManagementSettingsCommand.preselectedView.name() == 'CLASSIC')selected="selected"#end>#t('client.user.management.layout.default.view.classic')</option>
+                <option value="COMMENT" #if($clientUserManagementSettingsCommand.preselectedView.name() == 'COMMENT')selected="selected"#end>#t('client.user.management.layout.default.view.comment')</option>
+            </select>
+        </div>
+    </fieldset>
+    <div class="actionbar actionbar-general">
+        <div class="button-gray main">
+            <input type="submit" name="button" value="#t('client.configure.user.deletion.button')" title="#t('client.configure.user.deletion.button')" />
+        </div>
+        <span class="clear"> <!-- -->
+        </span>
+    </div>
+</form>

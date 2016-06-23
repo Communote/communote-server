@@ -1,0 +1,91 @@
+## Render a note inside the CLASSIC or COMMENT
+## Requires the following variables to be set:
+## $widget -> CPLWidget
+## $note (com.communote.server.web.fe.widgets.blog.notes.NoteListData) the note to render
+## $lastDate (String) String containing formatted date of last rendered date or null (only CLASSIC)
+## $widgetInstance (String) JavaScript snippet to get the widget instance
+## Parses following VMs:
+## the template returned by $widget.getNoteItemTemplate($note)
+## /WEB-INF/vm/widget/blog/ChronologicalPostList-Thread_Comment-Single.Widget.html.vm
+#set($numberOfComments = $note.NumberOfDiscussionNotes - 1)
+#set($wrapperCssClasses="control-discussion-wrapper control-discussion-${note.DiscussionId}")
+#if($renderStyle == 'CLASSIC')
+    #set( $currentDate = $dateTool.format('short_date', $note.creationDate, $communoteTool.getCurrentUserLocale($request) , $communoteTool.getCurrentUserEffectiveTimeZone() ) )
+    #if(!$currentDate.equals($lastDate))
+        <div class="cn-list-date" title="$dateTool.format('full_date', $note.creationDate, $communoteTool.getCurrentUserLocale($request) , $communoteTool.getCurrentUserEffectiveTimeZone() ) ">$currentDate</div>
+        #set($lastDate = $currentDate)
+    #end
+#elseif($note.NumberOfDiscussionNotes > 1)
+    #set($wrapperCssClasses="${wrapperCssClasses} cn-note-has-inline-comments")
+#end
+<div class="${wrapperCssClasses}" data-discussion-path="$note.getDiscussionPath()" data-comment-count="${numberOfComments}">
+    <div class="cn-list-blog-entry-wrapper">
+    #parse(${widget.getNoteItemTemplate($note)})
+    #if($renderStyle == 'CLASSIC')
+        <div class="control-inline-comments cn-inline-comments">
+            <div class="control-new-comment-placeholder" style="display:none"></div>
+        </div>
+        <div class="cn-thread-close"><a class="cn-list-blog-entry-close-discussion cn-link cn-last-child" href="javascript:;"
+            onclick="${widgetInstance}.toggleInlineDiscussion(${note.Id}, ${note.DiscussionId})">
+            <span class="cn-icon"><!--  --></span><span class="cn-icon-label">#t("blog.post.list.discussion.inline.hide")</span></a>
+            <span class="cn-clear"><!-- --></span>
+        </div>
+    #elseif($renderStyle == 'COMMENT' && $note.NumberOfDiscussionNotes > 1)
+        <div class="control-inline-comments cn-inline-comments cn-inline-comments-subset-shown">
+        #if($numberOfComments > 2 || ($numberOfComments != $note.getComments().size()))
+            <div class="cn-load-more-comments">
+                #set($isCommentsCountSingular = $numberOfComments == 1)
+                <a class="control-number-of-comments cn-inline-comments-show-full cn-link cn-note-number-of-comments" href="javascript:;" onclick="${widgetInstance}.showComments(${note.DiscussionId})">
+                    <span class="cn-icon"><!--  --></span><span class="cn-icon-label">#t_args("blog.post.list.comment.show_more.singular.$isCommentsCountSingular", $numberOfComments)</span>
+                </a>
+                <a class="cn-inline-comments-show-subset cn-link cn-note-number-of-comments" href="javascript:;" onclick="${widgetInstance}.hideComments(${note.DiscussionId})">
+                    <span class="cn-icon"><!--  --></span><span class="cn-icon-label">#t('blog.post.list.comment.show_less')</span>
+                </a>
+                <span class="cn-clear"><!-- Empty --></span>
+            </div>
+        #end
+            <div class="control-inline-comments-load-more-placeholder cn-inline-comments-full"><!-- Empty --></div>
+            <div class="cn-inline-comments-subset">
+            #set($commentsList = $note.getComments())
+            #if($commentsList.size() > 2 && 
+                ($numberOfComments == $commentsList.size()
+                 || (!${widget.getQueryParameters().isFeedFiltered()} 
+                 && !${widget.getQueryParameters().isRetrieveOnlyFollowedItems()}
+                 && !${widget.getQueryParameters().isFavoriteFeedAndUnfiltered()})))
+                #set($lowerIndex = $commentsList.size() - 2)
+                #set($commentsList = $commentsList.subList($lowerIndex, $commentsList.size()))
+            #end
+            #if($commentsList.size()>0)
+                #parse('/WEB-INF/vm/widget/blog/ChronologicalPostList-Thread_Comment-Single.Widget.html.vm')
+                <div class="control-new-comment-to-subset-placeholder" style="display:none"></div>
+            #else
+                <div class="control-new-comment-to-subset-placeholder" style="display:none"></div>
+            #end
+            </div>
+            <div class="control-new-comment-placeholder" style="display:none"></div>
+            #if($note.Commentable)
+            <div class="control-fast-reply cn-list-fast-reply">
+                <div class="cn-border cn-list-fast-reply-placeholder-wrapper">
+                    <a class="cn-list-fast-reply-enhanced-editor cn-write-note-editor-expand cn-icon" title="#t('blog.post.list.comment.reply.enhanced.editor')" href="javascript:;" onclick="${widgetInstance}.fastReply(this, ${note.DiscussionId}, true);return false;">&nbsp;</a>
+                    <div class="cn-list-fast-reply-placeholder" onclick="${widgetInstance}.fastReply(this, ${note.DiscussionId})">#t('create.note.placeholder.comment')</div>
+                    <span class="cn-clear"><!-- Empty --></span>
+                </div>
+                <div class="cn-content-comment"></div>
+            </div>
+            #end
+        </div>
+    #elseif($renderStyle == 'COMMENT' && $note.Commentable)
+        <div class="control-inline-comments cn-inline-comments">
+            <div class="control-new-comment-placeholder" style="display:none"></div>
+            <div class="control-fast-reply cn-list-fast-reply">
+                <div class="cn-border cn-list-fast-reply-placeholder-wrapper">
+                    <a class="cn-list-fast-reply-enhanced-editor cn-write-note-editor-expand cn-icon" title="#t('blog.post.list.comment.reply.enhanced.editor')" href="javascript:;" onclick="${widgetInstance}.fastReply(this, ${note.DiscussionId}, true);return false;">&nbsp;</a>
+                    <div class="cn-list-fast-reply-placeholder" onclick="${widgetInstance}.fastReply(this, ${note.DiscussionId})">#t('create.note.placeholder.comment')</div>
+                    <span class="cn-clear"><!-- Empty --></span>
+                </div>
+                <div class="cn-content-comment"></div>
+            </div>
+        </div>
+    #end
+    </div>
+</div>

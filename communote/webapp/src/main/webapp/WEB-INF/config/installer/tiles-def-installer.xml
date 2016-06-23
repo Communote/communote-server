@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+       
+<tiles-definitions>
+
+    <definition name="microblog.installer.layout" path="/WEB-INF/jsp/installer/installer_main.jsp">
+        <put name="title"   value="installer.main.page.title" type="string" />
+        <put name="header"  value="/WEB-INF/jsp/installer/installer_header.jsp" />
+        <put name="footer"  value="/WEB-INF/jsp/installer/installer_footer.jsp" />
+        <put name="col1"    value="/WEB-INF/jsp/installer/installer_progressbar.jsp" />
+        <put name="col2"    value="" />
+        <put name="installStep" value="0" />
+    </definition>
+    
+    <definition name="microblog.installer.step.welcome" extends="microblog.installer.layout">
+        <put name="title"   value="installer.step.welcome.page.title" type="string" />
+        <put name="col2"    value="/WEB-INF/jsp/installer/setup_welcome.jsp" />
+        <put name="installStep" value="1" />
+    </definition>
+    
+    <definition name="microblog.installer.step.database.selection" extends="microblog.installer.layout">
+        <put name="title"   value="installer.step.database.selection.page.title" type="string" />
+        <put name="col2"    value="/WEB-INF/jsp/installer/setup_database_selection.jsp" />
+        <put name="installStep" value="2" />
+    </definition>
+    
+    <definition name="microblog.installer.step.database.setup" extends="microblog.installer.layout">
+        <put name="title"   value="installer.step.database.setup.page.title" type="string" />
+        <put name="col2"    value="/WEB-INF/jsp/installer/setup_database_setup.jsp" />
+        <put name="installStep" value="3" />
+    </definition>
+    
+    <definition name="microblog.installer.step.application" extends="microblog.installer.layout">
+        <put name="title"   value="installer.step.application.page.title" type="string" />
+        <put name="col2"    value="/WEB-INF/jsp/installer/setup_application_details.jsp" />
+        <put name="installStep" value="4" />
+    </definition>
+    
+    <definition name="microblog.installer.step.mail" extends="microblog.installer.layout">
+        <put name="title"   value="installer.step.mail.page.title" type="string" />
+        <put name="col2"    value="/WEB-INF/jsp/installer/setup_mail.jsp" />
+        <put name="installStep" value="5" />
+    </definition>
+    
+    <definition name="microblog.installer.step.admin" extends="microblog.installer.layout">
+        <put name="title"   value="installer.step.admin.page.title" type="string" />
+        <put name="col2"    value="/WEB-INF/jsp/installer/setup_admin_account.jsp" />
+        <put name="installStep" value="6" />
+    </definition>
+    
+    <definition name="microblog.installer.step.finish" extends="microblog.installer.layout">
+        <put name="title"   value="installer.step.finish.page.title" type="string" />
+        <put name="col2"    value="/WEB-INF/jsp/installer/setup_finish.jsp" />
+        <put name="installStep" value="7" />
+    </definition>
+    
+    <definition name="microblog.installer.contact" extends="microblog.installer.layout">
+        <put name="title"   value="installer.contact.page.title" type="string" />
+        <put name="col1"    value="/WEB-INF/jsp/installer/installer_contact_left.jsp" />
+        <put name="col2"    value="/WEB-INF/jsp/installer/installer_contact_main.jsp" />
+        <put name="installStep" value="" />
+    </definition>
+    
+</tiles-definitions>

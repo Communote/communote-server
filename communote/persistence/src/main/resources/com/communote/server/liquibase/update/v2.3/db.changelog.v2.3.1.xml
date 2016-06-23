@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update/v2.3/db.changelog.v2.3.1.xml">
+	<changeSet author="Communote"
+		id="KENMEI-5455_Alternative_Methode_fuer_Nachladender_Notes">
+		<sql><![CDATA[
+            create index kenmei5455_idx on core_note(creation_date desc, ID desc);
+         ]]></sql>
+	</changeSet>
+	
+	<changeSet author="Communote" id="KENMEI-5524_1_1" context="client">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<!-- This changeset has been removed since it failed for mysql. It has been splitted 
+				and in case the missing one already has been executed do not execute this one. -->
+				<changeSetExecuted 
+					changeLogFile="de/communardo/kenmei/database/update/v2.3/db.changelog.v2.3.1.xml" 
+					author="Communote" id="KENMEI-5524_1"/>
+			</not>
+		</preConditions>
+		<createTable tableName="user_note_entity">
+			<column name="ID" type="BIGINT" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="rank" type="BIGINT">
+			</column>
+			<column name="note_fk" type="BIGINT">
+				<constraints nullable="false" />
+			</column>
+			<column name="user_fk" type="BIGINT">
+				<constraints nullable="false" />
+			</column>
+
+		</createTable>
+		<modifySql dbms="mysql">
+			<append value=" engine InnoDB" />
+		</modifySql>
+
+	</changeSet>
+    
+	<changeSet author="Communote" id="KENMEI-5524_1_2" context="client">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<!-- This changeset has been removed since it failed for mysql. It has been splitted 
+				and in case the missing one already has been executed do not execute this one. -->
+				<changeSetExecuted 
+					changeLogFile="de/communardo/kenmei/database/update/v2.3/db.changelog.v2.3.1.xml" 
+					author="Communote" id="KENMEI-5524_1"/>
+			</not>
+		</preConditions>
+		<addForeignKeyConstraint constraintName="user_note_entity_user_fkc"
+			referencedTableName="user_user" 
+			baseColumnNames="user_fk"
+			baseTableName="user_note_entity" 
+			referencedColumnNames="ID" />
+		<addForeignKeyConstraint constraintName="user_note_entity_note_fkc"
+			referencedTableName="core_note" 
+			baseColumnNames="note_fk"
+			baseTableName="user_note_entity" 
+			referencedColumnNames="ID" />
+
+	</changeSet>
+	
+	<changeSet author="Communote" id="KENMEI-5524_2" context="client" dbms="postgresql">
+		<createSequence sequenceName="user_note_entity_seq" />
+	</changeSet>
+	
+	<changeSet author="Communote" id="KENMEI-5524_3" context="client" dbms="oracle">
+		<createSequence sequenceName="user_note_entity_seq" />
+	</changeSet>
+	
+	<changeSet author="Communote" id="KENMEI-5524_4" context="client" dbms="mysql">
+		<addAutoIncrement tableName="user_note_entity"
+			columnName="id" columnDataType="BIGINT" />
+	</changeSet>
+	
+	<changeSet author="Communote" id="KENMEI-5524_5" context="client">
+		<addUniqueConstraint tableName="user_note_entity"
+			columnNames="note_fk,user_fk" constraintName="user_note_entity_fk_idx" />
+	</changeSet>
+
+	<changeSet author="Communote" id="KENMEI-5524_6" context="client">
+		<addColumn tableName="user_note_property">
+			<column name="user_note_entity_fk" type="BIGINT"></column>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="user_note_property_user_note_c" 
+			referencedTableName="user_note_entity" 
+			baseColumnNames="user_note_entity_fk" 
+			baseTableName="user_note_property" 
+			referencedColumnNames="ID"/>
+	</changeSet>
+    <changeSet author="Communote" id="KENMEI-5562_Index_last_discussion_creation_date">
+        <sql><![CDATA[
+                create index kenmei5562_idx on core_note(last_discussion_creation_date desc, ID desc);
+             ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5563-TIMESTAMP-without-TimeZone_pg" dbms="postgresql">
+        <sql><![CDATA[
+                alter table core_note alter column last_discussion_creation_date type timestamp without time zone;
+             ]]></sql>
+    </changeSet>
+    <changeSet author="Communote" id="KENMEI-5563-TIMESTAMP-without-TimeZone_mysql" dbms="mysql">
+        <sql><![CDATA[
+                ALTER TABLE core_note CHANGE last_discussion_creation_date last_discussion_creation_date TIMESTAMP;
+            ]]></sql> 
+    </changeSet>
+
+    <changeSet author="Communote" id="KENMEI-5524_1_1-fix_column_name" dbms="mssql">
+        <sql><![CDATA[
+                EXEC sp_rename 'user_note_entity.user_fk','USER_FK','COLUMN';
+                EXEC sp_rename 'user_note_entity.note_fk','NOTE_FK','COLUMN';
+            ]]></sql> 
+    </changeSet>
+</databaseChangeLog>

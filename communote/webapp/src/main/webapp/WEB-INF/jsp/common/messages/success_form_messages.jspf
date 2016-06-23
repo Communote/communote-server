@@ -1,0 +1,9 @@
+<%@ include file="/WEB-INF/jsp/common/include.jsp"%>
+<c:if test="${not empty successMessages}">
+    <dl class="successMsg">
+        <c:forEach var="msg" items="${successMessages}">
+            <dt>${msg}</dt>
+        </c:forEach>
+    </dl>
+    <span class="clear"><!-- ie --></span>
+</c:if>

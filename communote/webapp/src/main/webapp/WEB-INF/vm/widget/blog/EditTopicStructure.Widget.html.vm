@@ -1,0 +1,42 @@
+#cnRenderMessages()
+#widgetMetadata(${widget.ResponseMetadata})
+#if($singleResult)
+#set( $widgetInstance = "#jsCurrentWidget()" )
+<div class="cn-form-container">
+    <form method="POST">
+        #if($widget.isSettingToplevelTopicEnabled($singleResult) && $singleResult.RootTopic)
+        <fieldset>
+            <h2 class="cn-headline">#t('widget.editTopicStructure.toplevel.headline')</h2>
+            <div class="cn-form-info">#t('widget.editTopicStructure.toplevel.hint')</div>
+            <div class="cn-field-100">
+                <div class="cn-check">
+                    <input type="checkbox" id="${widget.WidgetId}-toplevel-toggle" 
+                               class="cn-inputCheck" #if($singleResult.isToplevelTopic()) checked="checked" #end />
+                    <input type="hidden" name="toplevelTopic" value=""/>
+                    <label for="${widget.WidgetId}-toplevel-toggle">#t('widget.editTopicStructure.toplevel.checkbox')</label>
+                    <span class="cn-clear"><!-- --></span>
+                </div>
+            </div>
+        
+        </fieldset>
+        #end
+        <input id="isSubmit" type="hidden" name="isSubmit" value="true"/>
+        <input type="hidden" name="blogId" value="$singleResult.Id"/>
+        <input type="hidden" name="childTopicIdsToRemove" value=""/>
+        <input type="hidden" name="childTopicIdsToAdd" value=""/>
+    </form>
+    <fieldset>
+        <h2 class="cn-headline">#t('widget.editTopicStructure.subtopics.headline')</h2>
+        <div class="cn-form-info">#t_args('widget.editTopicStructure.subtopics.hint' $singleResult.Title)</div>
+        <div class="cn-field-100 cn-long">
+            <input id="${widget.WidgetId}-subtopics-search" type="text" placeholder="#t('widget.editTopicStructure.subtopics.placeholder')" />
+        </div>
+    </fieldset>
+    <div class="cn-actions">
+            <div class="cn-buttons">
+                    <input type="button" class="cn-button main" value="#t('button.save')" onclick="${widgetInstance}.saveChanges(); return false;" />
+            </div>
+        </div>
+        <span class="cn-clear"><!-- ie --></span>
+</div>
+#end

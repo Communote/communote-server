@@ -1,0 +1,44 @@
+#* @vtlvariable name="invitationFields" type="java.util.List<com.communote.server.persistence.user.InvitationField>" *#
+#macro(cnInviteInputText $id $value $label $require $tooltip $fieldsCounter)
+    <div class="cn-field-50 #if($fieldsCounter % 2 == 0)cn-last#end"><div class="cn-line">
+        #cnLabel($id $label $require $tooltip)
+        <div class="cn-error-marker cn-for-$id cn-hidden"><!-- Marker Div --></div> 
+        <input type="text" class="cn-inputTxt" id="$id" name="$id" value="$!value" />
+        <div><label class="cn-error" for="$id"><!-- Empty --></label></div>
+        <span class="cn-clear"><!-- --></span>
+    </div></div>
+#end
+
+#if($invitationFields.contains('EMAILALIAS'))
+    #cnInviteInputText('emailAlias' '' 'blog.member.invite.form.emailAlias' true '' 1)
+    <span class="cn-clear"><!-- --></span>
+#end
+
+#set($showedFieldsCounter = 1)
+#if($invitationFields.contains('FIRSTNAME'))
+    #cnInviteInputText('firstName' '' 'user.register.firstname' true '' $showedFieldsCounter)
+    #set($showedFieldsCounter = $showedFieldsCounter + 1)
+#end
+#if($invitationFields.contains('LASTNAME'))
+    #cnInviteInputText('lastName' '' 'user.register.lastname' true '' $showedFieldsCounter)
+    #set($showedFieldsCounter = $showedFieldsCounter + 1)
+#end
+#if($invitationFields.contains('ALIAS'))   
+    #cnInviteInputText('alias' '' 'user.register.alias' true '' $showedFieldsCounter)
+    #set($showedFieldsCounter = $showedFieldsCounter + 1)
+#end
+#if($invitationFields.contains('EXTERNAL_USERNAME'))
+    #cnInviteInputText('externalUsername' '' 'user.register.alias' true '' $showedFieldsCounter)
+    #set($showedFieldsCounter = $showedFieldsCounter + 1)
+#end
+#if($invitationFields.contains('EMAIL'))
+    #cnInviteInputText('email' '' 'user.register.email' true '' $showedFieldsCounter)
+#end
+#if($invitationFields.contains('LANGUAGECODE'))
+    <div class="cn-field-50 cn-last">
+        #cnSelect('languageCode' $communoteTool.languages $communoteTool.getCurrentUserLocale($request).getLanguage() 'user.register.language' true '') 
+        <div>
+            <label class="cn-error" for="languageCode"><!-- Empty --></label>
+        </div>
+    </div>
+#end

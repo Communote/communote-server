@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<tools>
+    <data type="number" key="TOOLS_VERSION" value="2.0" />
+    <data type="boolean" key="GENERIC_TOOLS_AVAILABLE" value="true" />
+
+    <toolbox scope="request">
+        <tool class="com.communote.server.web.commons.viewtool.UrlTool" />
+        <tool class="com.communote.server.web.commons.viewtool.FormatTool" />
+        <tool class="com.communote.server.web.commons.viewtool.FollowTool" />
+        <tool class="org.apache.velocity.tools.view.ParameterTool" key="paramTool" />
+    </toolbox>
+
+    <toolbox scope="application">
+        <tool class="org.springframework.security.taglibs.velocity.AuthzImpl" key="authzTool" />
+        <tool class="org.apache.velocity.tools.generic.FieldTool" key="fieldTool" />
+        <tool class="org.apache.velocity.tools.generic.DateTool" key="dateTool" />
+        <tool class="org.apache.commons.lang.StringUtils" key="stringUtils" />
+        <tool class="org.apache.commons.lang.math.NumberUtils" key="numberUtils" />
+        <tool class="com.communote.common.velocity.EscapeTool" key="escTool" />
+        <tool class="com.communote.common.velocity.StringTool" key="stringTool" />
+        <tool class="com.communote.server.core.common.velocity.CommunoteTool" />
+        <tool class="com.communote.server.web.commons.viewtool.AdministrationTool" />
+        <tool class="com.communote.server.web.commons.viewtool.WebRenderTool" />
+    </toolbox>
+</tools>

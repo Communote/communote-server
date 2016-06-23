@@ -1,0 +1,15 @@
+#set($locale=$communoteTool.getCurrentUserLocale($request))
+<div class="imprint-page-content">
+    #foreach($section in $pageSections)
+        <div class="static-page-section ${section.Id}">
+            <h2>${section.getTitle($locale, $request)}</h2>
+            #if($section.isContentTemplate())
+                #parse($renderTool.getVelocityTemplateLocation(${section.getTemplate()}))
+            #else
+                <div class="static-page-section-content">${section.getContent($locale, $request)}</div>
+            #end
+        </div>
+    #end
+    <br />
+    <div class="text"><a href="$urlTool.render('/user/viewTermsConditions.do')">#t('user.about.terms.link')</a></div>
+</div>

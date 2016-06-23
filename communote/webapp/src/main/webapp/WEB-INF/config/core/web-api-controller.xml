@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<bean id="webBlogRightApiController" class="com.communote.server.web.api.service.blog.BlogRightApiController">   
+	</bean>
+	
+	<bean id="webBlogUserRoleApiController" class="com.communote.server.web.api.service.blog.BlogUserRoleApiController">   
+	</bean>	
+	
+	<bean id="webInviteUserToBlogApiController" class="com.communote.server.web.api.service.blog.InviteUserToBlogApiController">
+	</bean>
+	
+    <bean id="webBlogPublicAccessApiController" class="com.communote.server.web.api.service.blog.BlogPublicAccessApiController">
+    </bean> 
+    
+    <bean id="webPostCounterApiController" class="com.communote.server.web.api.service.post.PostCounterApiController">
+    </bean>
+    
+    <bean id="webFavoriteApiController" class="com.communote.server.web.api.service.post.FavoriteApiController">
+    </bean>
+    
+    <bean id="webFollowApiController" class="com.communote.server.web.api.service.user.FollowApiController" />
+
+	<bean id="webCreateNoteController"
+		class="com.communote.server.web.api.service.post.PostApiController">
+		<property name="creationSource" value="WEB" />
+	</bean>
+
+	<bean id="webApiHandlerMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="alwaysUseFullPath" value="true" />
+		<property name="mappings">
+			<props>
+				
+				<!--  the name of the controllers should start with "web" -->
+				
+				<prop key="/*/*/web/v*/blogRights.json">webBlogRightApiController</prop>
+				<prop key="/*/*/web/v*/blogRoles.json">webBlogUserRoleApiController</prop>
+                <prop key="/*/*/web/v*/blogInviteUser.json">webInviteUserToBlogApiController</prop>
+                <prop key="/*/*/web/v*/blogPublicAccess.json">webBlogPublicAccessApiController</prop>
+                <prop key="/*/*/web/v*/posts-count.json">webPostCounterApiController</prop>
+
+				<prop key="/*/*/web/v*/external/deleteExternalObject/*.json">deleteExternalObjectsApiController</prop>
+
+				<prop key="/*/*/web/v*/blog/Note.Create.json">webCreateNoteController</prop>
+				
+				<prop key="/*/*/web/v*/posts/favorite/*.json">webFavoriteApiController</prop>
+                <prop key="/*/*/web/v*/follow.json">webFollowApiController</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>

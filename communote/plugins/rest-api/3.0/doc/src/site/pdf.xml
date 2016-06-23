@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/DOCUMENT/1.0.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/DOCUMENT/1.0.1 http://maven.apache.org/xsd/document-1.0.1.xsd"
+  outputName="Documentation_of_Communote_Rest-Api_Plugin_${project.version}">
+
+  <meta>
+    <title>Documentation of Communote Rest-Api Plugin</title>
+    <author>Communote GmbH</author>
+  </meta>
+
+  <toc name="Table of Contents">
+    <item name="Introduction" ref="index.html"/>
+    <item name="Getting Started" ref="getting_started.html" />
+	<item name="Usage of Resources" ref="/gen/resources/usage.html" />
+	<item name="Available Resources" ref="/gen/resources/overview.html" />
+	<item name="Attachment Resource and Subresources" ref="/gen/resources/attachment.html"/>
+	<item name="Note Resource and Subresources" ref="/gen/resources/note.html"/>
+	<item name="Tag Resource and Subresources" ref="/gen/resources/tag.html"/>
+	<item name="TagStoreTagList Resource and Subresources" ref="/gen/resources/tagstoretaglist.html"/>
+	<item name="TagSuggestionList Resource and Subresources" ref="/gen/resources/tagsuggestionlist.html"/>
+	<item name="TimelineNote Resource and Subresources" ref="/gen/resources/timelinenote.html"/>
+	<item name="TimelineTag Resource and Subresources" ref="/gen/resources/timelinetag.html"/>
+	<item name="TimelineTopic Resource and Subresources" ref="/gen/resources/timelinetopic.html"/>
+	<item name="TimelineUser Resource and Subresources" ref="/gen/resources/timelineuser.html"/>
+	<item name="Topic Resource and Subresources" ref="/gen/resources/topic.html"/>
+	<item name="User Resource and Subresources" ref="/gen/resources/user.html"/>
+	
+	<item name="Usage of Communote Client for Java" ref="/gen/client/index.html" />
+	<item name="Imprint" ref="imprint.html" />
+  </toc>
+
+  <cover>
+    <coverTitle>Communote REST API Plugin</coverTitle>
+	<coverSubTitle>Version ${project.version}</coverSubTitle>
+    <coverType>Documentation</coverType>
+	<coverdate>${date}</coverdate> 
+    <projectName>${project.name}</projectName>
+    <companyName>Communote GmbH</companyName>
+    <companyLogo>./images/communote_logo-small.png</companyLogo>
+  </cover>
+  
+  
+</document>

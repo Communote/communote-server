@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd"
+    logicalFilePath="de/communardo/kenmei/database/update_2nd_pass/v1.1.4/db.changelog.v1.1.4.xml">
+
+    <changeSet author="unknown" id="ADD_INSTALLATION_ID" context="global">
+        <comment>Inserts an unique id to the application properties.</comment>
+        <customChange class="de.communardo.kenmei.database.update.AddUniqueIdToInstallation"></customChange>
+    </changeSet>
+    
+    <changeSet author="unknown" id="CR_115_Move_Application_Properties_Into_DB" context="global">
+        <comment>Get rid of property files and store the properties in the DB.</comment>
+        <customChange class="de.communardo.kenmei.database.update.MoveApplicationPropertiesFromFileToDatabase"></customChange>
+    </changeSet>
+
+    <changeSet author="unknown" id="CR_115_Refactor_URL_Application_Properties" context="global">
+        <comment>Convert old URL related properties to the new properties.</comment>
+        <customChange class="de.communardo.kenmei.database.update.RefactorApplicationUrlProperties"></customChange>
+    </changeSet>
+
+    <changeSet author="unknown" id="Create_Default_Blog_Where_Missing" context="client">
+        <comment>Create the default blog for clients where there is none yet.</comment>
+        <customChange class="de.communardo.kenmei.database.update.CreateDefaultBlogUpdateTask"></customChange>
+    </changeSet>
+
+    <changeSet author="unknown" id="Update_Master_Data_From_Property_Files" context="client" runOnChange="true">
+        <comment>Update the master data stored in DB with entries from property files.</comment>
+        <customChange class="de.communardo.kenmei.database.update.UpdateMasterData"></customChange>
+    </changeSet>
+
+    <changeSet author="unknown" id="Create_encrypted_creation_date" context="client">
+        <comment>No comment.</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_1_4.EncryptClientCreationDate"></customChange>
+    </changeSet>
+    
+    <changeSet author="unknown" id="KENMEI-1672_Virus_scanner_in_admin_section" context="client">
+        <comment>Add enabled option for virus scanner</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_1_4.AddVirusScannerEnableOption"></customChange>
+    </changeSet>
+
+    <changeSet author="unknown" id="KENMEI-1617_NullPointerException_bei_Zugriff_auf_Certificates" context="global">
+        <comment>Add password for keystore if it doesn't exist.</comment>
+        <customChange class="de.communardo.kenmei.database.update.v1_1_4.AddTrustedKeyStorePassword"></customChange>
+    </changeSet>
+
+</databaseChangeLog>

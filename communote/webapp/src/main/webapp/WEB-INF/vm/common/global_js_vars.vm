@@ -1,0 +1,37 @@
+## template with script that prepares the Communote namespace. Should be the first script block.
+## $page (String) Optional string with the name of the current page that will be rendered 
+##
+<script type="text/javascript">
+    ## prepare namespace
+    communote = {
+        classes: {},
+        configuration: {
+            openLinksInNewWindow: (window != window.parent) ## open links in new window by default if rendered in IFrame
+        },
+        environment: {
+            #if(${page})page: '${page}'#end
+        },
+        i18n: {},
+        server: {
+            applicationUrl: location.protocol + '//' + location.host + '$urlTool.render("", null, false, false, false, null, false)',
+#if( $request.requestedSessionIdFromCookie == false && $request.requestedSessionIdValid )
+            applicationSessionId: '$session.id',
+#end
+            resourceUrlBase: location.protocol + '//' + location.host + '$urlTool.renderStaticBase(false, false, null)',
+            resourceUrlParam: '$urlTool.createBuildTimestampParam()',
+            buildTimestamp: ${communoteTool.getApplicationInformation().getBuildTimestamp()},
+            isStandalone: $communoteTool.isStandalone(),
+            version: '$communoteTool.getApplicationInformation().getBuildNumber()'
+        }
+    };
+#if($authzTool.allGranted('ROLE_KENMEI_USER'))
+    communote.currentUser = {
+        id: $communoteTool.getCurrentUserId(),
+        alias: '$communoteTool.getCurrentUserAlias()',
+        isManager: $communoteTool.isCurrentUserClientManager(),
+        timeZoneOffset: $communoteTool.getCurrentOffsetOfEffectiveUserTimeZone(),
+        language: '$communoteTool.getCurrentUserLocale($request).getLanguage()',
+        preferences: $escTool.jsonInline($communoteTool.getAllUserPreferencesAsJson())
+    };
+#end
+</script>

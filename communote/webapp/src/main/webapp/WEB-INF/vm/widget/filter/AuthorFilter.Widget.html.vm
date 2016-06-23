@@ -1,0 +1,57 @@
+#set( $imageMedium = $fieldTool.get('com.communote.server.model.user.ImageSizeType.MEDIUM') )
+#set( $signatureShort = $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.SHORT') )
+#set( $signatureMedium = $fieldTool.get('com.communote.server.core.user.helper.UserNameFormat.MEDIUM') )
+#set( $widgetInstance = "#jsCurrentWidget()")
+#set( $mode = $widget.getParameter('mode', 'trend'))
+#widgetMetadata(${widget.ResponseMetadata})
+<div class="cn-filter-authors">
+    <div class="cn-widget-header-toolbar">
+        <ul aria-haspopup="true" class="cn-menu">
+            #if(${mode} == 'trend')
+                <li class="cn-more-actions"><a class="cn-link" href="javascript:;" title="#t_args('blog.filter.userlist.menu.trend.hint',[$communoteTool.client.getProperty('NOTES_TO_USE_FOR_TRENDS','1000')])" onclick="widgetController.getWidget('${widget.widgetId}').switchMode('trend'); return false;"><span class="cn-icon-label">$fmtTool.message('blog.filter.userlist.menu.trend') </span><span class="cn-icon cn-arrow"><!-- &#9660; --></span></a></li>
+            #else
+                <li class="cn-more-actions"><a class="cn-link " href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').switchMode('all'); return false;"><span class="cn-icon-label">$fmtTool.message('blog.filter.userlist.menu.all') </span><span class="cn-icon cn-arrow"><!-- &#9660; --></span></a></li>
+            #end
+            <li>
+                <ul class="cn-menu-list">
+                    #if(${mode} == 'trend')
+                        <li>
+                            <a class="cn-link" href="javascript:;" onclick="widgetController.getWidget('${widget.widgetId}').switchMode('all'); return false;">$fmtTool.message('blog.filter.userlist.menu.all')</a>
+                        </li>
+                    #else
+                        <li>
+                            <a class="cn-link  cn-active " href="javascript:;" title="#t_args('blog.filter.userlist.menu.trend.hint',[$communoteTool.client.getProperty('NOTES_TO_USE_FOR_TRENDS','1000')])" onclick="widgetController.getWidget('${widget.widgetId}').switchMode('trend'); return false;">$fmtTool.message('blog.filter.userlist.menu.trend')</a>
+                        </li>
+                    #end
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <h3 class="cn-headline">$fmtTool.message("blog.filter.userlist.title")</h3>
+    <div class="cn-content">
+        #if(!$list || $list.size() == 0)
+            <div class="cn-empty-list">
+                $fmtTool.message("widget.empty.list")
+            </div>
+        #else
+            <div class="cn-filter-authors-list">
+                #foreach($item in $list)
+                    #set( $authorSignature  = $communoteTool.getUserSignature($item, $signatureMedium)) 
+                    #set( $authorSignatureEscaped = $!escTool.xmlSimple($communoteTool.getUserSignature($item, $signatureMedium)) )
+                    #set( $authorSignatureShort = $!escTool.javascriptInline($communoteTool.getUserSignature($item, $signatureShort)) )
+                    <a onclick="${widgetInstance}.sendFilterGroupEvent('onUserToggled', '$item.Id', {type: 'user', key: '$item.Id', shortName:'$!authorSignatureShort', longName:'$!escTool.javascriptInline($authorSignature)'}); return false;" href="$urlTool.user("$item.alias")">
+                        <img width="37" height="37" 
+                            id="${widget.WidgetId}_userimage_$item.Id"
+                            class="control-userlist-item"
+                            data-cnt-user-id="$item.Id"
+                            title="$!authorSignatureEscaped" alt="$!authorSignatureEscaped"
+                            src="$urlTool.userImage($item.Id, $imageMedium)"/>
+                    </a>
+                #end
+            </div>
+            <span class="cn-clear"><!-- --></span>
+            #parse("/WEB-INF/vm/common/paging-widget.html.vm")
+        #end
+        <span class="cn-clear"><!-- --></span>
+    </div>
+</div>

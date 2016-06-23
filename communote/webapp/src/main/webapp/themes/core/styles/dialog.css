@@ -1,0 +1,54 @@
+
+/* header */
+
+#cn-header #cn-topmenu-arrow {
+    position: absolute;
+    bottom: -20px;
+    left: 38px;
+    width: 22px;
+    height: 20px;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+/* body */
+
+/* footer */
+#cn-footer-communote {
+    position: relative;
+	margin-top: 80px;
+    font-size: 11px;
+}
+
+#cn-footer-communote div {
+	float: left;
+}
+#cn-footer-communote img {
+    margin-bottom: 4px;
+}
+
+#cn-footer-communote.version-info{
+    color: #737373;
+}
+
+#cn-footer-communote dl {
+    color: #737373;
+    float: right;
+    font-size: 11px;
+    line-height: 18px;
+    margin: 10px 0 0;
+    padding: 0;
+    width: 220px;
+}
+
+#cn-footer-communote dt {
+    clear: both;
+    float: left;
+    width: 80px;
+}
+
+#cn-footer-communote dd {
+    float: left;
+    margin: 0;
+    width: 140px;
+}

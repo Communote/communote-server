@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <!-- ========================= DATASOURCE DEFINITION ========================= -->
+
+    <!-- none required -->
+    
+    <!-- ====================== End of DATASOURCE DEFINITION ====================== -->
+
+    <!-- ===================== TRANSACTION MANAGER DEFINITION ========================= -->
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory"><ref bean="sessionFactory"/></property>
+    </bean>
+
+    <!-- ===================== TRANSACTION MANAGER DEFINITION ========================= -->
+
+</beans>
