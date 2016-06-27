@@ -17,4 +17,4 @@ buildNumber.properties
 *.iml
 communote/tests/all-versions/integration/testsuites/
 communote/webapp/src-generated/
-communote/plugins/core/rest-api/*/doc/src/site/apt/gen
+communote/plugins/rest-api/*/doc/src/site/apt/gen

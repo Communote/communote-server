@@ -16,7 +16,7 @@
     <modules>
         <module>communote-plugins-parent</module>
 		<module>communote-core-plugin</module>
-        <!-- module>rest-api</module-->
+        <module>rest-api</module>
         <module>communote-activity-base-plugin</module>
         <module>communote-activity-core-plugin</module>
         <module>communote-alias-and-tag-link-renderer-plugin</module>

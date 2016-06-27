@@ -1,4 +1,4 @@
-module de.communardo.restws.server
+module com.communote.restws.server
 
 import org.eclipse.emf.mwe.utils.*
 
@@ -29,7 +29,7 @@ Workflow {
 
     component = org.eclipse.xtext.mwe.Reader {
         path = modelPath
-        register = de.communardo.restws.RestWebserviceStandaloneSetup {}
+        register = com.communote.restws.RestWebserviceStandaloneSetup {}
         load = {
             slot = "restWebservice"
             type = "RestWebservice"
@@ -62,10 +62,10 @@ Workflow {
         }
         //calling the entry point with the manipulated model to start doc generation 
         expand = "templates::doc::apt::Doc::docmain FOREACH webserviceMod"
+        fileEncoding = fileEncoding
         outlet = {
             path = targetDirDoc //use the doc output path defined above
         }
-        fileEncoding = fileEncoding
     }
 
     //starts the Model-2-Text transformation for server
@@ -82,11 +82,11 @@ Workflow {
         }
         //call the entry point of server code generation
         expand = "templates::java::server::Server::servermain FOREACH webserviceMod"
+        fileEncoding = fileEncoding
         outlet = {
             path = targetDirServer
             postprocessor = org.eclipse.xpand2.output.JavaBeautifier {}
         }
-        fileEncoding = fileEncoding
 		//beautifier = org.eclipse.xpand2.output.JavaBeautifier {}
     }
 
@@ -103,11 +103,11 @@ Workflow {
             value = clientJavaPackage
         }
         expand = "templates::java::client::ClientJava::clientjavamain FOREACH webserviceMod"
+		fileEncoding = fileEncoding
         outlet = {
             path = targetDirClientJava
 			postprocessor = org.eclipse.xpand2.output.JavaBeautifier {}
         }
-        fileEncoding = fileEncoding
 		//beautifier = org.eclipse.xpand2.output.JavaBeautifier {}
     }
 }
