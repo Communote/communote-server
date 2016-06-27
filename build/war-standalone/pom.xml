@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.communote.build</groupId>
+        <artifactId>communote-war-parent</artifactId>
+        <version>3.4-SNAPSHOT</version>
+        <relativePath>../war-parent</relativePath>
+    </parent>
+    <artifactId>communote-war-standalone</artifactId>
+    <packaging>war</packaging>
+    <name>Communote - Build - WAR - Standalone</name>
+    <properties>
+        <finalName.with.buildNumber>${project.artifactId}-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${buildNumber}.${project.packaging}</finalName.with.buildNumber>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.communote.server</groupId>
+            <artifactId>communote-server-web</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <!-- META-INF/Manifest.mf is always excluded, so recreate it -->
+                        <manifest>
+                            <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Implementation-Build>${buildNumber}</Implementation-Build>
+                            <Implementation-Build-Timestamp>${timestamp}</Implementation-Build-Timestamp>
+                            <Build-Timestamp>${build.timestamp}</Build-Timestamp>
+                            <Project-Version>${project.version}</Project-Version>
+                        </manifestEntries>
+                    </archive>
+                    <overlays>
+                        <overlay>
+                            <groupId>com.communote.server</groupId>
+                            <artifactId>communote-server-web</artifactId>
+                        </overlay>
+                    </overlays>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!--
+                 Copy the SNAPSHOT file name to final name with buildnumber instead of setting the build.finalName to avoid
+                  installing a versioned WAR file into the maven repository because other builds might use the snapshot WAR file.
+                -->
+				<!-- TODO still required? -->
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <target name="create-versioned-copy">
+                                <copy tofile="${project.build.directory}/${finalName.with.buildNumber}" file="${project.build.directory}/${project.build.finalName}.${project.packaging}" overwrite="true"></copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
