@@ -1,0 +1,14 @@
+Name                          Version            License
+==============================================================================================
+base.js                       1.1a            MIT
+jQuery                        1.7.1           MIT http://jquery.org/license/
+jQuery UI                     1.8.6           MIT
+http://www.JSON.org/json2.js  n/a             Public Domain
+mediaboxAdvanced              1.5.4 CNT       MIT https://github.com/Communote/mediaboxAdvanced
+Mootools                      1.4.5           MIT http://mootools.net/license.txt
+Mootools Date Picker          2.1.1 CNT       https://github.com/Communote/mootools-datepicker
+Mootools More                 1.4.0.1         MIT http://mootools.net/license.txt
+PURE http://beebole.com/pure  2.75            MIT
+Roar                          1.0.1 CNT       MIT 
+Smoothbox                     v20080623 CNT   MIT http://www.opensource.org/licenses/mit-license.php
+TinyMCE                       3.5.8           LGPL 2.1

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!-- The contents of this file will be loaded for each web application -->
+<Context antiJARLocking="true" privileged="true" reloadable="true" useHttpOnly="true">
+
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <Manager pathname="" />
+
+    <!-- Modify the value attribute of the next line if you want to change the location of the 
+	configuration directory which is searched for the startup.properties file. 	To apply the changes: 
+	- stop Communote, 
+	- replace the communote/conf/context.xml with this file, 
+	- move the startup.properties and log4j.properties from the old communote/conf directory to the new location
+	- and restart communote -->
+    <Environment name="communote.config.dir" type="java.lang.String" value="C:\Communote\" />
+
+    <Environment name="communote.instance.name" type="java.lang.String" value="communote" />
+
+</Context>

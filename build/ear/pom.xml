@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+		<groupId>com.communote.server</groupId>
+		<artifactId>communote-server-parent</artifactId>
+        <version>3.4-SNAPSHOT</version>
+    </parent>
+    <artifactId>communote-ear</artifactId>
+    <packaging>ear</packaging>
+    <name>Communote - Build - Ear</name>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>communote-war-standalone</artifactId>
+            <type>war</type>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<configuration>
+					<modules>
+						<webModule>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>communote-war-standalone</artifactId>
+							<contextRoot>/communote</contextRoot>
+							<bundleFileName>communote.war</bundleFileName>
+						</webModule>
+					</modules>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

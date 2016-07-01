@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Openfire Http Authentication Provider - </title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                  <a href="" id="bannerLeft">
+    
+                                            <img src="images/communardo_logo.png" alt="Communardo Software GmbH Logo" />
+    
+            </a>
+                    <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+    
+            <div class="xleft">
+        Last Published: 2010-04-16
+                      </div>
+            <div class="xright">            <a href="">Communardo Software GmbH</a>
+            
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+    
+                   <h5>Manual</h5>
+            <ul>
+              
+    <li class="none">
+                    <a href="index.html">About</a>
+          </li>
+              
+    <li class="none">
+              <strong>Installation</strong>
+        </li>
+              
+    <li class="none">
+                    <a href="configuration.html">Configuration</a>
+          </li>
+              
+    <li class="none">
+                    <a href="contact.html">Contact</a>
+          </li>
+          </ul>
+                                           <a href="http://maven.apache.org/" title="Built by Maven" class="poweredBy">
+            <img alt="Built by Maven" src="./images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+  
+  
+    
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2>Installation</h2>
+<ol type="1"><li>Install Openfire with your preferred fallback authentication provider. If you don't need a fallback use the internal mechanism for installation. You have to install Openfire before you can configure the HTTPRequestAuthProvider.</li>
+<li><a href="configuration.html">Configure</a> the HTTPRequestAuthProvider</li>
+<li>Switch the provider manually<ol type="1"><li>Stop Openfire,</li>
+<li>Connect to the database, which is used by Openfire manually,<ol type="1"><li>Go to table <b>ofproperty</b>,<ol type="1"><li>Change value of <b>provider.auth.className</b> to <b>de.communardo.xmpp.openfire.auth.HTTPRequestAuthProvider</b>,</li>
+<li>Change value of <b>provider.user.className</b> to <b>org.jivesoftware.openfire.user.DefaultUserProvider</b>,</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>Start Openfire. Now the <b>HTTPRequestAuthProvider</b> should be used.</li>
+</ol>
+<p><i>Hint:</i> An alternative way to change these settings would be via the Openfire administration page. Go to <a href="http://yourOpenfire:9090/server-properties.jsp" class="externalLink">http://yourOpenfire:9090/server-properties.jsp</a> and change the settings there.</p>
+</li>
+</ol>
+</div>
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2010
+    
+          Communardo Software GmbH
+          
+  
+
+  
+    
+  
+  
+    
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>

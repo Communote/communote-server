@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!-- The contents of this file will be loaded for each web application -->
+<Context antiJARLocking="true" privileged="true" reloadable="true" useHttpOnly="true">
+
+    <!-- Default set of monitored resources -->
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <Manager pathname="" />
+
+    <Environment name="communote.instance.name" type="java.lang.String" value="communote" />
+
+	<!--
+    <Environment name="communote.config.dir" type="java.lang.String" value="CONFIG_DIR" />
+    -->
+</Context>

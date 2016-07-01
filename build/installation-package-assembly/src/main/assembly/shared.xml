@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.1 http://maven.apache.org/xsd/component-1.1.1.xsd ">
+    <dependencySets>
+        <dependencySet>
+            <includes>
+                <include>org.postgresql:postgresql*</include>
+            </includes>
+            <outputDirectory>communote/lib</outputDirectory>
+        </dependencySet>
+        <dependencySet>
+            <includes>
+                <include>com.communote.server:communote-war-standalone</include>
+            </includes>
+            <outputDirectory>communote/communote</outputDirectory>
+            <unpack>true</unpack>
+        </dependencySet>
+    </dependencySets>
+    <files>
+        <file>
+            <source>src/main/resources/tomcat/conf/server.xml</source>
+            <outputDirectory>communote/conf</outputDirectory>
+        </file>
+    </files>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/resources/docs</directory>
+            <outputDirectory>docs</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/examples</directory>
+            <outputDirectory>examples</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/licenses</directory>
+            <outputDirectory>licenses</outputDirectory>
+        </fileSet>
+    </fileSets>
+</component>

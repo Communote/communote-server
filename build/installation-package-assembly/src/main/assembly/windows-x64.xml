@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.1 http://maven.apache.org/xsd/assembly-1.1.1.xsd ">
+    <id>windows-x64</id>
+    <formats>
+        <format>${formatWindows}</format>
+    </formats>
+    <componentDescriptors>
+        <componentDescriptor>src/main/assembly/shared.xml</componentDescriptor>
+    </componentDescriptors>
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/dependency/tomcat-windows-x64/apache-tomcat-${tomcatVersion}</directory>
+            <lineEnding>keep</lineEnding>
+            <outputDirectory>communote</outputDirectory>
+            <excludes>
+                <exclude>**/context.xml</exclude>
+                <exclude>**/server.xml</exclude>
+                <exclude>webapps/*/**</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>src/main/resources/windows/tomcat/context.xml</source>
+            <outputDirectory>communote/conf</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/resources/windows/tomcat/log4j.properties</source>
+            <outputDirectory>communote/conf/communote</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/resources/tomcat/bin/setenv.sh</source>
+            <outputDirectory>communote/bin</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/resources/tomcat/bin/setenv.bat</source>
+            <outputDirectory>communote/bin</outputDirectory>
+        </file>
+    </files>
+</assembly>
