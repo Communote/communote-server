@@ -6,7 +6,6 @@
         <artifactId>communote-server-parent</artifactId>
         <version>3.4-SNAPSHOT</version>
     </parent>
-    <groupId>com.communote.build</groupId>
     <artifactId>communote-war-parent</artifactId>
     <packaging>pom</packaging>
     <name>Communote - Build - WAR - Parent</name>
