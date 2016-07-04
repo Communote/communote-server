@@ -29,6 +29,8 @@ import com.communote.server.persistence.tag.TagStore;
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class UserQueryParameters extends PropertyQueryParameters {
+    private static final int DEFAULT_MAX_COUNT = 25;
+
     /**
      * Placeholder for the user alias, which is used for sorting and will be replaced by the query.
      */
@@ -50,8 +52,8 @@ public class UserQueryParameters extends PropertyQueryParameters {
     private String[] userSearchFilters;
     private String[] userSearchParamNames;
 
-    private Collection<UserRole> rolesToInclude;
-    private Collection<UserRole> rolesToExclude;
+    private final Collection<UserRole> rolesToInclude;
+    private final Collection<UserRole> rolesToExclude;
 
     /** The include status filter. */
     private UserStatus[] includeStatusFilter = null;
@@ -81,24 +83,28 @@ public class UserQueryParameters extends PropertyQueryParameters {
     private Boolean multilingualTagPrefixSearch = null;
 
     /**
-     * Create a query instance by definition
+     * Create parameters for configuring the user query. Uses {@value #DEFAULT_MAX_COUNT} as
+     * maxCount and 0 as offset.
+     * 
+     * @see #UserQueryParameters(int, int)
      */
     public UserQueryParameters() {
-        matchMode = MatchMode.ANYWHERE;
-        rolesToExclude = new HashSet<UserRole>();
-        rolesToInclude = new HashSet<UserRole>();
+        this(DEFAULT_MAX_COUNT, 0);
     }
 
     /**
-     * Create a query instance by definition.
+     * Create parameters for configuring the user query.
      *
      * @param maxCount
-     *            The number of max retrieved elements.
+     *            the upper limit of users to retrieve. A value of less than or equal to 0 means no
+     *            limit.
      * @param offset
-     *            The offset, where to start.
+     *            the offset in the result set from where matches should be retrieved
      */
     public UserQueryParameters(int maxCount, int offset) {
         matchMode = MatchMode.ANYWHERE;
+        rolesToExclude = new HashSet<UserRole>();
+        rolesToInclude = new HashSet<UserRole>();
         ResultSpecification resultSpecification = new ResultSpecification(offset, maxCount);
         setResultSpecification(resultSpecification);
     }
@@ -216,8 +222,7 @@ public class UserQueryParameters extends PropertyQueryParameters {
             putParameter(params, PARAM_LAST_MODIFICATION_DATE, lastModifiedAfter);
         }
         if (StringUtils.isNotBlank(tagPrefix)) {
-            putParametersForSearch(params,
-                    new String[] { UserQueryParameters.PARAM_TAG_PREFIX },
+            putParametersForSearch(params, new String[] { UserQueryParameters.PARAM_TAG_PREFIX },
                     new String[] { tagPrefix.toLowerCase() }, MatchMode.START, true);
         }
         putParametersForSearch(params, userSearchParamNames, userSearchFilters, getMatchMode(),
@@ -467,8 +472,7 @@ public class UserQueryParameters extends PropertyQueryParameters {
      * Sort by the last name ascending
      */
     public void sortByEmailAsc() {
-        addSortField("lower(" + PLACEHOLDER_USER_ALIAS, UserConstants.EMAIL + ")",
-                SORT_ASCENDING);
+        addSortField("lower(" + PLACEHOLDER_USER_ALIAS, UserConstants.EMAIL + ")", SORT_ASCENDING);
     }
 
     /**
