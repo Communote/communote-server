@@ -21,6 +21,12 @@
 			<groupId>com.communote.plugins.mq</groupId>
 			<artifactId>communote-plugins-mq-service</artifactId>
 			<version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.communote.plugins</groupId>
+                    <artifactId>communote-plugins-core</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.communote.plugins.mq</groupId>
