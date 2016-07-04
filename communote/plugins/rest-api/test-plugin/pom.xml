@@ -7,7 +7,6 @@
         <version>3.4-SNAPSHOT</version>
         <relativePath></relativePath>
     </parent>
-    <groupId>com.communote.rest-api</groupId>
     <artifactId>communote-rest-api-test-plugin</artifactId>
     <name>Communote - Plugins - Rest-Api - Integration Test Data Provider</name>
     <packaging>bundle</packaging>

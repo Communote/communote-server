@@ -9,7 +9,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.communote.rest-api</groupId>
     <artifactId>communote-rest-api-2.4-model</artifactId>
     <name>Communote - Plugins - Rest-Api - 2.4 - Model</name>
     <packaging>jar</packaging>

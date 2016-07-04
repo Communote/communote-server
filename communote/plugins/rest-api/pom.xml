@@ -8,7 +8,6 @@
         <relativePath></relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.communote.server.plugins</groupId>
     <artifactId>communote-rest-api-build</artifactId>
     <packaging>pom</packaging>
     <name>Communote - Plugins - Core - Rest-Api - Build</name>
