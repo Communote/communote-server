@@ -3,8 +3,8 @@ package com.communote.server.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.communote.server.test.CommunoteIntegrationTest;
@@ -32,15 +32,15 @@ public class UserPreferenceServiceTest extends CommunoteIntegrationTest {
         TestUserPreference preferences = userPreferenceService
                 .getPreferences(TestUserPreference.class);
         Assert.assertNotNull(preferences);
-        Assert.assertEquals(TestUserPreference.SOME_DEFAULT_VALUE, preferences.getSomeValue());
+        Assert.assertEquals(preferences.getSomeValue(), TestUserPreference.SOME_DEFAULT_VALUE);
         String newSomeValue = random();
         preferences.setSomeValue(newSomeValue);
         userPreferenceService.storePreferences(preferences);
         preferences = userPreferenceService.getPreferences(TestUserPreference.class);
-        Assert.assertEquals(newSomeValue, preferences.getSomeValue());
+        Assert.assertEquals(preferences.getSomeValue(), newSomeValue);
         userPreferenceService.removePreferences(TestUserPreference.class);
         preferences = userPreferenceService.getPreferences(TestUserPreference.class);
-        Assert.assertEquals(TestUserPreference.SOME_DEFAULT_VALUE, preferences.getSomeValue());
+        Assert.assertEquals(preferences.getSomeValue(), TestUserPreference.SOME_DEFAULT_VALUE);
 
         Map<String, String> preferencesAsMap = new HashMap<String, String>();
         preferencesAsMap.put(TestUserPreference.KEY_SOME_VALUE, newSomeValue);
@@ -48,6 +48,6 @@ public class UserPreferenceServiceTest extends CommunoteIntegrationTest {
         userPreferenceService
         .mergePreferences(TestUserPreference.class.getName(), preferencesAsMap);
         preferences = userPreferenceService.getPreferences(TestUserPreference.class);
-        Assert.assertEquals(newSomeValue, preferences.getSomeValue());
+        Assert.assertEquals(preferences.getSomeValue(), newSomeValue);
     }
 }

@@ -10,10 +10,10 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.testng.Assert;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
@@ -102,13 +102,11 @@ public class WebserviceExtensionPointTest {
 
         communoteWebServiceController.handleRequest(mockRequest, mockResponse);
 
-        Assert.assertEquals(200, mockResponse.getStatus());
+        Assert.assertEquals(mockResponse.getStatus(), 200);
 
         String resultContent = mockResponse.getContentAsString();
         Assert.assertNotNull(resultContent);
-        Assert.assertTrue(
-                resultContent,
-                resultContent.contains("<greeting>Hello " + myName
+        Assert.assertTrue(resultContent.contains("<greeting>Hello " + myName
                         + "! How are you today?</greeting>"));
 
     }

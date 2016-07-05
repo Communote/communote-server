@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.Assert;
 import org.springframework.security.core.Authentication;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -186,12 +186,12 @@ public class ImageManagementTest extends CommunoteIntegrationTest {
     private void assertCorrectImage(Image image, String expectedProviderId, int expectedHashCode,
             boolean expectedIsDefault, boolean expectedIsExternal) throws IOException {
         Assert.assertNotNull(image);
-        Assert.assertEquals(expectedProviderId, image.getProviderId());
-        Assert.assertEquals(expectedIsDefault, image.isDefaultImage());
-        Assert.assertEquals(expectedIsExternal, image.isExternal());
+        Assert.assertEquals(image.getProviderId(), expectedProviderId);
+        Assert.assertEquals(image.isDefaultImage(), expectedIsDefault);
+        Assert.assertEquals(image.isExternal(), expectedIsExternal);
         byte[] imageData = image.getBytes();
         Assert.assertNotNull(imageData);
-        Assert.assertEquals(expectedHashCode, Arrays.hashCode(imageData));
+        Assert.assertEquals(Arrays.hashCode(imageData), expectedHashCode);
     }
 
     private String createVersionString(String imageVersionString, ImageTypeDescriptor imageType) {
@@ -330,9 +330,9 @@ public class ImageManagementTest extends CommunoteIntegrationTest {
                 .toString(), ImageSizeType.LARGE);
         // have no access to the default image of that provider, thus just check that hash-code
         // changed
-        Assert.assertEquals(UserImageProvider.PROVIDER_IDENTIFIER, image.getProviderId());
-        Assert.assertEquals(true, image.isDefaultImage());
-        Assert.assertEquals(false, image.isExternal());
+        Assert.assertEquals(image.getProviderId(), UserImageProvider.PROVIDER_IDENTIFIER);
+        Assert.assertTrue(image.isDefaultImage());
+        Assert.assertFalse(image.isExternal());
         Assert.assertTrue(image.getBytes().length > 0);
         int returnedImageHashCode = Arrays.hashCode(image.getBytes());
         Assert.assertFalse(returnedImageHashCode == externalDefaultImageLargeHashCode);
@@ -601,14 +601,14 @@ public class ImageManagementTest extends CommunoteIntegrationTest {
     @Test
     public void testImageSizeMapping() {
         ImageSize size = imageManagement.getImageSize(testImageType.getName(), ImageSizeType.LARGE);
-        Assert.assertEquals(TEST_IMAGE_SIZE_LARGE.getHeight(), size.getHeight());
-        Assert.assertEquals(TEST_IMAGE_SIZE_LARGE.getWidth(), size.getWidth());
+        Assert.assertEquals(size.getHeight(), TEST_IMAGE_SIZE_LARGE.getHeight());
+        Assert.assertEquals(size.getWidth(), TEST_IMAGE_SIZE_LARGE.getWidth());
         size = imageManagement.getImageSize(testImageType.getName(), ImageSizeType.MEDIUM);
-        Assert.assertEquals(TEST_IMAGE_SIZE_MEDIUM.getHeight(), size.getHeight());
-        Assert.assertEquals(TEST_IMAGE_SIZE_MEDIUM.getWidth(), size.getWidth());
+        Assert.assertEquals(size.getHeight(), TEST_IMAGE_SIZE_MEDIUM.getHeight());
+        Assert.assertEquals(size.getWidth(), TEST_IMAGE_SIZE_MEDIUM.getWidth());
         size = imageManagement.getImageSize(testImageType.getName(), ImageSizeType.SMALL);
-        Assert.assertEquals(TEST_IMAGE_SIZE_SMALL.getHeight(), size.getHeight());
-        Assert.assertEquals(TEST_IMAGE_SIZE_SMALL.getWidth(), size.getWidth());
+        Assert.assertEquals(size.getHeight(), TEST_IMAGE_SIZE_SMALL.getHeight());
+        Assert.assertEquals(size.getWidth(), TEST_IMAGE_SIZE_SMALL.getWidth());
 
         // should be null for unregistered type
         Assert.assertNull(imageManagement.getImageSize(testImageType.getName() + "1",
@@ -637,14 +637,14 @@ public class ImageManagementTest extends CommunoteIntegrationTest {
         imageManagement.registerImageType(typeOverlay);
         // check correct size is returned
         ImageSize size = imageManagement.getImageSize(testImageType.getName(), ImageSizeType.LARGE);
-        Assert.assertEquals(DEFAULT_IMAGE_SIZE.getHeight(), size.getHeight());
-        Assert.assertEquals(DEFAULT_IMAGE_SIZE.getWidth(), size.getWidth());
+        Assert.assertEquals(size.getHeight(), DEFAULT_IMAGE_SIZE.getHeight());
+        Assert.assertEquals(size.getWidth(), DEFAULT_IMAGE_SIZE.getWidth());
         size = imageManagement.getImageSize(testImageType.getName(), ImageSizeType.MEDIUM);
-        Assert.assertEquals(TEST_IMAGE_SIZE_LARGE.getHeight(), size.getHeight());
-        Assert.assertEquals(TEST_IMAGE_SIZE_LARGE.getWidth(), size.getWidth());
+        Assert.assertEquals(size.getHeight(), TEST_IMAGE_SIZE_LARGE.getHeight());
+        Assert.assertEquals(size.getWidth(), TEST_IMAGE_SIZE_LARGE.getWidth());
         size = imageManagement.getImageSize(testImageType.getName(), ImageSizeType.SMALL);
-        Assert.assertEquals(TEST_IMAGE_SIZE_MEDIUM.getHeight(), size.getHeight());
-        Assert.assertEquals(TEST_IMAGE_SIZE_MEDIUM.getWidth(), size.getWidth());
+        Assert.assertEquals(size.getHeight(), TEST_IMAGE_SIZE_MEDIUM.getHeight());
+        Assert.assertEquals(size.getWidth(), TEST_IMAGE_SIZE_MEDIUM.getWidth());
         // check default image
         int overlayDefaultLargeImageHashCode = getHashCodeOfScaledImage(
                 testImageProvider.defaultImage, DEFAULT_IMAGE_SIZE, testImageType);
@@ -680,14 +680,14 @@ public class ImageManagementTest extends CommunoteIntegrationTest {
         // remove image type overlay and check that everything is normal again
         imageManagement.unregisterImageType(typeOverlay);
         size = imageManagement.getImageSize(testImageType.getName(), ImageSizeType.LARGE);
-        Assert.assertEquals(TEST_IMAGE_SIZE_LARGE.getHeight(), size.getHeight());
-        Assert.assertEquals(TEST_IMAGE_SIZE_LARGE.getWidth(), size.getWidth());
+        Assert.assertEquals(size.getHeight(), TEST_IMAGE_SIZE_LARGE.getHeight());
+        Assert.assertEquals(size.getWidth(), TEST_IMAGE_SIZE_LARGE.getWidth());
         size = imageManagement.getImageSize(testImageType.getName(), ImageSizeType.MEDIUM);
-        Assert.assertEquals(TEST_IMAGE_SIZE_MEDIUM.getHeight(), size.getHeight());
-        Assert.assertEquals(TEST_IMAGE_SIZE_MEDIUM.getWidth(), size.getWidth());
+        Assert.assertEquals(size.getHeight(), TEST_IMAGE_SIZE_MEDIUM.getHeight());
+        Assert.assertEquals(size.getWidth(), TEST_IMAGE_SIZE_MEDIUM.getWidth());
         size = imageManagement.getImageSize(testImageType.getName(), ImageSizeType.SMALL);
-        Assert.assertEquals(TEST_IMAGE_SIZE_SMALL.getHeight(), size.getHeight());
-        Assert.assertEquals(TEST_IMAGE_SIZE_SMALL.getWidth(), size.getWidth());
+        Assert.assertEquals(size.getHeight(), TEST_IMAGE_SIZE_SMALL.getHeight());
+        Assert.assertEquals(size.getWidth(), TEST_IMAGE_SIZE_SMALL.getWidth());
         // just test a control sample
         image = imageManagement.getImage(testImageType.getName(), imageId1, ImageSizeType.MEDIUM);
         assertCorrectImage(image, testImageProvider.getIdentifier(), defaultMediumImageHashCode,

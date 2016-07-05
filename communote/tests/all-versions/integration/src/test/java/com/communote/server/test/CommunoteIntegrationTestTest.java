@@ -1,17 +1,15 @@
 package com.communote.server.test;
 
-import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.communote.server.core.query.QueryManagement;
 import com.communote.server.persistence.blog.NoteDao;
-import com.communote.server.test.CommunoteIntegrationTest;
-
 
 /**
  * A test for {@link CommunoteIntegrationTest}
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class CommunoteIntegrationTestTest extends CommunoteIntegrationTest {

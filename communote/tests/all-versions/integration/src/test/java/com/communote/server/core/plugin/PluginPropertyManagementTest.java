@@ -3,14 +3,11 @@ package com.communote.server.core.plugin;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.communote.server.api.ServiceLocator;
-import com.communote.server.core.plugin.PluginPropertyManagement;
-import com.communote.server.core.plugin.PluginPropertyManagementException;
 import com.communote.server.test.CommunoteIntegrationTest;
 
 /**
@@ -40,13 +37,13 @@ public class PluginPropertyManagementTest extends CommunoteIntegrationTest {
 
         Map<String, String> clientProperties = pluginPropertyManagement
                 .getAllClientProperties(symbolicName);
-        Assert.assertEquals(3, clientProperties.size());
+        Assert.assertEquals(clientProperties.size(), 3);
         for (Entry<String, String> entry : clientProperties.entrySet()) {
             Assert.assertTrue(entry.getKey().startsWith("client"));
         }
         Map<String, String> applicationProperties = pluginPropertyManagement
                 .getAllApplicationProperties(symbolicName);
-        Assert.assertEquals(3, applicationProperties.size());
+        Assert.assertEquals(applicationProperties.size(), 3);
         for (Entry<String, String> entry : applicationProperties.entrySet()) {
             Assert.assertTrue(entry.getKey().startsWith("application"));
         }
@@ -179,6 +176,6 @@ public class PluginPropertyManagementTest extends CommunoteIntegrationTest {
         pluginPropertyManagement.setClientPropertyAsObject(symbolicName, key, value);
         Property value2 = pluginPropertyManagement.getClientPropertyAsObject(symbolicName, key,
                 Property.class);
-        Assert.assertEquals(value.getValue(), value2.getValue());
+        Assert.assertEquals(value2.getValue(), value.getValue());
     }
 }

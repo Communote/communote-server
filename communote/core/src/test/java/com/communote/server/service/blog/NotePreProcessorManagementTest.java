@@ -4,8 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.communote.server.api.core.note.NoteStoringTO;
@@ -163,13 +162,13 @@ public class NotePreProcessorManagementTest {
         noteStoringTO.setContent("Test");
         noteStoringTO.setPublish(true);
         notePreProcessorManagement.process(noteStoringTO);
-        Assert.assertEquals(6, callOrder.size());
-        Assert.assertEquals(highPriorityEditable.getOrder(), (int) callOrder.get(0));
-        Assert.assertEquals(midPriorityEditable.getOrder(), (int) callOrder.get(1));
-        Assert.assertEquals(lowPriorityEditable.getOrder(), (int) callOrder.get(2));
-        Assert.assertEquals(highPriorityImmutable.getOrder(), (int) callOrder.get(3));
-        Assert.assertEquals(midPriorityImmutable.getOrder(), (int) callOrder.get(4));
-        Assert.assertEquals(lowPriorityImmutable.getOrder(), (int) callOrder.get(5));
+        Assert.assertEquals(callOrder.size(), 6);
+        Assert.assertEquals((int) callOrder.get(0), highPriorityEditable.getOrder());
+        Assert.assertEquals((int) callOrder.get(1), midPriorityEditable.getOrder());
+        Assert.assertEquals((int) callOrder.get(2), lowPriorityEditable.getOrder());
+        Assert.assertEquals((int) callOrder.get(3), highPriorityImmutable.getOrder());
+        Assert.assertEquals((int) callOrder.get(4), midPriorityImmutable.getOrder());
+        Assert.assertEquals((int) callOrder.get(5), lowPriorityImmutable.getOrder());
     }
 
 }

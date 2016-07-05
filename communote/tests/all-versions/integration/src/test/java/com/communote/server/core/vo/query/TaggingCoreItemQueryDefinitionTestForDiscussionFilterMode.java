@@ -1,8 +1,7 @@
 package com.communote.server.core.vo.query;
 
-import junit.framework.Assert;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -69,7 +68,7 @@ CommunoteIntegrationTest {
     @Test
     public void testAllDiscussionFilterMode() {
         PageableList<SimpleNoteListItem> result = getNotes(DiscussionFilterMode.ALL);
-        Assert.assertEquals(3, result.size());
+        Assert.assertEquals(result.size(), 3);
     }
 
     /**
@@ -78,10 +77,10 @@ CommunoteIntegrationTest {
     @Test
     public void testIsDiscussionFilterMode() {
         PageableList<SimpleNoteListItem> result = getNotes(DiscussionFilterMode.IS_DISCUSSION);
-        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(result.size(), 2);
         // sorted by date and ID (descending)
-        Assert.assertEquals(disussionChildNoteId, result.get(0).getId());
-        Assert.assertEquals(disussionParentNoteId, result.get(1).getId());
+        Assert.assertEquals(result.get(0).getId(), disussionChildNoteId);
+        Assert.assertEquals(result.get(1).getId(), disussionParentNoteId);
     }
 
     /**
@@ -90,8 +89,8 @@ CommunoteIntegrationTest {
     @Test
     public void testIsNoDiscussionFilterMode() {
         PageableList<SimpleNoteListItem> result = getNotes(DiscussionFilterMode.IS_NO_DISCUSSION);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(noDisussionNoteId, result.get(0).getId());
+        Assert.assertEquals(result.size(), 1);
+        Assert.assertEquals(result.get(0).getId(), noDisussionNoteId);
     }
 
     /**
@@ -100,8 +99,8 @@ CommunoteIntegrationTest {
     @Test
     public void testIsRootOfDiscussionFilterMode() {
         PageableList<SimpleNoteListItem> result = getNotes(DiscussionFilterMode.IS_DISCUSSION_ROOT);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(disussionParentNoteId, result.get(0).getId());
+        Assert.assertEquals(result.size(), 1);
+        Assert.assertEquals(result.get(0).getId(), disussionParentNoteId);
     }
 
 }

@@ -2,8 +2,7 @@ package com.communote.service.exception;
 
 import java.util.UUID;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.communote.server.core.exception.ErrorCodes;
@@ -33,19 +32,19 @@ public class ExceptionMapperManagementTest {
         management.addExceptionMapper(exceptionMapper);
         // Direct mapping
         Status status = management.mapException(new IllegalArgumentException());
-        Assert.assertEquals(errorCode, status.getErrorCode());
+        Assert.assertEquals(status.getErrorCode(), errorCode);
         // Inherited mapping
         status = management.mapException(new MyIllegalArgumentException());
-        Assert.assertEquals(errorCode, status.getErrorCode());
+        Assert.assertEquals(status.getErrorCode(), errorCode);
         // No mapping (fallback)
         status = management.mapException(new NullPointerException());
-        Assert.assertEquals(ErrorCodes.INTERNAL_ERROR, status.getErrorCode());
+        Assert.assertEquals(status.getErrorCode(), ErrorCodes.INTERNAL_ERROR);
 
         // Remove mapper -> Unknown
         management.removeExceptionMapper(exceptionMapper);
         status = management.mapException(new MyIllegalArgumentException());
-        Assert.assertEquals(ErrorCodes.INTERNAL_ERROR, status.getErrorCode());
+        Assert.assertEquals(status.getErrorCode(), ErrorCodes.INTERNAL_ERROR);
         status = management.mapException(new IllegalArgumentException());
-        Assert.assertEquals(ErrorCodes.INTERNAL_ERROR, status.getErrorCode());
+        Assert.assertEquals(status.getErrorCode(), ErrorCodes.INTERNAL_ERROR);
     }
 }

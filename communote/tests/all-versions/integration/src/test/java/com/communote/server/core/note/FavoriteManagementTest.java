@@ -3,8 +3,7 @@ package com.communote.server.core.note;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -89,7 +88,7 @@ public class FavoriteManagementTest extends CommunoteIntegrationTest {
 
             AuthenticationHelper.setInternalSystemToSecurityContext();
             int actualFaved = favoriteManagement.getNumberOfFavorites(noteId);
-            Assert.assertEquals("Run: " + i, faved, actualFaved);
+            Assert.assertEquals(actualFaved, faved, "Run: " + i);
             AuthenticationHelper.removeAuthentication();
         }
 

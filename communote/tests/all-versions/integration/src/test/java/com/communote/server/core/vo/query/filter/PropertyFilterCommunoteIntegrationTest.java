@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.apache.commons.lang.StringUtils;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.communote.common.util.PageableList;
@@ -71,7 +70,7 @@ public class PropertyFilterCommunoteIntegrationTest extends CommunoteIntegration
 
         // No property filtering
         PageableList<SimpleNoteListItem> result = queryManagement.query(query, queryInstance);
-        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(result.size(), 2);
 
         // [0:Property, 1:Group, 2:Key, 3:Value, 4:MatchMode, 5:Negate (Optional)]
         // Filtering for the property
@@ -81,8 +80,8 @@ public class PropertyFilterCommunoteIntegrationTest extends CommunoteIntegration
                 "[\"" + StringUtils.join(propertyFilter, "\",\"") + "\"]");
         configurator.configure(parameters, queryInstance);
         result = queryManagement.query(query, queryInstance);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(noteWithPropertyId, result.get(0).getId());
+        Assert.assertEquals(result.size(), 1);
+        Assert.assertEquals(result.get(0).getId(), noteWithPropertyId);
 
         // Filtering for the property exclusion
         queryInstance.getPropertyFilters().clear();
@@ -92,7 +91,7 @@ public class PropertyFilterCommunoteIntegrationTest extends CommunoteIntegration
                 "[\"" + StringUtils.join(propertyFilter, "\",\"") + "\"]");
         configurator.configure(parameters, queryInstance);
         result = queryManagement.query(query, queryInstance);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(noteWithoutPropertyId, result.get(0).getId());
+        Assert.assertEquals(result.size(), 1);
+        Assert.assertEquals(result.get(0).getId(), noteWithoutPropertyId);
     }
 }

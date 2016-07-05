@@ -489,7 +489,7 @@ public class PropertyManagementTest extends CommunoteIntegrationTest {
                 .load(property.getId());
         Assert.assertEquals(updatedProperty.getId(), property.getId());
         Assert.assertEquals(updatedProperty.getPropertyValue(), newPropertyValue);
-        Assert.assertNotSame(updatedProperty.getLastModificationDate(),
+        Assert.assertNotEquals(updatedProperty.getLastModificationDate(),
                 property.getLastModificationDate());
 
         // Update property
@@ -545,7 +545,7 @@ public class PropertyManagementTest extends CommunoteIntegrationTest {
                 .load(propertyId);
         Assert.assertEquals(updatedPropertyId, propertyId);
         Assert.assertEquals(updatedProperty.getPropertyValue(), newPropertyValue);
-        Assert.assertNotSame(updatedProperty.getLastModificationDate(),
+        Assert.assertNotEquals(updatedProperty.getLastModificationDate(),
                 property.getLastModificationDate());
 
         propertyManagement.setObjectProperty(PropertyType.UserNoteProperty, noteId, keyGroup,

@@ -3,9 +3,8 @@ package com.communote.server.core.note;
 import java.util.Date;
 import java.util.Locale;
 
-import junit.framework.Assert;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -170,12 +169,12 @@ public class DiscussionViewDirectMessageTest extends CommunoteIntegrationTest {
         PageableList<DiscussionNoteData> notes = getNotes(topic, 5, noteE1, noteDao.load(noteE1)
                 .getCreationDate());
 
-        Assert.assertEquals(5, notes.size());
-        Assert.assertEquals(noteD1, notes.get(0).getId());
-        Assert.assertEquals(noteF1, notes.get(1).getId());
-        Assert.assertEquals(noteC1, notes.get(2).getId());
-        Assert.assertEquals(noteB1, notes.get(3).getId());
-        Assert.assertEquals(noteG1, notes.get(4).getId());
+        Assert.assertEquals(notes.size(), 5);
+        Assert.assertEquals(notes.get(0).getId(), noteD1);
+        Assert.assertEquals(notes.get(1).getId(), noteF1);
+        Assert.assertEquals(notes.get(2).getId(), noteC1);
+        Assert.assertEquals(notes.get(3).getId(), noteB1);
+        Assert.assertEquals(notes.get(4).getId(), noteG1);
     }
 
     /**
@@ -277,10 +276,10 @@ public class DiscussionViewDirectMessageTest extends CommunoteIntegrationTest {
         PageableList<DiscussionNoteData> notes = getNotes(topic, 5, noteE1, noteDao.load(noteE1)
                 .getCreationDate());
 
-        Assert.assertEquals(3, notes.size());
-        Assert.assertEquals(noteX1, notes.get(0).getId());
-        Assert.assertEquals(noteY1, notes.get(1).getId());
-        Assert.assertEquals(noteZ1, notes.get(2).getId());
+        Assert.assertEquals(notes.size(), 3);
+        Assert.assertEquals(notes.get(0).getId(), noteX1);
+        Assert.assertEquals(notes.get(1).getId(), noteY1);
+        Assert.assertEquals(notes.get(2).getId(), noteZ1);
     }
 
     /**
@@ -351,14 +350,14 @@ public class DiscussionViewDirectMessageTest extends CommunoteIntegrationTest {
         AuthenticationTestUtils.setSecurityContext(user2);
         PageableList<DiscussionNoteData> notes = getNotes(topic, 10, null, null);
 
-        Assert.assertEquals(7, notes.size());
-        Assert.assertEquals(noteA1, notes.get(0).getId());
-        Assert.assertEquals(noteB1, notes.get(1).getId());
-        Assert.assertEquals(noteG1, notes.get(2).getId());
-        Assert.assertEquals(noteF1, notes.get(3).getId());
-        Assert.assertEquals(noteE1, notes.get(4).getId());
-        Assert.assertEquals(noteD1, notes.get(5).getId());
-        Assert.assertEquals(noteC1, notes.get(6).getId());
+        Assert.assertEquals(notes.size(), 7);
+        Assert.assertEquals(notes.get(0).getId(), noteA1);
+        Assert.assertEquals(notes.get(1).getId(), noteB1);
+        Assert.assertEquals(notes.get(2).getId(), noteG1);
+        Assert.assertEquals(notes.get(3).getId(), noteF1);
+        Assert.assertEquals(notes.get(4).getId(), noteE1);
+        Assert.assertEquals(notes.get(5).getId(), noteD1);
+        Assert.assertEquals(notes.get(6).getId(), noteC1);
     }
 
     /**
@@ -464,13 +463,13 @@ public class DiscussionViewDirectMessageTest extends CommunoteIntegrationTest {
 
         AuthenticationTestUtils.setSecurityContext(user1);
         PageableList<DiscussionNoteData> notes = getNotes(topic, 10, null, null);
-        Assert.assertEquals(7, notes.size());
-        Assert.assertEquals(noteC1, notes.get(0).getId());
-        Assert.assertEquals(noteA1, notes.get(1).getId());
-        Assert.assertEquals(noteB1, notes.get(2).getId());
-        Assert.assertEquals(noteG1, notes.get(3).getId());
-        Assert.assertEquals(noteF1, notes.get(4).getId());
-        Assert.assertEquals(noteE1, notes.get(5).getId());
-        Assert.assertEquals(noteD1, notes.get(6).getId());
+        Assert.assertEquals(notes.size(), 7);
+        Assert.assertEquals(notes.get(0).getId(), noteC1);
+        Assert.assertEquals(notes.get(1).getId(), noteA1);
+        Assert.assertEquals(notes.get(2).getId(), noteB1);
+        Assert.assertEquals(notes.get(3).getId(), noteG1);
+        Assert.assertEquals(notes.get(4).getId(), noteF1);
+        Assert.assertEquals(notes.get(5).getId(), noteE1);
+        Assert.assertEquals(notes.get(6).getId(), noteD1);
     }
 }

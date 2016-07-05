@@ -2,8 +2,9 @@ package com.communote.server.persistence.user.group;
 
 import java.util.UUID;
 
-import junit.framework.Assert;
 
+
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.communote.server.api.ServiceLocator;
