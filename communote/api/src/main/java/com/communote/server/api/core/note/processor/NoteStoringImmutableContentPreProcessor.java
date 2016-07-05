@@ -5,13 +5,13 @@ import com.communote.server.api.core.note.NoteManagementAuthorizationException;
 import com.communote.server.api.core.note.NoteStoringTO;
 
 /**
- * A preprocessor which is invoked before storing a note that should be published. This kind of
- * preprocessor is not allowed to edit the content of the note, but all the other members of the TO
- * can be modified. These preprocessors are called before the those that can edit the content.
- * 
- * 
+ * A preprocessor which is invoked before storing a note. This kind of preprocessor is not allowed
+ * to edit the content of the note, but all the other members of the TO can be modified. These
+ * preprocessors are called before the those that can edit the content.
+ *
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public interface NoteStoringImmutableContentPreProcessor extends Orderable {
     /**
@@ -21,7 +21,7 @@ public interface NoteStoringImmutableContentPreProcessor extends Orderable {
     public static final int DEFAULT_ORDER = 1000;
 
     /**
-     * 
+     *
      * @return the order value which is interpreted as the priority of the processor. The higher the
      *         priority, the earlier this extension will be called.
      */
@@ -36,7 +36,7 @@ public interface NoteStoringImmutableContentPreProcessor extends Orderable {
 
     /**
      * Invokes the processor <b>before</b> the note is stored.
-     * 
+     *
      * @param noteStoringTO
      *            The note to work on.
      * @return The altered NoteStoringTO.

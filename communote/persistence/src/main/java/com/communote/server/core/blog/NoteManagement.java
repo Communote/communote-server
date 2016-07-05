@@ -72,8 +72,8 @@ public interface NoteManagement {
      */
     public NoteModificationResult createNote(NoteStoringTO noteStoringTO,
             Set<String> additionalBlogNameIds, FilterNoteProperty[] autosaveFilterProperties)
-                    throws BlogNotFoundException, NoteManagementAuthorizationException,
-                    NoteStoringPreProcessorException;
+            throws BlogNotFoundException, NoteManagementAuthorizationException,
+            NoteStoringPreProcessorException;
 
     /**
      * Deletes an autosave identified by the passed ID. In case there is no autosaved note with this
@@ -116,19 +116,21 @@ public interface NoteManagement {
     public Set<Long> deleteNotesOfUser(Long userId)
             throws com.communote.server.api.core.security.AuthorizationException;
 
-    /**
-     * Returns an autosave. The parameters noteId and parentNoteId can be used to retrieve an
-     * autosave for an edit or answer operation.
+    /***
+     * Return an autosave of the current user. The parameters noteId and parentNoteId can be used to
+     * retrieve an autosave for an edit operation or a comment.
      *
      * @param noteId
-     *            The note id, can be null.
+     *            the ID of a note to get the autosave of the edit operation of this note. Can be
+     *            null.
      * @param parentNoteId
-     *            The parents note id, can be null.
+     *            the ID of a parent note to get the autosave of a comment to this note. Can be
+     *            null.
      * @param propertyFilters
-     *            Filters for finding an autosave, can be null.
+     *            filters for finding an autosave. Can be null.
      * @param locale
      *            the locale to use when filling localizable content of the note like tags
-     * @return The autosave or null if not found.
+     * @return the autosave or null if there is none
      */
     public AutosaveNoteData getAutosave(Long noteId, Long parentNoteId,
             FilterNoteProperty[] propertyFilters, Locale locale);
@@ -209,8 +211,8 @@ public interface NoteManagement {
      */
     public DiscussionNoteData getNoteWithComments(Long noteId,
             QueryResultConverter<SimpleNoteListItem, DiscussionNoteData> converter)
-                    throws NoteNotFoundException,
-                    com.communote.server.api.core.security.AuthorizationException;
+            throws NoteNotFoundException,
+            com.communote.server.api.core.security.AuthorizationException;
 
     /**
      * Returns the number of notes in a discussion. Notes the current user is not allowed to read,
@@ -305,7 +307,7 @@ public interface NoteManagement {
      */
     public NoteModificationResult updateNote(NoteStoringTO noteStoringTO, Long noteId,
             java.util.Set<String> additionalBlogNameIds, boolean resendNotifications)
-                    throws BlogNotFoundException, NoteNotFoundException,
-                    NoteManagementAuthorizationException, NoteStoringPreProcessorException;
+            throws BlogNotFoundException, NoteNotFoundException,
+            NoteManagementAuthorizationException, NoteStoringPreProcessorException;
 
 }

@@ -192,18 +192,20 @@ public class NoteService {
     }
 
     /**
-     * Returns an autosave. The parameters noteId and parentNoteId can be used to retrieve an
-     * autosave for an edit or answer operation.
+     * Return an autosave of the current user. The parameters noteId and parentNoteId can be used to
+     * retrieve an autosave for an edit operation or a comment.
      *
      * @param noteId
-     *            The note id, can be null.
+     *            the ID of a note to get the autosave of the edit operation of this note. Can be
+     *            null.
      * @param parentNoteId
-     *            The parents note id, can be null.
+     *            the ID of a parent note to get the autosave of a comment to this note. Can be
+     *            null.
      * @param propertyFilters
-     *            Filters for finding an autosave, can be null.
+     *            filters for finding an autosave. Can be null.
      * @param locale
      *            the locale to use when filling localizable content of the note like tags
-     * @return The autosave or null if not found.
+     * @return the autosave or null if there is none
      */
     public AutosaveNoteData getAutosave(Long noteId, Long parentNoteId,
             FilterNoteProperty[] propertyFilters, Locale locale) {
@@ -350,8 +352,7 @@ public class NoteService {
      */
     private void moveIfInconsistent(Long discussionId, Long blogId)
             throws NoteManagementAuthorizationException {
-        if (ServiceLocator.findService(NoteDao.class)
-                .hasInconsistentTopics(discussionId, blogId)) {
+        if (ServiceLocator.findService(NoteDao.class).hasInconsistentTopics(discussionId, blogId)) {
             noteManagement.moveToTopic(discussionId, blogId);
             noteManagement.updateFollowableItems(discussionId, true);
         }
@@ -451,8 +452,7 @@ public class NoteService {
             return result;
         }
         NoteModificationResult result = noteManagement.updateNote(noteStoringTO, noteId,
-                additionalBlogNameIds,
-                resendNotifications);
+                additionalBlogNameIds, resendNotifications);
         if (noteStoringTO.isPublish() && result.getStatus().equals(NoteModificationStatus.SUCCESS)) {
             Note editedNote = getNote(result.getNoteId(), new IdentityConverter<Note>());
             Long discussionId = editedNote.getDiscussionId();
