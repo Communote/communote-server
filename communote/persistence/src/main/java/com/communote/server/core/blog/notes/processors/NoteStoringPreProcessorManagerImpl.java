@@ -83,6 +83,30 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
         runAfterPreProcessors.add(new AssertNoteContentNotePreProcessor());
     }
 
+    @Override
+    public void addProcessor(NoteStoringEditableContentPreProcessor notePreProcessor) {
+        // thread-safe add
+        synchronized (noteContentPreProcessors) {
+            ArrayList<NoteStoringEditableContentPreProcessor> newProcessors = new ArrayList<NoteStoringEditableContentPreProcessor>(
+                    noteContentPreProcessors);
+            newProcessors.add(notePreProcessor);
+            Collections.sort(newProcessors, notePreProcessorComparator);
+            noteContentPreProcessors = newProcessors;
+        }
+    }
+
+    @Override
+    public void addProcessor(NoteStoringImmutableContentPreProcessor notePreProcessor) {
+        // thread-safe add
+        synchronized (notePreProcessors) {
+            ArrayList<NoteStoringImmutableContentPreProcessor> newProcessors = new ArrayList<NoteStoringImmutableContentPreProcessor>(
+                    notePreProcessors);
+            newProcessors.add(notePreProcessor);
+            Collections.sort(newProcessors, notePreProcessorComparator);
+            notePreProcessors = newProcessors;
+        }
+    }
+
     /**
      * Invoke the provided preprocessors and take care of the autosave status of the note.
      *
@@ -98,7 +122,7 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
      */
     private NoteStoringTO invokeEditableContentProcessors(
             List<NoteStoringEditableContentPreProcessor> preProcessors, NoteStoringTO noteStoringTO)
-                    throws NoteManagementAuthorizationException, NoteStoringPreProcessorException {
+            throws NoteManagementAuthorizationException, NoteStoringPreProcessorException {
         for (NoteStoringEditableContentPreProcessor notePreProcessor : preProcessors) {
             if (noteStoringTO.isPublish() || notePreProcessor.isProcessAutosave()) {
                 noteStoringTO = notePreProcessor.process(noteStoringTO);
@@ -122,7 +146,7 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
      */
     private NoteStoringTO invokeImmutableContentProcessors(
             List<NoteStoringImmutableContentPreProcessor> preProcessors, NoteStoringTO noteStoringTO)
-                    throws NoteManagementAuthorizationException, NoteStoringPreProcessorException {
+            throws NoteManagementAuthorizationException, NoteStoringPreProcessorException {
         for (NoteStoringImmutableContentPreProcessor notePreProcessor : preProcessors) {
             if (noteStoringTO.isPublish() || notePreProcessor.isProcessAutosave()) {
                 noteStoringTO = notePreProcessor.process(noteStoringTO);
@@ -141,16 +165,9 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
                 propertyManagement, resourceStoringManagement));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.communote.server.core.blog.notes.processors.NoteStoringPreProcessorManager#process
-     * (com.communote.server.api.core.note.NoteStoringTO)
-     */
     @Override
     public void process(NoteStoringTO noteStoringTO) throws NoteStoringPreProcessorException,
-    NoteManagementAuthorizationException {
+            NoteManagementAuthorizationException {
         // do some normalizations
         // pre-processors usually assume that the content is not null, also it can be (e.g. template
         // notes). Hint: that the content is not blank will be checked by one of the
@@ -168,51 +185,6 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
         noteStoringTO.setContent(savedContent);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.communote.server.core.blog.notes.processors.NoteStoringPreProcessorManager#
-     * registerPreProcessor
-     * (com.communote.server.core.blog.notes.processors.NoteStoringEditableContentPreProcessor)
-     */
-    @Override
-    public void addProcessor(NoteStoringEditableContentPreProcessor notePreProcessor) {
-        // thread-safe add
-        synchronized (noteContentPreProcessors) {
-            ArrayList<NoteStoringEditableContentPreProcessor> newProcessors = new ArrayList<NoteStoringEditableContentPreProcessor>(
-                    noteContentPreProcessors);
-            newProcessors.add(notePreProcessor);
-            Collections.sort(newProcessors, notePreProcessorComparator);
-            noteContentPreProcessors = newProcessors;
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.communote.server.core.blog.notes.processors.NoteStoringPreProcessorManager#
-     * registerPreProcessor
-     * (com.communote.server.core.blog.notes.processors.NoteStoringImmutableContentPreProcessor)
-     */
-    @Override
-    public void addProcessor(NoteStoringImmutableContentPreProcessor notePreProcessor) {
-        // thread-safe add
-        synchronized (notePreProcessors) {
-            ArrayList<NoteStoringImmutableContentPreProcessor> newProcessors = new ArrayList<NoteStoringImmutableContentPreProcessor>(
-                    notePreProcessors);
-            newProcessors.add(notePreProcessor);
-            Collections.sort(newProcessors, notePreProcessorComparator);
-            notePreProcessors = newProcessors;
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.communote.server.core.blog.notes.processors.NoteStoringPreProcessorManager#
-     * removePreProcessor
-     * (com.communote.server.core.blog.notes.processors.NoteStoringEditableContentPreProcessor)
-     */
     @Override
     public void removeProcessor(NoteStoringEditableContentPreProcessor notePreProcessor) {
         synchronized (noteContentPreProcessors) {
@@ -225,7 +197,7 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.communote.server.core.blog.notes.processors.NoteStoringPreProcessorManager#
      * removePreProcessor
      * (com.communote.server.core.blog.notes.processors.NoteStoringImmutableContentPreProcessor)

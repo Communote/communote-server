@@ -17,34 +17,27 @@ import com.communote.server.core.vo.blog.DiscussionNoteData;
 import com.communote.server.core.vo.blog.NoteModificationResult;
 import com.communote.server.core.vo.query.QueryResultConverter;
 import com.communote.server.persistence.blog.CreateBlogPostHelper;
-import com.communote.server.persistence.blog.FilterNoteProperty;
 
 /**
  * <p>
  * Spring Service base class for <code>NoteManagement</code>, provides access to all services and
  * entities referenced by this service.
  * </p>
- * 
+ *
  * @see com.communote.server.service.NoteService
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 @Transactional(propagation = Propagation.REQUIRED)
 public abstract class NoteManagementBase implements NoteManagement {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public NoteModificationResult createNote(
-            NoteStoringTO noteStoringTO, Set<String> additionalBlogNameIds,
-            FilterNoteProperty[] autosaveFilterProperties)
-            throws BlogNotFoundException, NoteManagementAuthorizationException,
-            NoteStoringPreProcessorException {
+    public NoteModificationResult createNote(NoteStoringTO noteStoringTO,
+            Set<String> additionalBlogNameIds) throws BlogNotFoundException,
+            NoteManagementAuthorizationException, NoteStoringPreProcessorException {
         if (noteStoringTO == null) {
-            throw new IllegalArgumentException(
-                    "NoteManagement.createNote("
-                            + "NoteStoringTO noteStoringTO, java.util.Set<String> additionalBlogNameIds)"
-                            + " - 'noteStoringTO' can not be null");
+            throw new IllegalArgumentException("NoteManagement.createNote("
+                    + "NoteStoringTO noteStoringTO, java.util.Set<String> additionalBlogNameIds)"
+                    + " - 'noteStoringTO' can not be null");
         }
         if (noteStoringTO.getCreatorId() == null) {
             throw new IllegalArgumentException(
@@ -65,8 +58,7 @@ public abstract class NoteManagementBase implements NoteManagement {
             CreateBlogPostHelper.setDefaultFailLevel(noteStoringTO);
         }
         try {
-            return this.handleCreateNote(noteStoringTO, additionalBlogNameIds,
-                    autosaveFilterProperties);
+            return this.handleCreateNote(noteStoringTO, additionalBlogNameIds);
         } catch (RuntimeException rt) {
             throw new NoteManagementException(
                     "Error performing 'NoteManagement.createNote(NoteStoringTO noteStoringTO, java.util.Set<String> additionalBlogNameIds)' --> "
@@ -87,8 +79,7 @@ public abstract class NoteManagementBase implements NoteManagement {
             this.handleDeleteAutosave(noteId);
         } catch (RuntimeException rt) {
             throw new NoteManagementException(
-                    "Error performing 'NoteManagement.deleteAutosave(Long noteId)' --> "
-                            + rt, rt);
+                    "Error performing 'NoteManagement.deleteAutosave(Long noteId)' --> " + rt, rt);
         }
     }
 
@@ -124,8 +115,8 @@ public abstract class NoteManagementBase implements NoteManagement {
             return handleDeleteNotesOfUser(userId);
         } catch (RuntimeException rt) {
             throw new NoteManagementException(
-                    "Error performing 'NoteManagement.deleteNotesOfUser(Long userId)' --> "
-                            + rt, rt);
+                    "Error performing 'NoteManagement.deleteNotesOfUser(Long userId)' --> " + rt,
+                    rt);
         }
     }
 
@@ -156,8 +147,7 @@ public abstract class NoteManagementBase implements NoteManagement {
             return this.handleGetDiscussionId(noteId);
         } catch (RuntimeException rt) {
             throw new NoteManagementException(
-                    "Error performing 'NoteManagement.getNoteById(Long noteId)' --> "
-                            + rt, rt);
+                    "Error performing 'NoteManagement.getNoteById(Long noteId)' --> " + rt, rt);
         }
     }
 
@@ -208,15 +198,15 @@ public abstract class NoteManagementBase implements NoteManagement {
             return this.handleGetNumberOfReplies(noteId);
         } catch (RuntimeException rt) {
             throw new NoteManagementException(
-                    "Error performing 'NoteManagement.getNumberOfReplies(Long noteId)' --> "
-                            + rt, rt);
+                    "Error performing 'NoteManagement.getNumberOfReplies(Long noteId)' --> " + rt,
+                    rt);
         }
     }
 
     /**
      * Gets the current <code>principal</code> if one has been set, otherwise returns
      * <code>null</code>.
-     * 
+     *
      * @return the current principal
      */
     protected java.security.Principal getPrincipal() {
@@ -224,13 +214,11 @@ public abstract class NoteManagementBase implements NoteManagement {
     }
 
     /**
-     * Performs the core logic for {@link
-     * #createNote(NoteStoringTO, java.util.Set<String>)}
+     * Performs the core logic for {@link #createNote(NoteStoringTO, java.util.Set<String>)}
      */
     protected abstract com.communote.server.core.vo.blog.NoteModificationResult handleCreateNote(
             com.communote.server.api.core.note.NoteStoringTO noteStoringTO,
-            java.util.Set<String> additionalBlogNameIds,
-            FilterNoteProperty[] autosaveFilterProperties)
+            java.util.Set<String> additionalBlogNameIds)
             throws com.communote.server.api.core.blog.BlogNotFoundException,
             NoteManagementAuthorizationException,
             com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
@@ -245,8 +233,7 @@ public abstract class NoteManagementBase implements NoteManagement {
      * Performs the core logic for {@link #deleteNote(Long, boolean, boolean)}
      */
     protected abstract void handleDeleteNote(Long noteId, boolean deleteSystemPosts,
-            boolean clientManagerCanDelete)
-            throws NoteManagementAuthorizationException;
+            boolean clientManagerCanDelete) throws NoteManagementAuthorizationException;
 
     /**
      * Performs the core logic for {@link #deleteNotesOfUser(Long)}
@@ -256,10 +243,10 @@ public abstract class NoteManagementBase implements NoteManagement {
 
     /**
      * Performs the core logic for {@link #getCommentsOfDiscussion(Long)}
-     * 
+     *
      * @param noteId
      *            the ID of the note
-     * 
+     *
      * @return the notes
      * @throws NoteNotFoundException
      *             in case the note does not exists
@@ -269,7 +256,7 @@ public abstract class NoteManagementBase implements NoteManagement {
 
     /**
      * Implementation of {@link #getDiscussionId(Long)}
-     * 
+     *
      * @param noteId
      *            the ID of the note for which the discussion ID should be returned
      * @return the ID of the discussion
@@ -300,7 +287,7 @@ public abstract class NoteManagementBase implements NoteManagement {
 
     /**
      * Performs the core logic for {@link #getNumberOfNotesInDiscussion(Long)}
-     * 
+     *
      * @param noteId
      *            the ID of the note
      * @return the number notes
@@ -320,9 +307,8 @@ public abstract class NoteManagementBase implements NoteManagement {
      * {@inheritDoc}
      */
     protected abstract com.communote.server.core.vo.blog.NoteModificationResult handleUpdateNote(
-            com.communote.server.api.core.note.NoteStoringTO noteStoringTO,
-            Long noteId, java.util.Set<String> additionalBlogNameIds,
-            boolean resendNotifications)
+            com.communote.server.api.core.note.NoteStoringTO noteStoringTO, Long noteId,
+            java.util.Set<String> additionalBlogNameIds, boolean resendNotifications)
             throws com.communote.server.core.blog.NoteNotFoundException,
             NoteManagementAuthorizationException,
             com.communote.server.api.core.note.processor.NoteStoringPreProcessorException,
@@ -333,9 +319,8 @@ public abstract class NoteManagementBase implements NoteManagement {
      */
     @Override
     public com.communote.server.core.vo.blog.NoteModificationResult updateNote(
-            com.communote.server.api.core.note.NoteStoringTO noteStoringTO,
-            Long noteId, java.util.Set<String> additionalBlogNameIds,
-            boolean resendNotifications)
+            com.communote.server.api.core.note.NoteStoringTO noteStoringTO, Long noteId,
+            java.util.Set<String> additionalBlogNameIds, boolean resendNotifications)
             throws com.communote.server.core.blog.NoteNotFoundException,
             NoteManagementAuthorizationException,
             com.communote.server.api.core.note.processor.NoteStoringPreProcessorException,

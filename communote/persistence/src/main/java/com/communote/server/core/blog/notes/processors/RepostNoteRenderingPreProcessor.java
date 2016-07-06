@@ -116,7 +116,7 @@ public class RepostNoteRenderingPreProcessor implements NoteMetadataRenderingPre
     @Override
     public boolean process(NoteRenderContext context, NoteData item)
             throws NoteRenderingPreProcessorException {
-        StringPropertyTO originalNoteIdProperty = PropertyHelper.getProperty(
+        StringPropertyTO originalNoteIdProperty = PropertyHelper.getPropertyTO(
                 item.getObjectProperties(),
                 PropertyManagement.KEY_GROUP, RepostNoteStoringPreProcessor.KEY_ORIGIN_NOTE_ID);
         if (originalNoteIdProperty != null) {
@@ -124,7 +124,7 @@ public class RepostNoteRenderingPreProcessor implements NoteMetadataRenderingPre
             HashMap<String, Object> repostOriginalNoteData = new HashMap<String, Object>();
             item.getProperties().put(PROPERTY_REPOST_ORIGINAL_NOTE_DATA, repostOriginalNoteData);
             repostOriginalNoteData.put("id", originalNoteId);
-            StringPropertyTO originalAuthorId = PropertyHelper.getProperty(
+            StringPropertyTO originalAuthorId = PropertyHelper.getPropertyTO(
                     item.getObjectProperties(), PropertyManagement.KEY_GROUP,
                     RepostNoteStoringPreProcessor.KEY_ORIGIN_AUTHOR_ID);
             Long authorId = Long.valueOf(originalAuthorId.getPropertyValue());

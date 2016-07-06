@@ -32,8 +32,10 @@ import com.communote.server.api.core.note.NoteRenderContext;
 import com.communote.server.api.core.note.NoteRenderMode;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
+import com.communote.server.api.core.property.PropertyHelper;
 import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.api.core.property.PropertyType;
+import com.communote.server.api.core.property.StringPropertyTO;
 import com.communote.server.api.core.security.AuthorizationException;
 import com.communote.server.core.blog.FavoriteManagement;
 import com.communote.server.core.blog.NoteNotFoundException;
@@ -674,7 +676,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
             try {
                 propertyIds[i] = ((UserNoteProperty) propertyManagement.setObjectProperty(
                         PropertyType.UserNoteProperty, noteId, keyGroup, propertyKey, UUID
-                        .randomUUID().toString())).getId();
+                                .randomUUID().toString())).getId();
             } catch (NotFoundException e) {
                 Assert.fail("user note property was not found.");
             }
@@ -700,7 +702,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
      */
     @Test
     public void testDeleteNotesOfUserWithUserNoteEntities() throws AuthorizationException,
-    NotFoundException {
+            NotFoundException {
         User user = TestUtils.createRandomUser(false);
         Blog blog = TestUtils.createRandomBlog(true, true, user);
         Long noteId = TestUtils.createAndStoreCommonNote(blog, user.getId(), "TestNote");
@@ -730,7 +732,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
      */
     @Test
     public void testDeleteNoteWithAttachement() throws AuthorizationException,
-            BlogNotFoundException, NoteStoringPreProcessorException, ContentRepositoryException {
+    BlogNotFoundException, NoteStoringPreProcessorException, ContentRepositoryException {
         User user = TestUtils.createRandomUser(false);
         Blog blog = TestUtils.createRandomBlog(false, false, user);
 
@@ -779,7 +781,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
      */
     @Test
     public void testDeleteNoteWithAttachementByManager() throws AuthorizationException,
-            BlogNotFoundException, NoteStoringPreProcessorException, ContentRepositoryException {
+    BlogNotFoundException, NoteStoringPreProcessorException, ContentRepositoryException {
         User managerUser = TestUtils.createRandomUser(false);
         User authorUser = TestUtils.createRandomUser(false);
 
@@ -847,7 +849,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
                     propertyKey);
             propertyIds[i] = ((UserNoteProperty) propertyManagement.setObjectProperty(
                     PropertyType.UserNoteProperty, noteId, keyGroup, propertyKey, UUID.randomUUID()
-                    .toString())).getId();
+                            .toString())).getId();
             Assert.assertNotNull(ServiceLocator.findService(UserNotePropertyDao.class).load(
                     propertyIds[i]));
         }
@@ -895,7 +897,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
         propertyManagement.setObjectProperty(PropertyType.UserNoteProperty, childNoteId, keyGroup,
                 propertyKey, "true");
         ServiceLocator.instance().getService(FavoriteManagement.class)
-                .markNoteAsFavorite(childNoteId);
+        .markNoteAsFavorite(childNoteId);
         AuthenticationTestUtils.setSecurityContext(user1);
         noteService.deleteNote(noteId, false, false);
     }
@@ -928,5 +930,65 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
         // check that tags and attachments from original post are removed
         Assert.assertEquals(updatedItem.getTags().size(), 2, "Tag count of updated item is wrong.");
         Assert.assertEquals(updatedItem.getAttachments().size(), 0, "Attachment count wrong");
+    }
+
+    /**
+     * Test that note properties are correctly updated and removed when editing a note
+     * 
+     * @throws Exception
+     *             in case the test failed
+     */
+    @Test
+    public void testUpdateNoteWithProperties() throws Exception {
+        User user = TestUtils.createRandomUser(false);
+        Blog blog = TestUtils.createRandomBlog(false, false, user);
+        String keyGroup1 = UUID.randomUUID().toString();
+        String propertyKey1 = UUID.randomUUID().toString();
+        String keyGroup2 = UUID.randomUUID().toString();
+        String propertyKey2 = UUID.randomUUID().toString();
+        propertyManagement.addObjectPropertyFilter(PropertyType.NoteProperty, keyGroup1,
+                propertyKey1);
+        propertyManagement.addObjectPropertyFilter(PropertyType.NoteProperty, keyGroup2,
+                propertyKey2);
+        try {
+            NoteStoringTO storingTO = TestUtils.createCommonNote(blog, user.getId());
+            storingTO.getProperties().add(new StringPropertyTO("1", keyGroup1, propertyKey1, null));
+            storingTO.getProperties().add(new StringPropertyTO("2", keyGroup2, propertyKey2, null));
+            Long noteId = noteService.createNote(storingTO, null).getNoteId();
+            NoteData note = noteService.getNote(noteId, new NoteRenderContext(NoteRenderMode.PLAIN,
+                    Locale.ENGLISH));
+            Assert.assertEquals(note.getObjectProperties().size(), 2);
+            StringPropertyTO property1 = PropertyHelper.getPropertyTO(note.getObjectProperties(),
+                    keyGroup1, propertyKey1);
+            Assert.assertEquals(property1.getPropertyValue(), "1");
+            Assert.assertTrue(PropertyHelper.containsPropertyTO(note.getObjectProperties(),
+                    keyGroup2, propertyKey2, "2"));
+            // update note: remove one property and modify the value of the other
+            storingTO.setParentNoteId(noteId);
+            storingTO.getProperties().clear();
+            property1.setPropertyValue("42");
+            storingTO.getProperties().add(property1);
+            noteService.updateNote(storingTO, noteId, null, false);
+            note = noteService.getNote(noteId, new NoteRenderContext(NoteRenderMode.PLAIN,
+                    Locale.ENGLISH));
+            Assert.assertEquals(note.getObjectProperties().size(), 1);
+            Assert.assertTrue(PropertyHelper.containsPropertyTO(note.getObjectProperties(),
+                    keyGroup1, propertyKey1, "42"));
+            // update note: remove one property by setting value to null and add another
+            storingTO.getProperties().clear();
+            property1.setPropertyValue(null);
+            storingTO.getProperties().add(property1);
+            storingTO.getProperties()
+                    .add(new StringPropertyTO("21", keyGroup2, propertyKey2, null));
+            noteService.updateNote(storingTO, noteId, null, false);
+            note = noteService.getNote(noteId, new NoteRenderContext(NoteRenderMode.PLAIN,
+                    Locale.ENGLISH));
+            Assert.assertEquals(note.getObjectProperties().size(), 1);
+            Assert.assertTrue(PropertyHelper.containsPropertyTO(note.getObjectProperties(),
+                    keyGroup2, propertyKey2, "21"));
+        } finally {
+            propertyManagement.removeObjectPropertyFilter(PropertyType.NoteProperty, keyGroup1,
+                    propertyKey1);
+        }
     }
 }

@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -18,6 +17,7 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import com.communote.server.api.core.property.StringPropertyFilter;
 import com.communote.server.model.blog.Blog;
 import com.communote.server.model.blog.BlogConstants;
 import com.communote.server.model.global.GlobalId;
@@ -78,7 +78,7 @@ public class NoteDaoImpl extends NoteDaoBase {
     @Override
     public Note forceLoad(Long id) {
         getHibernateTemplate().getSessionFactory().getCache()
-                .evictEntity(NoteConstants.CLASS_NAME, id);
+        .evictEntity(NoteConstants.CLASS_NAME, id);
         return load(id);
     }
 
@@ -120,9 +120,9 @@ public class NoteDaoImpl extends NoteDaoBase {
     protected Note handleFindNearestNote(long noteId, Date creationDate, boolean younger) {
         Query query = getSession().createQuery(
                 "from " + NoteConstants.CLASS_NAME + " where " + NoteConstants.ID
-                        + (younger ? ">" : "<") + " :noteId AND " + NoteConstants.CREATIONDATE
-                        + " = :creationDate order by " + NoteConstants.ID
-                        + (younger ? " ASC" : " DESC"));
+                + (younger ? ">" : "<") + " :noteId AND " + NoteConstants.CREATIONDATE
+                + " = :creationDate order by " + NoteConstants.ID
+                + (younger ? " ASC" : " DESC"));
         query.setLong("noteId", noteId);
         query.setParameter("creationDate", creationDate);
         query.setMaxResults(1);
@@ -130,13 +130,10 @@ public class NoteDaoImpl extends NoteDaoBase {
         return list.isEmpty() ? null : list.get(0);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     // TODO Use CriteriaAPI
     protected Long handleGetAutosave(Long userId, Long noteId, Long parentNoteId,
-            FilterNoteProperty[] properties) {
+            Collection<StringPropertyFilter> properties) {
 
         StringBuilder query = new StringBuilder(AUTOSAVE_QUERY);
         List<Object> args = new ArrayList<Object>(5);
@@ -213,7 +210,7 @@ public class NoteDaoImpl extends NoteDaoBase {
     protected List<Note> handleGetNotesByTag(Long tagId) {
         return getHibernateTemplate().find(
                 "from " + NoteConstants.CLASS_NAME
-                        + " uti left join fetch uti.tags as tags where tags.id = ?", tagId);
+                + " uti left join fetch uti.tags as tags where tags.id = ?", tagId);
     }
 
     /**
@@ -317,7 +314,7 @@ public class NoteDaoImpl extends NoteDaoBase {
         // update the topic id on all notes of the discussion
         Query query = this.getSession().createQuery(
                 "UPDATE " + NoteConstants.CLASS_NAME + " note SET note." + NoteConstants.BLOG
-                        + "= ? WHERE note." + NoteConstants.DISCUSSIONID + " = ?");
+                + "= ? WHERE note." + NoteConstants.DISCUSSIONID + " = ?");
         query.setParameter(0, newTopic);
         query.setParameter(1, discussionId);
         query.setCacheMode(CacheMode.IGNORE);
@@ -339,7 +336,7 @@ public class NoteDaoImpl extends NoteDaoBase {
         if (noteIds != null) {
             for (Number noteId : noteIds) {
                 getHibernateTemplate().getSessionFactory().getCache()
-                        .evictEntity(Note.class, noteId);
+                .evictEntity(Note.class, noteId);
             }
         }
     }
@@ -354,30 +351,30 @@ public class NoteDaoImpl extends NoteDaoBase {
      * @param args
      *            The arguments.
      */
-    private void renderFilterProperties(FilterNoteProperty[] properties, StringBuilder query,
-            List<Object> args) {
-        if (properties == null || properties.length == 0) {
+    private void renderFilterProperties(Collection<StringPropertyFilter> properties,
+            StringBuilder query, List<Object> args) {
+        if (properties == null || properties.size() == 0) {
             return;
         }
-        List<FilterNoteProperty> genericExcludedFilter = new ArrayList<FilterNoteProperty>();
-        int i = 0;
-        propertiesLoop: for (; i < properties.length; i++) {
-            FilterNoteProperty property = properties[i];
-            if (StringUtils.isBlank(property.getPropertyValue()) && !property.isInclude()) {
+        List<StringPropertyFilter> genericExcludedFilter = new ArrayList<StringPropertyFilter>();
+        int counter = 0;
+        propertiesLoop: for (StringPropertyFilter property : properties) {
+            counter++;
+            if (property.getPropertyValue() == null && !property.isInclude()) {
                 genericExcludedFilter.add(property);
                 continue propertiesLoop;
             }
             args.add(property.getKeyGroup());
             args.add(property.getPropertyKey());
-            String note = " note" + i;
-            String noteProperty = " noteProperty" + i;
+            String note = " note" + counter;
+            String noteProperty = " noteProperty" + counter;
             query.append(" AND note." + NoteConstants.ID + " IN ( SELECT " + note + "."
                     + NoteConstants.ID + " FROM " + NoteConstants.CLASS_NAME + note);
             query.append(" left join " + note + "." + NoteConstants.PROPERTIES + noteProperty);
             query.append(" WHERE " + note + "." + NoteConstants.ID + " = note." + NoteConstants.ID
                     + " AND " + noteProperty + "." + PropertyConstants.KEYGROUP + " = ?  AND");
             query.append(noteProperty + "." + PropertyConstants.PROPERTYKEY + " = ? ");
-            if (StringUtils.isNotBlank(property.getPropertyValue())) {
+            if (property.getPropertyValue() != null) {
                 query.append(" AND " + noteProperty + "." + StringPropertyConstants.PROPERTYVALUE);
                 if (!property.isInclude()) {
                     query.append(" !");
@@ -387,16 +384,17 @@ public class NoteDaoImpl extends NoteDaoBase {
             }
             query.append(")");
         }
+        counter++;
         for (int e = 0; e < genericExcludedFilter.size(); e++) {
-            String note = " note" + (e + i + 1);
-            String noteProperty = " noteProperty" + (e + i + 1);
+            String note = " note" + (e + counter);
+            String noteProperty = " noteProperty" + (e + counter);
             query.append(" AND note." + NoteConstants.ID + " NOT IN ( SELECT " + note + "."
                     + NoteConstants.ID + " FROM " + NoteConstants.CLASS_NAME + note);
             query.append(" left join " + note + "." + NoteConstants.PROPERTIES + noteProperty);
             query.append(" WHERE " + note + "." + NoteConstants.ID + " = note." + NoteConstants.ID
                     + " AND " + noteProperty + "." + PropertyConstants.KEYGROUP + " = ?  AND");
             query.append(noteProperty + "." + PropertyConstants.PROPERTYKEY + " = ? )");
-            FilterNoteProperty property = genericExcludedFilter.get(e);
+            StringPropertyFilter property = genericExcludedFilter.get(e);
             args.add(property.getKeyGroup());
             args.add(property.getPropertyKey());
         }

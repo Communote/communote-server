@@ -145,7 +145,7 @@ public class RepostNoteStoringPreProcessor implements NoteStoringImmutableConten
     // and thus adding a property with same group and key would not replace the exisiting entry in
     // the set
     private StringPropertyTO getAutosaveAttachmentProperty(NoteStoringTO noteStoringTO) {
-        StringPropertyTO attachmentProperty = PropertyHelper.getProperty(
+        StringPropertyTO attachmentProperty = PropertyHelper.getPropertyTO(
                 noteStoringTO.getProperties(), PropertyManagement.KEY_GROUP,
                 KEY_ORIGIN_ATTACHMENT_IDS);
         if (attachmentProperty == null) {
@@ -185,7 +185,7 @@ public class RepostNoteStoringPreProcessor implements NoteStoringImmutableConten
     @Override
     public NoteStoringTO process(NoteStoringTO noteStoringTO)
             throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
-        StringPropertyTO repostNoteIdProperty = PropertyHelper.getProperty(
+        StringPropertyTO repostNoteIdProperty = PropertyHelper.getPropertyTO(
                 noteStoringTO.getProperties(), PropertyManagement.KEY_GROUP, KEY_ORIGIN_NOTE_ID);
         if (repostNoteIdProperty != null) {
             Long originalNoteId = null;

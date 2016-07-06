@@ -1,6 +1,7 @@
 package com.communote.server.service;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -24,6 +25,7 @@ import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
 import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.api.core.property.PropertyType;
+import com.communote.server.api.core.property.StringPropertyTO;
 import com.communote.server.api.core.security.AuthorizationException;
 import com.communote.server.core.blog.DiscussionChangedEvent;
 import com.communote.server.core.blog.MovingOfNonRootNotesNotAllowedException;
@@ -37,7 +39,6 @@ import com.communote.server.core.vo.blog.NoteModificationStatus;
 import com.communote.server.core.vo.query.QueryResultConverter;
 import com.communote.server.core.vo.uti.UserNotificationResult;
 import com.communote.server.model.note.Note;
-import com.communote.server.persistence.blog.FilterNoteProperty;
 import com.communote.server.persistence.blog.NoteDao;
 
 /**
@@ -79,34 +80,8 @@ public class NoteService {
     public NoteModificationResult createNote(NoteStoringTO noteStoringTO,
             Set<String> additionalBlogNameIds) throws BlogNotFoundException,
             NoteManagementAuthorizationException, NoteStoringPreProcessorException {
-        return createNote(noteStoringTO, additionalBlogNameIds, null);
-    }
-
-    /**
-     * Creates a note from the supplied transfer object.
-     *
-     * @param noteStoringTO
-     *            The note to create.
-     * @param additionalBlogNameIds
-     *            set of blog aliases for creating crossposts. These aliases will be ignore, if the
-     *            note is a comment to another note.
-     * @param autosaveFilterProperties
-     *            Additional properties for finding the autosave.
-     * @return The result of this operation.
-     * @throws BlogNotFoundException
-     *             in case the target blog does not exist
-     * @throws NoteManagementAuthorizationException
-     *             in case the user is not authorized to create the note, for instance if he has no
-     *             write access to the target blog
-     * @throws NoteStoringPreProcessorException
-     *             in case one of the pre processors failed
-     */
-    public NoteModificationResult createNote(NoteStoringTO noteStoringTO,
-            Set<String> additionalBlogNameIds, FilterNoteProperty[] autosaveFilterProperties)
-            throws BlogNotFoundException, NoteManagementAuthorizationException,
-            NoteStoringPreProcessorException {
         NoteModificationResult result = noteManagement.createNote(noteStoringTO,
-                additionalBlogNameIds, autosaveFilterProperties);
+                additionalBlogNameIds);
         if (noteStoringTO.isPublish() && NoteModificationStatus.SUCCESS.equals(result.getStatus())) {
             if (noteStoringTO.getParentNoteId() == null || !noteStoringTO.isIsDirectMessage()) {
                 noteManagement.updateLastDiscussionCreationDate(result.getNoteId(),
@@ -201,15 +176,18 @@ public class NoteService {
      * @param parentNoteId
      *            the ID of a parent note to get the autosave of a comment to this note. Can be
      *            null.
-     * @param propertyFilters
-     *            filters for finding an autosave. Can be null.
+     * @param properties
+     *            properties which should be used to get filters for finding an autosave. The
+     *            filters are resolved with the help of the registered
+     *            {@link com.communote.server.api.core.note.AutosavePropertyFilterProvider} the re
+     *            Can be null.
      * @param locale
      *            the locale to use when filling localizable content of the note like tags
      * @return the autosave or null if there is none
      */
     public AutosaveNoteData getAutosave(Long noteId, Long parentNoteId,
-            FilterNoteProperty[] propertyFilters, Locale locale) {
-        return noteManagement.getAutosave(noteId, parentNoteId, propertyFilters, locale);
+            Collection<StringPropertyTO> properties, Locale locale) {
+        return noteManagement.getAutosave(noteId, parentNoteId, properties, locale);
     }
 
     /**
@@ -298,7 +276,7 @@ public class NoteService {
      */
     public DiscussionNoteData getNoteWithComments(Long noteId,
             QueryResultConverter<SimpleNoteListItem, DiscussionNoteData> converter)
-            throws NoteNotFoundException, AuthorizationException {
+                    throws NoteNotFoundException, AuthorizationException {
         return noteManagement.getNoteWithComments(noteId, converter);
     }
 
@@ -433,9 +411,9 @@ public class NoteService {
      */
     public NoteModificationResult updateNote(NoteStoringTO noteStoringTO, Long noteId,
             Set<String> additionalBlogNameIds, boolean resendNotifications)
-            throws BlogNotFoundException, NoteNotFoundException,
-            NoteManagementAuthorizationException, NoteStoringPreProcessorException,
-            MovingOfNonRootNotesNotAllowedException {
+                    throws BlogNotFoundException, NoteNotFoundException,
+                    NoteManagementAuthorizationException, NoteStoringPreProcessorException,
+                    MovingOfNonRootNotesNotAllowedException {
         if (noteId != null && noteStoringTO.getBlogId() != null
                 && noteStoringTO.getContent() == null) {
             // This has to be done in two separate transaction, because

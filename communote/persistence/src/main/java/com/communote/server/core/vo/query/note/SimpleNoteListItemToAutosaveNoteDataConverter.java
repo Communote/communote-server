@@ -59,14 +59,14 @@ public class SimpleNoteListItemToAutosaveNoteDataConverter extends
      *            the autosave item
      */
     private void addRepostData(AutosaveNoteData target) {
-        StringPropertyTO repostNoteIdProperty = PropertyHelper.getProperty(
+        StringPropertyTO repostNoteIdProperty = PropertyHelper.getPropertyTO(
                 target.getObjectProperties(), PropertyManagement.KEY_GROUP,
                 RepostNoteStoringPreProcessor.KEY_ORIGIN_NOTE_ID);
         if (repostNoteIdProperty != null) {
             try {
                 Long repostNoteId = Long.parseLong(repostNoteIdProperty.getPropertyValue());
                 // check for Attachment autosave property of repost, and add those attachments
-                StringPropertyTO repostAttachmentIds = PropertyHelper.getProperty(
+                StringPropertyTO repostAttachmentIds = PropertyHelper.getPropertyTO(
                         target.getObjectProperties(), PropertyManagement.KEY_GROUP,
                         RepostNoteStoringPreProcessor.KEY_ORIGIN_ATTACHMENT_IDS);
                 if (repostAttachmentIds != null) {

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.communote.server.api.core.property.StringPropertyFilter;
 import com.communote.server.model.blog.Blog;
 import com.communote.server.model.note.Note;
 
@@ -25,10 +26,10 @@ public interface NoteDao {
 
     /**
      * Creates a new instance of Note and adds from the passed in <code>entities</code> collection
-     * 
+     *
      * @param entities
      *            the collection of Note instances to create.
-     * 
+     *
      * @return the created instances.
      */
     public Collection<Note> create(Collection<Note> entities);
@@ -64,7 +65,7 @@ public interface NoteDao {
 
     /**
      * Evicts (removes) the entity from the hibernate cache
-     * 
+     *
      * @param entity
      *            the entity to evict
      */
@@ -87,11 +88,11 @@ public interface NoteDao {
     /**
      * Load a note from the persistent store, even if it is cached. In case the note was cached the
      * updated note will be put into the cache.
-     * 
+     *
      * Note: when called from within a session where the entity is already loaded, the returned
      * object will be the one previously loaded into the session. However, a normal load from a
      * later session will return the latest from the persistent storage.
-     * 
+     *
      * @param id
      *            the ID of the note to load
      * @return the loaded note or null if there is no note with the given ID
@@ -106,12 +107,12 @@ public interface NoteDao {
      * note.
      * </p>
      * <p>
-     * 
+     *
      * @return the ID of the note or null if not found
      *         </p>
      */
     public Long getAutosave(Long userId, Long noteId, Long parentNoteId,
-            FilterNoteProperty[] properties);
+            Collection<StringPropertyFilter> filters);
 
     /**
      * <p>
@@ -129,7 +130,7 @@ public interface NoteDao {
     public List<Long> getNoteIdsOfDiscussion(Long discussionId);
 
     /**
- * 
+     *
      */
     public List<Note> getNotesByTag(Long tagId);
 
@@ -142,14 +143,14 @@ public interface NoteDao {
 
     /**
      * <p>
-     * 
+     *
      * @return List of notes for the given blog and parameters.
      *         </p>
      */
     public List<Note> getNotesForBlog(Long blogId, Long firstNoteId, Integer limit);
 
     /**
- * 
+     *
      */
     public List<Note> getNotesOfUser(Long userId);
 
@@ -157,7 +158,7 @@ public interface NoteDao {
      * <p>
      * Returns how often a note is favorized.
      * </p>
-     * 
+     *
      * @param noteId
      *            the note to check
      * @return the number of favorites
@@ -166,7 +167,7 @@ public interface NoteDao {
 
     /**
      * Test whether a discussion has notes which do not have the provided topic.
-     * 
+     *
      * @param discussionId
      *            ID of the discussion
      * @param topicId
@@ -184,7 +185,7 @@ public interface NoteDao {
      * which can optionally transform the entity (into a value object for example). By default,
      * transformation does not occur.
      * </p>
-     * 
+     *
      * @param id
      *            the identifier of the entity to load.
      * @return either the entity or the object transformed from the entity.
@@ -198,7 +199,7 @@ public interface NoteDao {
 
     /**
      * Loads all entities of type {@link Note}.
-     * 
+     *
      * @return the loaded entities.
      */
     public Collection<Note> loadAll();
@@ -212,7 +213,7 @@ public interface NoteDao {
      * optionally transform the entity (into a value object for example). By default, transformation
      * does not occur.
      * </p>
-     * 
+     *
      * @param transform
      *            the flag indicating what transformation to use.
      * @return the loaded entities.
@@ -221,7 +222,7 @@ public interface NoteDao {
 
     /**
      * Moves the given discussion to the given topic.
-     * 
+     *
      * @param discussionId
      *            The discussion to move.
      * @param newTopic
@@ -260,7 +261,7 @@ public interface NoteDao {
      * Updates the followableItems of a Note to the current settings. Should be called after the
      * note was updated/created.
      * </p>
-     * 
+     *
      * @param updateChildren
      *            If true, childrens will be updated too.
      */

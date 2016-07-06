@@ -1,5 +1,6 @@
 package com.communote.server.web.fe.widgets.blog;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,7 +39,6 @@ import com.communote.server.core.vo.blog.AutosaveNoteData;
 import com.communote.server.model.blog.Blog;
 import com.communote.server.model.user.ImageSizeType;
 import com.communote.server.model.user.UserRole;
-import com.communote.server.persistence.blog.FilterNoteProperty;
 import com.communote.server.service.NoteService;
 import com.communote.server.service.UserService;
 import com.communote.server.web.commons.FormAction;
@@ -67,8 +67,7 @@ public class CreateNoteWidget extends AbstractWidget {
      *            true if the client expects the content in plaintext and not HTML
      * @return the JSON object
      */
-    private ObjectNode createJsonNoteObject(NoteData item, boolean isAutosave,
-            boolean plaintextOnly) {
+    private ObjectNode createJsonNoteObject(NoteData item, boolean isAutosave, boolean plaintextOnly) {
 
         ObjectNode jsonObj = JsonHelper.getSharedObjectMapper().createObjectNode();
 
@@ -117,8 +116,8 @@ public class CreateNoteWidget extends AbstractWidget {
             throws NoteNotFoundException, AuthorizationException {
         if (noteId > 0) {
             // don't pass a render mode because we want the original note
-            NoteData item = getNoteManagement().getNote(noteId,
-                    new NoteRenderContext(null, locale));
+            NoteData item = getNoteManagement()
+                    .getNote(noteId, new NoteRenderContext(null, locale));
             ObjectNode noteToEdit = this.createJsonNoteObject(item, false, plaintextOnly);
             noteToEdit.put("numberOfDiscussionNotes", item.getNumberOfDiscussionNotes());
             return noteToEdit;
@@ -148,7 +147,7 @@ public class CreateNoteWidget extends AbstractWidget {
      */
     private ObjectNode createJsonNoteObjectForReply(long parentNoteId, Locale locale,
             boolean plaintextOnly, boolean authorNotification, boolean inheritTags)
-            throws NoteNotFoundException, AuthorizationException {
+                    throws NoteNotFoundException, AuthorizationException {
         if (parentNoteId <= 0) {
             throw new NoteNotFoundException("Parent note does not exist");
         }
@@ -187,7 +186,7 @@ public class CreateNoteWidget extends AbstractWidget {
      */
     private ObjectNode createJsonNoteObjectForRepost(long repostNoteId, Locale locale,
             boolean plaintextOnly, boolean copyAttachments, boolean inheritTags)
-            throws NoteNotFoundException, AuthorizationException {
+                    throws NoteNotFoundException, AuthorizationException {
         if (repostNoteId <= 0) {
             throw new NoteNotFoundException("Note to repost does not exist");
         }
@@ -222,23 +221,17 @@ public class CreateNoteWidget extends AbstractWidget {
             long repostNoteId, Locale locale, boolean plaintextOnly) {
         Long nId = noteId < 0 ? null : noteId;
         Long parentId = parentNoteId < 0 ? null : parentNoteId;
-        FilterNoteProperty[] propertyFilters = null;
-        // when not editing or commenting filter for the repost property
-        if (nId == null && parentId == null) {
-            propertyFilters = new FilterNoteProperty[1];
-            propertyFilters[0] = new FilterNoteProperty();
-            propertyFilters[0].setKeyGroup(PropertyManagement.KEY_GROUP);
-            propertyFilters[0].setPropertyKey(RepostNoteStoringPreProcessor.KEY_ORIGIN_NOTE_ID);
-            if (repostNoteId >= 0) {
-                // add repost note properties
-                propertyFilters[0].setPropertyValue(String.valueOf(repostNoteId));
-            } else {
-                // ensure the repost is not taken in the default create note case
-                propertyFilters[0].setInclude(false);
-            }
+        ArrayList<StringPropertyTO> properties = null;
+
+        // add repost property if the repostNoteId is set
+        if (repostNoteId >= 0) {
+            properties = new ArrayList<>();
+            properties.add(new StringPropertyTO(String.valueOf(repostNoteId),
+                    PropertyManagement.KEY_GROUP, RepostNoteStoringPreProcessor.KEY_ORIGIN_NOTE_ID,
+                    null));
         }
-        AutosaveNoteData autosave = getNoteManagement().getAutosave(nId, parentId,
-                propertyFilters, locale);
+        AutosaveNoteData autosave = getNoteManagement().getAutosave(nId, parentId, properties,
+                locale);
         if (autosave != null) {
             ObjectNode jsonObject = createJsonNoteObject(autosave, true, plaintextOnly);
             jsonObject.put("autosaveNoteId", autosave.getId());

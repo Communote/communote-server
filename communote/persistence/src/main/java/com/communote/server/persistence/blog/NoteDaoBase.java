@@ -1,9 +1,11 @@
 package com.communote.server.persistence.blog;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import com.communote.server.api.core.property.StringPropertyFilter;
 import com.communote.server.model.note.Note;
 
 /**
@@ -112,22 +114,16 @@ public abstract class NoteDaoBase extends HibernateDaoSupport implements NoteDao
 
     /**
      * @see NoteDao#getAutosave(Long, Long, Long,
-     *      com.communote.server.persistence.blog.FilterNoteProperty[])
+     *      com.communote.server.api.core.property.StringPropertyFilter[])
      */
     @Override
     public Long getAutosave(final Long userId, final Long noteId, final Long parentNoteId,
-            final com.communote.server.persistence.blog.FilterNoteProperty[] properties) {
+            Collection<StringPropertyFilter> propertyfilters) {
         if (userId == null) {
             throw new IllegalArgumentException(
-                    "NoteDao.getAutosave(Long userId, Long noteId, Long parentNoteId, com.communote.server.persistence.blog.FilterNoteProperty[] properties) - 'userId' can not be null");
+                    "NoteDao.getAutosave(Long userId, Long noteId, Long parentNoteId, com.communote.server.persistence.blog.StringPropertyFilter[] properties) - 'userId' can not be null");
         }
-        try {
-            return this.handleGetAutosave(userId, noteId, parentNoteId, properties);
-        } catch (RuntimeException rt) {
-            throw new RuntimeException(
-                    "Error performing 'NoteDao.getAutosave(Long userId, Long noteId, Long parentNoteId, com.communote.server.persistence.blog.FilterNoteProperty[] properties)' --> "
-                            + rt, rt);
-        }
+        return this.handleGetAutosave(userId, noteId, parentNoteId, propertyfilters);
     }
 
     /**
@@ -275,11 +271,10 @@ public abstract class NoteDaoBase extends HibernateDaoSupport implements NoteDao
     protected abstract Note handleFindNearestNote(long noteId, Date creationDate, boolean younger);
 
     /**
-     * Performs the core logic for
-     * {@link #getAutosave(Long, Long, Long, com.communote.server.persistence.blog.FilterNoteProperty[])}
+     * Performs the core logic for {@link #getAutosave(Long, Long, Long, Collection)}
      */
     protected abstract Long handleGetAutosave(Long userId, Long noteId, Long parentNoteId,
-            com.communote.server.persistence.blog.FilterNoteProperty[] properties);
+            Collection<StringPropertyFilter> propertyFilters);
 
     /**
      * Performs the core logic for {@link #getFavoriteNoteIds(Long, Long, Long)}

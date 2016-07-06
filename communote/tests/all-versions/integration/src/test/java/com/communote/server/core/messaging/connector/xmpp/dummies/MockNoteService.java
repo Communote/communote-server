@@ -1,5 +1,6 @@
 package com.communote.server.core.messaging.connector.xmpp.dummies;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -10,6 +11,7 @@ import com.communote.server.api.core.note.NoteManagementAuthorizationException;
 import com.communote.server.api.core.note.NoteRenderContext;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
+import com.communote.server.api.core.property.StringPropertyTO;
 import com.communote.server.api.core.security.AuthorizationException;
 import com.communote.server.core.blog.NoteNotFoundException;
 import com.communote.server.core.filter.listitems.SimpleNoteListItem;
@@ -17,7 +19,6 @@ import com.communote.server.core.vo.blog.AutosaveNoteData;
 import com.communote.server.core.vo.blog.DiscussionNoteData;
 import com.communote.server.core.vo.blog.NoteModificationResult;
 import com.communote.server.core.vo.query.QueryResultConverter;
-import com.communote.server.persistence.blog.FilterNoteProperty;
 
 /**
  * Dummy implementation.
@@ -25,18 +26,6 @@ import com.communote.server.persistence.blog.FilterNoteProperty;
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class MockNoteService extends com.communote.server.service.NoteService {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NoteModificationResult createNote(NoteStoringTO noteStoringTO,
-            Set<String> additionalBlogNameIds, FilterNoteProperty[] autosaveFilterProperties)
-            throws BlogNotFoundException, NoteManagementAuthorizationException,
-            NoteStoringPreProcessorException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     /**
      * {@inheritDoc}
@@ -80,13 +69,9 @@ public class MockNoteService extends com.communote.server.service.NoteService {
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AutosaveNoteData getAutosave(Long noteId, Long parentNoteId,
-            FilterNoteProperty[] filterNoteProperty, Locale locale) {
-        // TODO Auto-generated method stub
+            Collection<StringPropertyTO> properties, Locale locale) {
         return null;
     }
 

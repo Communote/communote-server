@@ -45,7 +45,7 @@ public class NoteManagementTestForAttachments extends CommunoteIntegrationTest {
         Long attachmentId = TestUtils.createAttachment().getId();
 
         TestUtils
-        .createAndStoreCommonNote(topic, user.getId(), "Test", new Long[] { attachmentId });
+                .createAndStoreCommonNote(topic, user.getId(), "Test", new Long[] { attachmentId });
         NoteStoringTO noteStoringTO = TestUtils.createCommonNote(topic, user.getId(), "Test",
                 new Long[] { attachmentId });
 
@@ -70,7 +70,7 @@ public class NoteManagementTestForAttachments extends CommunoteIntegrationTest {
         Assert.assertNull(attachmentDao.load(attachmentId));
         NoteStoringTO noteStoringTO = TestUtils.createCommonNote(topic, user.getId());
         noteStoringTO.setAttachmentIds(new Long[] { attachmentId });
-        NoteModificationResult note = noteService.createNote(noteStoringTO, null, null);
+        NoteModificationResult note = noteService.createNote(noteStoringTO, null);
         Assert.assertEquals(note.getStatus(), NoteModificationStatus.MISSING_ATTACHMENT);
     }
 }

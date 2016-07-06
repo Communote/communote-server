@@ -49,11 +49,11 @@ public class TemplateNoteStoringPreProcessor implements NoteStoringEditableConte
     @Override
     public NoteStoringTO process(NoteStoringTO noteStoringTO)
             throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
-        StringPropertyTO templateIdProperty = PropertyHelper.getProperty(
+        StringPropertyTO templateIdProperty = PropertyHelper.getPropertyTO(
                 noteStoringTO.getProperties(), PropertyManagement.KEY_GROUP,
                 NoteTemplateService.NOTE_PROPERTY_KEY_TEMPLATE_ID);
         if (templateIdProperty != null) {
-            StringPropertyTO templatePropsProperty = PropertyHelper.getProperty(
+            StringPropertyTO templatePropsProperty = PropertyHelper.getPropertyTO(
                     noteStoringTO.getProperties(), PropertyManagement.KEY_GROUP,
                     NoteTemplateService.NOTE_PROPERTY_KEY_TEMPLATE_PROPERTIES);
             String templatePropertiesJSON = templatePropsProperty == null ? null

@@ -56,11 +56,11 @@ public class TemplateNoteRenderingPreProcessor implements NoteContentRenderingPr
         // directly look for property in NoteData because the converter adds it
         try {
             StringPropertyTO noteTemplateIdProperty = PropertyHelper
-                    .getProperty(item.getObjectProperties(),
+                    .getPropertyTO(item.getObjectProperties(),
                             PropertyManagement.KEY_GROUP,
                             NoteTemplateService.NOTE_PROPERTY_KEY_TEMPLATE_ID);
             // get template properties which is a serialized JSON object
-            StringPropertyTO noteTemplatePropsProperty = PropertyHelper.getProperty(
+            StringPropertyTO noteTemplatePropsProperty = PropertyHelper.getPropertyTO(
                     item.getObjectProperties(), PropertyManagement.KEY_GROUP,
                     NoteTemplateService.NOTE_PROPERTY_KEY_TEMPLATE_PROPERTIES);
             NoteTemplateDefinition definition = getNoteTemplateService()
@@ -105,7 +105,7 @@ public class TemplateNoteRenderingPreProcessor implements NoteContentRenderingPr
     @Override
     public boolean supports(NoteRenderMode mode, NoteData item) {
         // only support notes that are template notes
-        return PropertyHelper.getProperty(item.getObjectProperties(),
+        return PropertyHelper.getPropertyTO(item.getObjectProperties(),
                 PropertyManagement.KEY_GROUP, NoteTemplateService.NOTE_PROPERTY_KEY_TEMPLATE_ID) != null;
     }
 

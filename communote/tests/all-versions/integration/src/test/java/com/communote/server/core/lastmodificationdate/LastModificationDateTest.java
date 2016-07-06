@@ -50,7 +50,7 @@ import com.communote.server.test.util.TestUtils;
 public class LastModificationDateTest extends CommunoteIntegrationTest {
 
     private static final class EasyNoteToNoteStoringTOConverter implements
-            Converter<Note, NoteStoringTO> {
+    Converter<Note, NoteStoringTO> {
         @Override
         public NoteStoringTO convert(Note source) {
             NoteStoringTO store = new NoteStoringTO();
@@ -86,8 +86,8 @@ public class LastModificationDateTest extends CommunoteIntegrationTest {
     private final EasyNoteToNoteStoringTOConverter converter = new EasyNoteToNoteStoringTOConverter();
 
     private Collection<Long> createSomeAutosaveNotes(User user, Blog topic)
-            throws BlogNotFoundException,
-            NoteManagementAuthorizationException, NoteStoringPreProcessorException {
+            throws BlogNotFoundException, NoteManagementAuthorizationException,
+            NoteStoringPreProcessorException {
 
         final Collection<Long> notesNotToBeReturned = new HashSet<>();
 
@@ -98,7 +98,7 @@ public class LastModificationDateTest extends CommunoteIntegrationTest {
                     + i);
 
             NoteModificationResult noteModificationResult = noteService.createNote(noteStoring,
-                    null, null);
+                    null);
 
             notesNotToBeReturned.add(noteModificationResult.getNoteId());
 
@@ -154,8 +154,7 @@ public class LastModificationDateTest extends CommunoteIntegrationTest {
         String orgContent = RandomStringUtils.randomAlphanumeric(100).replace('b', ' ');
         Long attachmentId = TestUtils.createAttachment().getId();
         Long noteId = TestUtils.createAndStoreCommonNote(topic, noteCreator.getId(), orgContent,
-                new Long[] { attachmentId }, null, new Date(
-                        System.currentTimeMillis() - 300000L));
+                new Long[] { attachmentId }, null, new Date(System.currentTimeMillis() - 300000L));
         Date noteCrawlModDate = lastModificationDateManagement
                 .getNoteCrawlLastModificationDate(noteId);
         Date topicCrawlModDate = lastModificationDateManagement
@@ -429,8 +428,7 @@ public class LastModificationDateTest extends CommunoteIntegrationTest {
 
         dates = lastModificationDateManagement
                 .getTopicCrawlLastModificationDates(lastModificationDateFactory);
-        validateResults(dates,
-                expectedResults, null);
+        validateResults(dates, expectedResults, null);
 
     }
 

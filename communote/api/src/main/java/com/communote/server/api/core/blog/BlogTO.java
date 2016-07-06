@@ -125,7 +125,7 @@ public class BlogTO implements java.io.Serializable {
      * @return the property if found
      */
     public StringPropertyTO getProperty(String keyGroup, String key) {
-        return PropertyHelper.getProperty(properties, keyGroup, key);
+        return PropertyHelper.getPropertyTO(properties, keyGroup, key);
     }
 
     /**

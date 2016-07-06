@@ -59,7 +59,6 @@ import com.communote.server.web.api.service.post.convert.v1_0_1.ApiDetailNoteCon
 import com.communote.server.web.api.to.ApiResult;
 import com.communote.server.web.api.to.listitem.v1_0_1.DetailPostListItem;
 import com.communote.server.web.commons.MessageHelper;
-import com.communote.server.web.commons.helper.PropertyHelper;
 import com.communote.server.web.fe.portal.blog.helper.CreateBlogPostFeHelper;
 
 /**
@@ -151,7 +150,7 @@ public class PostApiController extends BaseRestApiController {
             }
             try {
                 ServiceLocator.findService(ResourceStoringManagement.class)
-                        .deleteOrphanedAttachments(uploadedAttachments);
+                .deleteOrphanedAttachments(uploadedAttachments);
             } catch (AuthorizationException e) {
                 LOGGER.error(e.getMessage(), e);
             }
@@ -238,7 +237,8 @@ public class PostApiController extends BaseRestApiController {
         extension.setTopicAccessLevel(TopicAccessLevel.READ);
         extension.setUserId(SecurityHelper.getCurrentUserId());
 
-        PageableList<? extends IdentifiableEntityData> list = ServiceLocator.findService(QueryManagement.class)
+        PageableList<? extends IdentifiableEntityData> list = ServiceLocator.findService(
+                QueryManagement.class)
                 .query(USER_TAGGED_POST_QUERY, queryParameters, noteConverter);
         if (list.size() == 0) {
             throw new RequestedResourceNotFoundException(getResourceType(), postId.toString(),
@@ -474,8 +474,7 @@ public class PostApiController extends BaseRestApiController {
         try {
             if (noteId == null) {
                 noteStoringTO.setParentNoteId(parentNoteId);
-                result = noteManagement.createNote(noteStoringTO, crossPostBlogAliasesSet,
-                        PropertyHelper.getFilterNoteProperties(request));
+                result = noteManagement.createNote(noteStoringTO, crossPostBlogAliasesSet);
             } else {
                 result = noteManagement.updateNote(noteStoringTO, noteId, crossPostBlogAliasesSet,
                         true);

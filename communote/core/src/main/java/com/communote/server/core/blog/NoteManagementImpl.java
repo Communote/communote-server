@@ -37,6 +37,7 @@ import com.communote.server.api.core.common.NotFoundException;
 import com.communote.server.api.core.config.ConfigurationManager;
 import com.communote.server.api.core.config.type.ClientProperty;
 import com.communote.server.api.core.event.EventDispatcher;
+import com.communote.server.api.core.note.AutosavePropertyFilterProviderManager;
 import com.communote.server.api.core.note.NoteData;
 import com.communote.server.api.core.note.NoteManagementAuthorizationException;
 import com.communote.server.api.core.note.NotePermissionManagement;
@@ -46,8 +47,11 @@ import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringPostProcessorManager;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorManager;
+import com.communote.server.api.core.property.PropertyHelper;
 import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.api.core.property.PropertyType;
+import com.communote.server.api.core.property.StringPropertyFilter;
+import com.communote.server.api.core.property.StringPropertyTO;
 import com.communote.server.api.core.security.AuthorizationException;
 import com.communote.server.api.core.tag.TagTO;
 import com.communote.server.api.core.task.TaskAlreadyExistsException;
@@ -98,7 +102,6 @@ import com.communote.server.model.user.User;
 import com.communote.server.model.user.UserRole;
 import com.communote.server.model.user.UserStatus;
 import com.communote.server.persistence.blog.BlogDao;
-import com.communote.server.persistence.blog.FilterNoteProperty;
 import com.communote.server.persistence.blog.NoteDao;
 import com.communote.server.persistence.common.messages.ResourceBundleManager;
 import com.communote.server.persistence.resource.AttachmentDao;
@@ -154,6 +157,8 @@ public class NoteManagementImpl extends NoteManagementBase {
     private MailManagement mailManagement;
     @Autowired
     private NotePermissionManagement notePermissionManagement;
+    @Autowired
+    private AutosavePropertyFilterProviderManager autosavePropertyFilterProviderManager;
 
     private DiscussionDetailsRetriever discussionDetailsRetriever;
 
@@ -185,13 +190,12 @@ public class NoteManagementImpl extends NoteManagementBase {
                         userIdsString);
             }
         }
-        notePostProcessorExtensionPoint.process(notesForPostProcessing,
-                storingTO, properties);
+        notePostProcessorExtensionPoint.process(notesForPostProcessing, storingTO, properties);
 
     }
 
-    /**
-     * Asserts some preconditions for {@link #createNote(NoteStoringTO, Set, FilterNoteProperty[])
+/**
+     * Asserts some preconditions for {@link #createNote(NoteStoringTO, Set, StringPropertyFilter[])
      *
      * @param noteStoringTO The note.
      * @param topic The topic.
@@ -306,7 +310,7 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private void assertValidDirectMessage(NoteStoringTO noteStoringTO,
             NoteModificationResult result, Map<Blog, Collection<User>> blog2users)
-            throws NoteStoringPreProcessorException {
+                    throws NoteStoringPreProcessorException {
         if (!noteStoringTO.isPublish() || !noteStoringTO.isIsDirectMessage()) {
             return;
         }
@@ -478,7 +482,7 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private <T extends NoteData> void convertNote(Long noteId,
             QueryResultConverter<SimpleNoteListItem, T> converter, T target)
-            throws NoteNotFoundException, AuthorizationException {
+                    throws NoteNotFoundException, AuthorizationException {
         Note note = noteDao.load(noteId);
         if (note == null) {
             throw new NoteNotFoundException("The Note was not found. noteId=" + noteId);
@@ -608,29 +612,27 @@ public class NoteManagementImpl extends NoteManagementBase {
      *            the ID of the note to be edited in case of an edit, otherwise null
      * @param parentNoteId
      *            the ID of the parent note in case of a reply, otherwise null
-     * @param properties
-     *            Additional properties for retrieving the autosave.
      * @return the autosaved note or null
      */
-    private Note extractAutosave(NoteStoringTO storingTO, Long originalNoteId, Long parentNoteId,
-            FilterNoteProperty[] properties) {
+    private Note extractAutosave(NoteStoringTO storingTO, Long originalNoteId, Long parentNoteId) {
         Note autosave = null;
         if (storingTO.getAutosaveNoteId() != null) {
             autosave = noteDao.load(storingTO.getAutosaveNoteId());
             if (autosave != null && NoteStatus.AUTOSAVED.equals(autosave.getStatus())) {
                 return autosave;
             } else {
-                // if the autosave already exists but is published force
-                // creation of new
-                // autosave
+                // if the autosave already exists but is published force creation of new autosave
                 autosave = null;
             }
         }
         if (!storingTO.isPublish()) {
-            // the note will be stored as autosave, thus assure there is only
-            // one autosave
-            Long asId = noteDao.getAutosave(storingTO.getCreatorId(), originalNoteId, parentNoteId,
-                    properties);
+            // the note will be stored as autosave, thus assure there is only one autosave
+            Long asId = noteDao.getAutosave(
+                    storingTO.getCreatorId(),
+                    originalNoteId,
+                    parentNoteId,
+                    getAutosavePropertyFilters(originalNoteId, parentNoteId,
+                            storingTO.getProperties()));
             if (asId != null) {
                 autosave = noteDao.load(asId);
             }
@@ -639,13 +641,10 @@ public class NoteManagementImpl extends NoteManagementBase {
         return autosave;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @Transactional(readOnly = true)
     public AutosaveNoteData getAutosave(Long noteId, Long parentNoteId,
-            FilterNoteProperty[] filterNoteProperties, Locale locale) {
+            Collection<StringPropertyTO> properties, Locale locale) {
         Long currentUserId = SecurityHelper.assertCurrentUserId();
         if (noteId != null && parentNoteId == null) {
             // in case the autosave refers to an edit of a reply we must pass
@@ -658,7 +657,7 @@ public class NoteManagementImpl extends NoteManagementBase {
             }
         }
         Long autosaveId = noteDao.getAutosave(currentUserId, noteId, parentNoteId,
-                filterNoteProperties);
+                getAutosavePropertyFilters(noteId, parentNoteId, properties));
         if (autosaveId != null) {
             try {
                 SimpleNoteListItemToAutosaveNoteDataConverter converter = new SimpleNoteListItemToAutosaveNoteDataConverter(
@@ -679,6 +678,17 @@ public class NoteManagementImpl extends NoteManagementBase {
             }
         }
         return null;
+    }
+
+    private Collection<StringPropertyFilter> getAutosavePropertyFilters(Long noteId,
+            Long parentNoteId, Collection<StringPropertyTO> properties) {
+        if (noteId != null) {
+            return autosavePropertyFilterProviderManager.getFiltersForUpdate(noteId, properties);
+        } else if (parentNoteId != null) {
+            return autosavePropertyFilterProviderManager.getFiltersForComment(parentNoteId,
+                    properties);
+        }
+        return autosavePropertyFilterProviderManager.getFiltersForCreate(properties);
     }
 
     /**
@@ -768,14 +778,10 @@ public class NoteManagementImpl extends NoteManagementBase {
         return informableUsers;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected NoteModificationResult handleCreateNote(NoteStoringTO noteStoringTO,
-            Set<String> additionalBlogIds, FilterNoteProperty[] autosaveFilterProperties)
-                    throws BlogNotFoundException, NoteManagementAuthorizationException,
-                    NoteStoringPreProcessorException {
+            Set<String> additionalBlogIds) throws BlogNotFoundException,
+            NoteManagementAuthorizationException, NoteStoringPreProcessorException {
         Blog blog = blogDao.load(noteStoringTO.getBlogId());
         assertCreateNotePrecondition(noteStoringTO, blog);
         // TODO assert that current user is internal system or the user of TO, otherwise throw
@@ -797,8 +803,7 @@ public class NoteManagementImpl extends NoteManagementBase {
 
         assertValidDirectMessage(noteStoringTO, result, blog2users);
 
-        Note autosave = extractAutosave(noteStoringTO, null, noteStoringTO.getParentNoteId(),
-                autosaveFilterProperties);
+        Note autosave = extractAutosave(noteStoringTO, null, noteStoringTO.getParentNoteId());
         if (autosave != null) {
             if (noteStoringTO.getParentNoteId() != null) {
                 blog = autosave.getBlog();
@@ -899,9 +904,9 @@ public class NoteManagementImpl extends NoteManagementBase {
             if (NoteCreationSource.SYSTEM.equals(note.getCreationSource()) && !deleteSystemPosts) {
                 throw new NoteManagementAuthorizationException(
                         "The creation source of this post is '" + note.getCreationSource()
-                                + "'. The user with id " + userId
-                                + " is not allowed to delete the post with id " + postId, note
-                                .getBlog().getTitle());
+                        + "'. The user with id " + userId
+                        + " is not allowed to delete the post with id " + postId, note
+                        .getBlog().getTitle());
             }
             internalDeleteNoteWithReplies(note);
 
@@ -1001,7 +1006,7 @@ public class NoteManagementImpl extends NoteManagementBase {
     @Override
     protected DiscussionNoteData handleGetNoteWithComments(Long noteId,
             QueryResultConverter<SimpleNoteListItem, DiscussionNoteData> converter)
-                    throws NoteNotFoundException, AuthorizationException {
+            throws NoteNotFoundException, AuthorizationException {
         DiscussionNoteData result = new DiscussionNoteData();
         convertNote(noteId, converter, result);
         return result;
@@ -1044,8 +1049,8 @@ public class NoteManagementImpl extends NoteManagementBase {
     @Override
     protected NoteModificationResult handleUpdateNote(NoteStoringTO noteStoringTO, Long noteId,
             Set<String> additionalBlogIds, boolean resendNotifications)
-            throws BlogNotFoundException, NoteNotFoundException,
-            NoteManagementAuthorizationException, NoteStoringPreProcessorException {
+                    throws BlogNotFoundException, NoteNotFoundException,
+                    NoteManagementAuthorizationException, NoteStoringPreProcessorException {
 
         Note noteToEdit = noteDao.load(noteId);
         assertNoteToEditForUpdateNote(noteStoringTO, noteToEdit);
@@ -1081,7 +1086,7 @@ public class NoteManagementImpl extends NoteManagementBase {
         }
         // check whether the noteToEdit is a reply
         Long parentId = noteToEdit.getParent() != null ? noteToEdit.getParent().getId() : null;
-        Note autosave = extractAutosave(noteStoringTO, noteId, parentId, null);
+        Note autosave = extractAutosave(noteStoringTO, noteId, parentId);
         if (autosave == null) {
             if (noteStoringTO.isPublish()) {
                 result = internalUpdateWithCrossposts(noteToEdit, noteStoringTO, null, blog2users,
@@ -1152,9 +1157,9 @@ public class NoteManagementImpl extends NoteManagementBase {
     private Collection<String> internalCreateCrosspostsForNote(Note sourceNote,
             NoteStoringTO storingTO, Map<Blog, Collection<User>> blog2users,
             Collection<Note> createdNotes, Timestamp lastModificationDate)
-            throws NoteLimitReachedException, NoteStoringPreProcessorException,
-            AttachmentAlreadyAssignedException, NoteManagementAuthorizationException,
-            NoteNotFoundException {
+                    throws NoteLimitReachedException, NoteStoringPreProcessorException,
+                    AttachmentAlreadyAssignedException, NoteManagementAuthorizationException,
+                    NoteNotFoundException {
         Long blogIdToSkip = sourceNote.getBlog().getId();
         Collection<String> tagsWithProblems = new HashSet<>();
         if (storingTO.isPublish()) {
@@ -1545,8 +1550,8 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private Pair<Timestamp, List<String>> internalUpdateNoteData(Note note,
             NoteStoringTO noteStoringTO, Blog targetBlog, Collection<User> usersToNotify)
-                    throws NoteStoringPreProcessorException, AttachmentAlreadyAssignedException,
-                    NoteManagementAuthorizationException, NoteNotFoundException {
+            throws NoteStoringPreProcessorException, AttachmentAlreadyAssignedException,
+            NoteManagementAuthorizationException, NoteNotFoundException {
         if (targetBlog != null) {
             note.setBlog(targetBlog);
         }
@@ -1837,13 +1842,13 @@ public class NoteManagementImpl extends NoteManagementBase {
         if (note.isIsDirectMessage() && note.isMentionTopicManagers()) {
             Collection<String> mappedUsers = topicRightsManagement.getMappedUsers(note.getBlogId(),
                     new CollectionConverter<UserToBlogRoleMapping, String>() {
-                @Override
-                public String convert(UserToBlogRoleMapping source) {
-                    Long userId = source.getUserId();
-                    User user = userDao.load(userId);
-                    return user != null ? user.getAlias() : null;
-                }
-            }, BlogRole.MANAGER);
+                        @Override
+                        public String convert(UserToBlogRoleMapping source) {
+                            Long userId = source.getUserId();
+                            User user = userDao.load(userId);
+                            return user != null ? user.getAlias() : null;
+                        }
+                    }, BlogRole.MANAGER);
             note.getUsersToNotify().addAll(mappedUsers);
         }
     }
@@ -1925,6 +1930,12 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private void updateProperties(Note note, NoteStoringTO storingTO)
             throws NoteManagementAuthorizationException, NoteNotFoundException {
+        // remove all properties which are not set in the storingTO anymore by adding them with a
+        // null value
+        if (storingTO.getProperties() == null) {
+            storingTO.setProperties(new HashSet<StringPropertyTO>());
+        }
+        PropertyHelper.nullifyMissingProperties(note.getProperties(), storingTO.getProperties());
         try {
             propertyManagement.setObjectProperties(PropertyType.NoteProperty, note.getId(),
                     storingTO.getProperties());
