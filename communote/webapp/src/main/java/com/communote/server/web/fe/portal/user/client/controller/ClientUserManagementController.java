@@ -33,6 +33,7 @@ import com.communote.server.core.user.validation.UserActivationValidationExcepti
 import com.communote.server.model.user.User;
 import com.communote.server.model.user.UserRole;
 import com.communote.server.model.user.UserStatus;
+import com.communote.server.service.UserService;
 import com.communote.server.web.api.to.ApiResult;
 import com.communote.server.web.commons.MessageHelper;
 import com.communote.server.web.commons.helper.ControllerHelper;
@@ -99,7 +100,7 @@ public class ClientUserManagementController extends MultiActionController {
                 if (user != null) {
                     messageArguments = new Object[] { user.getAlias() };
                     ServiceLocator.instance().getService(UserManagement.class)
-                            .changeUserStatusByManager(userId, UserStatus.ACTIVE);
+                    .changeUserStatusByManager(userId, UserStatus.ACTIVE);
 
                     message = MessageHelper.getText(request,
                             "client.user.management.activate.user.success", messageArguments);
@@ -322,7 +323,7 @@ public class ClientUserManagementController extends MultiActionController {
         } else {
             try {
                 ServiceLocator.instance().getService(UserManagement.class)
-                .changeUserStatusByManager(userId, UserStatus.TEMPORARILY_DISABLED);
+                        .changeUserStatusByManager(userId, UserStatus.TEMPORARILY_DISABLED);
 
                 message = MessageHelper.getText(request,
                         "widget.user.management.profile.action.disable.success");
@@ -500,10 +501,10 @@ public class ClientUserManagementController extends MultiActionController {
             NoBlogManagerLeftException {
         if (deleteMode.equals(DELETE_MODE_DISABLE)) {
             ServiceLocator.instance().getService(UserManagement.class)
-            .permanentlyDisableUser(userId, confirmedBlogIds, becomeManager);
+                    .permanentlyDisableUser(userId, confirmedBlogIds, becomeManager);
         } else {
-            ServiceLocator.instance().getService(UserManagement.class)
-            .anonymizeUser(userId, confirmedBlogIds, becomeManager);
+            ServiceLocator.instance().getService(UserService.class)
+                    .anonymizeUser(userId, confirmedBlogIds, becomeManager);
         }
     }
 
@@ -525,7 +526,7 @@ public class ClientUserManagementController extends MultiActionController {
         if (role != null && userId != null) {
             try {
                 ServiceLocator.instance().getService(UserManagement.class)
-                .removeUserRole(userId, role);
+                        .removeUserRole(userId, role);
             } catch (NoClientManagerLeftException e) {
                 ObjectNode jsonResponse = JsonRequestHelper.createJsonErrorResponse(MessageHelper
                         .getText(request,

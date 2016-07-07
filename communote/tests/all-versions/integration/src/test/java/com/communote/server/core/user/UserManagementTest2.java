@@ -17,11 +17,6 @@ import com.communote.server.api.core.property.PropertyType;
 import com.communote.server.api.core.security.AuthorizationException;
 import com.communote.server.core.common.exceptions.InvalidOperationException;
 import com.communote.server.core.security.AuthenticationTokenManagement;
-import com.communote.server.core.user.EmailAlreadyExistsException;
-import com.communote.server.core.user.NoClientManagerLeftException;
-import com.communote.server.core.user.UserDeletionDisabledException;
-import com.communote.server.core.user.UserGroupMemberManagement;
-import com.communote.server.core.user.UserManagement;
 import com.communote.server.core.user.group.GroupNotFoundException;
 import com.communote.server.model.blog.Blog;
 import com.communote.server.model.user.User;
@@ -50,7 +45,8 @@ public class UserManagementTest2 extends CommunoteIntegrationTest {
 
     @Autowired
     private UserManagement userManagement;
-
+    @Autowired
+    private UserService userService;
     @Autowired
     private AuthenticationTokenManagement authenticationTokenManagement;
 
@@ -71,7 +67,7 @@ public class UserManagementTest2 extends CommunoteIntegrationTest {
      */
     @Test
     public void testAnonymizeUserWithNoteProperties() throws AuthorizationException,
-    NoClientManagerLeftException, UserDeletionDisabledException, NoBlogManagerLeftException {
+            NoClientManagerLeftException, UserDeletionDisabledException, NoBlogManagerLeftException {
         User user1 = TestUtils.createRandomUser(true);
         User user2 = TestUtils.createRandomUser(false);
         Blog blog = TestUtils.createRandomBlog(true, true, user1);
@@ -98,7 +94,7 @@ public class UserManagementTest2 extends CommunoteIntegrationTest {
         }
 
         String aliasUser2 = user2.getAlias();
-        userManagement.anonymizeUser(user2.getId(), new Long[0], true);
+        userService.anonymizeUser(user2.getId(), new Long[0], true);
         User foundUser = userManagement.findUserByAlias(aliasUser2);
         Assert.assertNull(foundUser);
     }
@@ -239,10 +235,10 @@ public class UserManagementTest2 extends CommunoteIntegrationTest {
         userVO.setSystemId("externalId2");
         // Set comparison to case sensitive.
         CommunoteRuntime
-        .getInstance()
-        .getConfigurationManager()
-        .updateClientConfigurationProperty(
-                ClientProperty.COMPARE_EXTERNAL_USER_ALIAS_LOWERCASE, "false");
+                .getInstance()
+                .getConfigurationManager()
+                .updateClientConfigurationProperty(
+                        ClientProperty.COMPARE_EXTERNAL_USER_ALIAS_LOWERCASE, "false");
         try {
             userManagement.createOrUpdateExternalUser(userVO);
             Assert.fail("Comparison of usernames should be case sensitive.");
@@ -251,10 +247,10 @@ public class UserManagementTest2 extends CommunoteIntegrationTest {
         }
         // Set comparison to case insensitive.
         CommunoteRuntime
-        .getInstance()
-        .getConfigurationManager()
-        .updateClientConfigurationProperty(
-                ClientProperty.COMPARE_EXTERNAL_USER_ALIAS_LOWERCASE, "true");
+                .getInstance()
+                .getConfigurationManager()
+                .updateClientConfigurationProperty(
+                        ClientProperty.COMPARE_EXTERNAL_USER_ALIAS_LOWERCASE, "true");
         userManagement.createOrUpdateExternalUser(userVO);
     }
 

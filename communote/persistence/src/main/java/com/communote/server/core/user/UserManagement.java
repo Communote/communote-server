@@ -62,13 +62,34 @@ public interface UserManagement {
      *             activated after accepting the terms
      */
     public void acceptTermsOfUse(Long userId) throws AuthorizationException, UserNotFoundException,
-            UserActivationValidationException;
+    UserActivationValidationException;
 
     /**
-     * <p>
-     * Deletes a user by anonymizing his profile and removing the content (notes, topics if
-     * possible) he created. The user will have status DELETED afterwards.
-     * </p>
+     * Delete a user by anonymizing his profile and removing the content (notes, topics if possible)
+     * he created. The user will have status DELETED afterwards and cannot be restored.
+     *
+     * @param userId
+     *            ID of the user to remove
+     * @param blogIds
+     *            an array of IDs of topics in which the user to remove is the only manager. If the
+     *            current user is not a client manager this parameter is ignored.
+     * @param becomeManager
+     *            whether the current user, which has to be a client manager, should become manager
+     *            of the topics identified by the IDs in blogIds array. If false the topics will be
+     *            deleted.
+     * @throws AuthorizationException
+     *             in case the current user is not a client manager or the user to remove
+     * @throws NoClientManagerLeftException
+     *             in case the user to delete is the last active client manager
+     * @throws UserDeletionDisabledException
+     *             in case the anonymization of users is disabled and the current user is not a
+     *             client manager
+     * @throws NoBlogManagerLeftException
+     *             in case there are topics which are managed by the user to remove and have
+     *             additional users with read access but no other managers. If the current user is
+     *             client manager this exception will only be thrown if the IDs of the topics are
+     *             not in the blogIds array. The exception will contain the IDs of the topics that
+     *             would become manager-less.
      */
     public void anonymizeUser(Long userId, Long[] blogIds, boolean becomeManager)
             throws AuthorizationException, NoClientManagerLeftException,
@@ -89,7 +110,7 @@ public interface UserManagement {
      *             system or crawl user role
      */
     public User assignUserRole(Long userId, UserRole role) throws AuthorizationException,
-            InvalidOperationException;
+    InvalidOperationException;
 
     /**
      * Method to change the users alias.
@@ -105,7 +126,7 @@ public interface UserManagement {
      *             Thrown, when the alias is syntactically invalid.
      */
     public boolean changeAlias(Long userId, String newAlias) throws AliasAlreadyExistsException,
-    AliasInvalidException;
+            AliasInvalidException;
 
     /**
      * Changes the email address of an user and validates this new address.
@@ -169,7 +190,7 @@ public interface UserManagement {
      *            The security code.
      */
     public void confirmNewEmailAddress(String securityCode) throws SecurityCodeNotFoundException,
-    EmailAlreadyExistsException;
+            EmailAlreadyExistsException;
 
     /**
      * <p>
@@ -178,8 +199,8 @@ public interface UserManagement {
      * </p>
      */
     public User confirmUser(String securitycode, UserVO user) throws SecurityCodeNotFoundException,
-            EmailValidationException, EmailAlreadyExistsException, AliasAlreadyExistsException,
-            PasswordLengthException, InvalidUserStatusTransitionException;
+    EmailValidationException, EmailAlreadyExistsException, AliasAlreadyExistsException,
+    PasswordLengthException, InvalidUserStatusTransitionException;
 
     /**
      * Creates or updates a user with data retrieved from a external user repository (e.g. via
@@ -344,7 +365,7 @@ public interface UserManagement {
 
     /**
      * Get the number of users with status ACTIVE.
-     * 
+     *
      * @param systemId
      *            ID of an external system to only count the users which originate from this
      *            external system. If null only internal users which can login (have a password)
@@ -401,8 +422,8 @@ public interface UserManagement {
             AuthorizationException;
 
     public User inviteUserToClient(UserVO user) throws EmailValidationException,
-            EmailAlreadyExistsException, AliasAlreadyExistsException,
-            PermanentIdMissmatchException, AuthorizationException;
+    EmailAlreadyExistsException, AliasAlreadyExistsException,
+    PermanentIdMissmatchException, AuthorizationException;
 
     /**
      * <p>
@@ -457,7 +478,7 @@ public interface UserManagement {
      *
      */
     public User removeUserRole(Long userId, UserRole role) throws AuthorizationException,
-            InvalidOperationException, NoClientManagerLeftException;
+    InvalidOperationException, NoClientManagerLeftException;
 
     /**
      * <p>
@@ -544,9 +565,9 @@ public interface UserManagement {
      *             in case the user cannot be activated
      */
     public User updateExternalUser(ExternalUserVO userVO) throws AliasAlreadyExistsException,
-            EmailAlreadyExistsException, EmailValidationException,
-            InvalidUserStatusTransitionException, NoClientManagerLeftException,
-            PermanentIdMissmatchException, UserActivationValidationException;
+    EmailAlreadyExistsException, EmailValidationException,
+    InvalidUserStatusTransitionException, NoClientManagerLeftException,
+    PermanentIdMissmatchException, UserActivationValidationException;
 
     /**
      * Sets the language of the given user to the given language.

@@ -16,20 +16,27 @@ import org.springframework.security.core.context.SecurityContext;
 import com.communote.common.converter.IdentityConverter;
 import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.application.CommunoteRuntime;
+import com.communote.server.api.core.blog.NoBlogManagerLeftException;
 import com.communote.server.api.core.config.ClientConfigurationProperties;
 import com.communote.server.api.core.config.type.ClientProperty;
+import com.communote.server.api.core.image.ImageManager;
+import com.communote.server.api.core.image.type.UserImageDescriptor;
 import com.communote.server.api.core.property.StringPropertyTO;
 import com.communote.server.api.core.security.AuthorizationException;
 import com.communote.server.api.core.user.UserNotFoundException;
 import com.communote.server.core.common.util.ExceptionHelper;
 import com.communote.server.core.external.ExternalUserRepository;
+import com.communote.server.core.image.type.UserImageProvider;
 import com.communote.server.core.security.AuthenticationHelper;
 import com.communote.server.core.security.FieldUserIdentification;
 import com.communote.server.core.security.SecurityHelper;
 import com.communote.server.core.security.UserIdentification;
 import com.communote.server.core.user.AliasAlreadyExistsException;
+import com.communote.server.core.user.NoClientManagerLeftException;
+import com.communote.server.core.user.UserDeletionDisabledException;
 import com.communote.server.core.user.UserGroupManagement;
 import com.communote.server.core.user.UserManagement;
+import com.communote.server.core.user.UserProfileManagement;
 import com.communote.server.core.user.group.AliasValidationException;
 import com.communote.server.core.user.group.GroupNotFoundException;
 import com.communote.server.core.vo.user.group.ExternalGroupVO;
@@ -101,6 +108,10 @@ public class UserService {
 
     @Autowired
     private ExternalUserGroupDao externalUserGroupDao;
+    @Autowired
+    private UserProfileManagement userProfileManagement;
+    @Autowired
+    private ImageManager imageManager;
 
     /**
      * Contains the default core repositories.
@@ -111,6 +122,45 @@ public class UserService {
      * Map comprises mapping of system id to user repository
      */
     private final Map<String, ExternalUserRepository> externalUserRepositories = new ConcurrentHashMap<String, ExternalUserRepository>();
+
+    /**
+     * Delete a user by anonymizing his profile and removing the content (notes, topics if possible)
+     * he created. The user will have status DELETED afterwards and cannot be restored.
+     *
+     * @param userId
+     *            ID of the user to remove
+     * @param blogIds
+     *            an array of IDs of topics in which the user to remove is the only manager. If the
+     *            current user is not a client manager this parameter is ignored.
+     * @param becomeManager
+     *            whether the current user, which has to be a client manager, should become manager
+     *            of the topics identified by the IDs in blogIds array. If false the topics will be
+     *            deleted.
+     * @throws AuthorizationException
+     *             in case the current user is not a client manager or the user to remove
+     * @throws NoClientManagerLeftException
+     *             in case the user to delete is the last active client manager
+     * @throws UserDeletionDisabledException
+     *             in case the anonymization of users is disabled and the current user is not a
+     *             client manager
+     * @throws NoBlogManagerLeftException
+     *             in case there are topics which are managed by the user to remove and have
+     *             additional users with read access but no other managers. If the current user is
+     *             client manager this exception will only be thrown if the IDs of the topics are
+     *             not in the blogIds array. The exception will contain the IDs of the topics that
+     *             would become manager-less.
+     */
+    public void anonymizeUser(Long userId, Long[] blogIds, boolean becomeManager)
+            throws AuthorizationException, NoClientManagerLeftException,
+            UserDeletionDisabledException, NoBlogManagerLeftException {
+        boolean customImage = userProfileManagement.hasCustomUserImage(userId);
+        userManagement.anonymizeUser(userId, blogIds, becomeManager);
+        if (customImage) {
+            // image was removed if user had a custom one
+            imageManager.imageChanged(UserImageDescriptor.IMAGE_TYPE_NAME,
+                    UserImageProvider.PROVIDER_IDENTIFIER, userId.toString());
+        }
+    }
 
     /**
      * Check if group could create automatically

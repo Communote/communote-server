@@ -13,13 +13,13 @@ import com.communote.server.api.core.config.type.ClientProperty;
 import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.api.core.property.PropertyType;
 import com.communote.server.core.security.SecurityHelper;
-import com.communote.server.core.user.UserManagement;
 import com.communote.server.model.blog.Blog;
 import com.communote.server.model.user.User;
 import com.communote.server.model.user.UserNoteProperty;
 import com.communote.server.persistence.blog.NoteDao;
 import com.communote.server.persistence.user.UserDao;
 import com.communote.server.persistence.user.UserNotePropertyDao;
+import com.communote.server.service.UserService;
 import com.communote.server.test.CommunoteIntegrationTest;
 import com.communote.server.test.util.AuthenticationTestUtils;
 import com.communote.server.test.util.TestUtils;
@@ -71,8 +71,8 @@ public class UserManagementIntegrationTest extends CommunoteIntegrationTest {
             Assert.assertNotNull(ServiceLocator.findService(UserNotePropertyDao.class).load(
                     propertyIds[i]));
         }
-        ServiceLocator.instance().getService(UserManagement.class)
-        .anonymizeUser(user.getId(), new Long[] { blog.getId() }, true);
+        ServiceLocator.findService(UserService.class).anonymizeUser(user.getId(),
+                new Long[] { blog.getId() }, true);
         Assert.assertNotNull(ServiceLocator.findService(UserDao.class).load(user.getId()));
         Assert.assertNull(ServiceLocator.findService(NoteDao.class).load(noteId));
         for (long propertyId : propertyIds) {

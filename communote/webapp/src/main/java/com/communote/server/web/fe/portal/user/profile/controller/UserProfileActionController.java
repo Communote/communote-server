@@ -38,6 +38,7 @@ import com.communote.server.core.user.UserManagement;
 import com.communote.server.core.user.UserManagementException;
 import com.communote.server.model.user.ImageSizeType;
 import com.communote.server.service.UserProfileService;
+import com.communote.server.service.UserService;
 import com.communote.server.web.api.to.ApiResult;
 import com.communote.server.web.commons.FormAction;
 import com.communote.server.web.commons.MessageHelper;
@@ -139,7 +140,8 @@ public class UserProfileActionController extends MultiActionController {
             userId = SecurityHelper.getCurrentUserId();
 
             if (DELETE_MODE_ANONYMIZE.equals(deleteMode)) {
-                um.anonymizeUser(userId, new Long[] { }, false);
+                ServiceLocator.findService(UserService.class).anonymizeUser(userId, new Long[] { },
+                        false);
             } else {
                 um.permanentlyDisableUser(userId, new Long[] { }, false);
             }
