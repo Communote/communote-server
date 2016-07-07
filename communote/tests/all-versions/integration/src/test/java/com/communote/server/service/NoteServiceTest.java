@@ -1,19 +1,24 @@
 package com.communote.server.service;
 
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.communote.common.converter.IdentityConverter;
 import com.communote.server.api.ServiceLocator;
+import com.communote.server.api.core.note.NoteData;
 import com.communote.server.api.core.note.NoteManagementAuthorizationException;
-import com.communote.server.api.core.security.AuthorizationException;
+import com.communote.server.api.core.note.NoteRenderContext;
+import com.communote.server.api.core.note.NoteRenderMode;
+import com.communote.server.api.core.note.processor.NoteRenderingPreProcessorManager;
 import com.communote.server.model.blog.Blog;
 import com.communote.server.model.note.Note;
 import com.communote.server.model.user.User;
 import com.communote.server.persistence.blog.NoteDao;
-import com.communote.server.service.NoteService;
 import com.communote.server.test.CommunoteIntegrationTest;
+import com.communote.server.test.note.DummyCachingNoteRenderingProcessor;
 import com.communote.server.test.util.AuthenticationTestUtils;
 import com.communote.server.test.util.TestUtils;
 
@@ -31,15 +36,20 @@ public class NoteServiceTest extends CommunoteIntegrationTest {
      * This tests {@link NoteService#deleteNotesOfUser(Long)}, especially if the update of the last
      * discussion creation date works.
      *
-     * @throws AuthorizationException
-     *             The test should fail, if this occurs.
+     * @throws Exception
+     *             in case the test failed
      */
     @Test
-    public void testDeleteNotesOfUser() throws AuthorizationException {
+    public void testDeleteNotesOfUser() throws Exception {
         NoteDao noteDao = ServiceLocator.findService(NoteDao.class);
         User user1 = TestUtils.createRandomUser(true);
         User user2 = TestUtils.createRandomUser(true);
         Blog topic = TestUtils.createRandomBlog(false, false, user1, user2);
+
+        // ensure the content cache is correctly invalidated
+        DummyCachingNoteRenderingProcessor preProcessor = new DummyCachingNoteRenderingProcessor();
+        ServiceLocator.findService(NoteRenderingPreProcessorManager.class).addProcessor(
+                preProcessor);
 
         // Root note without answer -> Discussion is null
         Long parentNoteId = TestUtils.createAndStoreCommonNote(topic, user2.getId(), "Test");
@@ -47,8 +57,13 @@ public class NoteServiceTest extends CommunoteIntegrationTest {
         Assert.assertNull(noteDao.load(parentNoteId));
 
         // Root note with answer from other user -> Anonymize
-        parentNoteId = TestUtils.createAndStoreCommonNote(topic, user2.getId(), "Test");
-        long date = noteDao.load(parentNoteId).getLastDiscussionNoteCreationDate().getTime();
+        parentNoteId = TestUtils.createAndStoreCommonNote(topic, user2.getId(),
+                "Test note content with #hash-tag and mention @" + user1.getAlias());
+        NoteData noteToAnonymize = noteService.getNote(parentNoteId, new NoteRenderContext(
+                NoteRenderMode.PORTAL, Locale.ENGLISH));
+        // 2 because all notes created with createAndStoreCommonNote get a random tag
+        Assert.assertEquals(noteToAnonymize.getTags().size(), 2);
+        Assert.assertEquals(noteToAnonymize.getNotifiedUsers().size(), 1);
         sleep(1200);
         Long answerId = TestUtils.createAndStoreCommonNote(topic, user1.getId(), "Test",
                 parentNoteId);
@@ -56,12 +71,17 @@ public class NoteServiceTest extends CommunoteIntegrationTest {
         Assert.assertEquals(answerDate, noteDao.load(parentNoteId)
                 .getLastDiscussionNoteCreationDate().getTime());
         noteService.deleteNotesOfUser(user2.getId());
-        Assert.assertEquals(answerDate, noteDao.load(parentNoteId)
-                .getLastDiscussionNoteCreationDate().getTime());
+        NoteData anonymizedNote = noteService.getNote(parentNoteId, new NoteRenderContext(
+                NoteRenderMode.PORTAL, Locale.ENGLISH));
+        Assert.assertNotEquals(anonymizedNote.getContent(), noteToAnonymize.getContent(),
+                "Content was not anonymized");
+        Assert.assertEquals(answerDate, anonymizedNote.getLastDiscussionCreationDate().getTime());
+        Assert.assertEquals(anonymizedNote.getTags().size(), 0);
+        Assert.assertEquals(anonymizedNote.getNotifiedUsers().size(), 0);
 
         // Answer from "deleted" user. -> Discussion will be refreshed.
         parentNoteId = TestUtils.createAndStoreCommonNote(topic, user1.getId(), "Test");
-        date = noteDao.load(parentNoteId).getLastDiscussionNoteCreationDate().getTime();
+        long date = noteDao.load(parentNoteId).getLastDiscussionNoteCreationDate().getTime();
         sleep(1200);
         answerId = TestUtils.createAndStoreCommonNote(topic, user2.getId(), "Test", parentNoteId);
         Assert.assertNotEquals(date, noteDao.load(parentNoteId).getLastDiscussionNoteCreationDate()
@@ -70,6 +90,8 @@ public class NoteServiceTest extends CommunoteIntegrationTest {
         Assert.assertNull(noteDao.load(answerId));
         Assert.assertEquals(date, noteDao.load(parentNoteId).getLastDiscussionNoteCreationDate()
                 .getTime());
+        ServiceLocator.findService(NoteRenderingPreProcessorManager.class).removeProcessor(
+                preProcessor);
     }
 
     /**
