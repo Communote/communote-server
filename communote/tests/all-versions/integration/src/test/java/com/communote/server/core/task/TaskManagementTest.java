@@ -124,7 +124,8 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
      */
     @Test
     public void testFailTaskExecution() throws Exception {
-        String uniqueTaskName = UUID.randomUUID().toString();
+        String uniqueTaskNamePrefix = UUID.randomUUID().toString() + "_fail_";
+        String uniqueTaskName = uniqueTaskNamePrefix + "1";
         taskManagement.addTask(uniqueTaskName, true, 0L, new Date(), TestTaskHandler.class);
         taskManagement.startTaskExecution(uniqueTaskName);
         taskManagement.failTaskExecution(uniqueTaskName);
@@ -135,7 +136,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         taskManagement.failTaskExecution(UUID.randomUUID().toString());
 
         // test robustness with not running tasks
-        uniqueTaskName = UUID.randomUUID().toString();
+        uniqueTaskName = uniqueTaskNamePrefix + "2";
         taskManagement.addTask(uniqueTaskName, true, 0L, new Date(), TestTaskHandler.class);
         taskManagement.failTaskExecution(uniqueTaskName);
 
@@ -146,7 +147,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         taskExecutionDao.update(taskExecution);
         try {
             taskManagement.failTaskExecution(uniqueTaskName);
-            Assert.fail("It must be possible to fail a task of other instances.");
+            Assert.fail("It must not be possible to fail a task of other instances.");
         } catch (InvalidInstanceException e) {
             // All right.
         }
@@ -162,13 +163,14 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
     public void testGetNextScheduledTask() throws Exception {
         TaskTO task = taskManagement.getNextScheduledTask();
         Assert.assertNull(task);
-
+        String uniqueTaskNamePrefix = UUID.randomUUID().toString() + "_getNext_";
+        String uniqueTaskName = uniqueTaskNamePrefix + "single";
         taskManagement.addTask(UUID.randomUUID().toString(), true, 0L, new Date(5000000000L),
                 new HashMap<String, String>(), TestTaskHandler.class);
         Assert.assertNotNull(taskManagement.getNextScheduledTask());
         Assert.assertNull(taskManagement.getNextScheduledTask(new Date(5000000000L)));
         for (int i = 10 + RandomUtils.nextInt(32); i > 0; i--) {
-            String uniqueTaskName = UUID.randomUUID().toString();
+            uniqueTaskName = uniqueTaskNamePrefix + i;
             taskManagement.addTask(uniqueTaskName, true, 0L, new Date(10000000 * i),
                     new HashMap<String, String>(), TestTaskHandler.class);
             task = taskManagement.getNextScheduledTask();
@@ -186,7 +188,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
     @Test
     public void testKillTaskExecution() throws Exception {
         // test killing running task
-        String uniqueTaskName = UUID.randomUUID().toString();
+        String uniqueTaskName = UUID.randomUUID().toString() + "_kill";
         taskManagement.addTask(uniqueTaskName, true, 0L, new Date(), new HashMap<String, String>(),
                 TestTaskHandler.class);
         Long executionId = taskManagement.startTaskExecution(uniqueTaskName);
@@ -230,7 +232,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         long millis = (System.currentTimeMillis() / 1000L) * 1000L;
         Date oldStart = new Date(millis + 120000);
         Date newStart = new Date(oldStart.getTime() - 2000);
-        String uniqueTaskName = UUID.randomUUID().toString();
+        String uniqueTaskName = UUID.randomUUID().toString() + "_reschedule";
         taskManagement.addTask(uniqueTaskName, true, 0L, oldStart, TestTaskHandler.class);
         taskManagement.rescheduleTask(uniqueTaskName, newStart);
         Task task = taskDao.findTaskByUniqueName(uniqueTaskName);
@@ -265,7 +267,8 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
     @Test
     public void testStartTaskExecution() throws Exception {
         // test that inactive tasks cannot be started
-        String uniqueTaskName = UUID.randomUUID().toString();
+        String uniqueTaskNamePrefix = UUID.randomUUID().toString() + "_start_";
+        String uniqueTaskName = uniqueTaskNamePrefix + "1";
         taskManagement.addTask(uniqueTaskName, false, 0L, new Date(),
                 new HashMap<String, String>(), TestTaskHandler.class);
         try {
@@ -276,7 +279,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         }
 
         // test that tasks can be started
-        uniqueTaskName = UUID.randomUUID().toString();
+        uniqueTaskName = uniqueTaskNamePrefix + "2";
         Long taskId = taskManagement.addTask(uniqueTaskName, true, 0L, new Date(),
                 new HashMap<String, String>(), TestTaskHandler.class);
         Long executionId = taskManagement.startTaskExecution(uniqueTaskName);
@@ -305,7 +308,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         }
 
         // test that tasks with future nextExecution timestamp cannot be started
-        uniqueTaskName = UUID.randomUUID().toString();
+        uniqueTaskName = uniqueTaskNamePrefix + "3";
         Date executionTime = new Date(new Date().getTime() + 300000);
         taskManagement.addTask(uniqueTaskName, true, 0L, executionTime, TestTaskHandler.class);
         executionId = taskManagement.startTaskExecution(uniqueTaskName);
@@ -322,15 +325,17 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
     @Test
     public void testStopAllTaskExecutions() throws Exception {
         List<String> taskNames = new ArrayList<String>();
+        String uniqueTaskNamePrefix = UUID.randomUUID().toString() + "_stopAll_";
         for (int i = 0; i < 10 + RandomUtils.nextInt(32); i++) {
-            String uniqueTaskName = UUID.randomUUID().toString();
+            String uniqueTaskName = uniqueTaskNamePrefix + i;
             taskManagement.addTask(uniqueTaskName, true, 0L, new Date(), TestTaskHandler.class);
             taskManagement.startTaskExecution(uniqueTaskName);
             taskNames.add(uniqueTaskName);
         }
+        uniqueTaskNamePrefix += "fail_";
         List<String> failedTaskNames = new ArrayList<String>();
-        for (int e = 0; e < 10 + RandomUtils.nextInt(32); e++) {
-            String uniqueTaskName = UUID.randomUUID().toString();
+        for (int i = 0; i < 10 + RandomUtils.nextInt(32); i++) {
+            String uniqueTaskName = uniqueTaskNamePrefix + i;
             taskManagement.addTask(uniqueTaskName, true, 0L, new Date(), TestTaskHandler.class);
             taskManagement.startTaskExecution(uniqueTaskName);
             taskManagement.failTaskExecution(uniqueTaskName);
@@ -340,20 +345,35 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         Assert.assertEquals(taskExecutionDao.findTaskExecutions(instanceName).size(),
                 failedTaskNames.size());
         for (String taskName : taskNames) {
-            Assert.assertNull(taskDao.findTaskByUniqueName(taskName));
+            Assert.assertNull(taskDao.findTaskByUniqueName(taskName), "Task " + taskName
+                    + " still exists");
         }
         for (String failedTaskName : failedTaskNames) {
             Task taskByUniqueName = taskDao.findTaskByUniqueName(failedTaskName);
-            Assert.assertNotNull(taskByUniqueName);
-            Assert.assertEquals(taskByUniqueName.getTaskStatus(), TaskStatus.FAILED);
+            Assert.assertNotNull(taskByUniqueName, "Task " + failedTaskName + " does not exist");
+            Assert.assertEquals(taskByUniqueName.getTaskStatus(), TaskStatus.FAILED, "Task "
+                    + failedTaskName + " is not FAILED");
         }
 
         // test reset of failed tasks with reschedule date
         taskManagement.stopAllTaskExecutions(true, new Date());
+        long nextExecutionMax = 0L;
         for (String failedTaskName : failedTaskNames) {
             Task taskByUniqueName = taskDao.findTaskByUniqueName(failedTaskName);
-            Assert.assertNotNull(taskByUniqueName);
-            Assert.assertEquals(taskByUniqueName.getTaskStatus(), TaskStatus.PENDING);
+            Assert.assertNotNull(taskByUniqueName, "Task " + failedTaskName + " does not exist");
+            Assert.assertEquals(taskByUniqueName.getTaskStatus(), TaskStatus.PENDING, "Task "
+                    + failedTaskName + " is not PENDING");
+            // task is not always rescheduled to the provided time, sometimes a little offset is
+            // added to reduce load. To avoid that the next test fails save the actual time of the
+            // next execution
+            if (taskByUniqueName.getNextExecution().getTime() > nextExecutionMax) {
+                nextExecutionMax = taskByUniqueName.getNextExecution().getTime();
+            }
+        }
+        long now = System.currentTimeMillis();
+        if (now < nextExecutionMax) {
+            // calls to start are ignored if start date is in future, wait if necessary
+            sleep(nextExecutionMax - now);
         }
         // test reset of failed tasks without reschedule date
         for (String failedTaskName : failedTaskNames) {
@@ -363,7 +383,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         taskManagement.stopAllTaskExecutions(true, null);
         for (String failedTaskName : failedTaskNames) {
             Task taskByUniqueName = taskDao.findTaskByUniqueName(failedTaskName);
-            Assert.assertNull(taskByUniqueName);
+            Assert.assertNull(taskByUniqueName, "Task " + failedTaskName + " still exists");
         }
     }
 
@@ -376,7 +396,8 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
      */
     @Test
     public void testStopTaskExecution() throws Exception {
-        String uniqueTaskName = UUID.randomUUID().toString();
+        String uniqueTaskNamePrefix = UUID.randomUUID().toString() + "_stop_";
+        String uniqueTaskName = uniqueTaskNamePrefix + "1";
         Long taskId = taskManagement.addTask(uniqueTaskName, true, 0L, new Date(),
                 TestTaskHandler.class);
         taskManagement.startTaskExecution(uniqueTaskName);
@@ -393,7 +414,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         Assert.assertNull(taskExecutionDao.findTaskExecution(uniqueTaskName));
         Assert.assertFalse(now.after(taskDao.load(taskId).getNextExecution()));
 
-        uniqueTaskName = UUID.randomUUID().toString();
+        uniqueTaskName = uniqueTaskNamePrefix + "2";
         taskId = taskManagement
                 .addTask(uniqueTaskName, true, 0L, new Date(), TestTaskHandler.class);
         Calendar calendar = Calendar.getInstance();
@@ -405,7 +426,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         Assert.assertNull(taskExecutionDao.findTaskExecution(uniqueTaskName));
         Assert.assertEquals(taskDao.load(taskId).getNextExecution(), rescheduleDate);
 
-        uniqueTaskName = UUID.randomUUID().toString();
+        uniqueTaskName = uniqueTaskNamePrefix + "3";
         taskId = taskManagement
                 .addTask(uniqueTaskName, true, 0L, new Date(), TestTaskHandler.class);
         TaskExecution taskExecution = TaskExecution.Factory.newInstance(UUID.randomUUID()
@@ -419,7 +440,7 @@ public class TaskManagementTest extends CommunoteIntegrationTest {
         }
 
         // Test that failed tasks cannot be stopped
-        uniqueTaskName = UUID.randomUUID().toString();
+        uniqueTaskName = uniqueTaskNamePrefix + "4";
         taskId = taskManagement
                 .addTask(uniqueTaskName, true, 0L, new Date(), TestTaskHandler.class);
         Long execId = taskManagement.startTaskExecution(uniqueTaskName);
