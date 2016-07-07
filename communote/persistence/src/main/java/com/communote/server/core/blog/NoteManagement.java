@@ -101,18 +101,18 @@ public interface NoteManagement {
             throws NoteManagementAuthorizationException;
 
     /**
-     * Deletes all notes and drafts of a user. Comments on these posts are converted to normal
-     * notes. If the current user is not allowed to delete these notes, i.e. he is not client
-     * manager or the creator of the posts, a NoteManagementAuthorizationException is thrown.+
+     * Delete all notes and drafts of a user. If one of these notes has comments it is not deleted,
+     * the content is anonymized instead to preserve the discussion. Additional note data like
+     * attachments, mentions and tags are removed.
      *
      * @param userId
-     *            Id of the user, the notes should be deleted for.
+     *            ID of the user whose notes should be deleted
      * @throws AuthorizationException
-     *             Thrown, when it is not allowed to delete the notes of this user.
-     * @return Set of changed discussions.
+     *             in case the current user is not the internal system user, the client manager or
+     *             the creator of the notes
+     * @return the IDs of the discussions which were modified because of the removal of notes
      */
-    public Set<Long> deleteNotesOfUser(Long userId)
-            throws com.communote.server.api.core.security.AuthorizationException;
+    public Set<Long> deleteNotesOfUser(Long userId) throws AuthorizationException;
 
     /***
      * Return an autosave of the current user. The parameters noteId and parentNoteId can be used to

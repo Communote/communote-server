@@ -149,14 +149,15 @@ public class NoteService {
     }
 
     /**
-     * Deletes all notes and drafts of a user. Comments on these posts are converted to normal
-     * notes. If the current user is not allowed to delete these notes, i.e. he is not client
-     * manager or the creator of the posts, a NoteManagementAuthorizationException is thrown.+
+     * Delete all notes and drafts of a user. If one of these notes has comments it is not deleted,
+     * the content is anonymized instead to preserve the discussion. Additional note data like
+     * attachments, mentions and tags are removed.
      *
      * @param userId
-     *            Id of the user, the notes should be deleted for.
+     *            ID of the user whose notes should be deleted
      * @throws AuthorizationException
-     *             Thrown, when it is not allowed to delete the notes of this user.
+     *             in case the current user is not the internal system user, the client manager or
+     *             the creator of the notes
      */
     public void deleteNotesOfUser(Long userId) throws AuthorizationException {
         Set<Long> dicussionIds = noteManagement.deleteNotesOfUser(userId);

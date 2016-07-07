@@ -939,14 +939,14 @@ public class NoteManagementImpl extends NoteManagementBase {
         final Set<Long> deletedNotes = new HashSet<>();
         try {
             if (!SecurityHelper.isInternalSystem()) {
-                // change the security context in case it is a different user (e.g. the topic
-                // manager)
-                // deleting the note
+                // change the security context in case it is a different user (e.g. the client
+                // manager) deleting the note
                 switchedAuth = true;
                 currentSecurityContext = AuthenticationHelper.setInternalSystemToSecurityContext();
             }
             // TODO better user the client locale?
             Locale locale = userDao.load(userId).getLanguageLocale();
+            // TODO might lead to OOM exception!
             Collection<Note> notes = noteDao.getNotesOfUser(userId);
 
             for (Note note : notes) {
