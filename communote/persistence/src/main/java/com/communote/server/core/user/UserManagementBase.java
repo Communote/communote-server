@@ -29,7 +29,7 @@ import com.communote.server.persistence.user.ExternalUserVO;
 public abstract class UserManagementBase implements UserManagement {
     @Override
     public void acceptTermsOfUse(Long userId) throws UserNotFoundException, AuthorizationException,
-    UserActivationValidationException {
+            UserActivationValidationException {
         if (userId == null) {
             throw new IllegalArgumentException("'userId' cannot be null");
         }
@@ -59,7 +59,7 @@ public abstract class UserManagementBase implements UserManagement {
 
     @Override
     public User assignUserRole(Long userId, UserRole role) throws AuthorizationException,
-    InvalidOperationException {
+            InvalidOperationException {
         if (userId == null) {
             throw new IllegalArgumentException(
                     "com.communote.server.service.user.UserManagement.assignUserRole(Long userId, UserRole role) - 'userId' can not be null");
@@ -132,7 +132,7 @@ public abstract class UserManagementBase implements UserManagement {
         try {
             handleChangeUserStatusByManager(userId, newStatus);
         } catch (RuntimeException rt) {
-            throw new UserManagementException("Unexpected exception changing user status");
+            throw new UserManagementException("Unexpected exception changing user status", rt);
         }
 
     }
@@ -384,7 +384,7 @@ public abstract class UserManagementBase implements UserManagement {
     }
 
     protected abstract void handleAcceptTermsOfUse(Long userId) throws UserNotFoundException,
-            AuthorizationException, UserActivationValidationException;
+    AuthorizationException, UserActivationValidationException;
 
     /**
      * Performs the core logic for {@link #anonymizeUser(Long, Long[], boolean)}
@@ -420,8 +420,8 @@ public abstract class UserManagementBase implements UserManagement {
      */
     protected abstract boolean handleChangeEmailAddress(Long userId, String newEmail,
             boolean sendConfirmationLink)
-            throws com.communote.server.api.core.common.EmailValidationException,
-            EmailAlreadyExistsException;
+                    throws com.communote.server.api.core.common.EmailValidationException,
+                    EmailAlreadyExistsException;
 
     /**
      * Performs the core logic for {@link #changePassword(Long, String)}
@@ -451,15 +451,6 @@ public abstract class UserManagementBase implements UserManagement {
             InvalidUserStatusTransitionException;
 
     /**
-     * Performs the core logic for {@link #createUser(UserVO, boolean, boolean)}
-     */
-    protected abstract User handleCreateUser(UserVO user, boolean emailConfirmation,
-            boolean managerConfirmation) throws EmailAlreadyExistsException,
-            com.communote.server.api.core.common.EmailValidationException,
-            AliasAlreadyExistsException,
-            com.communote.server.core.common.exceptions.PasswordLengthException;
-
-    /**
      * Performs the core logic for {@link #createOrUpdateExternalUser(ExternalUserVO)}
      */
     protected abstract User handleCreateOrUpdateExternalUser(ExternalUserVO userVO)
@@ -467,6 +458,15 @@ public abstract class UserManagementBase implements UserManagement {
             EmailAlreadyExistsException, AliasAlreadyExistsException,
             InvalidUserStatusTransitionException, UserActivationValidationException,
             NoClientManagerLeftException, PermanentIdMissmatchException;
+
+    /**
+     * Performs the core logic for {@link #createUser(UserVO, boolean, boolean)}
+     */
+    protected abstract User handleCreateUser(UserVO user, boolean emailConfirmation,
+            boolean managerConfirmation) throws EmailAlreadyExistsException,
+            com.communote.server.api.core.common.EmailValidationException,
+            AliasAlreadyExistsException,
+            com.communote.server.core.common.exceptions.PasswordLengthException;
 
     /**
      * Performs the core logic for {@link #findUserByAlias(String)}
@@ -526,10 +526,10 @@ public abstract class UserManagementBase implements UserManagement {
      */
     protected abstract void handlePermanentlyDisableUser(Long userId, Long[] blogIds,
             boolean becomeManager)
-            throws com.communote.server.api.core.security.AuthorizationException,
-            NoClientManagerLeftException, UserDeletionDisabledException,
-            InvalidUserStatusTransitionException,
-            com.communote.server.api.core.blog.NoBlogManagerLeftException;
+                    throws com.communote.server.api.core.security.AuthorizationException,
+                    NoClientManagerLeftException, UserDeletionDisabledException,
+                    InvalidUserStatusTransitionException,
+                    com.communote.server.api.core.blog.NoBlogManagerLeftException;
 
     /**
      * Performs the core logic for {@link #registerUser(String, java.util.Locale)}
@@ -700,7 +700,7 @@ public abstract class UserManagementBase implements UserManagement {
 
     @Override
     public User removeUserRole(Long userId, UserRole role) throws AuthorizationException,
-    InvalidOperationException, NoClientManagerLeftException {
+            InvalidOperationException, NoClientManagerLeftException {
         if (userId == null) {
             throw new IllegalArgumentException(
                     "com.communote.server.service.user.UserManagement.removeUserRole(Long userId, UserRole role) - 'userId' can not be null");
@@ -776,10 +776,10 @@ public abstract class UserManagementBase implements UserManagement {
 
     @Override
     public User updateExternalUser(ExternalUserVO userVO) throws AliasAlreadyExistsException,
-    EmailAlreadyExistsException,
-    com.communote.server.api.core.common.EmailValidationException,
-    UserActivationValidationException, InvalidUserStatusTransitionException,
-    NoClientManagerLeftException, PermanentIdMissmatchException {
+            EmailAlreadyExistsException,
+            com.communote.server.api.core.common.EmailValidationException,
+            UserActivationValidationException, InvalidUserStatusTransitionException,
+            NoClientManagerLeftException, PermanentIdMissmatchException {
         if (userVO == null) {
             throw new IllegalArgumentException(
                     "com.communote.server.service.user.UserManagement.updateExternalUser(ExternalUserVO userVO) - 'userVO' can not be null");
