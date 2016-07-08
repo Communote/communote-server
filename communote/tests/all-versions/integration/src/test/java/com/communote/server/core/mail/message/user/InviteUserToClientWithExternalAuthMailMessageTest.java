@@ -1,9 +1,9 @@
 package com.communote.server.core.mail.message.user;
 
 import com.communote.server.core.mail.MailManagement;
-import com.communote.server.core.mail.MailMessageCommunoteIntegrationTest;
 import com.communote.server.core.mail.messages.user.InviteUserToClientWithExternalAuthMailMessage;
 import com.communote.server.model.user.User;
+import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
 
 
 /**

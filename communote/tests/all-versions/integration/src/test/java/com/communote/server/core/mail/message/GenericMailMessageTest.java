@@ -1,10 +1,10 @@
 package com.communote.server.core.mail.message;
 
 import com.communote.server.core.mail.MailManagement;
-import com.communote.server.core.mail.MailMessageCommunoteIntegrationTest;
 import com.communote.server.core.mail.messages.GenericMailMessage;
 import com.communote.server.core.mail.messages.MailMessage;
 import com.communote.server.model.user.User;
+import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
 
 /**
  * This tests all message keys without own {@link MailMessage} implementation.

@@ -1,9 +1,9 @@
 package com.communote.server.core.mail.message.fetching;
 
 import com.communote.server.core.mail.MailManagement;
-import com.communote.server.core.mail.MailMessageCommunoteIntegrationTest;
 import com.communote.server.core.mail.messages.GenericMailMessage;
 import com.communote.server.model.user.User;
+import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
 
 
 /**

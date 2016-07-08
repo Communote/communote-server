@@ -1,15 +1,18 @@
 package com.communote.server.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -220,6 +223,14 @@ public abstract class CommunoteIntegrationTest {
     }
 
     /**
+     * @return the type of the database on which the test is running. Will be null if
+     *         setupIntegrationTest has not yet been executed.
+     */
+    protected DatabaseType getDatabaseType() {
+        return databaseType;
+    }
+
+    /**
      * Initialize the schema from the data.*.sql and post-data.*.sql scripts. This will also add
      * some additional content.
      *
@@ -231,12 +242,7 @@ public abstract class CommunoteIntegrationTest {
         URL postDataSqlResource = DatabaseUtils.getRequiredSqlScriptResource("post-data",
                 databaseType);
         try (Connection connection = DriverManager.getConnection(jdbcURL, username, password)) {
-            if (databaseType.getIdentifier().equals("ORACLE")) {
-                // ORACLE does not support execution of multiple lines in one statement
-                DatabaseUtils.runSqlScriptLineByLine(connection, dataSqlResource, null, true);
-            } else {
-                DatabaseUtils.runSqlScript(connection, dataSqlResource, null, true);
-            }
+            runDataSqlScript(connection, dataSqlResource, null);
             HashMap<String, String> replacements = new HashMap<String, String>();
             replacements.put("@@UNIQUE_ID@@", UNIQUE_CLIENT_ID);
             Calendar installationDate = Calendar.getInstance();
@@ -245,12 +251,7 @@ public abstract class CommunoteIntegrationTest {
                     .format(installationDate.getTime()));
             replacements.put("@@INSTALLATION_DATE@@", EncryptionUtils.encrypt(
                     Long.toString(installationDate.getTimeInMillis()), UNIQUE_CLIENT_ID));
-            if (databaseType.getIdentifier().equals("ORACLE")) {
-                DatabaseUtils.runSqlScriptLineByLine(connection, postDataSqlResource, replacements,
-                        true);
-            } else {
-                DatabaseUtils.runSqlScript(connection, postDataSqlResource, replacements, true);
-            }
+            runDataSqlScript(connection, postDataSqlResource, replacements);
         }
     }
 
@@ -259,6 +260,16 @@ public abstract class CommunoteIntegrationTest {
      */
     public String random() {
         return UUID.randomUUID().toString();
+    }
+
+    protected void runDataSqlScript(Connection connection, URL dataSqlResource,
+            Map<String, String> replacements) throws IOException, SQLException {
+        if (databaseType.getIdentifier().equals("ORACLE")) {
+            // ORACLE does not support execution of multiple lines in one statement
+            DatabaseUtils.runSqlScriptLineByLine(connection, dataSqlResource, replacements, true);
+        } else {
+            DatabaseUtils.runSqlScript(connection, dataSqlResource, replacements, true);
+        }
     }
 
     /**
@@ -425,7 +436,7 @@ public abstract class CommunoteIntegrationTest {
      *            the base directory of the test. This directory must contain a subdirectory named
      *            communote which contains META-INF/MANIFEST.MF.
      * @param dbTypeIdentifier
-     *            Identifier of the databaseName type to use. (Default: POSTGRESQL)
+     *            Identifier of the database type to use. (Default: POSTGRESQL)
      * @param dbHost
      *            The databaseName host (Default: localhost).
      * @param dbPort

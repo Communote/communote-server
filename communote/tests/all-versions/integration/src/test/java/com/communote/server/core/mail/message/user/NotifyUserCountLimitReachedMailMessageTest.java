@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.UUID;
 
 import com.communote.server.core.mail.MailManagement;
-import com.communote.server.core.mail.MailMessageCommunoteIntegrationTest;
 import com.communote.server.core.mail.messages.user.NotifyUserCountLimitReachedMailMessage;
 import com.communote.server.model.user.User;
+import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
 
 /**
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>

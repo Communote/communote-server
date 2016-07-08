@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.UUID;
 
 import com.communote.server.core.mail.MailManagement;
-import com.communote.server.core.mail.MailMessageCommunoteIntegrationTest;
 import com.communote.server.core.mail.messages.fetching.WarningMailMessage;
 import com.communote.server.model.user.User;
+import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
 
 
 /**

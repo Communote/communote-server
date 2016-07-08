@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.communote.server.core.mail.MailManagement;
-import com.communote.server.core.mail.MailMessageCommunoteIntegrationTest;
 import com.communote.server.core.mail.messages.user.manager.ActivateUserForManagerMailMessage;
 import com.communote.server.model.user.User;
+import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
 
 
 /**

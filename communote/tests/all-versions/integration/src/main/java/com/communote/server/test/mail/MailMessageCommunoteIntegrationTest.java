@@ -1,4 +1,4 @@
-package com.communote.server.core.mail;
+package com.communote.server.test.mail;
 
 import java.util.Locale;
 

@@ -12,7 +12,6 @@ import com.communote.server.core.general.RunInTransaction;
 import com.communote.server.core.general.TransactionException;
 import com.communote.server.core.general.TransactionManagement;
 import com.communote.server.core.mail.MailManagement;
-import com.communote.server.core.mail.MailMessageCommunoteIntegrationTest;
 import com.communote.server.core.mail.messages.user.NotifyAboutNoteMailMessage;
 import com.communote.server.core.messaging.NotificationDefinition.NotificationTypes;
 import com.communote.server.core.messaging.definitions.MentionNotificationDefinition;
@@ -20,6 +19,7 @@ import com.communote.server.model.blog.Blog;
 import com.communote.server.model.note.Note;
 import com.communote.server.model.user.User;
 import com.communote.server.persistence.blog.NoteDao;
+import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
 import com.communote.server.test.util.TestUtils;
 
 /**
