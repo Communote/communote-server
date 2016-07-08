@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Mailing Integration Test Suite" verbose="1">
-    <parameter name="skipDatabaseGeneration" value="true" />
-    <parameter name="skipApplicationInitializing" value="true" />
+    <parameter name="skipDatabaseCreation" value="true" />
+    <parameter name="skipApplicationInitialization" value="true" />
     <test name="Communote Integrationstests - Initialization Test">
         <!-- This test initializes the database and application. -->
-        <parameter name="skipDatabaseGeneration" value="false" />
-        <parameter name="skipApplicationInitializing" value="false" />
+        <parameter name="skipDatabaseCreation" value="false" />
+        <parameter name="skipApplicationInitialization" value="false" />
         <classes>
             <class name="com.communote.server.test.SimpleCommunoteIntegrationTest" />
         </classes>

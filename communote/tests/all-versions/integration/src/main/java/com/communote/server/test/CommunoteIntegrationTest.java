@@ -176,7 +176,7 @@ public abstract class CommunoteIntegrationTest {
 
     /**
      * Create and fill the core properties. Will be triggered by
-     * {@link #setupApplication(String, String)} if skipApplicationInitializing option is false.
+     * {@link #setupApplication(String, String)} if skipApplicationInitialization option is false.
      *
      * @return the prepared properties
      */
@@ -277,17 +277,17 @@ public abstract class CommunoteIntegrationTest {
      *
      * @param instanceName
      *            Name of the instance. Should only contain [a-Z0-9-_.]
-     * @param skipApplicationInitializing
+     * @param skipApplicationInitialization
      *            If set to <code>true</code>, the application wont' be initialized. (Default:
      *            "false")
      * @throws Exception
      *             Exception.
      */
-    @Parameters({ "instanceName", "skipApplicationInitializing" })
+    @Parameters({ "instanceName", "skipApplicationInitialization" })
     @BeforeClass(dependsOnMethods = "setupDatabase", groups = GROUP_INTEGRATION_TEST_SETUP)
     public void setupApplication(@Optional String instanceName,
-            @Optional("false") String skipApplicationInitializing) throws Exception {
-        if (Boolean.parseBoolean(skipApplicationInitializing)) {
+            @Optional("false") String skipApplicationInitialization) throws Exception {
+        if (Boolean.parseBoolean(skipApplicationInitialization)) {
             return;
         }
         if (instanceName == null || instanceName.length() == 0) {
@@ -375,16 +375,16 @@ public abstract class CommunoteIntegrationTest {
     /**
      * Drop and recreates the databaseName from the template files.
      *
-     * @param skipDatabaseGeneration
+     * @param skipDatabaseCreation
      *            If set to true, the databaseName creation will be skipped (Default: false).
      *
      * @throws Exception
      *             Exception.
      */
-    @Parameters({ "skipDatabaseGeneration" })
+    @Parameters({ "skipDatabaseCreation" })
     @BeforeClass(dependsOnMethods = { "setupIntegrationTest" }, groups = GROUP_INTEGRATION_TEST_SETUP)
-    public void setupDatabase(@Optional("false") String skipDatabaseGeneration) throws Exception {
-        if (BooleanUtils.toBoolean(skipDatabaseGeneration)) {
+    public void setupDatabase(@Optional("false") String skipDatabaseCreation) throws Exception {
+        if (BooleanUtils.toBoolean(skipDatabaseCreation)) {
             return;
         }
         LOGGER.info("Using the following JDBC URL for the test database: " + jdbcURL);
