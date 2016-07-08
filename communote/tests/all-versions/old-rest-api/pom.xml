@@ -9,8 +9,8 @@
     </parent>
     <artifactId>tests-api</artifactId>
     <packaging>jar</packaging>
-    <name>Kenmei Tests API</name>
-    <description>Kenmei Tests API</description>
+    <name>Communote Tests API</name>
+    <description>Tests for the old deprecated Communote API</description>
     <dependencies>
         <dependency>
             <groupId>log4j</groupId>

@@ -3,15 +3,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.communote.tests</groupId>
-		<artifactId>all-versions</artifactId>
-		<version>3.4-SNAPSHOT</version>
-	</parent>
-	<groupId>com.communote.tests.all-versions</groupId>
-	<artifactId>integration-tests-all</artifactId>
+        <artifactId>communote-server-parent</artifactId>
+        <groupId>com.communote.server</groupId>
+        <version>3.4-SNAPSHOT</version>
+        <relativePath></relativePath>
+    </parent>
+	<artifactId>tests-all-versions-integration</artifactId>
 	<name>Communote - Tests - All Versions - Integration</name>
-	<description>This module provides tests for all types of Communote, which need a running Communote instance.
-    </description>
+	<description>This module provides tests for all types of Communote which need a running Communote instance.</description>
 	<properties>
         <!-- to pass your own testsuite use: mvn -DtestSuite=<path to suite> -->
         <!-- You can store your testsuites in a "testsuites" sub-directory of the current directory because it is on the ignore list-->
@@ -114,6 +113,7 @@
 		<dependency>
 			<groupId>com.communote.server</groupId>
 			<artifactId>communote-server-web</artifactId>
+            <version>${project.version}</version>
 			<classifier>classes</classifier>
 		</dependency>
 		<dependency>
@@ -295,6 +295,12 @@
 		<dependency>
 			<groupId>org.restlet.jee</groupId>
 			<artifactId>org.restlet.ext.spring</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-asm</artifactId>
+                </exclusion>
+            </exclusions>
 			<type>jar</type>
 		</dependency>
 		<dependency>
