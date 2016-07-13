@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.codehaus.jackson.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,9 +33,12 @@ import com.communote.server.web.commons.helper.JsonRequestHelper;
 @RequestMapping(value = "/microblog/*/widgets/image/GlobalIdUploadImageUploader.json")
 public class GlobalIdUploadImageController {
 
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(GlobalIdUploadImageController.class);
+
     /**
      * Create the result object to be returned to the client
-     * 
+     *
      * @param request
      *            The request
      * @param entityId
@@ -42,19 +47,18 @@ public class GlobalIdUploadImageController {
      *            The type.
      * @return the JSON result
      */
-    private ObjectNode createResult(HttpServletRequest request, String entityId,
-            String imageType) {
+    private ObjectNode createResult(HttpServletRequest request, String entityId, String imageType) {
         ObjectNode result = JsonHelper.getSharedObjectMapper().createObjectNode();
         String url = ImageUrlHelper.buildImageUrl(entityId,
-                "banner".equals(imageType) ? CoreImageType.entityBanner : CoreImageType.entityProfile,
-                ImageSizeType.LARGE);
+                "banner".equals(imageType) ? CoreImageType.entityBanner
+                        : CoreImageType.entityProfile, ImageSizeType.LARGE);
         result.put("imageUrl", ControllerHelper.renderRelativeUrl(request, url, false, false));
         return result;
     }
 
     /**
      * Method to reset the image of the given entity to the default type.
-     * 
+     *
      * @param request
      *            The send request.
      * @param response
@@ -75,12 +79,14 @@ public class GlobalIdUploadImageController {
         try {
             ServiceLocator.findService(EntityImageManagement.class).setDefault(entityId,
                     EntityImageManagement.ImageType.getType(imageType));
-            jsonResponse = JsonRequestHelper.createJsonSuccessResponse(ResourceBundleManager
-                    .instance().getText(
-                            "widget.globalid-upload-image.reset.success", SessionHandler
-                                    .instance().getCurrentLocale(request)),
+            jsonResponse = JsonRequestHelper.createJsonSuccessResponse(
+                    ResourceBundleManager.instance().getText(
+                            "widget.globalid-upload-image.reset.success",
+                            SessionHandler.instance().getCurrentLocale(request)),
                     createResult(request, entityId, imageType));
         } catch (Exception e) {
+            LOGGER.error("Setting default image for entity with ID {} and type {} failed",
+                    entityId, imageType, e);
             Status status = ServiceLocator.findService(ExceptionMapperManagement.class)
                     .mapException(e);
             jsonResponse = JsonRequestHelper.createJsonErrorResponse(status.getMessage().toString(
@@ -120,6 +126,8 @@ public class GlobalIdUploadImageController {
                             SessionHandler.instance().getCurrentLocale(request)),
                     createResult(request, entityId, imageType));
         } catch (Exception e) {
+            LOGGER.error("Uploading image for entity with ID {} and type {} failed", entityId,
+                    imageType, e);
             Status status = ServiceLocator.findService(ExceptionMapperManagement.class)
                     .mapException(e);
             jsonResponse = JsonRequestHelper.createJsonErrorResponse(status.getMessage().toString(
