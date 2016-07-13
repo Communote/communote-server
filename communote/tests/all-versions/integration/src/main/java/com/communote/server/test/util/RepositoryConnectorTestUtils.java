@@ -1,13 +1,10 @@
 package com.communote.server.test.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Date;
 
 import com.communote.common.util.Pair;
-import com.communote.server.api.core.application.CommunoteRuntime;
-import com.communote.server.api.core.config.type.ApplicationProperty;
 import com.communote.server.core.crc.FilesystemConnector;
 import com.communote.server.core.crc.RepositoryConnector;
 import com.communote.server.core.crc.RepositoryConnectorConfiguration;
@@ -73,49 +70,13 @@ public class RepositoryConnectorTestUtils {
      * @param supportsMetadata
      *            True, if metadata should be supported.
      * @return the new FilesystemConnector
-     * @throws FileNotFoundException
-     *             if "kenmei.crc.file.repository.storage.dir" not exists.
-     */
-    public static RepositoryConnectorConfiguration createFilesystemConfiguration(
-            String connectorId, boolean supportsMetadata) throws FileNotFoundException {
-        String storageDir = CommunoteRuntime.getInstance().getConfigurationManager()
-                .getApplicationConfigurationProperties()
-                .getProperty(ApplicationProperty.FILE_SYSTEM_REPOSITORY_STORAGE_DIR_ROOT);
-
-        File file = new File(storageDir);
-        if (!file.exists()) {
-            if (!file.mkdirs()) {
-                throw new FileNotFoundException("cannot create storage dir: " + storageDir
-                        + ", cannot execute FilesystemConnectorTest");
-            }
-        }
-
-        RepositoryConnectorConfiguration configuration = new RepositoryConnectorConfiguration(
-                connectorId, supportsMetadata);
-
-        return configuration;
-    }
-
-    /**
-     * Creates a new FilesystemConnector
-     *
-     * @param connectorId
-     *            A long value set as connectorId.
-     * @param supportsMetadata
-     *            True, if metadata should be supported.
-     * @return the new FilesystemConnector
+     * @throws IOException
+     *             in case the connector cannot be created
      */
     public static RepositoryConnector createFilesystemConnector(String connectorId,
-            boolean supportsMetadata) {
-        String storageDir = CommunoteRuntime.getInstance().getConfigurationManager()
-                .getApplicationConfigurationProperties()
-                .getProperty(ApplicationProperty.FILE_SYSTEM_REPOSITORY_STORAGE_DIR_ROOT);
-
+            boolean supportsMetadata) throws IOException {
         RepositoryConnectorConfiguration configuration = new RepositoryConnectorConfiguration(
                 connectorId, supportsMetadata);
-        File file = new File(storageDir);
-        file.mkdir();
-
         RepositoryConnector connector = new FilesystemConnector(configuration);
         return connector;
     }

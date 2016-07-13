@@ -1,10 +1,12 @@
 package com.communote.server.core.crc;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.nio.file.AccessDeniedException;
 import java.util.Date;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -67,34 +69,21 @@ public class FilesystemConnector implements MetadataRepositoryConnector {
      *
      * @param connectorConfiguration
      *            The configuration for this connector.
+     * @throws IOException
+     *             in case the the directory for storing the content cannot be created or exists and
+     *             is not a directory or cannot be accessed
      */
-    public FilesystemConnector(RepositoryConnectorConfiguration connectorConfiguration) {
+    public FilesystemConnector(RepositoryConnectorConfiguration connectorConfiguration)
+            throws IOException {
         Assert.notNull(connectorConfiguration.getConnectorId(),
                 "The connector ID must not be empty");
         this.connectorConfiguration = connectorConfiguration;
         this.connectorSubdir = File.separator + connectorConfiguration.getConnectorId()
                 + File.separator;
         // check the path configuration
-        File file = new File(getPath());
-        if (!file.exists()) {
-            if (!file.mkdirs()) {
-                throw new IllegalArgumentException("cannot create directory "
-                        + file.getAbsolutePath());
-            }
-        }
-
-        if (!file.isDirectory()) {
-            throw new IllegalArgumentException("destined directory isn't a directory: "
-                    + file.getAbsolutePath());
-        } else {
-            if (!file.canRead() || !file.canWrite()) {
-                throw new IllegalArgumentException("cannot access to destined directory: "
-                        + file.getAbsolutePath());
-            }
-            LOGGER.debug(
-                    "creating FilesystemConnector with FilesystemConfiguration pointing to: {}",
-                    file.getAbsolutePath());
-        }
+        prepareStorageDirectory();
+        LOGGER.debug("Created FileSystemConnector with ID {}",
+                connectorConfiguration.getConnectorId());
     }
 
     /**
@@ -319,9 +308,10 @@ public class FilesystemConnector implements MetadataRepositoryConnector {
     }
 
     /**
-     * @return Path to the storage for the actual client.
+     * @return the path to the directory for storing content
      */
-    private String getPath() {
+    protected String getPath() {
+        // note: for legacy reasons the client ID cannot be removed from the path
         return ApplicationProperty.FILE_SYSTEM_REPOSITORY_STORAGE_DIR_ROOT.getValue()
                 + File.separator + ClientHelper.getCurrentClientId() + connectorSubdir;
     }
@@ -354,6 +344,32 @@ public class FilesystemConnector implements MetadataRepositoryConnector {
             ratio = sizeWithNewData / (float) repositorySizeLimit;
         }
         return ratio;
+    }
+
+    /**
+     * Create the directory returned by {@link #getPath()} if it does not yet exist.
+     *
+     * @throws IOException
+     *             in case the directory cannot be created or exists and is not a directory or
+     *             cannot be accessed
+     */
+    protected void prepareStorageDirectory() throws IOException {
+        File file = new File(getPath());
+        if (!file.exists()) {
+            if (!file.mkdirs()) {
+                throw new IOException("cannot create directory " + file.getAbsolutePath());
+            }
+        }
+
+        if (!file.isDirectory()) {
+            throw new FileNotFoundException("Defined storage directory isn't a directory: "
+                    + file.getAbsolutePath());
+        } else {
+            if (!file.canRead() || !file.canWrite()) {
+                throw new AccessDeniedException(file.getAbsolutePath());
+            }
+            LOGGER.debug("Prepared storage directory: {}", file.getAbsolutePath());
+        }
     }
 
     /**

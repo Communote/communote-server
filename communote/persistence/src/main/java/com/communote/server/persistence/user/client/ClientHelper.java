@@ -164,39 +164,6 @@ public final class ClientHelper {
     }
 
     /**
-     * Returns the file system directory path of the file repository of the current client.
-     *
-     * @return the file repository directory
-     */
-    public static String getFileRepositoryDirectory() {
-        return getFileRepositoryDirectory(getCurrentClient());
-    }
-
-    /**
-     * Returns the file system directory path of the file repository of a client.
-     *
-     * @param client
-     *            the client for which the path is to be returned
-     * @return the file repository directory
-     */
-    public static String getFileRepositoryDirectory(ClientTO client) {
-        return getFileRepositoryDirectory(client.getClientId());
-    }
-
-    /**
-     * Returns the file system directory path of the file repository of a client.
-     *
-     * @param clientId
-     *            the client for which the path is to be returned
-     * @return the file repository directory
-     */
-    public static String getFileRepositoryDirectory(String clientId) {
-        String base = getAppConfigurationProperties().getProperty(
-                ApplicationProperty.FILE_SYSTEM_REPOSITORY_STORAGE_DIR_ROOT);
-        return base + "/" + clientId;
-    }
-
-    /**
      * Return the ID of the global client. An exception will be thrown if called before the start of
      * the Communote runtime.
      *

@@ -1,16 +1,12 @@
 package com.communote.server.core.attachment;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.communote.common.util.Pair;
-import com.communote.server.api.core.application.CommunoteRuntime;
-import com.communote.server.api.core.config.type.ApplicationProperty;
 import com.communote.server.core.crc.FilesystemConnector;
 import com.communote.server.core.crc.RepositoryConnector;
 import com.communote.server.core.crc.RepositoryConnectorConfiguration;
@@ -51,7 +47,7 @@ public class FilesystemConnectorTest extends CommunoteIntegrationTest {
     /**
      * the directors to work for the connector
      */
-    private String storageDir = null;
+    private final String storageDir = null;
 
     /**
      * Compares, whether two BinaryContentTO arrays are equal
@@ -90,7 +86,7 @@ public class FilesystemConnectorTest extends CommunoteIntegrationTest {
             if (contentIn[i].getMetadata().getDate().getTime() > contentOut[i].getMetadata()
                     .getDate().getTime() + 1000
                     || contentIn[i].getMetadata().getDate().getTime() < contentOut[i].getMetadata()
-                            .getDate().getTime() - 1000) {
+                    .getDate().getTime() - 1000) {
                 Assert.fail("time not OK, expected: "
                         + contentIn[i].getMetadata().getDate().getTime() + ", but found: "
                         + contentOut[i].getMetadata().getDate().getTime());
@@ -102,23 +98,11 @@ public class FilesystemConnectorTest extends CommunoteIntegrationTest {
     /**
      * Test to create FilesystemConnector.
      *
-     * @throws FileNotFoundException
-     *             if "kenmei.crc.file.repository.storage.dir" not exists.
+     * @throws Exception
+     *             in case the test failed
      */
     @Test(groups = { "FilesystemConnectorTests" })
-    public void testCreateConnector() throws FileNotFoundException {
-        storageDir = CommunoteRuntime.getInstance().getConfigurationManager()
-                .getApplicationConfigurationProperties()
-                .getProperty(ApplicationProperty.FILE_SYSTEM_REPOSITORY_STORAGE_DIR_ROOT);
-
-        File file = new File(storageDir);
-        if (!file.exists()) {
-            if (!file.mkdirs()) {
-                throw new FileNotFoundException("cannot create storage directory: " + storageDir
-                        + ", cannot execute FilesystemConnectorTest");
-            }
-        }
-
+    public void testCreateConnector() throws Exception {
         RepositoryConnectorConfiguration configuration = new RepositoryConnectorConfiguration(
                 "test_filesystem_connector", true);
         connector = new FilesystemConnector(configuration);

@@ -1,6 +1,6 @@
 package com.communote.server.core.crc;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,20 +61,15 @@ public class RepositoryConnectorDelegateImpl extends RepositoryConnectorDelegate
      */
     private RepositoryConnector createDefaultRepositoryConnector()
             throws RepositoryConnectorDelegateException, ContentRepositoryException {
-        String storageDir = ClientHelper.getFileRepositoryDirectory();
-        if (StringUtils.isNotEmpty(storageDir)) {
-            File file = new File(storageDir);
-            if (!file.exists() && !file.mkdirs()) {
-                throw new RepositoryConnectorDelegateException(
-                        "Creating default connector failed. Directory " + storageDir
-                        + " could not be created.");
-            }
-        }
-
         RepositoryConnectorConfiguration configuration = new RepositoryConnectorConfiguration(
                 FilesystemConnector.DEFAULT_FILESYSTEM_CONNECTOR, true);
-        RepositoryConnector connector = new FilesystemConnector(configuration);
-        return connector;
+        try {
+            RepositoryConnector connector = new FilesystemConnector(configuration);
+            return connector;
+        } catch (IOException e) {
+            throw new RepositoryConnectorDelegateException("Creating default connector failed", e);
+        }
+
     }
 
     @Override
