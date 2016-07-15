@@ -119,8 +119,8 @@ public class ImageDiskCache {
     /**
      * Get the stored default image.
      *
-     * @param the
-     *            name of the image type
+     * @param typeName
+     *            the name of the image type
      * @param imageProviderId
      *            the ID of the provider which loaded the image
      * @param imageSize

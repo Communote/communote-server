@@ -115,7 +115,7 @@ public interface ConfigurationManager {
      */
     public void updateApplicationConfigurationProperties(
             Map<ApplicationConfigurationPropertyConstant, String> settings)
-            throws ConfigurationUpdateException;
+                    throws ConfigurationUpdateException;
 
     /**
      * Updates a collection of client configuration properties.
@@ -149,7 +149,7 @@ public interface ConfigurationManager {
 
     /**
      * Update the Confluence authentication and reload the cache. Forwards to
-     * {@link com.communote.server.core.ConfigurationManagement#updateConfluenceAuthConfig()}
+     * {@link com.communote.server.core.ConfigurationManagement#updateConfluenceAuthConfig(ConfluenceConfiguration)}
      *
      * @param confluenceAuthConfig
      *            the config

@@ -899,7 +899,7 @@ public class UserManagementImpl extends UserManagementBase {
     /**
      * {@inheritDoc}
      *
-     * @see UserManagement#registerUser(String, Locale, RegistrationType))
+     * @see UserManagement#registerUser(String, Locale, RegistrationType)
      */
     @Override
     protected User handleRegisterUser(String email, Locale locale, RegistrationType type)
@@ -1041,11 +1041,6 @@ public class UserManagementImpl extends UserManagementBase {
         mailManagement.sendMail(message);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see com.communote.server.core.user.UserManagementBase#handleUnlockUser(long, String)
-     */
     // TODO move to AuthenticationManagement (or SecurityManagement?)
     @Override
     protected User handleUnlockUser(String securityCode) throws SecurityCodeNotFoundException {

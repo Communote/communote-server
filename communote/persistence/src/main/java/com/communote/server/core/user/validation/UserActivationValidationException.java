@@ -42,8 +42,8 @@ public class UserActivationValidationException extends Exception {
      * @param message
      *            a message with details
      * @param messageKeySuffix
-     *            suffix to be added to the message key that is passed to {@link #getReason(String)}
-     *            to build the actual message key
+     *            suffix to be added to the message key that is passed to
+     *            {@link #getReason(String, Object...)} to build the actual message key
      * @param messageArguments
      *            the message arguments to be used when localizing the reason
      */
@@ -85,8 +85,8 @@ public class UserActivationValidationException extends Exception {
      * @param cause
      *            the cause of the exception
      * @param messageKeySuffix
-     *            suffix to be added to the message key that is passed to {@link #getReason(String)}
-     *            to build the actual message key
+     *            suffix to be added to the message key that is passed to
+     *            {@link #getReason(String, Object...)} to build the actual message key
      * @param messageArguments
      *            the message arguments to be used when localizing the reason
      */

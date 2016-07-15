@@ -4,9 +4,9 @@ import java.util.regex.Pattern;
 
 /**
  * Helper class for ip address validation
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class IpValidationUtils {
 
@@ -30,10 +30,10 @@ public class IpValidationUtils {
             Pattern.CASE_INSENSITIVE);
 
     /**
-     * Validate Ip Address
-     * 
+     * Validate IP Address
+     *
      * @param ip
-     *            Ip Address. Can be ipv4 ipv6
+     *            IP Address. Can be ipv4 ipv6
      * @return <code>true</code> if the ip address is valid
      */
     public static boolean isIPAddress(String ip) {
@@ -41,10 +41,10 @@ public class IpValidationUtils {
     }
 
     /**
-     * Returns true if the given string is a correctly formed IPv4 address. <br/>
-     * 
+     * Returns true if the given string is a correctly formed IPv4 address. <br>
+     *
      * @param address
-     *            Ip address
+     *            IP address
      * @return <code>True</code> if the String passed is a valid IP address, <code>false</code>
      *         otherwise
      */
@@ -54,9 +54,9 @@ public class IpValidationUtils {
 
     /**
      * Returns true if the given string is a correctly formed IPv6 address.
-     * 
+     *
      * @param address
-     *            Ip address
+     *            IP address
      * @return <code>True</code> if the String passed is a valid IP address, <code>false</code>
      *         otherwise
      */

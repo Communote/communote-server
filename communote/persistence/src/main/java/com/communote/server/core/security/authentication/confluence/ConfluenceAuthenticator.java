@@ -22,8 +22,8 @@ import com.communote.server.model.config.ConfluenceConfiguration;
 import com.communote.server.persistence.user.ExternalUserVO;
 
 /**
- * Authenticator that checks the token and logins against Confluence. *
- * 
+ * Authenticator that checks the token and logins against Confluence.
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class ConfluenceAuthenticator extends
@@ -36,15 +36,6 @@ public class ConfluenceAuthenticator extends
     private static final String CF_PARAM_USER_LOOKUP = "userLookup";
 
     private final ConfluenceConfiguration configuration;
-
-    /**
-     * @{inheritDoc
-     */
-    @Override
-    protected boolean isValidJsonUser(ObjectNode jsonUser) {
-        JsonNode userFound = jsonUser.get(JSON_PARAM_USER_FOUND);
-        return userFound != null && userFound.asBoolean();
-    }
 
     /**
      * @param configuration
@@ -78,8 +69,7 @@ public class ConfluenceAuthenticator extends
             if (authenticationRequest.isSendTokenAsParameter()) {
                 formparams.add(new BasicNameValuePair(
                         ClientProperty.GENERIC_AUTHENTICATOR_TOKEN_NAME.getValue("token"),
-                        authenticationRequest
-                                .getToken()));
+                        authenticationRequest.getToken()));
             } else {
                 method.addHeader("Cookie", "JSESSIONID=" + authenticationRequest.getToken());
             }
@@ -100,7 +90,7 @@ public class ConfluenceAuthenticator extends
 
     /**
      * Creates a prepared value object.
-     * 
+     *
      * @return the value object
      */
     @Override
@@ -137,6 +127,12 @@ public class ConfluenceAuthenticator extends
         return this.configuration.getAuthenticationApiUrl();
     }
 
+    @Override
+    protected boolean isValidJsonUser(ObjectNode jsonUser) {
+        JsonNode userFound = jsonUser.get(JSON_PARAM_USER_FOUND);
+        return userFound != null && userFound.asBoolean();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -144,8 +140,8 @@ public class ConfluenceAuthenticator extends
     protected void validateRetrievedUser(ConfluenceAuthenticationRequest confuenceAuthRequest,
             ExternalUserVO userVO) {
         if (confuenceAuthRequest.getToken() == null
-                && !StringUtils.equalsIgnoreCase(confuenceAuthRequest.getUsername(), userVO
-                        .getExternalUserName())) {
+                && !StringUtils.equalsIgnoreCase(confuenceAuthRequest.getUsername(),
+                        userVO.getExternalUserName())) {
             throw new AuthenticationServiceException(
                     "Response included login not matching request. requestedLogin="
                             + confuenceAuthRequest.getUsername() + " receivedLogin="

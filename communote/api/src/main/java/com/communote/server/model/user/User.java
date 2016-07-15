@@ -212,7 +212,7 @@ public class User extends CommunoteEntity {
     }
 
     /**
-     * @return The language code or {@link Locale#ENGLISH#getLanguage()} as default.
+     * @return The language code or the language of {@link Locale#ENGLISH} as default.
      */
     public String getLanguageCode() {
         String code = this.languageCode;

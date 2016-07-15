@@ -261,8 +261,8 @@ public interface UserManagement {
     /**
      * Returns a collection with all users that do not have one of the deleted statuses.
      *
-     * @param whether
-     *            to exclude the users who have the system user role
+     * @param excludeSystemUsers
+     *            whether to exclude the users who have the system user role
      */
     public java.util.Collection<User> findNotDeletedUsers(boolean excludeSystemUsers);
 
@@ -334,11 +334,15 @@ public interface UserManagement {
     public User findUserByUserId(Long userId);
 
     /**
-     * Find a user by the its id. *
+     * Find a user by the its id. <br>
+     *
+     * Use {@link #getUserById(Long, Converter)} instead.
      *
      * @param userId
      *            Id of the user to find.
-     * @param true to load the external authentications of the user
+     * @param loadExternalAuthentications
+     *            true to load the external authentications of the user
+     * @return the user
      */
     public User findUserByUserId(Long userId, boolean loadExternalAuthentications);
 
@@ -493,8 +497,8 @@ public interface UserManagement {
      * exclude users which are not active or temporarily disabled. The current user is excluded too.
      * The status of the user is not modified only the termsAccepted flag is reset.
      *
-     * @throws in
-     *             case the current user is not client manager or internal system user
+     * @throws AuthorizationException
+     *             in case the current user is not client manager or internal system user
      */
     public void resetTermsOfUse() throws AuthorizationException;
 

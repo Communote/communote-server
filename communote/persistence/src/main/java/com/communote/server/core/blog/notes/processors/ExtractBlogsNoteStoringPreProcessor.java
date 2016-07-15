@@ -12,8 +12,8 @@ import com.communote.server.core.blog.OnlyCrosspostMarkupException;
 
 /**
  * Preprocessor which searches the content for strings that are syntactically correct blog aliases
- * and start with a '&' character. The found aliases are added to the storing TO and the strings are
- * removed from the note content.
+ * and start with an '&amp;' character. The found aliases are added to the storing TO and the
+ * strings are removed from the note content.
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  *

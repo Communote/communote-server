@@ -90,7 +90,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
 
     /**
      * @param instance
-     *            The {@link QueryInstance}.
+     *            The query parameters.
      * @return List of all full text search fields.
      */
     protected String[] getFullTextSearchFields(I instance) {
@@ -99,7 +99,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
 
     /**
      *
-     * @return the alias of the note within the query (includes a "." at the end
+     * @return the alias of the note within the query (includes a "." at the end)
      */
     public String getNoteAlias() {
         return RESULT_ALIAS_NOTE;
@@ -156,9 +156,9 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * This method handles the resource id of a filter.
      *
      * @param instance
-     *            {@link QueryInstance}.
+     *            the query parameters
      * @param whereQuery
-     *            Teh where clause to add the new statement.
+     *            The where clause to add the new statement.
      * @param prefix
      *            The prefix to use.
      * @return The new prefix.
@@ -180,7 +180,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * @param tagQualifierPrefix
      *            The tag qualifier prefix.
      * @param instance
-     *            The {@link QueryInstance}.
+     *            the query parameters
      * @param wroteSomething
      *            Wrote something?
      * @param booleanConnector
@@ -213,7 +213,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * This method handles the start and end date of a filter.
      *
      * @param parameters
-     *            {@link QueryInstance} containing all needed information.
+     *            the query parameters
      * @param whereQuery
      *            The where clause to append to.
      * @param prefix
@@ -247,7 +247,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * id) or filter for the single note.
      *
      * @param instance
-     *            {@link QueryInstance} containing all needed information.
+     *            the query parameters
      * @param whereQuery
      *            The where clause to add statement to.
      * @param prefix
@@ -280,7 +280,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * Handles the subquery for excluding note status.
      *
      * @param instance
-     *            The instance with parameters.
+     *            the query parameters
      * @param whereQuery
      *            The existing where query.
      * @param prefix
@@ -314,7 +314,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * @param mainQuery
      *            Query to add statements to.
      * @param instance
-     *            {@link QueryInstance}.
+     *            the query parameters
      * @param prefix
      *            the prefix to use
      * @return the prefix for further usage
@@ -336,7 +336,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * applicable for a direct filter query. all other tags will be filtered by sub query.
      *
      * @param instance
-     *            The {@link QueryInstance}.
+     *            the query parameters
      * @param whereQuery
      *            The where clause.
      * @param prefix
@@ -392,7 +392,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * Include users in the result who have not tagged anything.
      *
      * @param instance
-     *            the query instance to consider
+     *            the query parameters
      * @return if these users shall be in the result set
      */
     protected boolean includeUsersWithoutTags(I instance) {
@@ -407,7 +407,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
 
     /**
      * @param queryInstance
-     *            the query instance to use
+     *            the query parameters
      * @return true if the query should use the distinct keyword for selects
      */
     protected boolean needDistinct(I queryInstance) {
@@ -421,7 +421,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * need the resource in a query?
      *
      * @param queryInstance
-     *            the query instance
+     *            the query parameters
      * @return if the resource is needed
      */
     protected boolean needResourceInQuery(I queryInstance) {
@@ -433,7 +433,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * Whether the tag entity is needed in the query.
      *
      * @param queryInstance
-     *            the current query instance
+     *            the query parameters
      * @return true if the query returns tags or the result is filtered by a tag prefix or a single
      *         tag
      */
@@ -452,7 +452,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * need the user in a query?
      *
      * @param queryInstance
-     *            the query instance
+     *            the query parameters
      * @return if the user is needed
      */
     protected abstract boolean needUserInQuery(I queryInstance);
@@ -475,7 +475,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * @param tagQualifierPrefix
      *            the prefix of the tag entity
      * @param instance
-     *            the query instance
+     *            the query parameters
      * @return the rendered disjunction
      */
     private String renderAtomDisjunction(AtomicTagFormula[] atoms, String tagQualifierPrefix,
@@ -548,7 +548,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * @param tagQualifierPrefix
      *            the prefix of the tag entity
      * @param instance
-     *            The {@link QueryInstance}.
+     *            the query parameters.
      * @return the rendered formula or an empty string if the formula has no sub-elements
      */
     private String renderCompoundFormula(CompoundTagFormula formula, String tagQualifierPrefix,
@@ -582,7 +582,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * @param utrIdSelection
      *            string with select clause
      * @param instance
-     *            the query instance
+     *            the query parameters
      * @return the rendered body of the formula or an empty string if the formula has no
      *         sub-elements
      */
@@ -630,13 +630,13 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
     }
 
     /**
-     * Renders the filter for notes that are direct messages.<br />
+     * Renders the filter for notes that are direct messages.<br>
      * The filter works as follows <li>{@code directMessages = true} >> shows only direct messages
      * for the current user</li> <li>{@code directMessages = false} >> all notes including the
      * direct messages of the current user</li>
      *
      * @param queryParameters
-     *            {@link QueryInstance}.
+     *            the query parameters
      * @param whereQuery
      *            the query to
      * @param prefix
@@ -720,13 +720,13 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
     }
 
     /**
-     * Renders the filter for favorite notes.<br />
+     * Renders the filter for favorite notes.<br>
      * The filter works as follows <li>{@code favorites = null} >> no filter</li> <li>
      * {@code favorites = true} >> only favorites posts</li> <li>{@code favorites = false} >> only
      * non favorites posts</li>
      *
      * @param instance
-     *            {@link QueryInstance}.
+     *            the query parameters
      * @param mainQuery
      *            the query to append
      * @param whereQuery
@@ -782,7 +782,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * Render the condition to do a fulltext search on the note content if necessary.
      *
      * @param instance
-     *            the query instance
+     *            the query parameters
      * @param whereQuery
      *            the where clause to append the condition to
      * @param prefix
@@ -816,7 +816,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * @param comparator
      *            the tag comparator, e.g. '=', '<>'
      * @param instance
-     *            The {@link QueryInstance}.
+     *            the query parameters.
      * @return whether something was added to the query
      */
     protected boolean renderLogicalTagConstraints(LogicalTagFormula formula, StringBuilder query,
@@ -1020,7 +1020,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * Render the select clause based on if its the count query or not
      *
      * @param queryInstance
-     *            the query instance to use
+     *            the query parameters to use
      * @param mainQuery
      *            the main query
      */
@@ -1163,7 +1163,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * Renders the query for filtering by TagStores.
      *
      * @param instance
-     *            The {@link QueryInstance}.
+     *            the query parameters.
      * @param innerPrefix
      *            The inner prefix.
      * @param tagStoreTagIds
@@ -1290,7 +1290,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
      * Render the condition to do a search on the topic titles if necessary.
      *
      * @param instance
-     *            the query instance
+     *            the query parameters
      * @param whereQuery
      *            the where clause to append the condition to
      * @param prefix
@@ -1311,7 +1311,7 @@ public abstract class TaggingCoreItemQueryDefinition<R, I extends TimelineQueryP
 
     /**
      * @param instance
-     *            The {@link QueryInstance}
+     *            the query parameters
      * @param prefix
      *            The prefix for the query.
      * @param query

@@ -44,7 +44,7 @@ import com.communote.server.persistence.user.client.ClientHelper;
 
 /**
  * Image provider which loads images from an external system using HTTP GET requests.
- * 
+ *
  * @param <C>
  *            the type of the configuration class
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
@@ -63,7 +63,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
 
     /**
      * Create a new external image provider
-     * 
+     *
      * @param identifier
      *            The identifier of the provider. The identifier has to be unique among all
      *            providers that are registered for an image type.
@@ -92,8 +92,8 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
      * Test that the image provider was not disabled. This method is called from loadImage and
      * implementations should also invoke it from other methods that return image data or
      * information (default image, version string).
-     * 
-     * @param imageIdentifer
+     *
+     * @param imageIdentifier
      *            the Id of the image that should be loaded. Only needed to create a useful
      *            exception.
      * @param configuration
@@ -123,7 +123,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
 
     /**
      * Temporarily disable the image provider
-     * 
+     *
      * @param reason
      *            The reason that caused the disabling of the provider
      * @param configuration
@@ -155,7 +155,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
     /**
      * Extract the image from the response entity. The caller has to take care of closing the
      * response or ensuring that the entity is consumed.
-     * 
+     *
      * @param entity
      *            the entity to handle
      * @param imageLastModified
@@ -167,9 +167,8 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
      * @throws ImageNotFoundException
      *             in case the entity is not a valid image
      */
-    protected ByteArrayImage extractImageFromEntity(HttpEntity entity,
-            Date imageLastModified) throws ExternalImageProviderServiceException,
-            ImageNotFoundException {
+    protected ByteArrayImage extractImageFromEntity(HttpEntity entity, Date imageLastModified)
+            throws ExternalImageProviderServiceException, ImageNotFoundException {
         if (entity == null) {
             throw new ImageNotFoundException("No image data contained in response");
         }
@@ -185,8 +184,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
                     throw new ImageNotFoundException(
                             "The response was not a valid or supported image");
                 }
-                return new ByteArrayImage(imageData, mimeType, imageLastModified,
-                        getIdentifier(),
+                return new ByteArrayImage(imageData, mimeType, imageLastModified, getIdentifier(),
                         false, true);
             }
         } catch (IllegalArgumentException e) {
@@ -234,7 +232,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
      * by the shared HttpClient instance. The default implementation will set the socket, connection
      * and connection manager timeouts to the values returned by {@link #getSocketTimeout()},
      * {@link #getConnectionTimeout()} and {@link #getConnectionManagerTimeout()}.
-     * 
+     *
      * @return the default request configuration
      */
     protected RequestConfig getDefaultRequestConfig() {
@@ -255,7 +253,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
     /**
      * Get the HTTP client to be used for all requests. If there is no current HTTP client a new one
      * will be created and prepared with a call to {@link #prepareHttpClient(HttpClientBuilder)}.
-     * 
+     *
      * @return the current HTTP client
      */
     protected CloseableHttpClient getHttpClient() {
@@ -267,7 +265,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
 
     /**
      * Get the URL under which the image with the given identifier can be downloaded
-     * 
+     *
      * @param imageIdentifier
      *            the ID of the image to download
      * @param configuration
@@ -282,7 +280,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
 
     /**
      * Get last modified header value as date, will fall back to current time if header is not set
-     * 
+     *
      * @param response
      *            the response of the image request
      * @return the last modification date
@@ -312,7 +310,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
     /**
      * Get request context to be used when downloading the given image. Implementations could use
      * this method to provide authentication details. The default implementation returns null.
-     * 
+     *
      * @param imageUrl
      *            the URL pointing to the image
      * @param imageIdentifier
@@ -328,7 +326,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
     /**
      * Get the HTTP request headers to add when downloading the given image. The default
      * implementation returns null.
-     * 
+     *
      * @param imageUrl
      *            the URL pointing to the image
      * @param imageIdentifier
@@ -365,7 +363,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
      * Invoked when the image URL was null or the image could not be downloaded and the cause was
      * not one that would disable the provider. Default implementation does nothing but subclasses
      * could use this method to update or reset the version string of the image if necessary.
-     * 
+     *
      * @param imageIdentifier
      *            the ID of the image that failed
      */
@@ -376,7 +374,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
      * Invoked by loadImage after successfully parsing and extracting the image. Default
      * implementation does nothing but subclasses could use this method to update the version string
      * of the image if necessary.
-     * 
+     *
      * @param imageIdentifier
      *            the ID of the image
      * @param lastModificationDate
@@ -391,7 +389,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
 
     /**
      * Test whether the image provider was temporarily disabled.
-     * 
+     *
      * @param configuration
      *            the current configuration of the image provider, can be null. Default
      *            implementation ignores this parameter.
@@ -407,7 +405,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
      * temporarily. By default the exceptions {@link ConnectTimeoutException},
      * {@link SocketTimeoutException} and {@link SocketException} are considered as disabling
      * exceptions.
-     * 
+     *
      * @param e
      *            the exception to check
      * @return true if the image provider should be disabled
@@ -440,7 +438,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
 
     @Override
     public Image loadImage(String imageIdentifier) throws ImageNotFoundException,
-            AuthorizationException {
+    AuthorizationException {
         C configuration = getConfiguration();
         assertNotDisabled(imageIdentifier, configuration);
         if (!this.isAuthorized(imageIdentifier)) {
@@ -509,7 +507,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
     /**
      * Prepare the HTTP client that should be used by all requests. The default implementations sets
      * the request config as returned by {@link #getDefaultRequestConfig()}.
-     * 
+     *
      * @param builder
      *            the HTTP client builder
      * @return the HTTP client
@@ -523,7 +521,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
     /**
      * Set the HTTP client instance that should be used for all requests. This instance will be
      * returned by {@link #getHttpClient()}.
-     * 
+     *
      * @param httpClient
      *            the HTTP client to set. Can be null, to reset the client.
      * @param replace
@@ -547,7 +545,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
 
     /**
      * Set whether the default image can be returned even if the provider is temporarily disabled.
-     * 
+     *
      * @param provideDefaultImageIfDisabled
      *            true to return the default image
      */
@@ -557,7 +555,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
 
     /**
      * Validate that the content type of the response is an image mime type.
-     * 
+     *
      * @param contentType
      *            the content type
      * @throws ExternalImageProviderServiceException
@@ -578,7 +576,7 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
 
     /**
      * Checks the status code of a response for an image request.
-     * 
+     *
      * @param statusLine
      *            the status line containing the status code
      * @throws ImageNotFoundException
@@ -589,8 +587,8 @@ public abstract class HttpExternalImageProvider<C> extends ImageProvider {
      *             {@link #getNotDisablingStatusCodes()}. The image provider will be disabled
      *             temporarily.
      */
-    protected void validateStatusCode(StatusLine statusLine)
-            throws ImageNotFoundException, ExternalImageProviderServiceException {
+    protected void validateStatusCode(StatusLine statusLine) throws ImageNotFoundException,
+            ExternalImageProviderServiceException {
         if (statusLine == null) {
             throw new ExternalImageProviderServiceException(
                     "Response did not contain a status code");

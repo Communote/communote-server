@@ -85,7 +85,7 @@ public class UserQueryParameters extends PropertyQueryParameters {
     /**
      * Create parameters for configuring the user query. Uses {@value #DEFAULT_MAX_COUNT} as
      * maxCount and 0 as offset.
-     * 
+     *
      * @see #UserQueryParameters(int, int)
      */
     public UserQueryParameters() {
@@ -453,8 +453,8 @@ public class UserQueryParameters extends PropertyQueryParameters {
 
     /**
      * Sets the user search string. If set the user must match either first, last or email. Each
-     * String in the array is "AND" connected: {'user','bla'} -> finds all user having somewhere in
-     * there name or email 'user' AND 'bla'
+     * String in the array is "AND" connected, eg. {'user','bla'} finds all users having somewhere
+     * in their name or email 'user' AND 'bla'
      *
      * @param userSearchFilters
      *            the user search string

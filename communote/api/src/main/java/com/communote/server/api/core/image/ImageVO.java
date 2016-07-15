@@ -48,18 +48,14 @@ public class ImageVO implements java.io.Serializable {
     }
 
     /**
-     * <p>
-     * The content of the image
-     * </p>
+     * @return the content of the image as byte array
      */
     public byte[] getImage() {
         return this.image;
     }
 
     /**
-     * <p>
-     * The last modification of this image
-     * </p>
+     * @return the date and time of the last modification of this image
      */
     public Date getLastModificationDate() {
         return this.lastModificationDate;

@@ -13,7 +13,7 @@ import com.communote.server.web.fe.widgets.extension.WidgetExtension;
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class ContentTypeWidgetExtension implements
-WidgetExtension<ContentTypeWidgetExtension, ContentTypeWidgetExtensionManagement> {
+        WidgetExtension<ContentTypeWidgetExtension, ContentTypeWidgetExtensionManagement> {
 
     /** Default category. */
     public final static String CATEGORY_DEFAULT = "default";
@@ -105,7 +105,7 @@ WidgetExtension<ContentTypeWidgetExtension, ContentTypeWidgetExtensionManagement
 
     /**
      * The filter has to have the following format:
-     * <b>['Property','Group','Key','Value','MatchMode','Negate (Optional)']</b> <br />
+     * <b>['Property','Group','Key','Value','MatchMode','Negate (Optional)']</b> <br>
      * The elements are
      * <ul>
      * <li><b>Property</b>: Class, the property is for, this can be one of "Note", "Entity" or

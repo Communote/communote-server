@@ -22,14 +22,14 @@ import com.communote.server.api.core.image.type.UserImageDescriptor;
 import com.communote.server.core.image.type.AttachmentImageProvider;
 import com.communote.server.core.image.type.ClientImageDescriptor;
 import com.communote.server.core.image.type.ClientImageProvider;
+import com.communote.server.core.image.type.EntityImageManagement.ImageType;
 import com.communote.server.core.image.type.EntityImageProvider;
 import com.communote.server.core.image.type.UserImageProvider;
-import com.communote.server.core.image.type.EntityImageManagement.ImageType;
 
 /**
  * Manages image types and image providers for these types. Some built-in types and providers are
  * added automatically during initialization.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class ImageProviderManager {
@@ -76,8 +76,8 @@ public class ImageProviderManager {
                     provider.getIdentifier());
 
             registerTypeDescriptor(new EntityProfileImageDescriptor());
-            provider = new EntityImageProvider(
-                    "/com/communote/images/default_entity_profile.png", ImageType.PROFILE);
+            provider = new EntityImageProvider("/com/communote/images/default_entity_profile.png",
+                    ImageType.PROFILE);
             registerProvider(EntityProfileImageDescriptor.IMAGE_TYPE_NAME, provider);
             builtInProviders.put(EntityProfileImageDescriptor.IMAGE_TYPE_NAME,
                     provider.getIdentifier());
@@ -89,7 +89,7 @@ public class ImageProviderManager {
 
     /**
      * Return a built-in provider for the given image type.
-     * 
+     *
      * @param imageTypeName
      *            the name of the image type
      * @return the provider or null if there is no built-in provider for that type
@@ -112,7 +112,7 @@ public class ImageProviderManager {
 
     /**
      * Return the image providers that can handle the given image type
-     * 
+     *
      * @param imageTypeName
      *            the name of the image type
      * @return the providers or null if the type does not exist
@@ -137,7 +137,7 @@ public class ImageProviderManager {
     /**
      * Register a provider which can load images for the given image type. There can be several
      * providers for a type.
-     * 
+     *
      * @param imageTypeName
      *            the name of the type which must have been registered before.
      * @param provider
@@ -150,10 +150,8 @@ public class ImageProviderManager {
     public synchronized void registerProvider(String imageTypeName, ImageProvider provider)
             throws ImageProviderManagerException, ImageTypeNotFoundException {
         if (!typeDescriptors.containsKey(imageTypeName)) {
-            throw new ImageTypeNotFoundException(
-                    "The provider " + provider.getIdentifier()
-                            + " cannot be added because there is no image type with name "
-                            + imageTypeName);
+            throw new ImageTypeNotFoundException("The provider " + provider.getIdentifier()
+                    + " cannot be added because there is no image type with name " + imageTypeName);
         }
         List<ImageProvider> providers = new ArrayList<>();
         providers.add(provider);
@@ -161,10 +159,9 @@ public class ImageProviderManager {
         if (existingProviders != null) {
             for (ImageProvider existingProvider : existingProviders) {
                 if (existingProvider.getIdentifier().equals(provider.getIdentifier())) {
-                    throw new ImageProviderManagerException(
-                            "The provider "
-                                    + provider.getIdentifier()
-                                    + " cannot be added because there is already a provider with this id");
+                    throw new ImageProviderManagerException("The provider "
+                            + provider.getIdentifier()
+                            + " cannot be added because there is already a provider with this id");
                 }
                 providers.add(existingProvider);
             }
@@ -178,9 +175,9 @@ public class ImageProviderManager {
      * overlay for the existing, that is, it will become the active descriptor for that type. The
      * existing descriptor will become the active one as soon as the overlay is unregistered. Such
      * an overlay is for instance useful for changing the supported image sizes.
-     * 
+     *
      * After adding a type, providers for that type can be registered.
-     * 
+     *
      * @param imageType
      *            the descriptor of the type
      * @return true if there was already a descriptor with the same name and the new type was added
@@ -212,7 +209,7 @@ public class ImageProviderManager {
     /**
      * Remove a provider that was added for a given image type. If the type or the provider do not
      * exist the call is ignored.
-     * 
+     *
      * @param imageTypeName
      *            the name of the type
      * @param provider
@@ -252,12 +249,12 @@ public class ImageProviderManager {
     /**
      * Remove a previously registered image type. If there are several types with the same name and
      * the type to remove is the active one the next type which was registered before this type will
-     * become the active one. <br/>
+     * become the active one. <br>
      * Providers will not be removed by this method, even if there are no more types with the same
      * name. However, a call to {@link #getProviders(String)} with the name of the removed type will
-     * return null. <br/>
+     * return null. <br>
      * If the type to remove does not exist the call is ignored.
-     * 
+     *
      * @param imageType
      *            the type to remove
      * @return true if an active overlay was removed, false otherwise

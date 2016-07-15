@@ -1,10 +1,10 @@
 package com.communote.server.core.blog.export;
 
 /**
- * Interface for defining generation permalinks.
- * 
+ * Interface for defining generation of permanent links.
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public interface PermalinkGenerator {
 
@@ -30,7 +30,7 @@ public interface PermalinkGenerator {
 
     /**
      * Get the type of perma link (one of the constants {@link #PERMA_ID_TOPICS} etc)
-     * 
+     *
      * @param uriFragments
      *            the splitted uri fragments
      * @return the perma link identifier (that is 'blogs', 'users', 'tags' ...)
@@ -38,8 +38,8 @@ public interface PermalinkGenerator {
     public abstract String extractPermaLinkIdentifier(String[] uriFragments);
 
     /**
-     * Calls {@link #getBlogLink(String, false)}.
-     * 
+     * Calls {@link #getBlogLink(String, boolean)} with secure parameter set to <code>false</code>.
+     *
      * @param blogAlias
      *            the alias of the blog to get the link for
      * @return the absolute perma link for the blog
@@ -56,8 +56,9 @@ public interface PermalinkGenerator {
     public abstract String getBlogLink(String blogAlias, boolean secure);
 
     /**
-     * Calls {@link #getNoteLink(String, Long, false)}.
-     * 
+     * Calls {@link #getNoteLink(String, Long, boolean)} with secure parameter set to
+     * <code>false</code>.
+     *
      * @param blogAlias
      *            the blog alias of the note to get the link for
      * @param noteId
@@ -78,8 +79,8 @@ public interface PermalinkGenerator {
     public abstract String getNoteLink(String blogAlias, Long noteId, boolean secure);
 
     /**
-     * Calls {@link #getTagLink(String, false)}.
-     * 
+     * Calls {@link #getTagLink(String, boolean)} with secure parameter set to <code>false</code>.
+     *
      * @param tagId
      *            The tag to get the link for
      * @return The permanent link for the tag.
@@ -96,8 +97,8 @@ public interface PermalinkGenerator {
     public abstract String getTagLink(long tagId, boolean secure);
 
     /**
-     * Calls {@link #getTagLink(String, false)}.
-     * 
+     * Calls {@link #getTagLink(String, boolean)} with secure parameter set to <code>false</code>.
+     *
      * @param tag
      *            The tag to get the link for
      * @return The permanent link for the tag.
@@ -118,8 +119,8 @@ public interface PermalinkGenerator {
     public abstract String getTagLink(String tag, boolean secure);
 
     /**
-     * Calls {@link #getUserLink(String,false)}.
-     * 
+     * Calls {@link #getUserLink(String,boolean)} with secure parameter set to <code>false</code>.
+     *
      * @param userAlias
      *            the alias of the user to get the link for
      * @return the perma link for the user

@@ -21,7 +21,7 @@ public final class IOHelper {
     /**
      * Close the AutoCloseable and log any exception that might be thrown.
      *
-     * @param closeable
+     * @param closable
      *            The closable to close. Can be null.
      */
     public static void close(AutoCloseable closable) {

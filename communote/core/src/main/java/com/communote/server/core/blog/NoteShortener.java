@@ -286,8 +286,8 @@ public class NoteShortener {
 
     /**
      * Returns the shortened content or null if there is no need to shorten it. If the content was
-     * shortened a directly closed read-more-link placeholder (<rml/>) will be contained at the cut
-     * position.
+     * shortened a directly closed read-more-link placeholder (&lt;rml/&gt;) will be contained at
+     * the cut position.
      *
      * @param content
      *            the content to shorten

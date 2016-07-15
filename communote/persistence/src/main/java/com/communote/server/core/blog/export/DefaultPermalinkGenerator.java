@@ -54,21 +54,11 @@ public class DefaultPermalinkGenerator implements PermalinkGenerator {
         return null;
     }
 
-    /**
-     * Calls {@link #getBlogLink(String, false)}.
-     *
-     * @param blogAlias
-     *            the alias of the blog to get the link for
-     * @return the absolute perma link for the blog
-     */
     @Override
     public final String getBlogLink(String blogAlias) {
         return getBlogLink(blogAlias, false);
     }
 
-    /**
-     * {@inheritDoc}.
-     */
     @Override
     public String getBlogLink(String blogAlias, boolean secure) {
         if (StringUtils.isEmpty(blogAlias)) {
@@ -87,15 +77,6 @@ public class DefaultPermalinkGenerator implements PermalinkGenerator {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Calls {@link #getNoteLink(String, Long, false)}.
-     *
-     * @param blogAlias
-     *            the blog alias of the note to get the link for
-     * @param noteId
-     *            the id of the note to get the link for
-     * @return the perma link for the note
-     */
     @Override
     public final String getNoteLink(String blogAlias, Long noteId) {
         return getNoteLink(blogAlias, noteId, false);
@@ -158,11 +139,6 @@ public class DefaultPermalinkGenerator implements PermalinkGenerator {
         return StringUtils.EMPTY;
     }
 
-    /**
-     * Calls {@link #getTagLink(String, false)}.
-     *
-     * {@inheritDoc}
-     */
     @Override
     public String getTagLink(String tag) {
         return getTagLink(tag, false);
@@ -184,13 +160,6 @@ public class DefaultPermalinkGenerator implements PermalinkGenerator {
         return StringUtils.EMPTY;
     }
 
-    /**
-     * Calls {@link #getUserLink(String,false)}.
-     *
-     * @param userAlias
-     *            the alias of the user to get the link for
-     * @return the perma link for the user
-     */
     @Override
     public final String getUserLink(String userAlias) {
         return getUserLink(userAlias, false);

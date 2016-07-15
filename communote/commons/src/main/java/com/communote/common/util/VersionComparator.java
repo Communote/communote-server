@@ -7,15 +7,16 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 /**
- * Comparator to compare versions, which contain a major, minor and optional a revision part.
- * 
- * compare(1.0, 1.0.1) returns a value < 0<br>
- * compare(1.0.1, 1.0.1) returns 0<br>
- * compare(1.0.1, 1.0) returns a value > 0<br>
- * 
- * 
+ * Comparator to compare versions, which contain a major, minor and optional a revision part.<br>
+ * Examples
+ * <ul>
+ * <li>compare(1.0, 1.0.1) returns a value &lt; 0</li>
+ * <li>compare(1.0.1, 1.0.1) returns 0</li>
+ * <li>compare(1.0.1, 1.0) returns a value &gt; 0</li>
+ * </ul>
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class VersionComparator implements Comparator<String> {
 
@@ -30,7 +31,7 @@ public class VersionComparator implements Comparator<String> {
 
     /**
      * Constructor to use revisions for the version comparison
-     * 
+     *
      * @param includesRevision
      *            If true, the last part is the revision and the version number will be normalized.
      */
@@ -40,14 +41,14 @@ public class VersionComparator implements Comparator<String> {
 
     /**
      * Compares the version.
-     * 
+     *
      * @param version1
      *            the version1 (e.g. 1.0.1)
      * @param version2
      *            the version2 (e.g 1.0)
-     * @return a value greater 0 if version1 > version2<br>
+     * @return a value greater 0 if version1 &gt; version2<br>
      *         0 if version1 == version2<br>
-     *         a value less 0 if version1 < version2<br>
+     *         a value less 0 if version1 &lt; version2<br>
      */
     @Override
     public int compare(String version1, String version2) {
@@ -71,8 +72,7 @@ public class VersionComparator implements Comparator<String> {
             }
         }
         // KENMEI-6778 Only add revision again, if it is numeric
-        if (includesRevision
-                && NumberUtils.isDigits(revisionV1.toString())
+        if (includesRevision && NumberUtils.isDigits(revisionV1.toString())
                 && NumberUtils.isDigits(revisionV2.toString())) {
             v1 = ArrayUtils.add(v1, revisionV1);
             v2 = ArrayUtils.add(v2, revisionV2);

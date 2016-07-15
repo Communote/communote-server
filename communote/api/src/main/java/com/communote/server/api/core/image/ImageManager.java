@@ -15,7 +15,7 @@ import com.communote.server.model.user.ImageSizeType;
  * <p>
  * On startup a set of built-in image types and providers are added automatically.
  * </p>
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public interface ImageManager {
@@ -199,9 +199,9 @@ public interface ImageManager {
     /**
      * Remove a previously registered image type. If there are several types with the same name and
      * the type to remove is the active one the next type which was registered before this type will
-     * become the active one. <br/>
+     * become the active one. <br>
      * Providers will not be removed by this method, even if there are no more types with the same
-     * name. However, accessing images of the type is not possible anymore. <br/>
+     * name. However, accessing images of the type is not possible anymore. <br>
      * If the type to remove does not exist the call is ignored.
      *
      * @param imageType

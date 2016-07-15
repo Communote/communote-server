@@ -91,14 +91,11 @@ public interface PermissionManagement<T, N, E extends AuthorizationException> {
     boolean hasPermission(long entityId, String permissionIdentifier);
 
     /**
-     * Checks if the current user has the permission to create the given entity, or to create
-     * entities of the associated type in general
+     * Checks if the current user has the permission to to create entities of the associated type
      *
-     * @param entityId
-     *            ID of the entity
      * @param permission
      *            The permission to check.
-     * @return True, if the user has the permission on the entity.
+     * @return True, if the user has the permission for creating entities
      */
     boolean hasPermissionForCreation(Permission<T> permission);
 

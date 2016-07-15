@@ -199,7 +199,7 @@ public class CommunoteTool {
      * @param fallback
      *            the fallback
      * @return the value
-     * @see com.communote.server.api.core.config.ClientConfigurationProperties#getProperty(ClientConfigurationPropertyConstant,
+     * @see com.communote.server.api.core.config.AbstractConfigurationProperties#getProperty(com.communote.server.api.core.config.ConfigurationPropertyConstant,
      *      int)
      */
     public int getConfigurationProperty(ClientConfigurationPropertyConstant key, int fallback) {
@@ -207,7 +207,7 @@ public class CommunoteTool {
     }
 
     /**
-     * Get the value of a configuration property as String. If the property is not defined the
+     * Get the value of a configuration property as String. If the property is not defined thes
      * provided fallback will be returned.
      *
      * @param key
@@ -215,7 +215,7 @@ public class CommunoteTool {
      * @param fallback
      *            the fallback as String
      * @return the value as String
-     * @see com.communote.server.api.core.config.ClientConfigurationProperties#getProperty(ClientConfigurationPropertyConstant,
+     * @see com.communote.server.api.core.config.AbstractConfigurationProperties#getProperty(com.communote.server.api.core.config.ConfigurationPropertyConstant,
      *      String)
      */
     public String getConfigurationPropertyAsString(ClientConfigurationPropertyConstant key,
@@ -224,7 +224,7 @@ public class CommunoteTool {
     }
 
     /**
-     * Delegates to {@link MasterDataManagement.getCountries()}
+     * Delegates to {@link MasterDataManagement#getCountries(Locale)}
      *
      * @param request
      *            the http servlet request
@@ -259,7 +259,7 @@ public class CommunoteTool {
     }
 
     /**
-     * Delegates to {@link UserManagementHelper.getCurrentOffsetOfEffectiveUserTimeZone()}
+     * Delegates to {@link UserManagementHelper#getCurrentOffsetOfEffectiveUserTimeZone()}
      *
      * @return the timezone offset
      */
@@ -302,7 +302,7 @@ public class CommunoteTool {
     }
 
     /**
-     * * @return The currents user profile.
+     * @return The currents user profile.
      */
     public UserProfileVO getCurrentUserProfile() {
         return ServiceLocator.findService(UserProfileManagement.class).findUserProfileVOByUserId(
@@ -353,7 +353,7 @@ public class CommunoteTool {
     }
 
     /**
-     * Delegates to {@link MasterDataManagement.getLanguages()}
+     * Delegates to {@link MasterDataManagement#getLanguages()}
      *
      * @return the list of supported languages
      */
@@ -376,7 +376,7 @@ public class CommunoteTool {
     }
 
     /**
-     * Delegates to {@link MasterDataManagement.getTimeZones()}
+     * Delegates to {@link MasterDataManagement#getTimeZones()}
      *
      * @return the list of timezone ids
      */
@@ -392,7 +392,7 @@ public class CommunoteTool {
     }
 
     /**
-     * Delegates to {@link MasterDataManagement.getUsedLanguages()}
+     * Delegates to {@link MasterDataManagement#getUsedLanguages()}
      *
      * @return the list of supported languages
      */
@@ -521,8 +521,7 @@ public class CommunoteTool {
     }
 
     /**
-     * Delegates to {@link
-     * com.communote.server.core.security.ssl.ChannelManagement.isForceSsl(channelType)}
+     * Delegates to {@link ChannelManagement#isForceSsl(ChannelType)}
      *
      * @param type
      *            the channel type

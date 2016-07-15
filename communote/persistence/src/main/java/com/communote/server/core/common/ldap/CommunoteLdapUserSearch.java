@@ -20,9 +20,9 @@ import com.communote.server.persistence.user.ExternalUserVO;
 
 /**
  * Search for a user in LDAP directory.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class CommunoteLdapUserSearch implements LdapUserSearch {
 
@@ -33,39 +33,39 @@ public class CommunoteLdapUserSearch implements LdapUserSearch {
 
     /**
      * Creates a search for retrieving LDAP users.
-     * 
+     *
      * @param config
      *            the LDAP configuration
-     * @param kenmeiAttributeName
-     *            the Kenmei attribute to be used for the {@link #searchForUser(String)} method. A
-     *            search for this attribute should return at most one user.
+     * @param communoteAttributeName
+     *            the Communote attribute to be used for the {@link #searchForUser(String)} method.
+     *            A search for this attribute should return at most one user.
      * @throws LdapAttributeMappingException
      *             if it's not possible to create an {@link LdapUserAttributesMapper} from the LDAP
      *             configuration
      */
-    public CommunoteLdapUserSearch(LdapConfiguration config, LdapUserAttribute kenmeiAttributeName)
-            throws LdapAttributeMappingException {
+    public CommunoteLdapUserSearch(LdapConfiguration config,
+            LdapUserAttribute communoteAttributeName) throws LdapAttributeMappingException {
         Assert.notNull(config, "LDAP configuration must be set");
         Assert.notNull(config.getUserSearch(), "LDAP user search configuration must be set");
         this.userAttributesMapper = new LdapUserAttributesMapper(config);
         this.initialDirContextFactory = LdapSearchUtils.createLdapContext(config,
                 userAttributesMapper);
         this.userSearchConfig = config.getUserSearch();
-        this.userSearchFilter = buildSearchFilterForUserSearch(kenmeiAttributeName);
+        this.userSearchFilter = buildSearchFilterForUserSearch(communoteAttributeName);
     }
 
     /**
      * Creates a search for retrieving LDAP users.
-     * 
+     *
      * @param userSearchConfig
      *            the user search configuration of the LDAP configuration
      * @param mapper
      *            the attributes mapper to be used
      * @param context
      *            the initialized JNDI context based on the provided LDAP configuration
-     * @param kenmeiAttributeName
-     *            the Kenmei attribute to be used for the {@link #searchForUser(String)} method. A
-     *            search for this attribute should return at most one user.
+     * @param communoteAttributeName
+     *            the Communote attribute to be used for the {@link #searchForUser(String)} method.
+     *            A search for this attribute should return at most one user.
      * @param userLogin
      *            the login to use for querying the LDAP server. If null the configured managerDn
      *            will be used.
@@ -74,7 +74,7 @@ public class CommunoteLdapUserSearch implements LdapUserSearch {
      */
     public CommunoteLdapUserSearch(LdapSearchConfiguration userSearchConfig,
             LdapUserAttributesMapper mapper, LdapContextSource context,
-            LdapUserAttribute kenmeiAttributeName, String userLogin, String userPassword) {
+            LdapUserAttribute communoteAttributeName, String userLogin, String userPassword) {
         Assert.notNull(userSearchConfig, "LDAP user search configuration must be set");
         this.initialDirContextFactory = context;
         if (userLogin != null) {
@@ -83,28 +83,28 @@ public class CommunoteLdapUserSearch implements LdapUserSearch {
         }
         this.userSearchConfig = userSearchConfig;
         this.userAttributesMapper = mapper;
-        this.userSearchFilter = buildSearchFilterForUserSearch(kenmeiAttributeName);
+        this.userSearchFilter = buildSearchFilterForUserSearch(communoteAttributeName);
     }
 
     /**
      * Builds an LDAP search filter for searching for a user where the search term matches the value
-     * of the LDAP attribute of the provided Kenmei attribute name.
-     * 
-     * @param kenmeiAttributeName
+     * of the LDAP attribute of the provided Communote attribute name.
+     *
+     * @param communoteAttributeName
      *            the attribute name
      * @return the search filter
      */
-    private String buildSearchFilterForUserSearch(LdapUserAttribute kenmeiAttributeName) {
+    private String buildSearchFilterForUserSearch(LdapUserAttribute communoteAttributeName) {
         if (StringUtils.isNotBlank(userSearchConfig.getSearchFilter())) {
-            return "(&(" + userAttributesMapper.getLdapAttributName(kenmeiAttributeName) + "={0})"
-                    + userSearchConfig.getSearchFilter() + ")";
+            return "(&(" + userAttributesMapper.getLdapAttributName(communoteAttributeName)
+                    + "={0})" + userSearchConfig.getSearchFilter() + ")";
         }
-        return "(" + userAttributesMapper.getLdapAttributName(kenmeiAttributeName) + "={0})";
+        return "(" + userAttributesMapper.getLdapAttributName(communoteAttributeName) + "={0})";
     }
 
     /**
      * Returns the {@link LdapUserAttributesMapper} used by the search.
-     * 
+     *
      * @return the mapper
      */
     public LdapUserAttributesMapper getUserAttributesMapper() {
@@ -125,11 +125,11 @@ public class CommunoteLdapUserSearch implements LdapUserSearch {
         searchControls.setReturningAttributes(userAttributesMapper.getMappedLdapAttributeNames());
         for (LdapSearchBaseDefinition searchBase : searchBaseDefs) {
             searchControls
-                    .setSearchScope(searchBase.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE
-                            : SearchControls.ONELEVEL_SCOPE);
+            .setSearchScope(searchBase.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE
+                    : SearchControls.ONELEVEL_SCOPE);
             try {
-                return template.searchForSingleEntry(
-                        searchBase.getSearchBase(), userSearchFilter, params);
+                return template.searchForSingleEntry(searchBase.getSearchBase(), userSearchFilter,
+                        params);
             } catch (IncorrectResultSizeDataAccessException e) {
                 // ignore no results case to allow checking other search bases
                 if (e.getActualSize() != 0) {
@@ -144,9 +144,8 @@ public class CommunoteLdapUserSearch implements LdapUserSearch {
 
     /**
      * Same as {@link #searchForUser(String)} but automatically transforms the LdapUserDetails to
-     * the VO by invoking
-     * {@link #transformResult(org.springframework.security.ldap.userdetails.LdapUserDetails)}.
-     * 
+     * the VO by invoking {@link #transformResult(DirContextOperations)}.
+     *
      * @param username
      *            the user name to search for. The search must not return more than one value
      * @return the user
@@ -165,7 +164,7 @@ public class CommunoteLdapUserSearch implements LdapUserSearch {
 
     /**
      * Transforms the LdapUserDetails into a VO.
-     * 
+     *
      * @param details
      *            the details to transform
      * @return the transformed VO
@@ -174,8 +173,8 @@ public class CommunoteLdapUserSearch implements LdapUserSearch {
      */
     public ExternalUserVO transformResult(DirContextOperations details)
             throws LdapAttributeMappingException {
-        ExternalUserVO userVO = userAttributesMapper.mapAttributes(
-                details.getDn().toString(), details.getAttributes());
+        ExternalUserVO userVO = userAttributesMapper.mapAttributes(details.getDn().toString(),
+                details.getAttributes());
         return userVO;
     }
 }

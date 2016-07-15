@@ -17,10 +17,10 @@ import com.communote.common.util.VersionComparator;
 
 /**
  * Manager or register, unregister and getting {@link JaxRsApplication} for an specific version (for
- * example Major.Minor -> 1.3 or prisma-1.3).
- * 
+ * example a simple major.minor (like 1.3) or prisma-1.3).
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  * @param <T>
  *            instance of extended {@link JaxRsApplication}
  */
@@ -33,8 +33,7 @@ public class RestletApplicationManager<T extends JaxRsApplication> {
 
     private final Map<String, T> restletApplications = new HashMap<String, T>();
 
-    private final Map<String, CommunoteRestletServletAdapter> restletAdapter =
-            new HashMap<String, CommunoteRestletServletAdapter>();
+    private final Map<String, CommunoteRestletServletAdapter> restletAdapter = new HashMap<String, CommunoteRestletServletAdapter>();
 
     private List<String> versionsList = new ArrayList<String>();
 
@@ -47,9 +46,9 @@ public class RestletApplicationManager<T extends JaxRsApplication> {
 
     /**
      * Getting an registered {@link JaxRsApplication} for specific version
-     * 
+     *
      * @param version
-     *            of {@link JaxRsApplication} (Major.Minor -> 1.3)
+     *            version of the application in the format major.minor like 1.3
      * @return Application
      */
     public T getApplication(String version) {
@@ -60,7 +59,7 @@ public class RestletApplicationManager<T extends JaxRsApplication> {
      * Getter for the {@link CommunoteRestletServletAdapter}. If
      * {@link CommunoteRestletServletAdapter} not exists, than create an instance, combine this with
      * the corresponding restlet application using the version and add this to an map.
-     * 
+     *
      * @param version
      *            version of api
      * @param context
@@ -81,7 +80,7 @@ public class RestletApplicationManager<T extends JaxRsApplication> {
 
     /**
      * Getting all supported versions of the REST API sorted
-     * 
+     *
      * @return an array of supported versions
      */
     public List<String> getVersions() {
@@ -92,10 +91,10 @@ public class RestletApplicationManager<T extends JaxRsApplication> {
      * Register {@link JaxRsApplication} for specific version. The restlet application is setting to
      * an map using the version. The old {@link CommunoteRestletServletAdapter} is removed (when
      * exists) from specific map.
-     * 
-     * 
+     *
+     *
      * @param version
-     *            of {@link JaxRsApplication} (Major.Minor -> 1.3)
+     *            version of the application in the format major.minor like 1.3
      * @param application
      *            instance of extended {@link JaxRsApplication}
      */
@@ -111,10 +110,10 @@ public class RestletApplicationManager<T extends JaxRsApplication> {
 
     /**
      * Unregister {@link JaxRsApplication} for specific version. The
-     * {@link CommunoteRestletServletAdapter} is removed (when exists) from specific map.
-     * 
+     * {@link CommunoteRestletServletAdapter} is removed when it exists.
+     *
      * @param version
-     *            of {@link JaxRsApplication} (Major.Minor -> 1.3)
+     *            version of the application in the format major.minor like 1.3
      */
     public void unregisterApplication(String version) {
         restletApplications.remove(version);

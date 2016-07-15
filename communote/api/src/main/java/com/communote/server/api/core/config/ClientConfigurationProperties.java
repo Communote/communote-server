@@ -33,8 +33,8 @@ import com.communote.server.model.config.Setting;
  *
  */
 public class ClientConfigurationProperties extends
-AbstractConfigurationProperties<ClientConfigurationPropertyConstant> implements
-Serializable {
+        AbstractConfigurationProperties<ClientConfigurationPropertyConstant> implements
+        Serializable {
 
     /**
      * default serial version ID
@@ -166,7 +166,7 @@ Serializable {
      *
      * @return the LDAP configuration
      * @deprecated use
-     *             {@link com.communote.server.service.UserService#getExternalSystemConfiguration(String)
+     *             {@link com.communote.server.service.UserService#getExternalSystemConfiguration(String)}
      */
     @Deprecated
     public LdapConfiguration getLdapConfiguration() {
@@ -281,7 +281,7 @@ Serializable {
      *
      * @return true, if Confluence authentication is configured and activated
      * @deprecated use
-     *             {@link com.communote.server.service.UserService#getExternalSystemConfiguration(String)
+     *             {@link com.communote.server.service.UserService#getExternalSystemConfiguration(String)}
      */
     @Deprecated
     public boolean isConfluenceAuthenticationActivated() {

@@ -19,7 +19,7 @@ import com.communote.server.model.user.User;
 /**
  * Helper to install Communote. The methods should be called in the following order
  * <ul>
- * <li>{@link #updateDatabaseSettings(Map)}</li>
+ * <li>{@link #updateDatabaseSettings(DatabaseType, Map)}</li>
  * <li>{@link #initializeDatabase(DatabaseInitializationStatusCallback)}</li>
  * <li>{@link #createCommunoteAccount(String, String)}</li>
  * <li>{@link #initializeCommunoteAccount(UserVO, Map)}</li>
@@ -39,8 +39,12 @@ public interface CommunoteInstaller {
     /**
      * Create the Communote account (aka the global client).
      *
+     * @param accountName
+     *            the name of the account
+     * @param timezoneId
+     *            the ID of the timezone
      * @throws InvalidClientIdException
-     *             in case the ID of the client is not valid
+     *             in case the configured ID of the global client is not valid
      * @throws CommunoteInstallerException
      *             in case creating the client failed
      */

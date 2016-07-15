@@ -214,7 +214,7 @@ public abstract class NoteManagementBase implements NoteManagement {
     }
 
     /**
-     * Performs the core logic for {@link #createNote(NoteStoringTO, java.util.Set<String>)}
+     * Performs the core logic for {@link #createNote(NoteStoringTO, Set)}
      */
     protected abstract com.communote.server.core.vo.blog.NoteModificationResult handleCreateNote(
             com.communote.server.api.core.note.NoteStoringTO noteStoringTO,
@@ -268,8 +268,7 @@ public abstract class NoteManagementBase implements NoteManagement {
 
 /**
      * Performs the core logic for
-     * {@link #getNoteWithComments(Long,
-     *  com.communote.server.core.vo.query.note.SimpleNoteListItemToDiscussionNoteDataConverter)
+     * {@link #getNoteWithComments(Long, QueryResultConverter)}
      * @param noteId
      *            the id of the note to retrieve
      * @param converter

@@ -264,7 +264,8 @@ public class SimpleMenuBuilder<C extends MenuEntry, S extends MenuEntry> {
     }
 
     /**
-     * Same as {@link #removeCategory(C)} but removes the category by its ID.
+     * Same as {@link #removeCategory(MenuEntry) removeCategory(C)} but removes the category by its
+     * ID.
      *
      * @param categoryId
      *            the ID of the category to remove
@@ -316,7 +317,8 @@ public class SimpleMenuBuilder<C extends MenuEntry, S extends MenuEntry> {
     }
 
     /**
-     * Same as {@link #removeFromCategory(String, S)} but searches the item by its ID.
+     * Same as {@link #removeFromCategory(String, MenuEntry) removeFromCategory(String, S)} but
+     * searches the item by its ID.
      *
      * @param categoryId
      *            the ID of the category from which the entry should be removed

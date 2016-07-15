@@ -189,7 +189,7 @@ public abstract class Task implements java.io.Serializable {
 
     /**
      * <p>
-     * The interval the task should be scheduled in milliseconds. If null or less than < 1 the task
+     * The interval the task should be scheduled in milliseconds. If null or less than 1 the task
      * will only be executed once.
      * </p>
      */

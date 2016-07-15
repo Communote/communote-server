@@ -48,8 +48,8 @@ public class AttachmentNotFoundException extends NotFoundException {
      * @param cause
      *            the cause of the exception
      */
-    public AttachmentNotFoundException(Long attachmentId, String message, Throwable throwable) {
-        super(message, throwable);
+    public AttachmentNotFoundException(Long attachmentId, String message, Throwable cause) {
+        super(message, cause);
         this.attachmentId = attachmentId;
     }
 

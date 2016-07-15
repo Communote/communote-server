@@ -233,37 +233,37 @@ public class PluginPropertyManagement {
             final String propertyKey, final Cache cache) throws PluginPropertyManagementException {
         try {
             return (String) new ClientDelegate()
-            .execute(new GlobalClientDelegateCallback<Serializable>() {
-                @Override
-                public Serializable doOnGlobalClient() throws Exception {
-                    final PluginPropertyCacheKey<String> cacheKey = new PluginPropertyCacheKey<String>(
-                            symbolicName, propertyKey, true);
-                    TransactionManagement txManagement = ServiceLocator
-                            .findService(TransactionManagement.class);
-                    RunInTransactionWithResult<Serializable> runInTransaction;
-                    runInTransaction = new RunInTransactionWithResult<Serializable>() {
-
+                    .execute(new GlobalClientDelegateCallback<Serializable>() {
                         @Override
-                        public Serializable execute() throws TransactionException {
-                            if (cache != null) {
-                                return cache.get(cacheKey,
-                                        pluginPropertyCacheElementProvider);
+                        public Serializable doOnGlobalClient() throws Exception {
+                            final PluginPropertyCacheKey<String> cacheKey = new PluginPropertyCacheKey<String>(
+                                    symbolicName, propertyKey, true);
+                            TransactionManagement txManagement = ServiceLocator
+                                    .findService(TransactionManagement.class);
+                            RunInTransactionWithResult<Serializable> runInTransaction;
+                            runInTransaction = new RunInTransactionWithResult<Serializable>() {
+
+                                @Override
+                                public Serializable execute() throws TransactionException {
+                                    if (cache != null) {
+                                        return cache.get(cacheKey,
+                                                pluginPropertyCacheElementProvider);
+                                    } else {
+                                        return pluginPropertyCacheElementProvider.load(cacheKey);
+                                    }
+                                }
+                            };
+                            Serializable value;
+                            if (CommunoteRuntime.getInstance().getApplicationInformation()
+                            .isStandalone()) {
+                                value = txManagement.execute(runInTransaction);
                             } else {
-                                return pluginPropertyCacheElementProvider.load(cacheKey);
+                                // force new Tx to get new connection and run on correct DB/Schema
+                                value = txManagement.executeInNew(runInTransaction);
                             }
+                            return value;
                         }
-                    };
-                    Serializable value;
-                    if (CommunoteRuntime.getInstance().getApplicationInformation()
-                                    .isStandalone()) {
-                        value = txManagement.execute(runInTransaction);
-                    } else {
-                        // force new Tx to get new connection and run on correct DB/Schema
-                        value = txManagement.executeInNew(runInTransaction);
-                    }
-                    return value;
-                }
-            });
+                    });
         } catch (Exception e) {
             if (e instanceof IllegalArgumentException) {
                 throw (IllegalArgumentException) e;
@@ -307,8 +307,8 @@ public class PluginPropertyManagement {
     }
 
     /**
-     * Sets a client property from an object. <br />
-     * <br />
+     * Sets a client property from an object. <br>
+     * <br>
      * Internally the property value will be stored as the serialized object in JSON format in
      * combination with the class name, for instance:
      * <code>com.example.Property={"count":"42"}</code>

@@ -8,21 +8,21 @@ import java.util.Set;
 
 /**
  * Abstraction to offer functionality for converting whole collections.
- * 
+ *
  * @param <S>
  *            the source type of the conversion
  * @param <T>
  *            the target type of the conversion
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public abstract class CollectionConverter<S, T> implements Converter<S, T> {
     /**
      * Method to convert a collection of sources to a collection of targets.
-     * 
+     *
      * @param sources
      *            The sources.
-     * @return The result of {@link CollectionConverter#convert(List)
+     * @return The result of {@link #convert(List)}
      */
     public Collection<T> convert(Collection<S> sources) {
         return convert(new ArrayList<S>(sources));
@@ -30,7 +30,7 @@ public abstract class CollectionConverter<S, T> implements Converter<S, T> {
 
     /**
      * Method to convert a list of sources to a collection of targets.
-     * 
+     *
      * @param sources
      *            The sources.
      * @return List of targets.
@@ -50,7 +50,7 @@ public abstract class CollectionConverter<S, T> implements Converter<S, T> {
 
     /**
      * Method to convert a set of sources to a set of targets.
-     * 
+     *
      * @param sources
      *            The sources.
      * @return Set of targets.

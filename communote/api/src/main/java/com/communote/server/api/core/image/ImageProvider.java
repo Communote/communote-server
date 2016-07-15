@@ -58,8 +58,7 @@ public abstract class ImageProvider {
     /**
      * Test whether a provider can load the image. This should for instance return false if the
      * provider was disabled completely or partially for certain identifiers. Checking whether the
-     * identified image exists is not necessary because {@link #loadImage(ImageDescriptor)} will
-     * handle it.
+     * identified image exists is not necessary because {@link #loadImage(String)} will handle it.
      *
      * @param imageIdentifier
      *            the identifier of the image
@@ -103,7 +102,7 @@ public abstract class ImageProvider {
      * @throws ImageNotFoundException
      *             in case there is no default image
      *
-     * @see {@link #getVersionString(String)}
+     * @see #getVersionString(String)
      */
     public String getDefaultImageVersionString() throws ImageNotFoundException {
         prepareDefaultImage();
@@ -237,7 +236,7 @@ public abstract class ImageProvider {
      *             in case the current user is not allowed to access the image
      */
     public abstract String getVersionString(String imageIdentifier) throws AuthorizationException,
-            ImageNotFoundException;
+    ImageNotFoundException;
 
     /**
      * Return whether the provider has a default image for the case when there is no image for a
@@ -348,7 +347,7 @@ public abstract class ImageProvider {
      *             in case the current user is not allowed to access the image
      */
     public abstract Image loadImage(String imageIdentifier) throws ImageNotFoundException,
-            AuthorizationException;
+    AuthorizationException;
 
     /**
      * Prepare the default image if not yet prepared.

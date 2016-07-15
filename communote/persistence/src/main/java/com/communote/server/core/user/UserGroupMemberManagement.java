@@ -12,14 +12,14 @@ import com.communote.server.core.user.group.GroupOperationNotPermittedException;
 
 /**
  * Management for group memberships.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public interface UserGroupMemberManagement {
 
     /**
      * Add a group to a group if it is not already contained.
-     * 
+     *
      * @param targetGroupId
      *            ID of the target group the other group should be added to
      * @param groupId
@@ -34,13 +34,12 @@ public interface UserGroupMemberManagement {
      *             in case the current user is not client manager
      */
     public void addGroup(Long targetGroupId, Long groupId)
-            throws GroupOperationNotPermittedException,
-            GroupNotFoundException, CantAddParentAsChildException,
-            AuthorizationException;
+            throws GroupOperationNotPermittedException, GroupNotFoundException,
+            CantAddParentAsChildException, AuthorizationException;
 
     /**
      * Add a user to a group
-     * 
+     *
      * @param groupId
      *            the ID of the group to add the user to
      * @param userId
@@ -55,13 +54,12 @@ public interface UserGroupMemberManagement {
      *             in case the current user is not client manager
      */
     public void addUser(Long groupId, Long userId) throws GroupNotFoundException,
-            UserNotFoundException, GroupOperationNotPermittedException,
-            AuthorizationException;
+    UserNotFoundException, GroupOperationNotPermittedException, AuthorizationException;
 
     /**
      * Adds a user to an external group. The external group must have an externalSystemId that is
      * equal to the value of the externalSystemId parameter.
-     * 
+     *
      * @param groupId
      *            the ID of the external group to add the user to
      * @param userId
@@ -79,8 +77,7 @@ public interface UserGroupMemberManagement {
      *             in case the current user is not the internal system user
      */
     public void addUserForExternal(Long groupId, Long userId, String externalSystemId)
-            throws GroupNotFoundException, UserNotFoundException,
-            AuthorizationException;
+            throws GroupNotFoundException, UserNotFoundException, AuthorizationException;
 
     /**
      * <p>
@@ -95,20 +92,18 @@ public interface UserGroupMemberManagement {
      * Returns true if the user is a direct or indirect member of the group.
      * </p>
      */
-    public boolean containsUser(Long groupId, Long userId)
-            throws GroupNotFoundException;
+    public boolean containsUser(Long groupId, Long userId) throws GroupNotFoundException;
 
     /**
      * <p>
      * Returns true if the user is a direct member of the group.
      * </p>
      */
-    public boolean containsUserDirectly(Long groupId, Long userId)
-            throws GroupNotFoundException;
+    public boolean containsUserDirectly(Long groupId, Long userId) throws GroupNotFoundException;
 
     /**
      * Return the number of direct members of a group.
-     * 
+     *
      * @param groupId
      *            the ID of the group whose members should be counted
      * @return the number of direct members
@@ -117,27 +112,26 @@ public interface UserGroupMemberManagement {
 
     /**
      * Return all users who are direct members of a group.
-     * 
+     *
      * @param groupId
      *            Id of the group.
-     * @returns a list of all users who are direct members of the given group.
-     * 
+     * @return a list of all users who are direct members of the given group.
+     *
      * @throws GroupNotFoundException
      *             in case the group does not exist
      */
-    public List<UserData> getUsersOfGroup(Long groupId)
-            throws GroupNotFoundException;
+    public List<UserData> getUsersOfGroup(Long groupId) throws GroupNotFoundException;
 
     /**
      * Return all IDs of users who are direct members of a given group.
-     * 
+     *
      * @param groupId
      *            Id of the group.
      * @param externalSystemId
      *            If set, only users of the given external system are considered.
-     * 
-     * @returns a list of all user IDs who are direct members of the given group.
-     * 
+     *
+     * @return a list of all user IDs who are direct members of the given group.
+     *
      * @throws GroupNotFoundException
      *             in case the group does not exist
      */
@@ -150,13 +144,12 @@ public interface UserGroupMemberManagement {
      * </p>
      */
     public void removeEntityFromGroup(Long groupId, Long entityId)
-            throws GroupOperationNotPermittedException,
-            GroupNotFoundException;
+            throws GroupOperationNotPermittedException, GroupNotFoundException;
 
     /**
      * Remove an external group from all external groups of the same external system that contain
      * this group as a direct member.
-     * 
+     *
      * @param groupId
      *            ID of the external group to remove from the other external groups
      * @param groupIdsToIgnore
@@ -171,7 +164,7 @@ public interface UserGroupMemberManagement {
 
     /**
      * Remove a group from all groups it is a member of.
-     * 
+     *
      * @param groupId
      *            The id of the group to remove
      * @throws GroupNotFoundException
@@ -179,14 +172,14 @@ public interface UserGroupMemberManagement {
      * @throws AuthorizationException
      *             in case the current user is not client manager or the internal system user
      */
-    public void removeGroupFromAllGroups(Long groupId)
-            throws GroupNotFoundException, AuthorizationException;
+    public void removeGroupFromAllGroups(Long groupId) throws GroupNotFoundException,
+            AuthorizationException;
 
     /**
      * Removes a user from an external group. The external group must have an externalSystemId that
      * is equal to the value of the externalSystemId parameter. If the group does not exist or the
      * user is not a member of that group nothing will happen.
-     * 
+     *
      * @param groupId
      *            the ID of the external group
      * @param userId
@@ -200,7 +193,7 @@ public interface UserGroupMemberManagement {
             throws AuthorizationException;
 
     /**
-     * 
+     *
      */
     public void removeUserFromAllGroups(Long userId) throws UserNotFoundException;
 

@@ -20,7 +20,6 @@ import com.communote.server.api.core.blog.UserBlogData;
 import com.communote.server.api.core.config.type.ClientProperty;
 import com.communote.server.core.config.ClientConfigurationHelper;
 import com.communote.server.core.security.SecurityHelper;
-import com.communote.server.model.blog.Blog;
 
 /**
  * Class with helper methods related to blog management<br>
@@ -34,13 +33,6 @@ public final class BlogManagementHelper {
     @SuppressWarnings("unchecked")
     private static final Comparator<Object> TITLE_COMPARATOR = new BeanComparator("title");
 
-    /** The id separator for the user {@link #buildUserIdList(Blog)}. */
-    public final static String USER_ID_LIST_SEPARATOR = "#";
-
-    /** The token if all users allow to read than calling {@link #buildUserIdList(Blog)}. */
-    public final static String USER_ID_LIST_ALL_CAN_READ_TOKEN = USER_ID_LIST_SEPARATOR
-            + "allCanRead" + USER_ID_LIST_SEPARATOR;
-
     /**
      * Regular expression for the name identifier of a topic
      */
@@ -52,8 +44,8 @@ public final class BlogManagementHelper {
     public static boolean canSetAllCanReadWrite() {
         return SecurityHelper.isClientManager()
                 || CommunoteRuntime.getInstance().getConfigurationManager()
-                .getClientConfigurationProperties()
-                        .getProperty(ClientProperty.ALLOW_ALL_CAN_READ_WRITE_FOR_ALL_USERS, true);
+                        .getClientConfigurationProperties()
+                .getProperty(ClientProperty.ALLOW_ALL_CAN_READ_WRITE_FOR_ALL_USERS, true);
     }
 
     /**

@@ -24,13 +24,13 @@ import com.communote.server.core.common.database.DatabaseUpdater;
 
 /**
  * Database updater using the liquibase framework and a configured Hibernate session factory
- * implementor to get the database connection. <br />
+ * implementor to get the database connection. <br>
  * Implementation is inspired by {@see liquibase.spring.SpringLiquibase}
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public abstract class AbstractLiquibaseDatabaseUpdater extends DatabaseUpdater implements
-        ResourceLoaderAware {
+ResourceLoaderAware {
 
     private final static Logger LOGGER = LoggerFactory
             .getLogger(AbstractLiquibaseDatabaseUpdater.class);

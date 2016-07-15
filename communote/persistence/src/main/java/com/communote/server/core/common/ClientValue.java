@@ -7,13 +7,13 @@ import com.communote.server.persistence.user.client.ClientHelper;
 
 /**
  * The client value stores a value separately for each client using
- * {@link ClientHelper#getCurrentClientId()
- * 
+ * {@link ClientHelper#getCurrentClientId()}
+ *
  * The {@link #hashCode()}, {@link #equals(Object)} and {@link #toString()} methods also use the
  * current client and delegate the logic to a check against the value of the client.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  * @param <T>
  */
 public class ClientValue<T> {

@@ -2,11 +2,13 @@ package com.communote.common.util;
 
 /**
  * Simple Pair.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  * @param <Left>
+ *            type of the left element of the pair
  * @param <Right>
+ *            type of the right element of the pair
  */
 public class Pair<Left, Right> {
 
@@ -16,7 +18,7 @@ public class Pair<Left, Right> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param left
      *            Left.
      * @param right

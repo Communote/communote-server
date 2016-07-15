@@ -13,7 +13,7 @@ import com.communote.server.model.security.IpRange;
 
 /**
  * Helper class for IpV6 address calculations.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class IpRangeHelper {
@@ -26,7 +26,7 @@ public class IpRangeHelper {
 
     /**
      * Transform byte array to ipv6 notation.
-     * 
+     *
      * @param value
      *            the byte array
      * @return the string in ipv6 notation
@@ -51,10 +51,10 @@ public class IpRangeHelper {
     }
 
     /**
-     * Compress ip v6, add ::.
-     * 
+     * Compress IP v6, add ::.
+     *
      * @param ip
-     *            the ip
+     *            the IP
      * @return the string
      */
     private static String compressIPV6(String ip) {
@@ -76,9 +76,9 @@ public class IpRangeHelper {
 
     /**
      * Removes :: from ipv6 address.
-     * 
+     *
      * @param ip
-     *            the ip as ipv6 or ipv4.
+     *            the IP as ipv6 or ipv4.
      * @return the string
      */
     private static String expandIpAddress(String ip) {
@@ -108,7 +108,7 @@ public class IpRangeHelper {
 
     /**
      * Gets the broadcast address.
-     * 
+     *
      * @param ip
      *            the ip
      * @param netmask
@@ -121,7 +121,7 @@ public class IpRangeHelper {
 
     /**
      * Gets the net address.
-     * 
+     *
      * @param ip
      *            the ip
      * @param netmask
@@ -134,7 +134,7 @@ public class IpRangeHelper {
 
     /**
      * Gets the bit mask.
-     * 
+     *
      * @param bits
      *            the bits to set
      * @return the net mask
@@ -150,7 +150,7 @@ public class IpRangeHelper {
 
     /**
      * Gets the sub net mask for the given ip.
-     * 
+     *
      * @param ip
      *            the ip
      * @return the sub net mask
@@ -160,10 +160,10 @@ public class IpRangeHelper {
     }
 
     /**
-     * Gets the sub net mask value from the ip as string, default is 128bit.
-     * 
+     * Gets the sub net mask value from the IP as string, default is 128bit.
+     *
      * @param ip
-     *            the ip as string
+     *            the IP as string
      * @return the sub net mask value, default 128bit
      */
     private static int getSubNetMaskBits(String ip) {
@@ -180,34 +180,34 @@ public class IpRangeHelper {
     }
 
     /**
-     * Checks if if the ip is in range.
-     * 
+     * Checks if if the IP is in range.
+     *
      * @param ip
      *            the ip
      * @param start
      *            the start of the range
      * @param end
      *            the end of the range
-     * @return true, if ip is in range
+     * @return true, if IP is in range
      */
     public static boolean ipInRange(BigInteger ip, BigInteger start, BigInteger end) {
         return ip.compareTo(start) >= 0 && ip.compareTo(end) <= 0;
     }
 
     /**
-     * Checks if if the ip is in range.
-     * 
+     * Checks if if the IP is in range.
+     *
      * @param ip
      *            the ip
      * @param start
      *            the start of the range
      * @param end
      *            the end of the range
-     * @return true, if ip is in range
+     * @return true, if IP is in range
      * @throws InvalidIpRangeException
-     *             the invalid ip range exception
+     *             the invalid IP range exception
      * @throws InvalidIpAddressException
-     *             the invalid ip address exception
+     *             the invalid IP address exception
      */
     public static boolean ipInRange(String ip, String start, String end)
             throws InvalidIpRangeException, InvalidIpAddressException {
@@ -222,9 +222,9 @@ public class IpRangeHelper {
 
     /**
      * Transform the given ipv6 or ipv4 address to 16 byte array.
-     * 
+     *
      * @param ip
-     *            the ip as ipv6 or ipv4
+     *            the IP as ipv6 or ipv4
      * @return 16 byte value
      */
     private static byte[] ipToByte(String ip) {
@@ -265,34 +265,34 @@ public class IpRangeHelper {
 
     /**
      * Transform the given ipv6 address to 128 bit integer.
-     * 
+     *
      * @param ip
      *            the ip
-     * @return the ip as 128 bit integer
+     * @return the IP as 128 bit integer
      * @throws InvalidIpAddressException
-     *             the invalid ip address exception
+     *             the invalid IP address exception
      */
     public static BigInteger ipToInt(String ip) throws InvalidIpAddressException {
         if (ip == null) {
-            throw new IllegalArgumentException("ip can not be null");
+            throw new IllegalArgumentException("IP can not be null");
         }
         if (validateIP(ip)) {
             return new BigInteger(ipToByte(ip));
         } else {
-            throw new InvalidIpAddressException("invalid ip address", ip);
+            throw new InvalidIpAddressException("invalid IP address", ip);
         }
     }
 
     /**
      * Transform the given 128 bit value to ipv6 notation.
-     * 
+     *
      * @param ip
      *            the ip
      * @return the string in ipv6 notation
      */
     public static String ipToString(BigInteger ip) {
         if (ip == null) {
-            throw new IllegalArgumentException("ip can not be null");
+            throw new IllegalArgumentException("IP can not be null");
         }
         return byteToString(trimTo16Bytes(ip));
     }
@@ -301,7 +301,7 @@ public class IpRangeHelper {
      * Transform ranges to string. The method will first look for the stringRepresentation member of
      * the IpRange and take it if it is not null. Otherwise the members start and end will be
      * converted to an IPv6 IP address range.
-     * 
+     *
      * @param ranges
      *            the ranges
      * @param delimiter
@@ -329,20 +329,20 @@ public class IpRangeHelper {
 
     /**
      * Parse an iP range.
-     * 
+     *
      * @param iprange
      *            the iprange
      * @return the iP range
      * @throws InvalidIpRangeException
-     *             the invalid ip range exception
+     *             the invalid IP range exception
      * @throws InvalidIpAddressException
-     *             the invalid ip address exception
+     *             the invalid IP address exception
      */
     public static IpRange stringToRange(String iprange) throws InvalidIpRangeException,
-            InvalidIpAddressException {
+    InvalidIpAddressException {
         iprange = StringUtils.trimToEmpty(iprange);
         if (StringUtils.isEmpty(iprange)) {
-            throw new InvalidIpAddressException("got empty ip adress", iprange);
+            throw new InvalidIpAddressException("got empty IP adress", iprange);
         }
         String startIp;
         String endIp;
@@ -368,17 +368,17 @@ public class IpRangeHelper {
     }
 
     /**
-     * Parses multiple ip ranges.
-     * 
+     * Parses multiple IP ranges.
+     *
      * @param text
      *            the text
      * @param delimiter
      *            the delimiter
-     * @return the list< ip range>
+     * @return a list of IP ranges
      * @throws InvalidIpRangeException
-     *             the invalid ip range exception
+     *             the invalid IP range exception
      * @throws InvalidIpAddressException
-     *             the invalid ip address exception
+     *             the invalid IP address exception
      */
     public static List<IpRange> stringToRanges(String text, String delimiter)
             throws InvalidIpRangeException, InvalidIpAddressException {
@@ -396,7 +396,7 @@ public class IpRangeHelper {
 
     /**
      * Trim to16 bytes.
-     * 
+     *
      * @param ip
      *            the ip
      * @return the byte[]
@@ -413,7 +413,7 @@ public class IpRangeHelper {
 
     /**
      * Validate ip. Accepts ipv4 and ipv6 notation.
-     * 
+     *
      * @param ip
      *            the ip
      * @return true, if successful

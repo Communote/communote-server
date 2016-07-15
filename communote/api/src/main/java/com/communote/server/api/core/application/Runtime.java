@@ -26,6 +26,9 @@ public interface Runtime {
 
     /**
      * Add a listener that is informed after the application was completely initialized.
+     *
+     * @param listener
+     *            the listener to add
      */
     void addInitializationCompleteListener(InitializationCompleteListener listener);
 
@@ -40,8 +43,8 @@ public interface Runtime {
     void addInitializationCondition(String conditionId);
 
     /**
-     * Mark a condition that was previously added with {@link #addInitCondition(String)} as
-     * fulfilled. If this was the last unfulfilled init condition and the core is already
+     * Mark a condition that was previously added with {@link #addInitializationCondition(String)}
+     * as fulfilled. If this was the last unfulfilled init condition and the core is already
      * initialized the application will be considered as completely initialized and the
      * initialization complete listeners will be called. If the provided condition was not added the
      * call is ignored.

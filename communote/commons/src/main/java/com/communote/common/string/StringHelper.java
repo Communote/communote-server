@@ -10,14 +10,14 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Helper class for Strings.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public final class StringHelper {
     /**
      * Cleans a string, removes whitespaces on start and end, and removes multiple whitespaces.
      * Handles null parameter and returns an empty string.
-     * 
+     *
      * @param string
      *            the string
      * @return the cleaned string
@@ -28,7 +28,7 @@ public final class StringHelper {
 
     /**
      * Cleans a List of Strings, handle null parameter
-     * 
+     *
      * @param list
      *            the list
      * @return the cleaned list
@@ -49,16 +49,16 @@ public final class StringHelper {
     /**
      * Remove the cleanUpChar from the given string by stripping it from the start and end. If it
      * still exists use the replaceChar to remove it.
-     * 
+     *
      * Example: str="%bla%bla", cleanUpChar="%", replaceChar="-" will return "bla-bla"
-     * 
+     *
      * @param str
      *            the string to cleanup
      * @param cleanUpChar
      *            the string to replace
      * @param replaceChar
      *            the string to replace with
-     * @return
+     * @return the cleaned string
      */
     public static String cleanUpString(String str, String cleanUpChar, String replaceChar) {
 
@@ -71,7 +71,7 @@ public final class StringHelper {
     /**
      * Converts a string containing a decimal number into a long. If the conversion is not possible
      * the fallback will be returned.
-     * 
+     *
      * @param value
      *            the value to convert
      * @param fallback
@@ -92,7 +92,7 @@ public final class StringHelper {
 
     /**
      * Gets the string as long array.
-     * 
+     *
      * @param value
      *            the value
      * @return the string as long array
@@ -118,7 +118,7 @@ public final class StringHelper {
 
     /**
      * Convert a string of longs which are separated by commas into a list of Long objects.
-     * 
+     *
      * @param value
      *            the value to process
      * @return the list of Longs
@@ -129,11 +129,11 @@ public final class StringHelper {
 
     /**
      * Convert a string of longs which are separated by commas into a list of Long objects.
-     * 
+     *
      * @param value
      *            the value to process
      * @param ignoreValuesEqualLessZero
-     *            if true, parsed long values <= 0 will not be added to the returning list
+     *            if true, parsed long values &lt;= 0 will not be added to the returning list
      * @return the list of Longs
      */
     public static List<Long> getStringAsLongList(String value, boolean ignoreValuesEqualLessZero) {
@@ -142,7 +142,7 @@ public final class StringHelper {
 
     /**
      * Convert a string of longs which are separated by a given string into a list of Long objects.
-     * 
+     *
      * @param value
      *            the value to process
      * @param separator
@@ -155,13 +155,13 @@ public final class StringHelper {
 
     /**
      * Convert a string of longs which are separated by a given string into a list of Long objects.
-     * 
+     *
      * @param value
      *            the value to process
      * @param separator
      *            the separator
      * @param ignoreValuesEqualLessZero
-     *            if true, parsed long values <= 0 will not be added to the returning list
+     *            if true, parsed long values &lt;= 0 will not be added to the returning list
      * @return the list of Longs
      */
     public static List<Long> getStringAsLongList(String value, String separator,
@@ -211,7 +211,7 @@ public final class StringHelper {
     /**
      * Converts a string of the form 'k1=v1,k2=v2,k3=v3' into a map with k's as key and the v's as
      * the associated values.
-     * 
+     *
      * @param mapping
      *            the string based mapping to convert
      * @return the created map
@@ -231,7 +231,7 @@ public final class StringHelper {
 
     /**
      * Replaces all occurrences of a character with the replacement.
-     * 
+     *
      * @param source
      *            the source to process
      * @param charToReplace
@@ -258,7 +258,7 @@ public final class StringHelper {
     /**
      * Build a string containing toString for each sub element. The result will be in the form
      * [a,b,null,c ...]
-     * 
+     *
      * @param coll
      *            The collection to use
      * @return The String
@@ -285,7 +285,7 @@ public final class StringHelper {
      * Converts the map into a string of the form 'k1=v1,k2=v2,k3=v3'. This method does no escaping,
      * thus keys and values should not contain commas or equal signs. The counterpart of this
      * function is {@link StringHelper#getStringAsMap(String)}.
-     * 
+     *
      * @param mapping
      *            the map to convert
      * @return the string
@@ -308,7 +308,7 @@ public final class StringHelper {
 
     /**
      * Build a string of the array in the form "o1, o2, o3" if separator is ", "
-     * 
+     *
      * @param array
      *            an array of objects which should be "stringed"
      * @param separator
@@ -334,14 +334,14 @@ public final class StringHelper {
 
     /**
      * To cut out middle part of a String.
-     * 
+     *
      * @param string
      *            the string to truncate
      * @param maxLength
      *            the max length of a string
      * @param ellipses
      *            the replacement in case of cutting the string
-     * 
+     *
      * @return The abbreviated string if the string exceeds the max length otherwise the original
      *         string is returned.
      */

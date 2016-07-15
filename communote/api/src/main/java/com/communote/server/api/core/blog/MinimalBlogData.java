@@ -93,8 +93,8 @@ public class MinimalBlogData extends IdentifiableEntityData {
      * @param alias
      *            The alias of the topic
      */
-    public void setNameIdentifier(String nameIdentifier) {
-        this.setAlias(nameIdentifier);
+    public void setNameIdentifier(String alias) {
+        this.setAlias(alias);
     }
 
     /**

@@ -95,10 +95,10 @@ public final class UserManagementHelper {
     }
 
     /**
-     * Gets the effective time zone for the currently logged in user.<br />
-     * <br />
-     * If no time zone exists for the user, this method returns the client time zone as fall back.<br />
-     * If no time zone exists for the client, this method returns the system time zone as fall back.<br />
+     * Gets the effective time zone for the currently logged in user.<br>
+     * <br>
+     * If no time zone exists for the user, this method returns the client time zone as fall back.<br>
+     * If no time zone exists for the client, this method returns the system time zone as fall back.
      *
      * @return timeZone the effective time zone for the current user
      */
@@ -107,10 +107,10 @@ public final class UserManagementHelper {
     }
 
     /**
-     * Gets the effective time zone for the user.<br />
-     * <br />
-     * If no time zone exists for the user, this method returns the client time zone as fall back.<br />
-     * If no time zone exists for the client, this method returns the system time zone as fall back.<br />
+     * Gets the effective time zone for the user.<br>
+     * <br>
+     * If no time zone exists for the user, this method returns the client time zone as fall back.<br>
+     * If no time zone exists for the client, this method returns the system time zone as fall back.
      *
      * @param userId
      *            the id of a user
@@ -122,11 +122,11 @@ public final class UserManagementHelper {
     }
 
     /**
-     * Gets the effective time zone for the user.<br />
-     * <br />
-     * If no time zone exists for the user, this method returns the client time zone as fall back.<br />
+     * Gets the effective time zone for the user.<br>
+     * <br>
+     * If no time zone exists for the user, this method returns the client time zone as fall back.<br>
      * If no time zone exists for the client, this method returns the defined time zone as fall
-     * back.<br />
+     * back.
      *
      * @param userId
      *            the id of a user
@@ -139,11 +139,11 @@ public final class UserManagementHelper {
     }
 
     /**
-     * Gets the effective time zone for the currently logged in user.<br />
-     * <br />
-     * If no time zone exists for the user, this method returns the client time zone as fall back.<br />
+     * Gets the effective time zone for the currently logged in user.<br>
+     * <br>
+     * If no time zone exists for the user, this method returns the client time zone as fall back.<br>
      * If no time zone exists for the client, this method returns the defined time zone as fall
-     * back.<br />
+     * back.<br>
      *
      * @param fallback
      *            the defined fall back
@@ -247,11 +247,11 @@ public final class UserManagementHelper {
     }
 
     /**
-     * Gets the effective time zone for the user.<br />
-     * <br />
-     * If no time zone exists for the user, this method returns the client time zone as fall back.<br />
+     * Gets the effective time zone for the user.<br>
+     * <br>
+     * If no time zone exists for the user, this method returns the client time zone as fall back.<br>
      * If no time zone exists for the client, this method returns a defined fall back or the system
-     * time zone.<br />
+     * time zone.
      *
      * @param userId
      *            id of the a user

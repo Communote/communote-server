@@ -15,27 +15,27 @@ import com.communote.server.api.core.config.ApplicationConfigurationPropertyCons
  *
  */
 public enum ApplicationPropertyVirusScanning implements ApplicationConfigurationPropertyConstant {
-    /** @see CommandlineScanner.COMMAND_LINE_PROP */
+    /** @see CommandlineScanner#COMMAND_LINE_PROP */
     COMMAND_LINE_STRING(CommandlineScanner.COMMAND_LINE_PROP),
-    /** @see CommandlineScanner.EXIT_CODE_PROP */
+    /** @see CommandlineScanner#EXIT_CODE_PROP */
     COMMAND_LINE_EXIT_CODE(CommandlineScanner.EXIT_CODE_PROP),
-    /** @see CommandlineScanner.TEMP_DIR_PROP */
+    /** @see CommandlineScanner#TEMP_DIR_PROP */
     COMMAND_LINE_TEMP_DIR(CommandlineScanner.TEMP_DIR_PROP),
-    /** @see CommandlineScanner.TEMP_FILE_PREFIX_PROP */
+    /** @see CommandlineScanner#TEMP_FILE_PREFIX_PROP */
     COMMAND_LINE_TEMP_FILE_PREFIX(CommandlineScanner.TEMP_FILE_PREFIX_PROP),
-    /** @see CommandlineScanner.TEMP_FILE_SUFFIX_PROP */
+    /** @see CommandlineScanner#TEMP_FILE_SUFFIX_PROP */
     COMMAND_LINE_TEMP_FILE_SUFFIX(CommandlineScanner.TEMP_FILE_SUFFIX_PROP),
-    /** @see CommandlineScanner.COMMAND_LINE_PROCESS_TIMEOUT_PROP */
+    /** @see CommandlineScanner#COMMAND_LINE_PROCESS_TIMEOUT_PROP */
     COMMAND_LINE_PROCESS_TIMEOUT(CommandlineScanner.COMMAND_LINE_PROCESS_TIMEOUT_PROP),
-    /** @see ClamAVScanner.TEMP_DIR_PROP */
+    /** @see ClamAVScanner#TEMP_DIR_PROP */
     CLAMAV_SCANNER_TEMP_DIR(ClamAVScanner.TEMP_DIR_PROP),
-    /** @see ClamAVScanner.HOST_PROP */
+    /** @see ClamAVScanner#HOST_PROP */
     CLAMAV_SCANNER_HOST(ClamAVScanner.HOST_PROP),
-    /** @see ClamAVScanner.PORT_PROP */
+    /** @see ClamAVScanner#PORT_PROP */
     CLAMAV_SCANNER_PORT(ClamAVScanner.PORT_PROP),
-    /** @see ClamAVScanner.CONNECTION_TIMEOUT_PROP */
+    /** @see ClamAVScanner#CONNECTION_TIMEOUT_PROP */
     CLAMAV_SCANNER_CONNECTION_TIMEOUT(ClamAVScanner.CONNECTION_TIMEOUT_PROP),
-    /** @see VirusScannerFactory.PROP_SCANNER_TYPE */
+    /** @see VirusScannerFactory#PROP_SCANNER_TYPE */
     VIRUS_SCANNER_FACTORY_TYPE(VirusScannerFactory.PROP_SCANNER_TYPE),
     /**
      * defines whether the virus scanner is enabled

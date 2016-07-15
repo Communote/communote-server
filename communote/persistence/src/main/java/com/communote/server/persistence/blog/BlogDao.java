@@ -9,8 +9,7 @@ public interface BlogDao {
     /**
      * This constant is used as a transformation flag; entities can be converted automatically into
      * value objects or other types, different methods in a class implementing this interface
-     * support this feature: look for an <code>int</code> parameter called <code>transform</code>.
-     * <p/>
+     * support this feature: look for an <code>int</code> parameter called <code>transform</code>. <br>
      * This specific flag denotes no transformation will occur.
      */
     public final static int TRANSFORM_NONE = 0;

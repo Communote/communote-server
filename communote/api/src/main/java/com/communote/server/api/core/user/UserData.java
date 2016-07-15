@@ -8,10 +8,11 @@ import com.communote.server.api.core.tag.TagData;
 
 /**
  * Value object holding details about a user.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
-public class UserData extends IdentifiableEntityData implements com.communote.server.model.user.UserName {
+public class UserData extends IdentifiableEntityData implements
+        com.communote.server.model.user.UserName {
 
     private static final long serialVersionUID = -5043825598867930914L;
 
@@ -152,7 +153,7 @@ public class UserData extends IdentifiableEntityData implements com.communote.se
      *
      * @return the ID of the user
      *
-     * @deprecated Use {@link IdentifiableEntityData#getId(Long)}
+     * @deprecated Use {@link IdentifiableEntityData#getId()}
      */
     @Deprecated
     public Long getUserId() {

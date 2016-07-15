@@ -34,8 +34,8 @@ public final class StringEscapeHelper {
     /**
      * Escapes strings which should be used as string literals in JavaScript code that is rendered
      * in HTML inline event handler attributes like onclick or inside a script tag. The characters
-     * '<\">& are escaped with hex notation. This method should only be used in pages that are UTF-8
-     * encoded.
+     * '&lt;\"&gt;&amp; are escaped with hex notation. This method should only be used in pages that
+     * are UTF-8 encoded.
      *
      * @param str
      *            the string to escape
@@ -70,9 +70,10 @@ public final class StringEscapeHelper {
 
     /**
      * Escapes serialized JSON which should be used in JavaScript code that is rendered inside a
-     * script tag. The characters <>& are escaped with hex notation. Other characters are not
-     * modified and it is assumed that they were already escaped correctly by the JSON serializer.
-     * This method should only be used in pages that are UTF-8 encoded and have an HTML DOCTYPE.
+     * script tag. The characters &lt;&gt;&amp; are escaped with hex notation. Other characters are
+     * not modified and it is assumed that they were already escaped correctly by the JSON
+     * serializer. This method should only be used in pages that are UTF-8 encoded and have an HTML
+     * DOCTYPE.
      *
      * @param str
      *            the serialized JSON to escape
@@ -133,12 +134,12 @@ public final class StringEscapeHelper {
     }
 
     /**
-     * Performs the following substring replacements (to facilitate output to XML/HTML pages): <br />
-     * & -> &amp;amp;<br />
-     * < -> &amp;lt;<br />
-     * > -> &amp;gt;<br />
-     * " -> &amp;#034;<br />
-     * ' -> &amp;#039;
+     * Performs the following substring replacements (to facilitate output to XML/HTML pages): <br>
+     * &amp; with &amp;amp;<br>
+     * &lt; with &amp;lt;<br>
+     * &gt; with &amp;gt;<br>
+     * " with &amp;#034;<br>
+     * ' with &amp;#039;
      *
      * @param buffer
      *            the string to escape XML entities

@@ -35,7 +35,7 @@ public interface TaskManagement {
      */
     public Long addTask(String uniqueTaskName, boolean active, Long interval,
             Date nextExecutionDate, Class<? extends TaskHandler> handlerClass)
-            throws TaskAlreadyExistsException;
+                    throws TaskAlreadyExistsException;
 
     /**
      * Add a new task.
@@ -83,7 +83,7 @@ public interface TaskManagement {
      */
     public Long addTask(String uniqueTaskName, boolean active, Long interval,
             Date nextExecutionDate, Map<String, String> properties, String handlerClass)
-            throws TaskAlreadyExistsException;
+                    throws TaskAlreadyExistsException;
 
     /**
      * Add a new task.
@@ -188,7 +188,7 @@ public interface TaskManagement {
      * Get the tasks to schedule next
      *
      * @param upperBound
-     *            NextExecution < UpperBound.
+     *            NextExecution &lt; UpperBound.
      * @param maxTasks
      *            maximum number of tasks to return
      * @param taskIdsToExclude
@@ -284,7 +284,7 @@ public interface TaskManagement {
      *             in case of an unexpected error
      */
     public Long startTaskExecution(String uniqueTaskName) throws TaskAlreadyRunningException,
-            TaskNotActiveException, TaskManagementException;
+    TaskNotActiveException, TaskManagementException;
 
     /**
      * Same as {@link #startTaskExecution(String)} but can throw
@@ -302,7 +302,7 @@ public interface TaskManagement {
      */
     // TODO should be removed and implementation should use a RunInTransaction
     public Long startTaskExecutionTx(String uniqueTaskName) throws TaskNotActiveException,
-    TaskAlreadyRunningException;
+            TaskAlreadyRunningException;
 
     /**
      * Calls stopAllTaskExecutions(true,now).

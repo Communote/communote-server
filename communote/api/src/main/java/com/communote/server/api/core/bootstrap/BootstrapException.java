@@ -18,8 +18,6 @@ public class BootstrapException extends RuntimeException {
      *
      * @param message
      *            the details message
-     * @param localizedDetails
-     *            additional localized details
      */
     public BootstrapException(String message) {
         super(message);

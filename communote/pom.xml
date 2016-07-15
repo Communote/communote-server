@@ -131,6 +131,7 @@
         </profile>
     </profiles>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.mysql.jdbc>5.1.14</version.mysql.jdbc>
         <version.mssql.jdbc>1.2.2</version.mssql.jdbc>
         <version.oracle.jdbc>11.2.0.2.0</version.oracle.jdbc>
