@@ -130,6 +130,20 @@
             </modules>
         </profile>
     </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <windowtitle>Communote ${project.version} API</windowtitle>
+                    <doctitle>Communote ${project.version} API documentation</doctitle>
+                   <excludePackageNames>de.communardo.kenmei.*</excludePackageNames>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.mysql.jdbc>5.1.14</version.mysql.jdbc>
