@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- The contents of this file will be loaded for each web application -->
-<Context antiJARLocking="true" privileged="true" reloadable="false" useHttpOnly="true">
+<Context privileged="true" useHttpOnly="true">
     
     <!-- Default set of monitored resources -->
     <WatchedResource>
