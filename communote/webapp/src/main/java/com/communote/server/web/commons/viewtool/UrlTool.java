@@ -1,6 +1,5 @@
 package com.communote.server.web.commons.viewtool;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +32,7 @@ import com.communote.server.web.WebServiceLocator;
 import com.communote.server.web.commons.helper.ControllerHelper;
 import com.communote.server.web.commons.helper.ImageUrlHelper;
 import com.communote.server.web.commons.resource.ConcatenatedResourceStore;
+import com.communote.server.web.commons.resource.FaviconProviderManager;
 
 /**
  * Tool for rendering application URLs.
@@ -47,33 +47,13 @@ public class UrlTool extends RequestAwareTool {
     private PermalinkGenerator permalinkGenerator;
     private ConcatenatedResourceStore jsConcatenatedResourceStore;
     private ConcatenatedResourceStore cssConcatenatedResourceStore;
+    private FaviconProviderManager faviconProviderManager;
 
     /**
      * Constructor.
      */
     public UrlTool() {
 
-    }
-
-    /**
-     * This method expands the given url with a timestamp. If the file for the given urlPath exists,
-     * the last modification date of this file will be used, else the build timestamp of the current
-     * Communote version.
-     *
-     * @param url
-     *            The url to append the timestamp to.
-     * @param urlPath
-     *            The url path, used for generating the url.
-     * @return The url including a timestamp.
-     */
-    private String appendTimestamp(String url, String urlPath) {
-        File file = new File(CommunoteRuntime.getInstance().getApplicationInformation()
-                .getApplicationRealPath()
-                + urlPath);
-        long timestamp = file.exists() ? file.lastModified() : CommunoteRuntime.getInstance()
-                .getApplicationInformation().getBuildTimestamp();
-        url += (url.contains("?") ? "&" : "?") + "t=" + timestamp;
-        return url;
     }
 
     /**
@@ -159,6 +139,20 @@ public class UrlTool extends RequestAwareTool {
     public String getExternalObjectLink(String externalSystemId, String externalObjectId) {
         return ServiceLocator.instance().getService(PermalinkGenerationManagement.class)
                 .getExternalObjectLink(externalSystemId, externalObjectId);
+    }
+
+    private FaviconProviderManager getFaviconProviderManager() {
+        if (faviconProviderManager == null) {
+            faviconProviderManager = WebServiceLocator.findService(FaviconProviderManager.class);
+        }
+        return faviconProviderManager;
+    }
+
+    /**
+     * @return the URL of the favicon icon
+     */
+    public String getFaviconUrl() {
+        return getFaviconProviderManager().getFaviconUrl(getRequest());
     }
 
     /**
@@ -356,7 +350,7 @@ public class UrlTool extends RequestAwareTool {
         String url = ControllerHelper.renderUrl(getRequest(), urlPath, baseUrl, absolute, secure,
                 renderSessionId, clientId, staticResource, false);
         if (staticResource) {
-            url = appendTimestamp(url, urlPath);
+            url = ControllerHelper.appendTimestamp(url, urlPath);
         }
         return url;
     }

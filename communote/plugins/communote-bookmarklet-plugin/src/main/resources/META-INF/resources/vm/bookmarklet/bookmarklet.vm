@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <title>$pageTitle</title>
-        <link rel="shortcut icon" type="image/x-icon" href="$urlTool.render('/images/favicon.ico', false, false, true)" />
+        <link rel="shortcut icon" type="image/x-icon" href="$urlTool.getFaviconUrl()" />
         #parse('/WEB-INF/vm/common/styles.html.vm')
         #parse('/WEB-INF/vm/common/scripts.html.vm')
         <script type="text/javascript">

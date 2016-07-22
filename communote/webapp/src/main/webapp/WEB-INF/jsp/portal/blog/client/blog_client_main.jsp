@@ -16,7 +16,6 @@
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="language" content="en" />
-        <link rel="shortcut icon" type="image/x-icon" href="<ct:url staticResource="true" value="/favicon.ico" />" />
         <%
         ApplicationConfigurationProperties props = CommunoteRuntime.getInstance().getConfigurationManager().getApplicationConfigurationProperties();
         boolean packCss = props.getProperty(ApplicationProperty.STYLES_PACK, true);
@@ -31,6 +30,7 @@
         request.setAttribute("menuEntry", adminTool.getCurrentMenuEntry(request));
         request.setAttribute("currentLocale", new CommunoteTool().getCurrentUserLocale(request));
         %>
+        <link rel="shortcut icon" type="image/x-icon" href="<%= urlTool.getFaviconUrl() %>" />
         <%-- just hard-coding the categories here, should be refactored when switching to VM --%>
         <c:choose>
             <c:when test="<%= packCss%>"><link rel="stylesheet" type="text/css" href="<%= urlTool.renderConcatenatedCssUrl("admin", compressCss) %>" media="screen,projection" />

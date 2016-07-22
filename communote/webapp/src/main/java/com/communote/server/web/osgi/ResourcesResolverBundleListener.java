@@ -19,6 +19,7 @@ import com.communote.server.api.util.JsonHelper;
 import com.communote.server.core.osgi.CommunoteBundleListener;
 import com.communote.server.core.osgi.OSGiHelper;
 import com.communote.server.web.commons.resource.ConcatenatedResourceStoreException;
+import com.communote.server.web.commons.resource.FaviconProviderManager;
 import com.communote.server.web.commons.resource.ResourceCategoryRegistry;
 import com.communote.server.web.commons.resource.ResourceExtension;
 
@@ -41,6 +42,14 @@ public class ResourcesResolverBundleListener extends CommunoteBundleListener {
 
     @Autowired
     private ResourceCategoryRegistry resourceCategoryRegistry;
+    @Autowired
+    private FaviconProviderManager faviconProviderManager;
+    private final String faviconFilepath;
+
+    public ResourcesResolverBundleListener() {
+        this.faviconFilepath = "static" + File.separator
+                + BundleFaviconProvider.FAVICON_FILE_PATH.replace('/', File.separatorChar);
+    }
 
     /**
      * Copies all additional resources out of the given bundle.
@@ -91,6 +100,7 @@ public class ResourcesResolverBundleListener extends CommunoteBundleListener {
     protected void fireBundleStarted(Bundle bundle) {
         LOG.debug("Bundle started: [" + bundle.getBundleId() + "]" + bundle.getSymbolicName());
         if (copyResources(bundle)) {
+            registerFaviconProvider(bundle);
             registerCategories(bundle, JS_CATEGORIES_FILE);
             registerCategories(bundle, CSS_CATEGORIES_FILE);
         }
@@ -105,6 +115,7 @@ public class ResourcesResolverBundleListener extends CommunoteBundleListener {
     @Override
     protected void fireBundleStopped(Bundle bundle) {
         String bundleName = bundle.getSymbolicName();
+        unregisterFaviconProvider(bundle);
         OSGiHelper.clearBundleStorage(bundleName);
         resourceCategoryRegistry.unregisterJsCategories(bundleName);
         resourceCategoryRegistry.unregisterCssCategories(bundleName);
@@ -145,5 +156,25 @@ public class ResourcesResolverBundleListener extends CommunoteBundleListener {
                         + " defined in " + fileName + " failed", e);
             }
         }
+    }
+
+    private void registerFaviconProvider(Bundle bundle) {
+        File faviconFile = new File(OSGiHelper.getBundleStorage(bundle.getSymbolicName()),
+                faviconFilepath);
+        if (faviconFile.exists()) {
+            faviconProviderManager.addFaviconProvider(new BundleFaviconProvider(bundle
+                    .getSymbolicName(), String.valueOf(bundle.getVersion().hashCode())));
+        }
+
+    }
+
+    private void unregisterFaviconProvider(Bundle bundle) {
+        File faviconFile = new File(OSGiHelper.getBundleStorage(bundle.getSymbolicName()),
+                faviconFilepath);
+        if (faviconFile.exists()) {
+            faviconProviderManager.removeFaviconProvider(new BundleFaviconProvider(bundle
+                    .getSymbolicName(), String.valueOf(bundle.getVersion().hashCode())));
+        }
+
     }
 }

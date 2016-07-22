@@ -1,5 +1,6 @@
 package com.communote.server.web.commons.helper;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.communote.common.util.UrlHelper;
 import com.communote.server.api.ServiceLocator;
+import com.communote.server.api.core.application.ApplicationInformation;
 import com.communote.server.api.core.application.CommunoteRuntime;
 import com.communote.server.api.core.config.ApplicationConfigurationProperties;
 import com.communote.server.api.core.config.type.ApplicationProperty;
@@ -84,6 +86,34 @@ public class ControllerHelper {
         url.append("?");
         url.append(KenmeiForwardFilter.PARAMETER_NAME_STATIC_RESOURCE);
         url.append("=true");
+    }
+
+    /**
+     * Append a timestamp to the given URL. If the given urlPath refers to an existing file, the
+     * last modification date of this file will be used. Otherwise the build timestamp of the
+     * current Communote version is used.
+     *
+     * @param url
+     *            The URL to append the timestamp to.
+     * @param urlPath
+     *            The URL path which was used for generating the URL. Can be null to force usage of
+     *            the build timestamp.
+     * @return The URL including a timestamp.
+     */
+    public static String appendTimestamp(String url, String urlPath) {
+        ApplicationInformation appInfo = CommunoteRuntime.getInstance().getApplicationInformation();
+        Long lastModified = null;
+        if (urlPath != null) {
+            File file = new File(appInfo.getApplicationRealPath() + urlPath);
+            if (file.exists()) {
+                lastModified = file.lastModified();
+            }
+        }
+        if (lastModified == null) {
+            lastModified = appInfo.getBuildTimestamp();
+        }
+        url += (url.contains("?") ? "&" : "?") + "t=" + lastModified;
+        return url;
     }
 
     /**
@@ -356,7 +386,7 @@ public class ControllerHelper {
      */
     public static ModelAndView prepareModelAndViewForJsonResponse(HttpServletRequest request,
             HttpServletResponse response, ObjectNode json, boolean writeJsonDirectly)
-                    throws IOException {
+            throws IOException {
         // TODO use JsonRequestHelper.isJsonRequested?
         String acceptHeader = request.getHeader("Accept");
         if (acceptHeader != null && acceptHeader.contains("application/json")) {

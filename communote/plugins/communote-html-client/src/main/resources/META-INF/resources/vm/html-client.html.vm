@@ -8,6 +8,7 @@
         <link rel="stylesheet" type="text/css" href="$urlTool.render("/resources/styles/htmlClient-standalone-styles.css?${build.timestamp}")" />
         <script type="text/javascript" src="$urlTool.render("/resources/javascripts/htmlClient-scripts.js?build=${build.timestamp}")"></script>
 		<link rel="apple-touch-icon" sizes="129x129" href="$urlTool.render('plugins/${maven-symbolicname}/images/communote-apple-touch-icon-129x129.png')" />
+        <link rel="shortcut icon" type="image/x-icon" href="$urlTool.getFaviconUrl()" />
     </head>
     <body style="margin:0">
         <script type="text/javascript">
