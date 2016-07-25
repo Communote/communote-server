@@ -218,16 +218,15 @@
         <sql>DROP TABLE IF EXISTS user_client_act_code, user_client_activation_code;</sql>
     </changeSet>
     
-    <!-- <changeSet id="KENMEI-7514_Cleanup_old_client_settings" author="Communote">
+    <changeSet id="KENMEI-7514_Cleanup_old_client_settings" author="Communote">
         <sql>delete from configuration_setting where SETTING_KEY in ('kenmei.client.license.ends.30.mail.send','kenmei.client.user.count.100.mail', 'kenmei.client.user.count.90.mail',
          'kenmei.client.user.count.limit.activation', 'kenmei.client.user.count.limit');
         </sql>
     </changeSet>
-    what about ClientProperty.LAST_DATE_OF_LICENCE_ENDS_MAIL_SEND - remove from standalone?
     <changeSet id="KENMEI-7514_Cleanup_old_app_settings" author="Communote" context="global">
         <sql>delete from configuration_app_setting where SETTING_KEY in ('com.communote.license.subscription.email', 'com.communote.license.subscription.reply-to.email', 'com.communote.license.subscription.reply-to.name', 'kenmei.application.home.page.host');
         </sql>
-    </changeSet> -->
+    </changeSet>
     
     <changeSet author="Communote" id="KENMEI-7547_modification_time_of_setting">
         <addColumn tableName="configuration_setting">
