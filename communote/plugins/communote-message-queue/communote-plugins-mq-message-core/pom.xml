@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.communote.plugins</groupId>
 		<artifactId>communote-plugins-mq-parent</artifactId>
-        <version>3.4-SNAPSHOT</version>
+        <version>3.4</version>
 		<relativePath>../communote-plugins-mq-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>com.communote.plugins.mq</groupId>

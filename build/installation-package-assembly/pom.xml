@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.communote.server</groupId>
     <artifactId>communote-installation-package-assembly</artifactId>
-    <version>3.4-SNAPSHOT</version>
+    <version>3.4</version>
     <name>Communote installation packages</name>
     <description>This project builds the installation packages for Communote</description>
     <properties>
