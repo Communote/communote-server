@@ -81,7 +81,8 @@ public abstract class CommunoteIntegrationTest {
      * and read the bundles from there. No need to configure directory here then.
      */
     // TODO How to improve this resolution
-    public static final String COMMUNOTE_VERSION = System.getProperty("project.version", "3.4");
+    public static final String COMMUNOTE_VERSION = System.getProperty("project.version",
+            "3.4.1-SNAPSHOT");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunoteIntegrationTest.class);
 
@@ -191,7 +192,7 @@ public abstract class CommunoteIntegrationTest {
         coreProperties.setProperty(CorePropertyDatabase.DATABASE_PROTOCOL_SEPARATOR.getKeyString(),
                 databaseType.getDefaultProtocolSeperator());
         coreProperties
-        .setProperty(CorePropertyDatabase.DATABASE_USER_NAME.getKeyString(), username);
+                .setProperty(CorePropertyDatabase.DATABASE_USER_NAME.getKeyString(), username);
         coreProperties.setProperty(CorePropertyDatabase.DATABASE_USER_PASSWORD.getKeyString(),
                 password);
         coreProperties.setProperty(CorePropertyDatabase.HIBERNATE_DIALECT.getKeyString(),
@@ -295,7 +296,7 @@ public abstract class CommunoteIntegrationTest {
         System.setProperty("java.naming.factory.initial", MockInitialContextFactory.class.getName());
         Context mockJeeEnvContext = EasyMock.createMock(Context.class);
         EasyMock.expect(mockJeeEnvContext.lookup("communote.instance.name"))
-        .andReturn(instanceName);
+                .andReturn(instanceName);
         EasyMock.expect(mockJeeEnvContext.lookup("communote.config.dir")).andReturn(
                 createConfigurationDirectory(instanceName));
         EasyMock.replay(mockJeeEnvContext);
@@ -304,7 +305,7 @@ public abstract class CommunoteIntegrationTest {
         // springs webapp context is using the InitialContext too while refreshing the webapp
         // context, thus mock lookup and close methods
         EasyMock.expect(mockInitialContext.lookup(EasyMock.not(EasyMock.eq("java:comp/env"))))
-        .andThrow(new NamingException()).anyTimes();
+                .andThrow(new NamingException()).anyTimes();
         mockInitialContext.close();
         EasyMock.expectLastCall().anyTimes();
         EasyMock.replay(mockInitialContext);
@@ -313,24 +314,24 @@ public abstract class CommunoteIntegrationTest {
         // create Communote runtime with additional test beans
         DefaultRuntimeBuilder runtimeBuilder = DefaultRuntimeBuilder.getInstance();
         runtimeBuilder
-        .addApplicationContextConfigLocation("classpath:/com/communote/server/test/spring/applicationContext-test.xml");
+                .addApplicationContextConfigLocation("classpath:/com/communote/server/test/spring/applicationContext-test.xml");
         runtimeBuilder.setApplicationDirectory(applicationRealDir.getAbsolutePath());
         CommunoteRuntime.init(runtimeBuilder);
         // create a webapplication context with custom test beans. This context is needed by the
         // plugins.
         this.testWebAppContext = new XmlWebApplicationContext();
         testWebAppContext
-                .setConfigLocation("classpath:/com/communote/server/test/spring/webApplicationContext-test.xml");
+        .setConfigLocation("classpath:/com/communote/server/test/spring/webApplicationContext-test.xml");
         // Add a precondition to wait for our test webapp context.
         CommunoteRuntime.getInstance().addInitializationCondition(
                 "TEST_WEB_APP_CONTEXT_INITIALIZED");
         CommunoteRuntime.getInstance().start();
         // expose test packages for testing plugins
         ServiceLocator
-        .instance()
-        .getService(OSGiManagement.class)
-        .addFrameworkPropertiesLocation(
-                "classpath:/com/communote/server/test/osgi/test_osgi.properties");
+                .instance()
+                .getService(OSGiManagement.class)
+                .addFrameworkPropertiesLocation(
+                        "classpath:/com/communote/server/test/osgi/test_osgi.properties");
         // webapp context must be refreshed manually
         testWebAppContext.refresh();
         // webapp context is ready -> precondition is fulfilled
@@ -453,7 +454,7 @@ public abstract class CommunoteIntegrationTest {
      *             Exception.
      */
     @Parameters({ "testBaseDirectory", "dbTypeIdentifier", "dbHost", "dbPort",
-            "jdbcURLQueryString", "dbName", "tempDbName" })
+        "jdbcURLQueryString", "dbName", "tempDbName" })
     @BeforeClass(dependsOnMethods = "setupDatabaseUser", groups = GROUP_INTEGRATION_TEST_SETUP)
     public void setupIntegrationTest(String testBaseDirectory,
             @Optional("POSTGRESQL") String dbTypeIdentifier, @Optional("localhost") String dbHost,
