@@ -1,5 +1,7 @@
 package com.communote.common.util;
 
+import java.io.Serializable;
+
 /**
  * Simple Pair.
  *
@@ -10,7 +12,9 @@ package com.communote.common.util;
  * @param <Right>
  *            type of the right element of the pair
  */
-public class Pair<Left, Right> {
+public class Pair<Left, Right> implements Serializable {
+
+    private static final long serialVersionUID = 2191893574249135877L;
 
     private Left left;
 
