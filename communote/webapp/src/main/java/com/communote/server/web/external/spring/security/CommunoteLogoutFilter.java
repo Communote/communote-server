@@ -51,7 +51,6 @@ public class CommunoteLogoutFilter extends LogoutFilter {
                                     "could not add client id to this uri: '" + url + "'");
                         }
                         // reset session values
-                        SessionHandler.instance().setFirstRequestedWasSecure(request, null);
                         SessionHandler.instance().resetOverriddenCurrentUserLocale(request);
                         ControllerHelper.sendInternalRedirect(request, response, url);
                     };

@@ -177,19 +177,12 @@ public class CommunoteAuthenticationSuccessHandler extends SimpleUrlAuthenticati
             return;
         }
 
-        // if the URL is not absolute - create one but respect the protocol of the first request
-        Boolean firstRequestWasSecure = SessionHandler.instance().getFirstRequestedWasSecure(
-                request);
         if (!UrlHelper.isAbsoluteHttpUrl(targetUrl)) {
-            // if module client part is already contained the URL can be rendered as static URL
+            // if module client part is already contained, the URL can be rendered as static URL
             boolean renderStatic = targetUrl.startsWith(moduleClientPart);
-            if (firstRequestWasSecure != null) {
-                targetUrl = ControllerHelper.renderAbsoluteUrlIgnoreRequestProtocol(request, null,
-                        targetUrl, firstRequestWasSecure, renderStatic, false);
-            } else {
-                targetUrl = ControllerHelper.renderAbsoluteUrl(request, null, targetUrl, false,
-                        renderStatic, false);
-            }
+            targetUrl = ControllerHelper.renderAbsoluteUrl(request, null, targetUrl, false,
+                    renderStatic, false);
+
             targetUrl = encodeAbsoluteURL(request, targetUrl);
         }
 

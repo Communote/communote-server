@@ -31,8 +31,6 @@ public final class SessionHandler {
 
     private final static Logger LOG = Logger.getLogger(SessionHandler.class);
 
-    private static final String FIRST_REQUEST_WAS_SECURE = "firstRequestedWasSecure";
-
     private static SessionHandler INSTANCE = null;
 
     /** Attribute for the current user locale. */
@@ -138,18 +136,6 @@ public final class SessionHandler {
     }
 
     /**
-     * Stores if the first request for the user was over http or https.
-     *
-     * @param request
-     *            the current request
-     * @return true if the first request was over a secure channel
-     */
-    public Boolean getFirstRequestedWasSecure(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        return session == null ? null : (Boolean) session.getAttribute(FIRST_REQUEST_WAS_SECURE);
-    }
-
-    /**
      * Get the overridden locale of the current user
      *
      * @param session
@@ -230,26 +216,4 @@ public final class SessionHandler {
             session.removeAttribute(CURRENT_USER_LOCALE);
         }
     }
-
-    /**
-     * Stores if the first request for the user was over http or https.
-     *
-     * @param request
-     *            the current request
-     * @param firstRequestedWasSecure
-     *            Whether the request was secure or not. If null, a previously stored secure flag is
-     *            removed.
-     */
-    public void setFirstRequestedWasSecure(HttpServletRequest request,
-            Boolean firstRequestedWasSecure) {
-        HttpSession session = request.getSession(firstRequestedWasSecure != null);
-        if (session != null) {
-            if (firstRequestedWasSecure == null) {
-                session.removeAttribute(FIRST_REQUEST_WAS_SECURE);
-            } else {
-                session.setAttribute(FIRST_REQUEST_WAS_SECURE, firstRequestedWasSecure);
-            }
-        }
-    }
-
 }

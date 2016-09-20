@@ -127,13 +127,6 @@ public class ForceSslChannelFilter implements Filter, InitializingBean {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
         boolean secureRequest = httpServletRequest.isSecure();
-
-        Boolean firstRequestedWasSecure = SESSION_HANDLER
-                .getFirstRequestedWasSecure(httpServletRequest);
-        if (firstRequestedWasSecure == null) {
-            SESSION_HANDLER.setFirstRequestedWasSecure(httpServletRequest, secureRequest);
-        }
-
         boolean isForceSsl = getChannelManagement().isForceSsl();
 
         if (isForceSsl && !secureRequest) {

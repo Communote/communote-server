@@ -16,7 +16,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.Assert;
 
-import com.communote.server.core.common.session.SessionHandler;
 import com.communote.server.external.acegi.UserAccountException;
 import com.communote.server.external.acegi.UserAccountTemporarilyLockedException;
 import com.communote.server.web.commons.helper.ControllerHelper;
@@ -85,7 +84,7 @@ public class CommunoteAuthenticationFailureHandler extends SimpleUrlAuthenticati
             if (authenticationException instanceof UserAccountTemporarilyLockedException) {
                 url += "&lockedTimeout="
                         + ((UserAccountTemporarilyLockedException) authenticationException)
-                                .getLockedTimeout().getTime();
+                        .getLockedTimeout().getTime();
             }
             if (authenticationException instanceof UserAccountException) {
                 url += "&username="
@@ -96,9 +95,7 @@ public class CommunoteAuthenticationFailureHandler extends SimpleUrlAuthenticati
         }
 
         String failureUrl = authenticationFailureUrl;
-        Boolean firstRequestSecure = SessionHandler.instance().getFirstRequestedWasSecure(request);
-        String redirectUrl = ControllerHelper.renderAbsoluteUrlIgnoreRequestProtocol(request, null,
-                failureUrl, firstRequestSecure == null ? request.isSecure() : firstRequestSecure,
+        String redirectUrl = ControllerHelper.renderAbsoluteUrl(request, null, failureUrl, false,
                 false, false);
         new DefaultRedirectStrategy().sendRedirect(request, response,
                 appendTargetUrl(redirectUrl, request));

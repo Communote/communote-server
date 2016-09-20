@@ -1,5 +1,5 @@
 #set($targetUrl = $escTool.url($paramTool.get('targetUrl')))
-<form id="auth_form" name="auth_form" method="post" action="$urlTool.render("/check_credentials?targetUrl=$!{targetUrl}", true, true, false)" onsubmit="if(communote.loginSubmitted) return false; communote.loginSubmitted=true; return true;">
+<form id="auth_form" name="auth_form" method="post" action="$urlTool.render("/check_credentials?targetUrl=$!{targetUrl}")" onsubmit="if(communote.loginSubmitted) return false; communote.loginSubmitted=true; return true;">
     <div class="cn-headline">
         <h2>#t('login.legend')</h2>
         #set($authenticationFailures = [ 
