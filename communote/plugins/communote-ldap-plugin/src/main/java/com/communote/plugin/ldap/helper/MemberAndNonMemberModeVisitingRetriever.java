@@ -38,7 +38,7 @@ import com.communote.server.plugins.api.externals.ExternalEntityVisitor;
 /**
  * This retriever is able to visit members of the given filter. The members can be retrieved via
  * member mode (memberOf) or non member mode (members).
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<ExternalGroupVO> {
@@ -60,7 +60,7 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
 
     /**
      * Constructor.
-     * 
+     *
      * @param filter
      *            The filter to search for.
      * @param ldapConfiguration
@@ -82,8 +82,8 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
             LdapConfiguration ldapConfiguration, int timeout, int pagingSize,
             long internalHighestCommittedUSN, boolean isPagingAllowed,
             LdapGroupAttributesMapper ldapGroupAttributesMapper) throws NamingException {
-        super(ldapConfiguration, timeout, pagingSize, internalHighestCommittedUSN,
-                isPagingAllowed, ldapGroupAttributesMapper.getBinaryLdapAttributeName());
+        super(ldapConfiguration, timeout, pagingSize, internalHighestCommittedUSN, isPagingAllowed,
+                ldapGroupAttributesMapper.getBinaryLdapAttributeName());
         this.ldapGroupAttributesMapper = ldapGroupAttributesMapper;
         this.filter = filter;
         this.ldapConfiguration = ldapConfiguration;
@@ -103,12 +103,12 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
             }
         }
         this.returningAttributes = returningAttributes.toArray(new String[returningAttributes
-                .size()]);
+                                                                          .size()]);
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @param incremental
      *            Incremental mode is currently not supported in non member mode.
      */
@@ -124,7 +124,7 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
 
     /**
      * Visits the entities in non member mode.
-     * 
+     *
      * @param visitor
      *            The visitor.
      * @param incremental
@@ -133,8 +133,7 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
      *             Exception.
      */
     private void acceptForNonMemberMode(final ExternalEntityVisitor<ExternalGroupVO> visitor,
-            final boolean incremental)
-            throws RetrieverException {
+            final boolean incremental) throws RetrieverException {
         ContextExecutor entrySearch = new ContextExecutor() {
             @Override
             public Object executeWithContext(DirContext dirContext) throws NamingException {
@@ -147,8 +146,8 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
                             synchronizationAttribute);
                     if (groupDNs != null) {
                         String searchFilter = incremental ? "(&(" + USN_ATTRIBUTE_KEY + ">="
-                                + (internalHighestCommittedUSN + 1) + ")" + groupSearchFilter
-                                + ")" : groupSearchFilter;
+                                + (internalHighestCommittedUSN + 1) + ")" + groupSearchFilter + ")"
+                                : groupSearchFilter;
                         // handle the DNs
                         for (String groupDN : groupDNs) {
                             handleGroup(visitor, dirContext, searchFilter, groupDN);
@@ -158,7 +157,7 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
                     LOGGER.info(
                             "The user might have been deleted or moved within the external system"
                                     + " repository. Searchfilter: {}, Message: {}",
-                            getSearchFilter(), e.getMessage());
+                                    getSearchFilter(), e.getMessage());
                 } catch (LdapAttributeMappingException e) {
                     LOGGER.error(e.getMessage(), e);
                 }
@@ -167,7 +166,7 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
 
             /**
              * Method to handle the group.
-             * 
+             *
              * @param visitor
              *            The visitor.
              * @param dirContext
@@ -189,24 +188,25 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
                     if (dnToGroupsMap.containsKey(groupDN)) {
                         visitor.visit(dnToGroupsMap.get(groupDN));
                     } else {
-                        // use OBJECT scope for DN based query
-                        NamingEnumeration<SearchResult> result = dirContext.search(
-                                groupDN.replace("/", "\\/"), // KENMEI-5545
-                                searchFilter, new SearchControls(
-                                        SearchControls.OBJECT_SCOPE, 1, 0,
-                                        returningAttributes, false, false));
-                        ExternalGroupVO externalGroupVO = null;
-                        if (result.hasMore()) {
-                            externalGroupVO = ldapGroupAttributesMapper
-                                    .mapAttributes(
-                                            groupDN, result.next().getAttributes());
-                            visitor.visit(externalGroupVO);
+                        NamingEnumeration<SearchResult> result = null;
+                        try {
+                            // use OBJECT scope for DN based query
+                            result = dirContext.search(groupDN.replace("/", "\\/"), // KENMEI-5545
+                                    searchFilter, new SearchControls(SearchControls.OBJECT_SCOPE,
+                                            1, 0, returningAttributes, false, false));
+                            ExternalGroupVO externalGroupVO = null;
+                            if (result.hasMore()) {
+                                externalGroupVO = ldapGroupAttributesMapper.mapAttributes(groupDN,
+                                        result.next().getAttributes());
+                                visitor.visit(externalGroupVO);
+                            }
+                            dnToGroupsMap.put(groupDN, externalGroupVO);
+                        } finally {
+                            LdapUtils.closeNamingEnumeration(result);
                         }
-                        dnToGroupsMap.put(groupDN, externalGroupVO);
                     }
                 } catch (Exception e) {
-                    LOGGER.warn("Error visiting group {} {}", groupDN,
-                            e.getMessage());
+                    LOGGER.warn("Error visiting group {} {}", groupDN, e.getMessage());
                     LOGGER.debug(e.getMessage(), e);
                 }
             }
@@ -257,9 +257,9 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
         if (!ldapConfiguration.getGroupSyncConfig().isMemberMode()) {
             return filter;
         }
-        String finalFilter = "(" + ldapGroupAttributesMapper
-                .getLdapAttributName(LdapGroupAttribute.MEMBERSHIP.getName()) + "="
-                + LdapEncoder.filterEncode(filter) + ")";
+        String finalFilter = "("
+                + ldapGroupAttributesMapper.getLdapAttributName(LdapGroupAttribute.MEMBERSHIP
+                        .getName()) + "=" + LdapEncoder.filterEncode(filter) + ")";
         String result;
         if (StringUtils.isBlank(groupSearchFilter)) {
             result = finalFilter;
@@ -273,7 +273,7 @@ public class MemberAndNonMemberModeVisitingRetriever extends VisitingRetriever<E
 
     /**
      * Method to set the filter to use. This allows better reuse of the retriever.
-     * 
+     *
      * @param filter
      *            The filter to set.
      */

@@ -33,6 +33,22 @@ public class LdapUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(LdapUtils.class);
 
     /**
+     * Close a naming enumeration to free up resources.
+     * 
+     * @param enumeration
+     *            the enumeration to close. If null, this method does nothing.
+     */
+    public static void closeNamingEnumeration(NamingEnumeration<?> enumeration) {
+        if (enumeration != null) {
+            try {
+                enumeration.close();
+            } catch (NamingException e) {
+                // ignore
+            }
+        }
+    }
+
+    /**
      * Converts the bytes to a string in LDAP bytes format. This string will be a backslash
      * separated concatenation of the hexadecimal value of each bytes, e.g. '\0a\0b\99\ff'.
      *

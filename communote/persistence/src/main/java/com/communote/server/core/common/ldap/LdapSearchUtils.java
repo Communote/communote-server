@@ -9,20 +9,15 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.naming.Context;
-import javax.naming.InvalidNameException;
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
-import org.springframework.ldap.core.ContextExecutor;
+import org.springframework.ldap.UncategorizedLdapException;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
@@ -51,8 +46,7 @@ public class LdapSearchUtils {
 
     private static final String FOLLOW = "follow";
 
-    private static final LdapServerCacheElementProvider LDAP_SERVER_CACHE_ELEMENT_PROVIDER =
-            new LdapServerCacheElementProvider();
+    private static final LdapServerCacheElementProvider LDAP_SERVER_CACHE_ELEMENT_PROVIDER = new LdapServerCacheElementProvider();
 
     /**
      * Tests whether a connection to the LDAP directory is possible.
@@ -124,8 +118,7 @@ public class LdapSearchUtils {
 
             if (binaryAttributes != null && binaryAttributes.length > 0) {
                 map.put("java.naming.ldap.attributes.binary",
-                        StringHelper.toString(binaryAttributes,
-                                " "));
+                        StringHelper.toString(binaryAttributes, " "));
             }
             if (config.getSaslMode() != null) {
                 map.put(Context.SECURITY_AUTHENTICATION, config.getSaslMode());
@@ -143,29 +136,6 @@ public class LdapSearchUtils {
     }
 
     /**
-     * Tests whether an entry exists in LDAP directory.
-     *
-     * @param contextFactory
-     *            context factory to use
-     * @param dn
-     *            the DN of the entry to test
-     * @param searchFilter
-     *            the searchFilter the entry must adhere to
-     * @param searchBaseDefs
-     *            search base definitions to assert that the DN is legal with respect to the DNs
-     * @return true if there is an entry in the LDAP directory with provided DN, that conforms to
-     *         one of the search bases and is retrievable by the search filter
-     * @throws DataAccessException
-     *             in case of access problems while communicating with the repository
-     */
-    public static boolean entryExists(LdapContextSource contextFactory, final String dn,
-            final String searchFilter, Collection<LdapSearchBaseDefinition> searchBaseDefs)
-                    throws DataAccessException {
-        // no attributes to return
-        return retrieveEntry(contextFactory, dn, searchFilter, new String[] { }, searchBaseDefs) != null;
-    }
-
-    /**
      * Searches for an active directory server within a windows domain.
      *
      * @param domain
@@ -180,7 +150,8 @@ public class LdapSearchUtils {
             throws NamingException {
         TreeMap<Integer, List<LdapServer>> serversMap = ServiceLocator
                 .findService(CacheManager.class)
-                .getCache().get(new LdapServerCacheKey(domain, queryPrefix),
+                .getCache()
+                .get(new LdapServerCacheKey(domain, queryPrefix),
                         LDAP_SERVER_CACHE_ELEMENT_PROVIDER);
         ArrayList<String> serverUrls = new ArrayList<String>();
         for (Entry<Integer, List<LdapServer>> entry : serversMap.entrySet()) {
@@ -222,7 +193,8 @@ public class LdapSearchUtils {
     }
 
     /**
-     * Retrieves an entry with the named attributes from the LDAP directory.
+     * Retrieve an entry with the named attributes from the LDAP directory and convert it with the
+     * provided attributes mapper.
      *
      * @param contextFactory
      *            context factory to use
@@ -233,45 +205,47 @@ public class LdapSearchUtils {
      * @param attributesToReturn
      *            the attributes to fetch
      * @param searchBaseDefs
-     *            search base definitions to assert that the DN is legal with respect to the DNs
-     * @return the entry from the LDAP directory with the provided DN, that conforms to one of the
-     *         search bases and is retrievable by the search filter or null if there is no such
-     *         entry
+     *            search base definitions to assert that the DN conforms to at least one of the
+     *            search bases
+     * @return the converted entry from the LDAP directory with the provided DN, that conforms to
+     *         one of the search bases and is retrievable by the search filter or null if there is
+     *         no such entry
      * @throws DataAccessException
      *             in case of access problems while communicating with the repository
+     * @throws LdapAttributeMappingException
+     *             in case the entry cannot be converted
      */
-    public static SearchResult retrieveEntry(LdapContextSource contextFactory,
-            final String dn, final String searchFilter, final String[] attributesToReturn,
-            Collection<LdapSearchBaseDefinition> searchBaseDefs) throws DataAccessException {
+    public static <T> T retrieveEntry(LdapContextSource contextFactory, final String dn,
+            final String searchFilter, final String[] attributesToReturn,
+            Collection<LdapSearchBaseDefinition> searchBaseDefs, LdapAttributesMapper<T> mapper)
+                    throws DataAccessException, LdapAttributeMappingException {
         if (searchBaseDefs != null) {
             if (!LdapUtils.dnConformsToSearchBaseDefinitions(dn, searchBaseDefs)) {
                 return null;
             }
         }
-        ContextExecutor entryExistsSearch = new ContextExecutor() {
-
-            @Override
-            public Object executeWithContext(DirContext dirContext) throws NamingException {
-                SearchResult entry = null;
-                try {
-                    // OBJECT scope
-                    NamingEnumeration<SearchResult> result = dirContext.search(dn, searchFilter,
-                            new SearchControls(SearchControls.OBJECT_SCOPE, 1, 0,
-                                    attributesToReturn, false, false));
-                    if (result.hasMore()) {
-                        entry = result.nextElement();
-                    }
-                } catch (NameNotFoundException e) {
-                    // doesn't exist in LDAP, do nothing
-
-                } catch (InvalidNameException e) {
-                    LOGGER.debug("Encountered invalid DN {}", dn);
-                }
-                return entry;
-            }
-        };
+        // OBJECT scope
+        SearchControls searchControls = new SearchControls(SearchControls.OBJECT_SCOPE, 1, 0,
+                attributesToReturn, false, false);
         LdapTemplate template = new LdapTemplate(contextFactory);
-        return (SearchResult) template.executeReadOnly(entryExistsSearch);
+        try {
+            List result = template.search(dn, searchFilter, searchControls,
+                    new SpringAttributesMapperAdapter(dn, mapper));
+            if (!result.isEmpty()) {
+                return (T) result.get(0);
+            }
+        } catch (org.springframework.ldap.NameNotFoundException e) {
+            // doesn't exist in LDAP, do nothing
+        } catch (org.springframework.ldap.InvalidNameException e) {
+            LOGGER.debug("Encountered invalid DN {}", dn);
+        } catch (UncategorizedLdapException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof LdapAttributeMappingException) {
+                throw (LdapAttributeMappingException) cause;
+            }
+            throw e;
+        }
+        return null;
     }
 
     /**

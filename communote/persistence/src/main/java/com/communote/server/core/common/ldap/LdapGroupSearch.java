@@ -12,7 +12,8 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.ldap.core.ContextExecutor;
 import org.springframework.ldap.core.LdapTemplate;
@@ -22,17 +23,16 @@ import com.communote.server.core.vo.user.group.ExternalGroupVO;
 import com.communote.server.model.config.LdapConfiguration;
 import com.communote.server.model.config.LdapSearchBaseDefinition;
 
-
 /**
  * Class for searching Groups within a LDAP.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class LdapGroupSearch {
 
     /** Logger. */
-    private final static Logger LOG = Logger.getLogger(LdapGroupSearch.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(LdapGroupSearch.class);
 
     private final LdapContextSource context;
     private final LdapAttributesMapper<ExternalGroupVO> attributeMapper;
@@ -44,7 +44,7 @@ public class LdapGroupSearch {
 
     /**
      * Constructor.
-     * 
+     *
      * @param configuration
      *            The configuration to be used.
      * @throws LdapAttributeMappingException
@@ -79,7 +79,7 @@ public class LdapGroupSearch {
     /**
      * Adds the configured group search filter via &-condition to the provided search filter if not
      * empty.
-     * 
+     *
      * @param filter
      *            the filter to extend
      * @return the extended filter
@@ -99,7 +99,7 @@ public class LdapGroupSearch {
 
     /**
      * Searches for entries within the directory
-     * 
+     *
      * @param searchString
      *            Search string.
      * @return The results.
@@ -123,15 +123,17 @@ public class LdapGroupSearch {
             @Override
             public Object executeWithContext(DirContext dirContext) throws NamingException {
                 for (LdapSearchBaseDefinition searchBase : searchBases) {
-                    controls
-                            .setSearchScope(searchBase.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE
-                                    : SearchControls.ONELEVEL_SCOPE);
+                    controls.setSearchScope(searchBase.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE
+                            : SearchControls.ONELEVEL_SCOPE);
+                    NamingEnumeration<SearchResult> searchResult = null;
                     try {
-                        NamingEnumeration<SearchResult> searchResult = dirContext.search(searchBase
-                                .getSearchBase(), searchFilter, controls);
+                        searchResult = dirContext.search(searchBase.getSearchBase(), searchFilter,
+                                controls);
                         mapSearchResult(groups, searchResult, searchBase.getSearchBase());
                     } catch (NamingException e) {
-                        LOG.error(e.getMessage(), e);
+                        LOGGER.error(e.getMessage(), e);
+                    } finally {
+                        LdapUtils.closeNamingEnumeration(searchResult);
                     }
                 }
                 return null;
@@ -140,14 +142,14 @@ public class LdapGroupSearch {
         try {
             new LdapTemplate(context).executeReadOnly(entrySearch);
         } catch (DataAccessException e) {
-            LOG.error(e.getMessage(), e);
+            LOGGER.error(e.getMessage(), e);
         }
         return groups;
     }
 
     /**
      * Retrieves a group by its DN if the group exists
-     * 
+     *
      * @param groupDN
      *            the DN of the group to retrieve
      * @return the group or null if there is no matching group
@@ -158,18 +160,13 @@ public class LdapGroupSearch {
      */
     public ExternalGroupVO getGroup(String groupDN) throws DataAccessException,
             LdapAttributeMappingException {
-        SearchResult entry = LdapSearchUtils.retrieveEntry(context, groupDN, groupSearchFilter,
-                returningAttributes, searchBases);
-        if (entry != null) {
-            return attributeMapper.mapAttributes(groupDN, entry
-                    .getAttributes());
-        }
-        return null;
+        return LdapSearchUtils.retrieveEntry(context, groupDN, groupSearchFilter,
+                returningAttributes, searchBases, attributeMapper);
     }
 
     /**
      * Checks, if the given group exists.
-     * 
+     *
      * @param groupDN
      *            The groups dn.
      * @return True, if the group exists, else false.
@@ -177,7 +174,14 @@ public class LdapGroupSearch {
      *             Exception.
      */
     public boolean hasGroup(String groupDN) throws DataAccessException {
-        return LdapSearchUtils.entryExists(context, groupDN, groupSearchFilter, searchBases);
+        try {
+            if (getGroup(groupDN) != null) {
+                return true;
+            }
+        } catch (LdapAttributeMappingException e) {
+            LOGGER.debug("Group with DN {} exists but cannot be mapped: {}", groupDN, e.getMessage());
+        }
+        return false;
     }
 
     /**
@@ -199,11 +203,11 @@ public class LdapGroupSearch {
                 } else {
                     dn = element.getName();
                 }
-                ExternalGroupVO externalGroupVO = attributeMapper.mapAttributes(dn, element
-                        .getAttributes());
+                ExternalGroupVO externalGroupVO = attributeMapper.mapAttributes(dn,
+                        element.getAttributes());
                 groups.add(externalGroupVO);
             } catch (LdapAttributeMappingException e) {
-                LOG.error(e.getMessage(), e);
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
