@@ -400,10 +400,6 @@ public class ApplicationInitializer {
      * Initializes standard values for unset system parameters.
      */
     private void initializeSystemParameters() {
-        System.setProperty("com.sun.jndi.ldap.connect.pool.prefsize",
-                System.getProperty("com.sun.jndi.ldap.connect.pool.prefsize", "10"));
-        System.setProperty("com.sun.jndi.ldap.connect.pool.timeout",
-                System.getProperty("com.sun.jndi.ldap.connect.pool.timeout", "60000"));
         System.setProperty("file.encoding", "UTF-8");
         System.setProperty("mail.mime.decodeparameters", Boolean.TRUE.toString());
         System.setProperty("mail.mime.decodefilename", Boolean.TRUE.toString());
