@@ -8,18 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
  * Spring Service base class for <code>com.communote.server.service.mail.MailManagement</code>,
  * provides access to all services and entities referenced by this service.
  * </p>
- * 
+ *
  * @see com.communote.server.core.mail.MailManagement
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 @Transactional(propagation = Propagation.REQUIRED)
-public abstract class MailManagementBase
-        implements com.communote.server.core.mail.MailManagement {
+public abstract class MailManagementBase implements com.communote.server.core.mail.MailManagement {
 
     /**
      * Gets the current <code>principal</code> if one has been set, otherwise returns
      * <code>null</code>.
-     * 
+     *
      * @return the current principal
      */
     protected java.security.Principal getPrincipal() {
@@ -37,25 +36,26 @@ public abstract class MailManagementBase
      */
     protected abstract void handleSendMail(
             org.springframework.mail.javamail.MimeMessagePreparator mailMessage)
-            throws com.communote.server.core.mail.MailingException;
+                    throws com.communote.server.core.mail.MailingException;
 
     /**
      * @see com.communote.server.core.mail.MailManagement#resetSettings()
      */
+    @Override
     public void resetSettings() {
         try {
             this.handleResetSettings();
         } catch (RuntimeException rt) {
             throw new com.communote.server.core.mail.MailManagementException(
                     "Error performing 'com.communote.server.service.mail.MailManagement.resetSettings()' --> "
-                            + rt,
-                    rt);
+                            + rt, rt);
         }
     }
 
     /**
      * @see com.communote.server.core.mail.MailManagement#sendMail(org.springframework.mail.javamail.MimeMessagePreparator)
      */
+    @Override
     public void sendMail(org.springframework.mail.javamail.MimeMessagePreparator mailMessage)
             throws com.communote.server.core.mail.MailingException {
         if (mailMessage == null) {
@@ -64,11 +64,12 @@ public abstract class MailManagementBase
         }
         try {
             this.handleSendMail(mailMessage);
+        } catch (MailingException e) {
+            throw e;
         } catch (RuntimeException rt) {
             throw new com.communote.server.core.mail.MailManagementException(
                     "Error performing 'com.communote.server.service.mail.MailManagement.sendMail(org.springframework.mail.javamail.MimeMessagePreparator mailMessage)' --> "
-                            + rt,
-                    rt);
+                            + rt, rt);
         }
     }
 }

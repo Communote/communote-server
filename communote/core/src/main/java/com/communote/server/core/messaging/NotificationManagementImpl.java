@@ -35,6 +35,7 @@ import com.communote.server.core.blog.NoteManagement;
 import com.communote.server.core.blog.export.PermalinkGenerationManagement;
 import com.communote.server.core.mail.MailManagement;
 import com.communote.server.core.mail.MailMessageHelper;
+import com.communote.server.core.mail.MailingException;
 import com.communote.server.core.mail.messages.MailModelPlaceholderConstants;
 import com.communote.server.core.mail.messages.user.NotifyAboutNoteMailMessage;
 import com.communote.server.core.messaging.NotificationDefinition.NotificationTypes;
@@ -164,8 +165,8 @@ public class NotificationManagementImpl extends NotificationManagementBase {
                 + "."
                 + ClientHelper.getCurrentClientId()
                 + CommunoteRuntime.getInstance().getConfigurationManager()
-                        .getApplicationConfigurationProperties()
-                .getProperty(ApplicationPropertyXmpp.USER_SUFFIX);
+                .getApplicationConfigurationProperties()
+                        .getProperty(ApplicationPropertyXmpp.USER_SUFFIX);
 
         return jabberId;
     }
@@ -241,7 +242,12 @@ public class NotificationManagementImpl extends NotificationManagementBase {
                 users.add(user);
                 NotifyAboutNoteMailMessage message = new NotifyAboutNoteMailMessage(users,
                         note.getUser(), locale, note, note.getBlog(), definitionKeys, model);
-                mailManagement.sendMail(message);
+                try {
+                    mailManagement.sendMail(message);
+                } catch (MailingException e) {
+                    LOGGER.error("Error sending note notification to user {}: {}", user.getId(),
+                            e.getMessage());
+                }
             }
         }
     }
@@ -393,10 +399,10 @@ public class NotificationManagementImpl extends NotificationManagementBase {
         }
         model.put(MailModelPlaceholderConstants.UTI_FORMATED_DATE_CREATE,
                 UserManagementHelper.getDateFormat(userToNotify.getId(), user.getLanguageLocale())
-                .format(note.getCreationDate()));
+                        .format(note.getCreationDate()));
         model.put(MailModelPlaceholderConstants.UTI_FORMATED_DATE_MODIFY,
                 UserManagementHelper.getDateFormat(userToNotify.getId(), user.getLanguageLocale())
-                .format(note.getLastModificationDate()));
+                        .format(note.getLastModificationDate()));
 
         Set<Tag> tags = note.getTags();
         List<String> tagList = new ArrayList<String>();
