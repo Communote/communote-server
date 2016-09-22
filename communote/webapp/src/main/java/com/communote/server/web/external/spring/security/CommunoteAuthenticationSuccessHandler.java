@@ -97,6 +97,44 @@ public class CommunoteAuthenticationSuccessHandler extends SimpleUrlAuthenticati
     }
 
     /**
+     * Convert the targetUrl to a relative Communote URL.
+     *
+     * @param request
+     *            the request
+     * @param targetUrl
+     *            the target URL to convert
+     * @return the relative URL or null if the URL is not a Communote URL
+     */
+    private String convertToRelativeUrl(HttpServletRequest request, String targetUrl) {
+        String relativeUrl;
+        // URL must have same host, port and context as current request or configured URL
+        String url = targetUrl.toLowerCase(Locale.ENGLISH);
+        boolean targetUrlSecure = url.startsWith("https:");
+        if (!targetUrlSecure && !url.startsWith("http:")) {
+            LOGGER.debug("Target URL is not a valid HTTP URL: {}", targetUrl);
+            return null;
+        }
+        int length = url.length();
+        url = stripDefaultPort(url, targetUrlSecure);
+        int offset = length - url.length();
+        // create absolute URL with context path
+        String absoluteUrl = ControllerHelper.renderAbsoluteUrl(request, null, StringUtils.EMPTY,
+                targetUrlSecure, true, false);
+        if (!url.startsWith(absoluteUrl)) {
+
+            absoluteUrl = ClientUrlHelper.renderConfiguredAbsoluteUrl(null, StringUtils.EMPTY,
+                    targetUrlSecure, true);
+            if (!url.startsWith(absoluteUrl)) {
+                LOGGER.debug("Target URL is not a Communote URL: {}", targetUrl);
+                return null;
+            }
+        }
+        // create relative url but preserve case
+        relativeUrl = targetUrl.substring(absoluteUrl.length() + offset);
+        return relativeUrl;
+    }
+
+    /**
      * <p>
      * Get the targetUrl from the request parameter returned by {@link #getTargetUrlParameter()}.
      * The referer or the default URL are not considered.
@@ -150,6 +188,29 @@ public class CommunoteAuthenticationSuccessHandler extends SimpleUrlAuthenticati
         return url;
     }
 
+    private String getTargetUrlFromSavedRequest(HttpServletRequest request,
+            SavedRequest savedRequest) {
+        String targetUrl = null;
+        if (savedRequest != null) {
+            // get saved absolute target URL
+            targetUrl = savedRequest.getRedirectUrl();
+            String url = targetUrl.toLowerCase(Locale.ENGLISH);
+            // assert that there is no down-grade to HTTP if current request is HTTPS
+            if (request.isSecure() && !url.startsWith("https:")) {
+                // convert to relative URL
+                targetUrl = convertToRelativeUrl(request, targetUrl);
+            }
+            if (targetUrl == null) {
+                LOGGER.debug(
+                        "Target URL from saved request could not be converted to a relative URL: {}",
+                        savedRequest.getRedirectUrl());
+            } else {
+                LOGGER.debug("Found target URL in saved request: {}", targetUrl);
+            }
+        }
+        return targetUrl;
+    }
+
     @Override
     protected void handle(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
@@ -158,10 +219,7 @@ public class CommunoteAuthenticationSuccessHandler extends SimpleUrlAuthenticati
         String targetUrl = determineTargetUrl(request, response);
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         if (targetUrl == null) {
-            if (savedRequest != null) {
-                targetUrl = savedRequest.getRedirectUrl();
-                LOGGER.debug("Found target URL in saved request: {}", targetUrl);
-            }
+            targetUrl = getTargetUrlFromSavedRequest(request, savedRequest);
         }
         if (savedRequest != null) {
             requestCache.removeRequest(request, response);
@@ -222,30 +280,10 @@ public class CommunoteAuthenticationSuccessHandler extends SimpleUrlAuthenticati
         }
         String relativeUrl;
         if (UrlHelper.isAbsoluteUrl(targetUrl)) {
-            // URL must have same host, port and context as current request or configured URL
-            String url = targetUrl.toLowerCase(Locale.ENGLISH);
-            boolean targetUrlSecure = url.startsWith("https:");
-            if (!targetUrlSecure && !url.startsWith("http:")) {
-                LOGGER.debug("Target URL is not a valid HTTP URL: {}", targetUrl);
+            relativeUrl = convertToRelativeUrl(request, targetUrl);
+            if (relativeUrl == null) {
                 return false;
             }
-            int length = url.length();
-            url = stripDefaultPort(url, targetUrlSecure);
-            int offset = length - url.length();
-            // create absolute URL with context path
-            String absoluteUrl = ControllerHelper.renderAbsoluteUrl(request, null,
-                    StringUtils.EMPTY, targetUrlSecure, true, false);
-            if (!url.startsWith(absoluteUrl)) {
-
-                absoluteUrl = ClientUrlHelper.renderConfiguredAbsoluteUrl(null, StringUtils.EMPTY,
-                        targetUrlSecure, true);
-                if (!url.startsWith(absoluteUrl)) {
-                    LOGGER.debug("Target URL is not a Communote URL: {}", targetUrl);
-                    return false;
-                }
-            }
-            // create relative url but preserve case
-            relativeUrl = targetUrl.substring(absoluteUrl.length() + offset);
         } else {
             // relative target URLs are expected to start after the contextPath
             relativeUrl = targetUrl;
