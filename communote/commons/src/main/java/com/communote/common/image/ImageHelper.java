@@ -37,6 +37,14 @@ import com.communote.common.io.MimeTypeHelper;
  */
 public class ImageHelper {
 
+    /** Logger. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageHelper.class);
+
+    /**
+     * The maximum of the image size is 5000 bytes
+     */
+    public final static int USER_IMAGE_MAX_SIZE = 5000;
+
     /**
      * Converts the byte array to an image.
      *
@@ -48,11 +56,12 @@ public class ImageHelper {
         try {
             return Imaging.getBufferedImage(data);
         } catch (Exception e) {
-            LOGGER.warn("Error reading image: {}", e.getMessage());
+            LOGGER.warn("Error reading image with Imaging: {}", e.getMessage());
             try {
                 return ImageIO.read(new ByteArrayInputStream(data));
             } catch (IOException e1) {
-                LOGGER.warn("Error reading image: {} ", e1.getMessage(), e);
+                LOGGER.warn("Error reading image with ImageIO: {} ", e1.getMessage());
+                LOGGER.debug(e1.getMessage(), e1);
             }
         }
         return null;
@@ -240,14 +249,6 @@ public class ImageHelper {
         }
         return image;
     }
-
-    /** Logger. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImageHelper.class);
-
-    /**
-     * The maximum of the image size is 5000 bytes
-     */
-    public final static int USER_IMAGE_MAX_SIZE = 5000;
 
     /**
      * Private constructor

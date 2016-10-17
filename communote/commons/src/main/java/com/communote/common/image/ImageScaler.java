@@ -102,7 +102,7 @@ public class ImageScaler {
      *
      * @param image
      *            the image to convert
-     * @return the converted image
+     * @return the converted image or null if the provided image was null
      */
     private byte[] convertImageToBytes(BufferedImage image) {
         if (image == null) {
@@ -295,7 +295,7 @@ public class ImageScaler {
      *
      * @param data
      *            Binary image data
-     * @return returns the scaled byte array
+     * @return returns the scaled byte array or null if the image data couldn't be parsed
      */
     public byte[] resizeImage(byte[] data) {
         BufferedImage image = ImageHelper.byteToImage(data);
@@ -308,7 +308,9 @@ public class ImageScaler {
             }
         }
         byte[] result = convertImageToBytes(image);
-        result = ImageHelper.copyExifOrientation(data, result);
+        if (result != null) {
+            result = ImageHelper.copyExifOrientation(data, result);
+        }
         return result;
     }
 
