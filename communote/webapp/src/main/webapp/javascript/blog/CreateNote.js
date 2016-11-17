@@ -50,6 +50,7 @@ var CreateNoteWidget = new Class({
         // can hold additional details to run the action. The allowed values depend on the action
         actionOptions: undefined
     },
+    communoteLocalStorage: new CommunoteLocalStorage(),
     defaultTagStoreAlias: 'DefaultNoteTagStore',
     // whether the editor is currently dirty. Will be reset after a successful autosave.
     dirty: false,
@@ -95,6 +96,9 @@ var CreateNoteWidget = new Class({
      */
     renderStyle: null,
     renderStyleCssClassPrefix: 'cn-write-note-render-style-',
+
+    resendNotificationProperty: {},
+
     // css classes to be applied to the create note container (getWriteContainerElement)
     // when the editor only supports richtext
     richTextEditorCssClass: null,
@@ -232,7 +236,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Adds one or more attachments described by attachment data object.
-     * 
+     *
      * @param {Object|Object[]} attachmentData A description of the attachment including the member
      *            'id', 'fileName', 'mime'.
      */
@@ -243,7 +247,7 @@ var CreateNoteWidget = new Class({
     /**
      * Add the items from items that are not yet in the dataHolder. Will set the dirty flag if
      * something changed.
-     * 
+     *
      * @param {Object} dataHolder the dataHolder to be extended
      * @param {Array|Object} items an array of JSON objects or single JSON object to evaluate
      * @param {String} idString the name of the attribute of the item object of which the value is
@@ -291,7 +295,7 @@ var CreateNoteWidget = new Class({
     /**
      * Adds a tag to the addedTags array if it is not yet contained. In case the tag was added
      * tagAdded will be called and the dirty flag will be set.
-     * 
+     *
      * @param {String|Object} tag The tag to add, can be a simple string tag or a structured tag
      *            object
      */
@@ -308,7 +312,7 @@ var CreateNoteWidget = new Class({
      * Adds a bunch of tags to the addedTags array. Only tags that are not yet contained will be
      * added. For each added tag the tagAdded will be called. If any tag was added the dirty flag
      * will be set.
-     * 
+     *
      * @param {String[]|Object[]} tags The tags to add, the array can contain simple string tags or
      *            structured tag objects
      */
@@ -364,7 +368,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Adds users for notification.
-     * 
+     *
      * @param {Object|Object[]) users An object containing user data or an array of such objects.
      * @return whether something was added
      */
@@ -375,7 +379,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Called after an attachment was added. Subclasses can use this hook to update the view.
-     * 
+     *
      * @param {Object} attachmentData JSON object describing the attached attachment
      * @param {boolean} moreToCome true if the attachment was added as part of batch update and the
      *            current item is not the last. Can be used to optimize view updates.
@@ -385,7 +389,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Called after an attachment was removed. Subclasses can use this hook to update the view.
-     * 
+     *
      * @param {String} id identifier of the attached attachment. This parameter is null if all
      *            attachments were removed.
      */
@@ -490,7 +494,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Is called after an autosave has been created.
-     * 
+     *
      * @param {boolean} online true if it the autosave was created online, false if it was stored
      *            offline in a cookie
      */
@@ -513,7 +517,7 @@ var CreateNoteWidget = new Class({
     /**
      * Cancel the edit, update or create operation. The actual behavior of this function is defined
      * by the configurable cancelBehavior.
-     * 
+     *
      * @param Event [event] The event that triggered cancel.
      */
     cancel: function(event) {
@@ -589,9 +593,21 @@ var CreateNoteWidget = new Class({
     },
 
     /**
+     * Defines if already notified user will receive notifcations again
+     */
+    changeResendNotificationMode: function(activate) {
+      this.resendNotificationProperty = {
+        "key": "editNote.resendNotification",
+        "keyGroup": "com.communote",
+        "value": activate
+      };
+      communoteLocalStorage.setItem("com.communote.editNote.resendNotification", activate);
+    },
+
+    /**
      * Implementation of the 'approveMatchCallback' callback of the AutocompleterStaticDataSource
      * that excludes the
-     * 
+     *
      * @@discussion suggestion when not used in a discussion context.
      */
     checkDiscussionContextApproveMatchCallback: function(query, staticSearchDefinition) {
@@ -664,7 +680,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Called after the content of the widget has been initialized after a refresh.
-     * 
+     *
      * @param {boolean} fromOnlineAutosave If true, there was an autosave that was loaded from the
      *            server
      * @param {boolean} fromOfflineAutosave If true, there was an autosave that was loaded from the
@@ -717,7 +733,7 @@ var CreateNoteWidget = new Class({
     /**
      * Convert a tag string to a valid tag object containing the minimum required members if it is
      * not already one.
-     * 
+     *
      * @param {String|Object} tag The tag to process
      */
     convertToTagObject: function(tag) {
@@ -731,7 +747,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Create the NoteTextEditor to be used and return it.
-     * 
+     *
      * @return {NoteTextEditor} the editor
      */
     createEditor: function() {
@@ -741,7 +757,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Creates an object that holds all the information to be submitted when sending the note.
-     * 
+     *
      * @param {boolean} publish whether the note will be published or stored as an autosave
      * @param {String} content the content of the note
      * @return {Object} an object with all information for storing the note
@@ -772,6 +788,14 @@ var CreateNoteWidget = new Class({
         data.publish = publish === true ? true : false;
         data.autosaveNoteId = this.autosaveNoteId;
         data.noteVersion = this.autosaveVersion;
+
+        if(this.action === 'edit') {
+          if (this.noteProperties === null) {
+            this.noteProperties = [];
+          }
+          this.noteProperties.push(this.resendNotificationProperty);
+        }
+
         properties = this.createPropertiesPostData(publish);
         if (properties) {
             data.properties = properties;
@@ -790,10 +814,10 @@ var CreateNoteWidget = new Class({
         }
         if (this.predefinedNoteProperties) {
             if (typeOf(this.predefinedNoteProperties) === 'array') {
-                communote.utils.propertyUtils.mergeProperties(properties, 
+                communote.utils.propertyUtils.mergeProperties(properties,
                         this.predefinedNoteProperties);
             } else {
-                communote.utils.propertyUtils.mergeProperty(properties, 
+                communote.utils.propertyUtils.mergeProperty(properties,
                         this.predefinedNoteProperties);
             }
         }
@@ -842,7 +866,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Discard the autosave if there is one.
-     * 
+     *
      * @param {Function} [postRemoveOperation] A function to run after successfully removing the
      *            autosave. If null the editor will be reset. If no operation should be executed
      *            pass false.
@@ -876,7 +900,7 @@ var CreateNoteWidget = new Class({
             utils = noteUtils;
             for (i = 0; i < this.attachments.ids.length; i++) {
                 // not really interested in the server response as the job
-                // will clean-up the attachments that could not be deleted 
+                // will clean-up the attachments that could not be deleted
                 utils.deleteAttachment(this.attachments.ids[i]);
             }
             if (postRemoveOperation) {
@@ -959,7 +983,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Returns the index of a tag within the tagStore array.
-     * 
+     *
      * @param {Object} tag The tag to find, can be a simple unpersisted tag which just has the
      *            defaultName set or a persisted tag with tagId
      * @param {Object[]} tagStore Array that holds tags which can be persisted tags with tagId or
@@ -1000,7 +1024,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Returns the element to be used as positionSource element for the tag autocompleter.
-     * 
+     *
      * @return {Element} the element or null if not required
      */
     getTagAutocompleterPositionSource: function() {
@@ -1008,7 +1032,7 @@ var CreateNoteWidget = new Class({
     },
     /**
      * Returns the tag search element.
-     * 
+     *
      * @return {Element} the element if it exists
      */
     getTagSearchElement: function() {
@@ -1038,7 +1062,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Returns the element to be used as positionSource element for the topic autocompleter.
-     * 
+     *
      * @return {Element} the element or null if not required
      */
     getTopicAutocompleterPositionSource: function() {
@@ -1046,7 +1070,7 @@ var CreateNoteWidget = new Class({
     },
     /**
      * Returns the topic search element.
-     * 
+     *
      * @return {Element} the element if it exists
      */
     getTopicSearchElement: function() {
@@ -1055,7 +1079,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Returns the element to be used as positionSource element for the user autocompleter.
-     * 
+     *
      * @return {Element} the element or null if not required
      */
     getUserAutocompleterPositionSource: function() {
@@ -1063,7 +1087,7 @@ var CreateNoteWidget = new Class({
     },
     /**
      * Returns the user search element.
-     * 
+     *
      * @return {Element} the element if it exists
      */
     getUserSearchElement: function() {
@@ -1075,7 +1099,7 @@ var CreateNoteWidget = new Class({
      * controls like the attachment upload. This element will receive render style CSS class
      * constructed from the #renderStyleCssClassPrefix and the current render style. The default
      * imlementation looks for child node with class 'control-write-note-body-wrapper'.
-     * 
+     *
      * @return {Element} the wrapper element or null if the widget does not need such a wrapper
      */
     getWrapperElement: function() {
@@ -1202,7 +1226,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Helper that adds a tag to the tagStore array if it is not yet contained.
-     * 
+     *
      * @param {Object} tag The tag to add
      * @param {Object[]} tagStore Array that holds tags which can be persisted tags with tagId or
      *            tags that are not yet persisted
@@ -1307,7 +1331,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Prepares the options for an autocompleter.
-     * 
+     *
      * @param {String} positionSourceGetter Name of a local getter function that returns the
      *            position source element for the autocompleter
      * @param {Boolean} emptyOnSelection True if the autocompleter should clear the input when a
@@ -1387,7 +1411,7 @@ var CreateNoteWidget = new Class({
     },
 
     refreshComplete: function(responseMetadata) {
-        var isAutosave;
+        var isAutosave, resendNotification;
         isAutosave = (this.autosaveCookie && this.autosaveCookie.get('autosaveVersion') != null)
                 || (responseMetadata && responseMetadata.autosave);
         // TODO better name
@@ -1408,6 +1432,16 @@ var CreateNoteWidget = new Class({
         if (this.useAttachmentSelection()) {
             this.refreshAttachmentSelection();
         }
+
+        if (this.action === 'edit') {
+          // Load the latest setting for the resend notification option via Local Storage
+          resendNotification = communoteLocalStorage.getItem("com.communote.editNote.resendNotification");
+          if(resendNotification === "true") {
+            $(this.widgetId + '-resend-notification').set('checked', (resendNotification === "true"));
+          }
+          this.changeResendNotificationMode(resendNotification);
+        }
+
         this.initContent(responseMetadata);
         this.startAutosaveJob();
         init_tips(this.domNode);
@@ -1437,7 +1471,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Attaches a tag autocompleter if a tag search element exists.
-     * 
+     *
      * @param {Element} searchElement The input element to attach the autocompleter to
      */
     refreshTagSelection: function(searchElement) {
@@ -1458,7 +1492,7 @@ var CreateNoteWidget = new Class({
     /**
      * Called after refresh if useTopicSelection returned true. Default implementation attaches a
      * topic autocompleter to the input field.
-     * 
+     *
      * @param {Element} searchElement The input element to attach the autocompleter to
      */
     refreshTopicSelection: function(searchElement) {
@@ -1476,7 +1510,7 @@ var CreateNoteWidget = new Class({
     /**
      * Called after refresh if useUserSelection returned true. Default implementation attaches a
      * user autocompleter to it.
-     * 
+     *
      * @param {Element} searchElement The input element to attach the autocompleter to
      */
     refreshUserSelection: function(searchElement) {
@@ -1517,7 +1551,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Removes the item from the data holder
-     * 
+     *
      * @param {Object} dataHolder The data holder to update
      * @param {String} id identifier of the item to remove, if null remove all items
      * @return {boolean} whether the dataHolder was changed
@@ -1550,7 +1584,7 @@ var CreateNoteWidget = new Class({
     /**
      * Remove one or all tags from the addedTags array. If the array was changed tagRemoved will be
      * called.
-     * 
+     *
      * @param {Object|String} tag The tag to remove or null to remove all tags
      */
     removeTag: function(tag) {
@@ -1611,7 +1645,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Removes an previously added user from the users to notify.
-     * 
+     *
      * @param {Object} [userData] the object holding the details of the user to remove, if not
      *            specified all users are removed
      */
@@ -1861,7 +1895,7 @@ var CreateNoteWidget = new Class({
      * Called when a tag was added for instance by selecting it from the autocompleter or submitting
      * the tag input field. Subclasses can use this class to update a summary. This class does
      * nothing.
-     * 
+     *
      * @param {Object|String} tag The tag that was added
      * @param {Boolean} moreToCome Whether more tags will be added. This can be used to optimize
      *            summary creation.
@@ -1884,7 +1918,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Method that is invoked when a topic was added.
-     * 
+     *
      * @param {Object} topicData The object describing the topic that was added.
      * @param {boolean} moreToCome Whether this add is only the first of a sequence of adds.
      */
@@ -1897,7 +1931,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Method that is invoked when one or more topics were removed.
-     * 
+     *
      * @param {Object} topicData The object describing the topic that was removed. Will be null if
      *            all topics were removed.
      */
@@ -1932,7 +1966,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Called after a user was added. Subclasses can use this hook to update the view.
-     * 
+     *
      * @param {Object} userData JSON object describing the added user
      * @param {boolean} moreToCome true if the user was added as part of batch update and the
      *            current item is not the last. Can be used to optimize view updates.
@@ -1946,7 +1980,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Called after a user was removed. Subclasses can use this hook to update the view.
-     * 
+     *
      * @param {Object} [userData] the object holding the details of the user that was removed. This
      *            parameter is null if all users were removed.
      */
@@ -1968,7 +2002,7 @@ var CreateNoteWidget = new Class({
 
     /**
      * Can be called to invoke a direct message on the actual CreateNote Widget.
-     * 
+     *
      * @param {Object} userAlias The user alias the direct message should be send to.
      */
     writeDirectMessage: function(userAlias) {

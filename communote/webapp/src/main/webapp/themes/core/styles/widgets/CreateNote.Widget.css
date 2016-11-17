@@ -36,7 +36,7 @@
 }
 
 .cn-write-note.cn-write-note-render-style-simulate:after {
-    border-color: rgba(255, 255, 255, 0); 
+    border-color: rgba(255, 255, 255, 0);
     border-top-color: #FFFFFF;
     border-width: 7px;
     left: 5%;
@@ -44,7 +44,7 @@
 }
 
 .cn-write-note.cn-write-note-render-style-simulate:before {
-    border-color: rgba(199, 199, 199, 0); 
+    border-color: rgba(199, 199, 199, 0);
     border-top-color: #C7C7C7;
     border-width: 8px;
     left: 5%;
@@ -110,7 +110,7 @@
 .cn-write-note-accessory-contents .cn-icon-label {
     line-height: 22px;
 }
-    
+
 .cn-write-note .cn-write-note-accessory-user .cn-icon {
     background-position: -421px -101px;
 }
@@ -163,12 +163,22 @@
     padding-top: 6px;
 }
 
-.cn-accessory-content .cn-note-dm {
+.cn-accessory-content .cn-note-option {
+    line-height: 24px;
     margin-top: 12px;
 }
 
-.cn-accessory-content .cn-note-dm label {
+.cn-accessory-content .cn-note-option ~ .cn-note-option {
+    margin: 5px 0;
+}
+
+.cn-accessory-content .cn-note-option input {
+    vertical-align: middle;
+}
+
+.cn-accessory-content .cn-note-option label {
     padding-left: 6px;
+    vertical-align: middle;
 }
 
 .cn-accessory-content .cn-attachment-summary {
@@ -238,7 +248,7 @@
 
 .cn-attachment-summary .cn-attachment-remove .cn-icon:hover {
     background-position: -132px -259px;
-} 
+}
 
 .cn-write-note-accessory-attachment form {
     visibility: hidden;
@@ -257,7 +267,7 @@
 
 .cn-write-note-accessory-attachment.cn-custom-upload form input {
     width: auto;
-    height: 25px;    
+    height: 25px;
 }
 
 .cn-write-note-accessory-attachment #cn-upload-button {
@@ -265,7 +275,7 @@
 }
 
 .cn-write-note-accessory-attachment.cn-custom-upload #cn-upload-button {
-    display: none;    
+    display: none;
 }
 
 /* relative positioning to make ExpandingTextarea work correctly because the textarea
@@ -317,7 +327,7 @@
 }
 .cn-write-note.cn-write-note-render-style-minimal .cn-write-note-plaintext .cn-write-note-editor-textarea-wrapper {
 	margin-right: 20px;
-} 
+}
 
 .cn-write-note-editor,
 .cn-write-note-editor-simulate,
@@ -438,7 +448,7 @@
     background-repeat: no-repeat;
     background-position: bottom right;
     zoom: 1;
-    
+
 }
 
 .cn-link-group-container {
