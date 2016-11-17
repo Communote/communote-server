@@ -178,11 +178,12 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
         addProcessor(new ExtractUsersNotePreProcessor());
         addProcessor(new RepostNoteStoringPreProcessor(notePermissionManagement,
                 propertyManagement, resourceStoringManagement));
+        addProcessor(new EditNotificationNoteStoringPreProcessor());
     }
 
     @Override
     public void process(NoteStoringTO noteStoringTO) throws NoteStoringPreProcessorException,
-            NoteManagementAuthorizationException {
+    NoteManagementAuthorizationException {
         processEdit(null, noteStoringTO);
     }
 

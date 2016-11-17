@@ -184,7 +184,7 @@ public class NoteManagementImpl extends NoteManagementBase {
 
     }
 
-/**
+    /**
      * Asserts some preconditions for {@link #createNote(NoteStoringTO, Set, StringPropertyFilter[])
      *
      * @param noteStoringTO The note.
@@ -300,7 +300,7 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private void assertValidDirectMessage(NoteStoringTO noteStoringTO,
             NoteModificationResult result, Map<Blog, Collection<User>> blog2users)
-                    throws NoteStoringPreProcessorException {
+            throws NoteStoringPreProcessorException {
         if (!noteStoringTO.isPublish() || !noteStoringTO.isIsDirectMessage()) {
             return;
         }
@@ -472,7 +472,7 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private <T extends NoteData> void convertNote(Long noteId,
             QueryResultConverter<SimpleNoteListItem, T> converter, T target)
-                    throws NoteNotFoundException, AuthorizationException {
+            throws NoteNotFoundException, AuthorizationException {
         Note note = noteDao.load(noteId);
         if (note == null) {
             throw new NoteNotFoundException("The Note was not found. noteId=" + noteId);
@@ -894,9 +894,9 @@ public class NoteManagementImpl extends NoteManagementBase {
             if (NoteCreationSource.SYSTEM.equals(note.getCreationSource()) && !deleteSystemPosts) {
                 throw new NoteManagementAuthorizationException(
                         "The creation source of this post is '" + note.getCreationSource()
-                        + "'. The user with id " + userId
-                        + " is not allowed to delete the post with id " + postId, note
-                        .getBlog().getTitle());
+                                + "'. The user with id " + userId
+                                + " is not allowed to delete the post with id " + postId, note
+                                .getBlog().getTitle());
             }
             internalDeleteNoteWithReplies(note);
 
@@ -996,7 +996,7 @@ public class NoteManagementImpl extends NoteManagementBase {
     @Override
     protected DiscussionNoteData handleGetNoteWithComments(Long noteId,
             QueryResultConverter<SimpleNoteListItem, DiscussionNoteData> converter)
-            throws NoteNotFoundException, AuthorizationException {
+                    throws NoteNotFoundException, AuthorizationException {
         DiscussionNoteData result = new DiscussionNoteData();
         convertNote(noteId, converter, result);
         return result;
@@ -1039,8 +1039,8 @@ public class NoteManagementImpl extends NoteManagementBase {
     @Override
     protected NoteModificationResult handleUpdateNote(NoteStoringTO noteStoringTO, Long noteId,
             Set<String> additionalBlogIds, boolean resendNotifications)
-                    throws BlogNotFoundException, NoteNotFoundException,
-                    NoteManagementAuthorizationException, NoteStoringPreProcessorException {
+            throws BlogNotFoundException, NoteNotFoundException,
+            NoteManagementAuthorizationException, NoteStoringPreProcessorException {
 
         Note noteToEdit = noteDao.load(noteId);
         assertNoteToEditForUpdateNote(noteStoringTO, noteToEdit);
@@ -1052,7 +1052,7 @@ public class NoteManagementImpl extends NoteManagementBase {
         }
         mergeAdditionalBlogAliases(noteStoringTO, additionalBlogIds);
         noteStoringTO.setIsDirectMessage(noteToEdit.isDirect());
-        noteContentProcessorManagement.process(noteStoringTO);
+        noteContentProcessorManagement.processEdit(noteToEdit, noteStoringTO);
 
         if (noteStoringTO.isPublish() && !noteToEdit.isDirect()
                 && noteStoringTO.isIsDirectMessage()) {
@@ -1147,9 +1147,9 @@ public class NoteManagementImpl extends NoteManagementBase {
     private Collection<String> internalCreateCrosspostsForNote(Note sourceNote,
             NoteStoringTO storingTO, Map<Blog, Collection<User>> blog2users,
             Collection<Note> createdNotes, Timestamp lastModificationDate)
-                    throws NoteLimitReachedException, NoteStoringPreProcessorException,
-                    AttachmentAlreadyAssignedException, NoteManagementAuthorizationException,
-                    NoteNotFoundException {
+            throws NoteLimitReachedException, NoteStoringPreProcessorException,
+            AttachmentAlreadyAssignedException, NoteManagementAuthorizationException,
+            NoteNotFoundException {
         Long blogIdToSkip = sourceNote.getBlog().getId();
         Collection<String> tagsWithProblems = new HashSet<>();
         if (storingTO.isPublish()) {
@@ -1541,8 +1541,8 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private Pair<Timestamp, List<String>> internalUpdateNoteData(Note note,
             NoteStoringTO noteStoringTO, Blog targetBlog, Collection<User> usersToNotify)
-            throws NoteStoringPreProcessorException, AttachmentAlreadyAssignedException,
-            NoteManagementAuthorizationException, NoteNotFoundException {
+                    throws NoteStoringPreProcessorException, AttachmentAlreadyAssignedException,
+                    NoteManagementAuthorizationException, NoteNotFoundException {
         if (targetBlog != null) {
             note.setBlog(targetBlog);
         }
@@ -1833,13 +1833,13 @@ public class NoteManagementImpl extends NoteManagementBase {
         if (note.isIsDirectMessage() && note.isMentionTopicManagers()) {
             Collection<String> mappedUsers = topicRightsManagement.getMappedUsers(note.getBlogId(),
                     new CollectionConverter<UserToBlogRoleMapping, String>() {
-                        @Override
-                        public String convert(UserToBlogRoleMapping source) {
-                            Long userId = source.getUserId();
-                            User user = userDao.load(userId);
-                            return user != null ? user.getAlias() : null;
-                        }
-                    }, BlogRole.MANAGER);
+                @Override
+                public String convert(UserToBlogRoleMapping source) {
+                    Long userId = source.getUserId();
+                    User user = userDao.load(userId);
+                    return user != null ? user.getAlias() : null;
+                }
+            }, BlogRole.MANAGER);
             note.getUsersToNotify().addAll(mappedUsers);
         }
     }

@@ -98,16 +98,16 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
     protected Collection<User> getUsersToNotify(Note note, NoteStoringPostProcessorContext context,
             Set<Long> userIdsToSkip) {
         if (note.isDirect()) {
-            return null; // Only managers are allowed and these are already resolved.
+            return null;
         }
         boolean includeAuthors;
         boolean includeManagers;
         boolean includeReaders;
         String value = context.getProperties().get(PROPERTY_KEY_TOPIC_MENTIONS);
         if (value == null) {
-            includeAuthors = true;
-            includeManagers = true;
-            includeReaders = true;
+            includeAuthors = note.isMentionTopicAuthors();
+            includeManagers = note.isMentionTopicManagers();
+            includeReaders = note.isMentionTopicReaders();
         } else {
             includeAuthors = !value.contains(TOPIC_MENTION_AUTHORS);
             includeManagers = !value.contains(TOPIC_MENTION_MANAGERS);
@@ -176,17 +176,6 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
         return usersToNotify;
     }
 
-    /**
-     * @param note
-     *            The note to check.
-     * @return True, if this note should be processed.
-     */
-    private boolean mustProcess(Note note) {
-        return !note.isDirect()
-                && (note.isMentionTopicAuthors() || note.isMentionTopicManagers() || note
-                        .isMentionTopicReaders());
-    }
-
     @Override
     protected boolean sendNotifications(Note note, NoteStoringTO orginalNoteStoringTO,
             Map<String, String> properties, NoteNotificationDetails resendDetails) {
@@ -224,9 +213,9 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
                     throw new TooManyMentionedUsersNoteManagementException();
                 }
                 properties
-                        .put(PROPERTY_KEY_TOPIC_MENTIONS,
-                                encodeMentionPropertyValue(includeReaders, includeAuthors,
-                                        includeManagers));
+                .put(PROPERTY_KEY_TOPIC_MENTIONS,
+                        encodeMentionPropertyValue(includeReaders, includeAuthors,
+                                includeManagers));
                 return true;
             }
         }

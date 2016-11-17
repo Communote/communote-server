@@ -37,8 +37,31 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
      */
     private static final String PROPERTY_KEY_USER_IDS_TO_SKIP = PropertyManagement.KEY_GROUP
             + ".notification.idsToSkip";
+    private static final String ATTRIBUTE_KEY_USER_IDS_TO_SKIP = PROPERTY_KEY_USER_IDS_TO_SKIP;
     private NoteDao noteDao;
     private NotificationService notificationService;
+
+    /**
+     * Extracts the IDs of the users to not notify from the context properties and adds them to the
+     * context attributes so it can be reused by all notification processors handling the same note.
+     * 
+     * @param context
+     *            the post processing context
+     * @return the IDs of the users to not notify
+     */
+    protected Set<Long> extractUserIdsToSkip(NoteStoringPostProcessorContext context) {
+        Object attributeValue = context.getAttributes().get(ATTRIBUTE_KEY_USER_IDS_TO_SKIP);
+        if (attributeValue instanceof Set) {
+            return (Set) attributeValue;
+        }
+        Set<Long> userIdsToSkip = new HashSet<>();
+        String propValue = context.getProperties().get(PROPERTY_KEY_USER_IDS_TO_SKIP);
+        if (propValue != null) {
+            userIdsToSkip.addAll(StringHelper.getStringAsLongList(propValue));
+        }
+        context.getAttributes().put(ATTRIBUTE_KEY_USER_IDS_TO_SKIP, userIdsToSkip);
+        return userIdsToSkip;
+    }
 
     /**
      * @return the note DAO
@@ -119,11 +142,7 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
         if (note == null) {
             return;
         }
-        Set<Long> userIdsToSkip = new HashSet<>();
-        String propValue = context.getProperties().get(PROPERTY_KEY_USER_IDS_TO_SKIP);
-        if (propValue != null) {
-            userIdsToSkip.addAll(StringHelper.getStringAsLongList(propValue));
-        }
+        Set<Long> userIdsToSkip = extractUserIdsToSkip(context);
         Collection<User> usersToNotify = getUsersToNotify(note, context, userIdsToSkip);
         Collection<User> usersToSendMessage = new HashSet<User>();
         if (usersToNotify != null) {
@@ -132,7 +151,7 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
                         && (user.hasStatus(UserStatus.ACTIVE))
                         && getNotificationService().userHasSchedule(user.getId(),
                                 getNotificationDefinition(), NotificationScheduleTypes.IMMEDIATE)
-                                && (!note.getUser().getId().equals(user.getId()) || notifyAuthor())) {
+                        && (!note.getUser().getId().equals(user.getId()) || notifyAuthor())) {
                     usersToSendMessage.add(user);
                     userIdsToSkip.add(user.getId());
                 }

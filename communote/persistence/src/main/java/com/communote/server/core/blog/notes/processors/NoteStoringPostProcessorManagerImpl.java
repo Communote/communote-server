@@ -16,8 +16,8 @@ import com.communote.common.util.DescendingOrderComparator;
 import com.communote.server.api.core.blog.BlogRightsManagement;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringPostProcessor;
-import com.communote.server.api.core.note.processor.NoteStoringPostProcessorManager;
 import com.communote.server.api.core.note.processor.NoteStoringPostProcessorContext;
+import com.communote.server.api.core.note.processor.NoteStoringPostProcessorManager;
 import com.communote.server.api.core.task.TaskAlreadyExistsException;
 import com.communote.server.api.core.task.TaskManagement;
 import com.communote.server.core.general.RunInTransaction;
@@ -152,11 +152,9 @@ public class NoteStoringPostProcessorManagerImpl implements NoteStoringPostProce
             Map<String, String> properties) throws TaskAlreadyExistsException {
         List<NoteStoringPostProcessor> processors = sortedProcessors;
 
-        Map<String, String> mergedProperties = new HashMap<String, String>();
-        if (properties != null) {
-            mergedProperties.putAll(properties);
+        if (properties == null) {
+            properties = new HashMap<>();
         }
-
         // process synchronously and check if asynchronous processing is required
         boolean interested = false;
         for (NoteStoringPostProcessor processor : processors) {
@@ -166,6 +164,9 @@ public class NoteStoringPostProcessorManagerImpl implements NoteStoringPostProce
             }
         }
         if (interested) {
+            Map<String, String> mergedProperties = new HashMap<String, String>();
+            mergedProperties.putAll(properties);
+
             String taskId = "notePostProcessTask_";
             boolean editOperation = !note.getCreationDate().equals(note.getLastModificationDate());
             taskId += note.getId();
