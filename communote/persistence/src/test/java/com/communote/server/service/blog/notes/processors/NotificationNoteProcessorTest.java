@@ -2,6 +2,7 @@ package com.communote.server.service.blog.notes.processors;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ import org.testng.annotations.Test;
 
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringPostProcessorContext;
+import com.communote.server.api.core.property.PropertyManagement;
+import com.communote.server.core.blog.notes.processors.NoteNotificationDetails;
 import com.communote.server.core.blog.notes.processors.NotificationNoteProcessor;
 import com.communote.server.core.messaging.NotificationDefinition;
 import com.communote.server.core.messaging.NotificationScheduleTypes;
@@ -69,16 +72,13 @@ public class NotificationNoteProcessorTest {
          */
         @Override
         protected Collection<User> getUsersToNotify(Note note,
-                NoteStoringPostProcessorContext context) {
+                NoteStoringPostProcessorContext context, Set<Long> userIdsToSkip) {
             return note.getUsersToBeNotified();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
-        public boolean process(Note note, NoteStoringTO noteStoringTO,
-                Map<String, String> properties) {
+        protected boolean sendNotifications(Note note, NoteStoringTO noteStoringTO,
+                Map<String, String> properties, NoteNotificationDetails resendDetails) {
             boolean processMe = noteStoringTO.isSendNotifications()
                     && note.getUsersToBeNotified() != null
                     && !note.getUsersToBeNotified().isEmpty();
@@ -141,9 +141,13 @@ public class NotificationNoteProcessorTest {
             User registeredUser = users.get((int) i);
             registeredUser.setStatus(UserStatus.REGISTERED);
             Long userIdToSkip = (i + 1) % 10;
+            Map<String, String> properties = new HashMap<>();
+            // TODO this is ugly
+            properties.put(PropertyManagement.KEY_GROUP + ".notification.idsToSkip",
+                    userIdToSkip.toString());
             notifiedUsers.clear();
             notificationNoteProcessor.processAsynchronously(i, new NoteStoringPostProcessorContext(
-                    new Long[] { userIdToSkip }));
+                    properties));
             HashSet<Long> usersToNotify = new HashSet<>(activeUsers);
             usersToNotify.remove(userIdToSkip);
             usersToNotify.remove(registeredUser.getId());

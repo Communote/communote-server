@@ -9,6 +9,7 @@ import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringEditableContentPreProcessor;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
 import com.communote.server.core.blog.OnlyCrosspostMarkupException;
+import com.communote.server.model.note.Note;
 
 /**
  * Preprocessor which searches the content for strings that are syntactically correct blog aliases
@@ -73,4 +74,9 @@ public class ExtractBlogsNoteStoringPreProcessor implements NoteStoringEditableC
         return noteStoringTO;
     }
 
+    @Override
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        return process(noteStoringTO);
+    }
 }

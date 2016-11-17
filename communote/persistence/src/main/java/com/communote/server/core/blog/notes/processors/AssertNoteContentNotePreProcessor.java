@@ -5,12 +5,13 @@ import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringImmutableContentPreProcessor;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
 import com.communote.server.core.blog.NoteManagementException;
+import com.communote.server.model.note.Note;
 
 /**
  * Processor, which checks the content syntactically.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class AssertNoteContentNotePreProcessor implements NoteStoringImmutableContentPreProcessor {
 
@@ -33,5 +34,11 @@ public class AssertNoteContentNotePreProcessor implements NoteStoringImmutableCo
             throw new NoteManagementException("Content of note must not be empty.");
         }
         return noteStoringTO;
+    }
+
+    @Override
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        return process(noteStoringTO);
     }
 }

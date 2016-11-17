@@ -27,9 +27,9 @@ import com.communote.server.model.note.Note;
 
 /**
  * Processor for reposts.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class RepostNoteStoringPreProcessor implements NoteStoringImmutableContentPreProcessor {
 
@@ -53,7 +53,7 @@ public class RepostNoteStoringPreProcessor implements NoteStoringImmutableConten
 
     /**
      * Constructor.
-     * 
+     *
      * @param notePermissionManagement
      *            The note permission management to check for the required permission
      * @param propertyManagement
@@ -78,7 +78,7 @@ public class RepostNoteStoringPreProcessor implements NoteStoringImmutableConten
     /**
      * Create a copy of the attachments attached to the original note which should also be attached
      * to the repost.
-     * 
+     *
      * @param noteStoringTO
      *            the TO holding the details on the note to store
      * @param originalAttachments
@@ -124,19 +124,18 @@ public class RepostNoteStoringPreProcessor implements NoteStoringImmutableConten
             // set null value to remove property from previous autosave
             StringPropertyTO attachmentProperty = getAutosaveAttachmentProperty(noteStoringTO);
             attachmentProperty.setPropertyValue(autosaveAttachmentIds.size() > 0 ? StringUtils
-                    .join(autosaveAttachmentIds,
-                            ORIGIN_ATTACHMENT_IDS_SEPARATOR) : null);
+                    .join(autosaveAttachmentIds, ORIGIN_ATTACHMENT_IDS_SEPARATOR) : null);
         }
         // add remaining/new attachments
         finalAttachmentIds.addAll(newAttachmentIds);
         noteStoringTO.setAttachmentIds(finalAttachmentIds.toArray(new Long[finalAttachmentIds
-                .size()]));
+                                                                           .size()]));
     }
 
     /**
      * Get the property holding the autosave attachment IDs of the original note. If it does not
      * exist create and add it.
-     * 
+     *
      * @param noteStoringTO
      *            the note storing TO
      * @return the property
@@ -173,7 +172,7 @@ public class RepostNoteStoringPreProcessor implements NoteStoringImmutableConten
 
     /**
      * Invokes the processor <b>before</b> the note is stored.
-     * 
+     *
      * @param noteStoringTO
      *            The note to work on.
      * @return The altered NoteStoringTO.
@@ -196,10 +195,10 @@ public class RepostNoteStoringPreProcessor implements NoteStoringImmutableConten
                         new IdentityConverter<Note>());
                 cloneAttachments(noteStoringTO, originalNote.getAttachments());
                 if (noteStoringTO.isPublish()) {
-                    noteStoringTO.getProperties().add(
-                            new StringPropertyTO(originalNote.getUser().getId().toString(),
-                                    PropertyManagement.KEY_GROUP,
-                                    KEY_ORIGIN_AUTHOR_ID, new Date()));
+                    noteStoringTO
+                            .getProperties()
+                            .add(new StringPropertyTO(originalNote.getUser().getId().toString(),
+                                    PropertyManagement.KEY_GROUP, KEY_ORIGIN_AUTHOR_ID, new Date()));
                     // remove the property of the autosave attachments by setting its value to null
                     StringPropertyTO attachmentProperty = getAutosaveAttachmentProperty(noteStoringTO);
                     attachmentProperty.setPropertyValue(null);
@@ -207,12 +206,18 @@ public class RepostNoteStoringPreProcessor implements NoteStoringImmutableConten
             } catch (NumberFormatException e) {
                 throw new NoteStoringPreProcessorException("Invalid repost note ID", e);
             } catch (AuthorizationException e) {
-                throw new InvalidPermissionForRepostException(
-                        SecurityHelper.getCurrentUserId(), originalNoteId);
+                throw new InvalidPermissionForRepostException(SecurityHelper.getCurrentUserId(),
+                        originalNoteId);
             } catch (NotFoundException e) {
                 throw new NoteStoringPreProcessorException("The requested note does not exist", e);
             }
         }
         return noteStoringTO;
+    }
+
+    @Override
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        return process(noteStoringTO);
     }
 }

@@ -5,19 +5,21 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.communote.server.api.core.note.NoteManagementAuthorizationException;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringImmutableContentPreProcessor;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
 import com.communote.server.core.blog.NoteManagement;
 import com.communote.server.core.blog.notes.processors.exceptions.DirectMessageMissingRecipientException;
 import com.communote.server.core.user.helper.ValidationPatterns;
+import com.communote.server.model.note.Note;
 
 /**
  * This processors extracts the users to be notified from the content. It also checks, if the note
  * is a direct message and takes this into account.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class ExtractUsersNotePreProcessor implements NoteStoringImmutableContentPreProcessor {
 
@@ -31,18 +33,16 @@ public class ExtractUsersNotePreProcessor implements NoteStoringImmutableContent
                     + NoteManagement.CONSTANT_MENTION_TOPIC_MANAGERS + "|"
                     + NoteManagement.CONSTANT_MENTION_TOPIC_READERS + "|"
                     + NoteManagement.CONSTANT_MENTION_TOPIC_AUTHORS + "|"
-                    + NoteManagement.CONSTANT_MENTION_DISCUSSION_PARTICIPANTS + "|"
-                    + USER_PREFIX + "(?:" + ValidationPatterns.PATTERN_ALIAS
-                    + "))(?:\\s|(</?[\\w]>))*\\s+");
+                    + NoteManagement.CONSTANT_MENTION_DISCUSSION_PARTICIPANTS + "|" + USER_PREFIX
+                    + "(?:" + ValidationPatterns.PATTERN_ALIAS + "))(?:\\s|(</?[\\w]>))*\\s+");
 
     private static final Pattern IS_DIRECT_MESSAGE_PATTERN = Pattern
             .compile("((?:\\s|(</?[\\w]+(?:\\s[^>]*)*>))*[dD](?:\\s|(</?[\\w]+>))*)(?:"
                     + NoteManagement.CONSTANT_MENTION_TOPIC_MANAGERS + "|"
                     + NoteManagement.CONSTANT_MENTION_TOPIC_READERS + "|"
                     + NoteManagement.CONSTANT_MENTION_TOPIC_AUTHORS + "|"
-                    + NoteManagement.CONSTANT_MENTION_DISCUSSION_PARTICIPANTS + "|"
-                    + USER_PREFIX + "(?:" + ValidationPatterns.PATTERN_ALIAS
-                    + "))(?:\\s|(</?[\\w]+>))*.*");
+                    + NoteManagement.CONSTANT_MENTION_DISCUSSION_PARTICIPANTS + "|" + USER_PREFIX
+                    + "(?:" + ValidationPatterns.PATTERN_ALIAS + "))(?:\\s|(</?[\\w]+>))*.*");
 
     // matches user aliases with @ prefix
     private final static Pattern USER_PATTERN = Pattern.compile("(^|[\\s\\u00A0;,\\[(>])"
@@ -53,14 +53,15 @@ public class ExtractUsersNotePreProcessor implements NoteStoringImmutableContent
 
     /**
      * Extracts the direct message receiver, if there is one.
-     * 
+     *
      * @param note
      *            The note.
      * @throws NoteStoringPreProcessorException
      *             Exception.
      */
 
-    private void extractDirectMessageReceiver(NoteStoringTO note) throws NoteStoringPreProcessorException {
+    private void extractDirectMessageReceiver(NoteStoringTO note)
+            throws NoteStoringPreProcessorException {
         String content = note.getContent();
         content = content.replaceAll(PATTERN_FOR_WHITESPACE_REPLACEMENTS, " ");
         Matcher isDirectMessageMatcher = IS_DIRECT_MESSAGE_PATTERN.matcher(content);
@@ -79,7 +80,7 @@ public class ExtractUsersNotePreProcessor implements NoteStoringImmutableContent
 
     /**
      * Extracts users to be notify.
-     * 
+     *
      * @param note
      *            The note.
      */
@@ -106,7 +107,7 @@ public class ExtractUsersNotePreProcessor implements NoteStoringImmutableContent
 
     /**
      * Handle as specific receiver found.
-     * 
+     *
      * @param note
      *            The note to handle
      * @param userMatcher
@@ -177,9 +178,15 @@ public class ExtractUsersNotePreProcessor implements NoteStoringImmutableContent
         return note;
     }
 
+    @Override
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        return process(noteStoringTO);
+    }
+
     /**
      * Method to set the mentions flags.
-     * 
+     *
      * @param note
      *            The note to process.
      */

@@ -7,8 +7,8 @@ import org.springframework.security.core.context.SecurityContext;
 
 import com.communote.common.string.StringHelper;
 import com.communote.server.api.ServiceLocator;
-import com.communote.server.api.core.note.processor.NoteStoringPostProcessorManager;
 import com.communote.server.api.core.note.processor.NoteStoringPostProcessorContext;
+import com.communote.server.api.core.note.processor.NoteStoringPostProcessorManager;
 import com.communote.server.api.core.task.TaskHandler;
 import com.communote.server.api.core.task.TaskHandlerException;
 import com.communote.server.api.core.task.TaskTO;
@@ -16,7 +16,7 @@ import com.communote.server.core.security.AuthenticationHelper;
 
 /**
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class NotePostProcessTaskHandler implements TaskHandler {
     private final static Logger LOG = Logger.getLogger(NotePostProcessTaskHandler.class);
@@ -24,11 +24,6 @@ public class NotePostProcessTaskHandler implements TaskHandler {
      * Property key for saving the note id in the task properties
      */
     public static final String PROPERTY_KEY_NOTE_ID = "noteId";
-    /**
-     * Property key for saving the IDs of the users that should not be notified in the task
-     * properties
-     */
-    public static final String PROPERTY_KEY_USER_IDS_NO_NOTIFY = "idsToSkip";
 
     /**
      * {@inheritDoc}
@@ -54,14 +49,12 @@ public class NotePostProcessTaskHandler implements TaskHandler {
                         + task.getId()
                         + " taskUniqueName="
                         + task.getUniqueName()
-                        + " PROPERTY_KEY_NOTE_ID="
-                        + task.getProperty(PROPERTY_KEY_NOTE_ID));
+                        + " PROPERTY_KEY_NOTE_ID=" + task.getProperty(PROPERTY_KEY_NOTE_ID));
             } else {
-                Long[] userIdsToSkip = StringHelper.getStringAsLongArray(task
-                        .getProperty(PROPERTY_KEY_USER_IDS_NO_NOTIFY));
-                NoteStoringPostProcessorContext context = new NoteStoringPostProcessorContext(userIdsToSkip);
-                NoteStoringPostProcessorManager extensionPoint = ServiceLocator
-                        .instance().getService(NoteStoringPostProcessorManager.class);
+                NoteStoringPostProcessorContext context = new NoteStoringPostProcessorContext(
+                        task.getProperties());
+                NoteStoringPostProcessorManager extensionPoint = ServiceLocator.instance()
+                        .getService(NoteStoringPostProcessorManager.class);
                 extensionPoint.processAsynchronously(noteId, context);
             }
         } finally {

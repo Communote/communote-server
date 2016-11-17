@@ -37,9 +37,11 @@ import org.xml.sax.SAXException;
 import com.communote.common.util.HTMLHelper;
 import com.communote.common.util.UrlHelper;
 import com.communote.server.api.core.note.NoteContentType;
+import com.communote.server.api.core.note.NoteManagementAuthorizationException;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringEditableContentPreProcessor;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
+import com.communote.server.model.note.Note;
 
 /**
  * Processor, which removes any markup from the note content that is not supported/allowed.
@@ -47,7 +49,7 @@ import com.communote.server.api.core.note.processor.NoteStoringPreProcessorExcep
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class RemoveUnsupportedMarkupNotePreProcessor implements
-        NoteStoringEditableContentPreProcessor {
+NoteStoringEditableContentPreProcessor {
     private final static Pattern STANDALONE_TAG = Pattern.compile("<[-\\w:]+\\s*/>");
     private final static Pattern OPENING_TAG = Pattern.compile("<([-\\w:]+)[\\s=\\w\"';]*>");
     private final static Pattern BODY_PATTERN = Pattern.compile("<body[^>]*>(.*)</body>",
@@ -67,8 +69,8 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
     private static final HashSet<String> SUPPORTED_TAGS = new HashSet<String>(Arrays.asList("div",
             "strong", "em", "u", "b", "i", "ul", "ol", "li", "blockquote", "a", "p", "br"));
 
-    private static final HashSet<String> GLOBAL_ALLOWED_ATTRIBUTES = new HashSet<String>(Arrays
-            .asList("name", "title"));
+    private static final HashSet<String> GLOBAL_ALLOWED_ATTRIBUTES = new HashSet<String>(
+            Arrays.asList("name", "title"));
     private final HashMap<String, HashMap<String, ArrayList<Pattern>>> allowedAttributesPerTag;
 
     /**
@@ -82,7 +84,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
     /**
      * Adds elements required for XHTML conformity to the content. This includes version
      * information, the doctype string, html and body tags.
-     * 
+     *
      * @param content
      *            the content to process
      * @return the processed content
@@ -134,7 +136,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
 
     /**
      * Creates the path part containing the segment part if existing not representing a jsession ID
-     * 
+     *
      * @param pathPart
      *            the path part of the URL
      * @param segment
@@ -176,7 +178,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
 
     /**
      * Matches always group 0 and returns currentValue if allowedValues is null
-     * 
+     *
      * @param currentValue
      *            the current value
      * @param allowedValues
@@ -200,7 +202,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
 
     /**
      * Returns the data surrounded by the body tag.
-     * 
+     *
      * @param content
      *            the content to process
      * @return the data found within body tag or the empty string in case there is no body tag
@@ -215,7 +217,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
 
     /**
      * Returns the body node of the XHTML document.
-     * 
+     *
      * @param document
      *            the XHTML document
      * @return the body node or null if it was not found
@@ -236,7 +238,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
     /**
      * Tries to guess whether content is HTML (for opening and matching end tag). If it is not HTML
      * all HTML special characters in content will be escaped.
-     * 
+     *
      * @param content
      *            the content to evaluate
      * @param contentType
@@ -284,7 +286,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
 
     /**
      * Tests whether a node or one of its parent element nodes has the given tag name.
-     * 
+     *
      * @param startNode
      *            the node to start with
      * @param tagName
@@ -306,7 +308,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
 
     /**
      * Inserts an anchor into the DOM as left sibling of a reference node.
-     * 
+     *
      * @param protocolHostPart
      *            the protocol and host part (including port) of the URL the anchor should link to
      * @param pathPart
@@ -360,7 +362,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
 
     /**
      * Tests whether a tag is supported.
-     * 
+     *
      * @param node
      *            the node to test
      * @param localName
@@ -387,7 +389,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
     /**
      * Removes unsupported markup from the post content found in the storing transfer object. All
      * text nodes are preserved.
-     * 
+     *
      * @param note
      *            the transfer object to process
      * @return The altered note.
@@ -459,7 +461,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
      * whose tag is in the SUPPORTED_TAGS set and dropping all nodes whose tag is not in the
      * SUPPORTED_TAGS set but keeping the children of these nodes by moving them to the right
      * position in their parent layer.
-     * 
+     *
      * @param node
      *            the DOM element node to process
      * @return the next sibling of the supplied node or null if there is none
@@ -488,12 +490,18 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
         return nextNode;
     }
 
+    @Override
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        return process(noteStoringTO);
+    }
+
     /**
      * Processes an element node. This covers removing the node if it's tag is in the TAGS_TO_REMOVE
      * set, removing unsupported attributes for nodes whose tag is in the SUPPORTED_TAGS set and
      * dropping all nodes whose tag is not in the SUPPORTED_TAGS set but keeping the children of
      * these nodes by moving them to the right position in their parent layer.
-     * 
+     *
      * @param element
      *            the element node to process
      * @return the first child of this node if this node has children and has an unsupported tag,
@@ -537,7 +545,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
      * Moves all children of the unsupported node one layer upwards in DOM hierarchy and removes the
      * unsupported node afterwards. The children will be inserted before the unsupported node in
      * correct order.
-     * 
+     *
      * @param unsupportedNode
      *            the unsupported node
      */
@@ -561,7 +569,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
     /**
      * Tests the element node for unsupported attributes and attribute values and removes those from
      * the node.
-     * 
+     *
      * @param e
      *            the element node to check
      * @param localName
@@ -599,7 +607,7 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
     /**
      * Tests whether the text node contains a URL. If the parent is an anchor the link text is
      * shortened if necessary otherwise a new anchor element is created and inserted into the dom.
-     * 
+     *
      * @param node
      *            the text node to analyze
      */
@@ -640,8 +648,8 @@ public class RemoveUnsupportedMarkupNotePreProcessor implements
                 protocolHostPart.append(matcher.group(2));
 
                 String pathPart = buildPathPart(matcher.group(3), matcher.group(4));
-                insertAnchor(protocolHostPart.toString(), pathPart, matcher.group(5), matcher
-                        .group(6), node, leftText);
+                insertAnchor(protocolHostPart.toString(), pathPart, matcher.group(5),
+                        matcher.group(6), node, leftText);
                 offset = matcher.end();
             }
             // replace/remove the old text node

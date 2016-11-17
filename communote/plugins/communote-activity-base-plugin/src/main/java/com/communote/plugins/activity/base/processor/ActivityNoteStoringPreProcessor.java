@@ -21,6 +21,7 @@ import com.communote.server.api.core.property.StringPropertyTO;
 import com.communote.server.api.core.security.AuthorizationException;
 import com.communote.server.core.template.NoteTemplateService;
 import com.communote.server.model.blog.Blog;
+import com.communote.server.model.note.Note;
 
 /**
  * Note storing pre processor which asserts that an activity message can be created. For activities
@@ -28,7 +29,7 @@ import com.communote.server.model.blog.Blog;
  * active for the target topic. A TO is considered to be an activity if the <code>templateId</code>
  * property is set and the property <code>contentTypes.activity</code> is set to
  * <code>activity</code>.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 @Component
@@ -57,7 +58,7 @@ public class ActivityNoteStoringPreProcessor implements NoteStoringImmutableCont
 
     /**
      * Test whether the note is an activity.
-     * 
+     *
      * @param noteStoringTO
      *            the TO describing the note
      * @return the templateId identifying the activity or null if the note is not an activity
@@ -73,10 +74,9 @@ public class ActivityNoteStoringPreProcessor implements NoteStoringImmutableCont
 
             }
             if (ActivityService.PROPERTY_KEY_GROUP.equals(property.getKeyGroup())
-                    && ActivityService.NOTE_PROPERTY_KEY_ACTIVITY.equals(property
-                            .getPropertyKey())
-                    && ActivityService.NOTE_PROPERTY_VALUE_ACTIVITY.equals(property
-                            .getPropertyValue())) {
+                    && ActivityService.NOTE_PROPERTY_KEY_ACTIVITY.equals(property.getPropertyKey())
+                            && ActivityService.NOTE_PROPERTY_VALUE_ACTIVITY.equals(property
+                                    .getPropertyValue())) {
                 activityTypeFound = true;
             }
             if (templateId != null && activityTypeFound) {
@@ -93,7 +93,7 @@ public class ActivityNoteStoringPreProcessor implements NoteStoringImmutableCont
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws ActivityDeactivatedNotePreProcessorException
      *             Thrown, when the given activity is deactivated.
      */
@@ -131,5 +131,11 @@ public class ActivityNoteStoringPreProcessor implements NoteStoringImmutableCont
             }
         }
         return noteStoringTO;
+    }
+
+    @Override
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        return process(noteStoringTO);
     }
 }

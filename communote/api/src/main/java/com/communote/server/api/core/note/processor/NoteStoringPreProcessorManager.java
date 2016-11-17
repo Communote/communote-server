@@ -2,6 +2,7 @@ package com.communote.server.api.core.note.processor;
 
 import com.communote.server.api.core.note.NoteManagementAuthorizationException;
 import com.communote.server.api.core.note.NoteStoringTO;
+import com.communote.server.model.note.Note;
 
 /**
  * Extension point for registering processors to manipulate notes before they are persisted. Typical
@@ -14,21 +15,6 @@ import com.communote.server.api.core.note.NoteStoringTO;
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public interface NoteStoringPreProcessorManager {
-
-    /**
-     * Run the registered preprocessors. This will at first invoke the
-     * {@link NoteStoringEditableContentPreProcessor}s and afterwards the
-     * {@link NoteStoringImmutableContentPreProcessor}s.
-     *
-     * @param noteStoringTO
-     *            the TO to pass to the preprocessors
-     * @throws NoteStoringPreProcessorException
-     *             in case any of the preprocessors failed
-     * @throws NoteManagementAuthorizationException
-     *             thrown to indicate that the note cannot be created because of access restrictions
-     */
-    void process(NoteStoringTO noteStoringTO) throws NoteStoringPreProcessorException,
-    NoteManagementAuthorizationException;
 
     /**
      * Add the given preprocessor to the list of processors.
@@ -45,6 +31,38 @@ public interface NoteStoringPreProcessorManager {
      *            the preprocessor to add
      */
     void addProcessor(NoteStoringImmutableContentPreProcessor notePreProcessor);
+
+    /**
+     * Run the registered preprocessors before creating a new note. This will at first invoke the
+     * {@link NoteStoringEditableContentPreProcessor}s and afterwards the
+     * {@link NoteStoringImmutableContentPreProcessor}s.
+     *
+     * @param noteStoringTO
+     *            the TO to pass to the preprocessors
+     * @throws NoteStoringPreProcessorException
+     *             in case any of the preprocessors failed
+     * @throws NoteManagementAuthorizationException
+     *             thrown to indicate that the note cannot be created because of access restrictions
+     */
+    void process(NoteStoringTO noteStoringTO) throws NoteStoringPreProcessorException,
+    NoteManagementAuthorizationException;
+
+    /**
+     * Run the registered preprocessors before updating an existing note. This will at first invoke
+     * the {@link NoteStoringEditableContentPreProcessor}s and afterwards the
+     * {@link NoteStoringImmutableContentPreProcessor}s.
+     *
+     * @param noteToEdit
+     *            the note to edit
+     * @param noteStoringTO
+     *            the TO to pass to the preprocessors
+     * @throws NoteStoringPreProcessorException
+     *             in case any of the preprocessors failed
+     * @throws NoteManagementAuthorizationException
+     *             thrown to indicate that the note cannot be created because of access restrictions
+     */
+    void processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException;
 
     /**
      * Remove the given preprocessor from the list of processors.
