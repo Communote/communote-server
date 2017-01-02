@@ -212,8 +212,8 @@ public interface NoteManagement {
      */
     public DiscussionNoteData getNoteWithComments(Long noteId,
             QueryResultConverter<SimpleNoteListItem, DiscussionNoteData> converter)
-                    throws NoteNotFoundException,
-                    com.communote.server.api.core.security.AuthorizationException;
+            throws NoteNotFoundException,
+            com.communote.server.api.core.security.AuthorizationException;
 
     /**
      * Returns the number of notes in a discussion. Notes the current user is not allowed to read,
@@ -293,8 +293,6 @@ public interface NoteManagement {
      * @param additionalBlogNameIds
      *            set of blog aliases for creating crossposts. These aliases will be ignore, if the
      *            note is a comment to another note.
-     * @param resendNotifications
-     *            whether to send notifications to mentioned users
      * @return The result of this operation.
      * @throws BlogNotFoundException
      *             in case the target blog does not exist
@@ -307,8 +305,8 @@ public interface NoteManagement {
      *             in case one of the pre processors failed
      */
     public NoteModificationResult updateNote(NoteStoringTO noteStoringTO, Long noteId,
-            java.util.Set<String> additionalBlogNameIds, boolean resendNotifications)
-                    throws BlogNotFoundException, NoteNotFoundException,
-                    NoteManagementAuthorizationException, NoteStoringPreProcessorException;
+            java.util.Set<String> additionalBlogNameIds) throws BlogNotFoundException,
+            NoteNotFoundException, NoteManagementAuthorizationException,
+            NoteStoringPreProcessorException;
 
 }

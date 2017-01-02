@@ -118,7 +118,7 @@ public class MockNoteService extends com.communote.server.service.NoteService {
     @Override
     public DiscussionNoteData getNoteWithComments(Long noteId,
             QueryResultConverter<SimpleNoteListItem, DiscussionNoteData> converter)
-            throws NoteNotFoundException, AuthorizationException {
+                    throws NoteNotFoundException, AuthorizationException {
 
         // TODO Auto-generated method stub
         return null;
@@ -153,9 +153,9 @@ public class MockNoteService extends com.communote.server.service.NoteService {
      */
     @Override
     public NoteModificationResult updateNote(NoteStoringTO postStroingTO, Long noteId,
-            Set<String> additionalBlogNameIds, boolean resendNotifications)
-            throws NoteNotFoundException, NoteManagementAuthorizationException,
-            NoteStoringPreProcessorException, BlogNotFoundException {
+            Set<String> additionalBlogNameIds) throws NoteNotFoundException,
+            NoteManagementAuthorizationException, NoteStoringPreProcessorException,
+            BlogNotFoundException {
         // TODO Auto-generated method stub
         return null;
     }

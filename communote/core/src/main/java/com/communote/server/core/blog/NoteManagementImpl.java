@@ -165,14 +165,12 @@ public class NoteManagementImpl extends NoteManagementBase {
      *
      * @param storingTO
      *            the original noteStoringTO for which a note (or several) is created
-     * @param usersToIgnore
-     *            List of users which should be ignored.
      * @param notesForPostProcessing
      *            List of notes to do post processing.
      * @throws TaskAlreadyExistsException
      *             in case the notification tasks cannot be created
      */
-    private void addNotesForPostProcessing(NoteStoringTO storingTO, Collection<User> usersToIgnore,
+    private void addNotesForPostProcessing(NoteStoringTO storingTO,
             Collection<Note> notesForPostProcessing) throws TaskAlreadyExistsException {
 
         if (notesForPostProcessing == null) {
@@ -184,7 +182,7 @@ public class NoteManagementImpl extends NoteManagementBase {
 
     }
 
-    /**
+/**
      * Asserts some preconditions for {@link #createNote(NoteStoringTO, Set, StringPropertyFilter[])
      *
      * @param noteStoringTO The note.
@@ -300,7 +298,7 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private void assertValidDirectMessage(NoteStoringTO noteStoringTO,
             NoteModificationResult result, Map<Blog, Collection<User>> blog2users)
-            throws NoteStoringPreProcessorException {
+                    throws NoteStoringPreProcessorException {
         if (!noteStoringTO.isPublish() || !noteStoringTO.isIsDirectMessage()) {
             return;
         }
@@ -472,7 +470,7 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private <T extends NoteData> void convertNote(Long noteId,
             QueryResultConverter<SimpleNoteListItem, T> converter, T target)
-            throws NoteNotFoundException, AuthorizationException {
+                    throws NoteNotFoundException, AuthorizationException {
         Note note = noteDao.load(noteId);
         if (note == null) {
             throw new NoteNotFoundException("The Note was not found. noteId=" + noteId);
@@ -800,15 +798,14 @@ public class NoteManagementImpl extends NoteManagementBase {
             }
             // set the possibly new blog to assure only one autosave on create
             // action (and not one per blog)
-            result = internalUpdateWithCrossposts(autosave, noteStoringTO, blog, blog2users, null,
-                    result);
+            result = internalUpdateWithCrossposts(autosave, noteStoringTO, blog, blog2users, result);
         } else {
             Note parentNote = null;
             if (noteStoringTO.getParentNoteId() != null) {
                 parentNote = noteDao.load(noteStoringTO.getParentNoteId());
             }
             result = internalCreateWithCrossposts(noteStoringTO, blog, parentNote, null,
-                    blog2users, null, result);
+                    blog2users, result);
         }
         // TODO invalidating the cache here is error prone as the transaction is not yet committed.
         // Should fire an event in the NoteService and handle it in the provider instead.
@@ -894,9 +891,9 @@ public class NoteManagementImpl extends NoteManagementBase {
             if (NoteCreationSource.SYSTEM.equals(note.getCreationSource()) && !deleteSystemPosts) {
                 throw new NoteManagementAuthorizationException(
                         "The creation source of this post is '" + note.getCreationSource()
-                                + "'. The user with id " + userId
-                                + " is not allowed to delete the post with id " + postId, note
-                                .getBlog().getTitle());
+                        + "'. The user with id " + userId
+                        + " is not allowed to delete the post with id " + postId, note
+                        .getBlog().getTitle());
             }
             internalDeleteNoteWithReplies(note);
 
@@ -996,7 +993,7 @@ public class NoteManagementImpl extends NoteManagementBase {
     @Override
     protected DiscussionNoteData handleGetNoteWithComments(Long noteId,
             QueryResultConverter<SimpleNoteListItem, DiscussionNoteData> converter)
-                    throws NoteNotFoundException, AuthorizationException {
+            throws NoteNotFoundException, AuthorizationException {
         DiscussionNoteData result = new DiscussionNoteData();
         convertNote(noteId, converter, result);
         return result;
@@ -1038,8 +1035,7 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     @Override
     protected NoteModificationResult handleUpdateNote(NoteStoringTO noteStoringTO, Long noteId,
-            Set<String> additionalBlogIds, boolean resendNotifications)
-            throws BlogNotFoundException, NoteNotFoundException,
+            Set<String> additionalBlogIds) throws BlogNotFoundException, NoteNotFoundException,
             NoteManagementAuthorizationException, NoteStoringPreProcessorException {
 
         Note noteToEdit = noteDao.load(noteId);
@@ -1066,24 +1062,16 @@ public class NoteManagementImpl extends NoteManagementBase {
             return result;
         }
         assertValidDirectMessage(noteStoringTO, result, blog2users);
-        Collection<User> usersToIgnore = null;
-        if (noteStoringTO.isSendNotifications() && !resendNotifications
-                && noteToEdit.getUsersToBeNotified() != null) {
-            usersToIgnore = new HashSet<>();
-            for (User user : noteToEdit.getUsersToBeNotified()) {
-                usersToIgnore.add(user);
-            }
-        }
         // check whether the noteToEdit is a reply
         Long parentId = noteToEdit.getParent() != null ? noteToEdit.getParent().getId() : null;
         Note autosave = extractAutosave(noteStoringTO, noteId, parentId);
         if (autosave == null) {
             if (noteStoringTO.isPublish()) {
                 result = internalUpdateWithCrossposts(noteToEdit, noteStoringTO, null, blog2users,
-                        usersToIgnore, result);
+                        result);
             } else {
                 result = internalCreateWithCrossposts(noteStoringTO, noteToEdit.getBlog(),
-                        noteToEdit.getParent(), noteToEdit, blog2users, usersToIgnore, result);
+                        noteToEdit.getParent(), noteToEdit, blog2users, result);
             }
         } else {
             if (noteStoringTO.isPublish()) {
@@ -1094,10 +1082,10 @@ public class NoteManagementImpl extends NoteManagementBase {
                 }
                 autosave.getAttachments().clear();
                 result = internalUpdateWithCrossposts(noteToEdit, noteStoringTO, null, blog2users,
-                        usersToIgnore, result);
+                        result);
             } else {
                 result = internalUpdateWithCrossposts(autosave, noteStoringTO, null, blog2users,
-                        usersToIgnore, result);
+                        result);
             }
         }
         if (result.getStatus().equals(NoteModificationStatus.SUCCESS) && noteStoringTO.isPublish()
@@ -1147,9 +1135,9 @@ public class NoteManagementImpl extends NoteManagementBase {
     private Collection<String> internalCreateCrosspostsForNote(Note sourceNote,
             NoteStoringTO storingTO, Map<Blog, Collection<User>> blog2users,
             Collection<Note> createdNotes, Timestamp lastModificationDate)
-            throws NoteLimitReachedException, NoteStoringPreProcessorException,
-            AttachmentAlreadyAssignedException, NoteManagementAuthorizationException,
-            NoteNotFoundException {
+                    throws NoteLimitReachedException, NoteStoringPreProcessorException,
+                    AttachmentAlreadyAssignedException, NoteManagementAuthorizationException,
+                    NoteNotFoundException {
         Long blogIdToSkip = sourceNote.getBlog().getId();
         Collection<String> tagsWithProblems = new HashSet<>();
         if (storingTO.isPublish()) {
@@ -1312,8 +1300,6 @@ public class NoteManagementImpl extends NoteManagementBase {
      *            targetblog ) and the associated users to be added as notification targets. Whether
      *            the users actually receive notifications depends on the isSendNotifications flag
      *            of the post storing TO and the usersToIgnore black list
-     * @param usersToIgnore
-     *            a collection of users to be excluded from sending notifications, can be null
      * @param modificationResult
      *            the current modification status which will be updated and returned
      * @return whether the modification was successful
@@ -1321,8 +1307,7 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private NoteModificationResult internalCreateWithCrossposts(NoteStoringTO storingTO,
             Blog targetBlog, Note parentNote, Note originalNote,
-            Map<Blog, Collection<User>> blog2users, Collection<User> usersToIgnore,
-            NoteModificationResult modificationResult) {
+            Map<Blog, Collection<User>> blog2users, NoteModificationResult modificationResult) {
         NoteModificationStatus status = NoteModificationStatus.SUCCESS;
         Throwable errorCause = null;
         try {
@@ -1343,7 +1328,7 @@ public class NoteManagementImpl extends NoteManagementBase {
                     internalCreateCrosspostsForNote(note, storingTO, blog2users, createdNotes,
                             creationDate));
 
-            addNotesForPostProcessing(storingTO, usersToIgnore, createdNotes);
+            addNotesForPostProcessing(storingTO, createdNotes);
         } catch (NoteLimitReachedException e) {
             status = NoteModificationStatus.LIMIT_REACHED;
         } catch (NoteManagementAuthorizationException e) {
@@ -1541,8 +1526,8 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     private Pair<Timestamp, List<String>> internalUpdateNoteData(Note note,
             NoteStoringTO noteStoringTO, Blog targetBlog, Collection<User> usersToNotify)
-                    throws NoteStoringPreProcessorException, AttachmentAlreadyAssignedException,
-                    NoteManagementAuthorizationException, NoteNotFoundException {
+            throws NoteStoringPreProcessorException, AttachmentAlreadyAssignedException,
+            NoteManagementAuthorizationException, NoteNotFoundException {
         if (targetBlog != null) {
             note.setBlog(targetBlog);
         }
@@ -1600,15 +1585,13 @@ public class NoteManagementImpl extends NoteManagementBase {
      *            targetblog ) and the associated users to be added as notification targets. Whether
      *            the users actually receive notifications depends on the isSendNotifications flag
      *            of the post storing TO and the usersToIgnore black list
-     * @param usersToIgnore
-     *            a collection of users to be excluded from sending notifications, can be null
      * @param modificationResult
      *            the current modification status which will be updated and returned
      * @return whether the modification was successful
      */
     private NoteModificationResult internalUpdateWithCrossposts(Note note, NoteStoringTO storingTO,
             Blog targetBlog, Map<Blog, Collection<User>> blog2users,
-            Collection<User> usersToIgnore, NoteModificationResult modificationResult) {
+            NoteModificationResult modificationResult) {
         NoteModificationStatus status = NoteModificationStatus.SUCCESS;
         Throwable errorCause = null;
         if (targetBlog == null) {
@@ -1629,7 +1612,7 @@ public class NoteManagementImpl extends NoteManagementBase {
             modificationResult.getTagsWithProblems().addAll(
                     internalCreateCrosspostsForNote(note, storingTO, blog2users, updatePosts,
                             noteResult.getLeft()));
-            addNotesForPostProcessing(storingTO, usersToIgnore, updatePosts);
+            addNotesForPostProcessing(storingTO, updatePosts);
         } catch (NoteLimitReachedException e) {
             status = NoteModificationStatus.LIMIT_REACHED;
         } catch (NoteManagementAuthorizationException e) {
@@ -1833,13 +1816,13 @@ public class NoteManagementImpl extends NoteManagementBase {
         if (note.isIsDirectMessage() && note.isMentionTopicManagers()) {
             Collection<String> mappedUsers = topicRightsManagement.getMappedUsers(note.getBlogId(),
                     new CollectionConverter<UserToBlogRoleMapping, String>() {
-                @Override
-                public String convert(UserToBlogRoleMapping source) {
-                    Long userId = source.getUserId();
-                    User user = userDao.load(userId);
-                    return user != null ? user.getAlias() : null;
-                }
-            }, BlogRole.MANAGER);
+                        @Override
+                        public String convert(UserToBlogRoleMapping source) {
+                            Long userId = source.getUserId();
+                            User user = userDao.load(userId);
+                            return user != null ? user.getAlias() : null;
+                        }
+                    }, BlogRole.MANAGER);
             note.getUsersToNotify().addAll(mappedUsers);
         }
     }

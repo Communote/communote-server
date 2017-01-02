@@ -414,7 +414,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
         editOf.setPublish(false);
         NoteModificationResult simplePostResult = noteService.createNote(simplePost, null);
         NoteModificationResult edit = noteService.updateNote(editOf, simplePostResult.getNoteId(),
-                null, false);
+                null);
         AutosaveNoteData loadedDraft = noteService.getAutosave(simplePostResult.getNoteId(), null,
                 null, Locale.ENGLISH);
         Assert.assertEquals(edit.getNoteId(), loadedDraft.getId());
@@ -514,7 +514,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
         Thread.sleep(2000); // Wait a while to make sure the date changed.
         Blog testBlog2 = TestUtils.createRandomBlog(true, true, user);
         additionalBlogs.add(testBlog2.getNameIdentifier());
-        noteService.updateNote(storingTO, originalNoteId, additionalBlogs, false);
+        noteService.updateNote(storingTO, originalNoteId, additionalBlogs);
         item = getPostWithTag(uniqueTag, testBlog2.getId(), storingTO.getCreatorId());
         Assert.assertEquals(item.getCreationDate(), originalCreationDate);
     }
@@ -919,7 +919,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
 
         storingTO.setUnparsedTags(UUID.randomUUID().toString() + ","
                 + UNIQUE_TAG_POOL.get("testUpdateNote"));
-        NoteModificationResult result = noteService.updateNote(storingTO, noteId, null, false);
+        NoteModificationResult result = noteService.updateNote(storingTO, noteId, null);
         checkCreationSuccessWithWarnings(result, 0, 0, 0, 0);
         // check for updated content
         NoteData updatedItem = noteService.getNote(result.getNoteId(), new NoteRenderContext(null,
@@ -934,7 +934,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
 
     /**
      * Test that note properties are correctly updated and removed when editing a note
-     * 
+     *
      * @throws Exception
      *             in case the test failed
      */
@@ -968,7 +968,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
             storingTO.getProperties().clear();
             property1.setPropertyValue("42");
             storingTO.getProperties().add(property1);
-            noteService.updateNote(storingTO, noteId, null, false);
+            noteService.updateNote(storingTO, noteId, null);
             note = noteService.getNote(noteId, new NoteRenderContext(NoteRenderMode.PLAIN,
                     Locale.ENGLISH));
             Assert.assertEquals(note.getObjectProperties().size(), 1);
@@ -980,7 +980,7 @@ public class NoteManagementTest extends CommunoteIntegrationTest {
             storingTO.getProperties().add(property1);
             storingTO.getProperties()
                     .add(new StringPropertyTO("21", keyGroup2, propertyKey2, null));
-            noteService.updateNote(storingTO, noteId, null, false);
+            noteService.updateNote(storingTO, noteId, null);
             note = noteService.getNote(noteId, new NoteRenderContext(NoteRenderMode.PLAIN,
                     Locale.ENGLISH));
             Assert.assertEquals(note.getObjectProperties().size(), 1);

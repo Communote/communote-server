@@ -50,7 +50,7 @@ import com.communote.server.test.util.TestUtils;
 public class LastModificationDateTest extends CommunoteIntegrationTest {
 
     private static final class EasyNoteToNoteStoringTOConverter implements
-    Converter<Note, NoteStoringTO> {
+            Converter<Note, NoteStoringTO> {
         @Override
         public NoteStoringTO convert(Note source) {
             NoteStoringTO store = new NoteStoringTO();
@@ -168,7 +168,7 @@ public class LastModificationDateTest extends CommunoteIntegrationTest {
         NoteStoringTO noteTO = TestUtils.createCommonNote(topic, noteCreator.getId());
         noteTO.setContent(orgContent + " edited");
         noteTO.setAttachmentIds(new Long[] { attachmentId });
-        NoteModificationResult result = noteService.updateNote(noteTO, noteId, null, false);
+        NoteModificationResult result = noteService.updateNote(noteTO, noteId, null);
         Assert.assertEquals(result.getStatus(), NoteModificationStatus.SUCCESS);
         noteCrawlModDate = lastModificationDateManagement.getNoteCrawlLastModificationDate(noteId);
         topicCrawlModDate = lastModificationDateManagement.getTopicCrawlLastModificationDate(topic
@@ -271,7 +271,7 @@ public class LastModificationDateTest extends CommunoteIntegrationTest {
         Assert.assertNotNull(before);
         NoteStoringTO storing = noteService.getNote(noteId, converter);
 
-        noteService.updateNote(storing, noteId, null, false);
+        noteService.updateNote(storing, noteId, null);
         Note note = noteService.getNote(noteId, new IdentityConverter<Note>());
 
         Assert.assertTrue(note.getLastModificationDate().getTime() > before.getTime());
@@ -307,7 +307,7 @@ public class LastModificationDateTest extends CommunoteIntegrationTest {
         NoteStoringTO storing = noteService.getNote(noteId, converter);
 
         storing.setBlogId(newTopic.getId());
-        noteService.updateNote(storing, noteId, null, false);
+        noteService.updateNote(storing, noteId, null);
         noteService.getNote(noteId, new IdentityConverter<Note>());
 
         /**

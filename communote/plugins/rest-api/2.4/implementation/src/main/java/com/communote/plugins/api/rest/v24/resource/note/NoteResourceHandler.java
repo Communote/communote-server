@@ -33,16 +33,15 @@ import com.communote.server.service.NoteService;
  * Is the handler class to provide data for a note resource to the resource class. All the list
  * parameter are collected in a parameter map expected the <tt>filterHtml</tt>. This value is
  * evaluated within this class.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class NoteResourceHandler
         extends
-        DefaultResourceHandler
-        <CreateNoteParameter, EditNoteParameter, DeleteNoteParameter, GetNoteParameter, DefaultParameter> {
+        DefaultResourceHandler<CreateNoteParameter, EditNoteParameter, DeleteNoteParameter, GetNoteParameter, DefaultParameter> {
 
     /**
-     * 
+     *
      */
     public NoteResourceHandler() {
         super(new NoteResourceValidator());
@@ -51,7 +50,7 @@ public class NoteResourceHandler
     /**
      * Removes orphaned attachments that were previously uploaded but were not attached to the
      * created note.
-     * 
+     *
      * @param request
      *            the request
      * @param attribute
@@ -64,8 +63,7 @@ public class NoteResourceHandler
     private void cleanupAttachments(Request request, String attribute, Long[] attachmentIds)
             throws AuthorizationException {
         Set<Long> uploadedAttachments = ResourceHandlerHelper.getUploadedAttachmentsFromSession(
-                request,
-                attribute);
+                request, attribute);
         if (uploadedAttachments != null) {
             // remove all IDs that were saved with note
             if (attachmentIds != null) {
@@ -73,15 +71,15 @@ public class NoteResourceHandler
                     uploadedAttachments.remove(id);
                 }
             }
-            ServiceLocator.findService(ResourceStoringManagement.class)
-                    .deleteOrphanedAttachments(uploadedAttachments);
+            ServiceLocator.findService(ResourceStoringManagement.class).deleteOrphanedAttachments(
+                    uploadedAttachments);
             ResourceHandlerHelper.removeUploadedAttachmentsFromSession(request, attribute);
         }
     }
 
     /**
      * Gets the {@link NoteService}
-     * 
+     *
      * @return {@link NoteService}
      */
     private NoteService getNoteService() {
@@ -90,7 +88,7 @@ public class NoteResourceHandler
 
     /**
      * Create a single note on the server. This note can either be a reply or a new note
-     * 
+     *
      * @param createNoteParameter
      *            - an object that contains all the parameter that can or have to be used for such a
      *            request
@@ -123,9 +121,9 @@ public class NoteResourceHandler
     @Override
     public Response handleCreateInternally(CreateNoteParameter createNoteParameter,
             String requestedMimeType, UriInfo uriInfo, String sessionId, Request request)
-            throws IllegalRequestParameterException, BlogNotFoundException,
-            AuthorizationException, NoteStoringPreProcessorException, NoteNotFoundException,
-            ResponseBuildException, ExtensionNotSupportedException {
+            throws IllegalRequestParameterException, BlogNotFoundException, AuthorizationException,
+                    NoteStoringPreProcessorException, NoteNotFoundException, ResponseBuildException,
+                    ExtensionNotSupportedException {
 
         NoteStoringTO noteStoringTO = NoteResourceHelper.buildNoteStoringTO(createNoteParameter);
 
@@ -162,7 +160,7 @@ public class NoteResourceHandler
 
     /**
      * Delete a note on the server
-     * 
+     *
      * @param deleteNoteParameter
      *            - an object that contains all the parameter that can or have to be used for such a
      *            request
@@ -189,13 +187,12 @@ public class NoteResourceHandler
             ExtensionNotSupportedException {
         getNoteService().deleteNote(deleteNoteParameter.getNoteId(), false, false);
         return ResponseHelper.buildSuccessResponse(null, request,
-                "restapi.message.resource.note.delete",
-                deleteNoteParameter.getNoteId());
+                "restapi.message.resource.note.delete", deleteNoteParameter.getNoteId());
     }
 
     /**
      * Changes an existing note on the server
-     * 
+     *
      * @param editNoteParameter
      *            - an object that contains all the parameter that can or have to be used for such a
      *            request
@@ -228,9 +225,9 @@ public class NoteResourceHandler
     @Override
     public Response handleEditInternally(EditNoteParameter editNoteParameter,
             String requestedMimeType, UriInfo uriInfo, String sessionId, Request request)
-            throws IllegalRequestParameterException, NoteNotFoundException,
-            AuthorizationException, BlogNotFoundException, NoteStoringPreProcessorException,
-            ResponseBuildException, ExtensionNotSupportedException {
+            throws IllegalRequestParameterException, NoteNotFoundException, AuthorizationException,
+                    BlogNotFoundException, NoteStoringPreProcessorException, ResponseBuildException,
+                    ExtensionNotSupportedException {
 
         NoteService noteService = getNoteService();
         NoteModificationResult result;
@@ -247,7 +244,7 @@ public class NoteResourceHandler
         }
 
         result = noteService.updateNote(noteStoringTO, editNoteParameter.getNoteId(),
-                additionalBlogNameIds, true);
+                additionalBlogNameIds);
 
         if (noteStoringTO.isPublish()) {
             // pass the upload session ID directly because it's not in the request anymore
@@ -260,7 +257,7 @@ public class NoteResourceHandler
 
     /**
      * Retrieve a single note from the server
-     * 
+     *
      * @param getNoteParameter
      *            - an object that contains all the parameter that can or have to be used for such a
      *            request

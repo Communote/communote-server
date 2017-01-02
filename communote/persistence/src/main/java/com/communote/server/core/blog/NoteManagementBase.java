@@ -266,9 +266,9 @@ public abstract class NoteManagementBase implements NoteManagement {
     protected abstract Long handleGetDiscussionId(Long noteId)
             throws com.communote.server.core.blog.NoteNotFoundException;
 
-/**
-     * Performs the core logic for
-     * {@link #getNoteWithComments(Long, QueryResultConverter)}
+    /**
+     * Performs the core logic for {@link #getNoteWithComments(Long, QueryResultConverter)}
+     *
      * @param noteId
      *            the id of the note to retrieve
      * @param converter
@@ -307,7 +307,7 @@ public abstract class NoteManagementBase implements NoteManagement {
      */
     protected abstract com.communote.server.core.vo.blog.NoteModificationResult handleUpdateNote(
             com.communote.server.api.core.note.NoteStoringTO noteStoringTO, Long noteId,
-            java.util.Set<String> additionalBlogNameIds, boolean resendNotifications)
+            java.util.Set<String> additionalBlogNameIds)
             throws com.communote.server.core.blog.NoteNotFoundException,
             NoteManagementAuthorizationException,
             com.communote.server.api.core.note.processor.NoteStoringPreProcessorException,
@@ -319,45 +319,44 @@ public abstract class NoteManagementBase implements NoteManagement {
     @Override
     public com.communote.server.core.vo.blog.NoteModificationResult updateNote(
             com.communote.server.api.core.note.NoteStoringTO noteStoringTO, Long noteId,
-            java.util.Set<String> additionalBlogNameIds, boolean resendNotifications)
+            java.util.Set<String> additionalBlogNameIds)
             throws com.communote.server.core.blog.NoteNotFoundException,
             NoteManagementAuthorizationException,
             com.communote.server.api.core.note.processor.NoteStoringPreProcessorException,
             com.communote.server.api.core.blog.BlogNotFoundException {
         if (noteStoringTO == null) {
             throw new IllegalArgumentException(
-                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds, boolean resendNotifications) - 'noteStoringTO' can not be null");
+                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds) - 'noteStoringTO' can not be null");
         }
         if (noteStoringTO.getCreatorId() == null) {
             throw new IllegalArgumentException(
-                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds, boolean resendNotifications) - 'noteStoringTO.creatorId' can not be null");
+                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds) - 'noteStoringTO.creatorId' can not be null");
         }
         if (noteStoringTO.getBlogId() == null) {
             throw new IllegalArgumentException(
-                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds, boolean resendNotifications) - 'noteStoringTO.blogId' can not be null");
+                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds) - 'noteStoringTO.blogId' can not be null");
         }
         if (noteStoringTO.getCreationSource() == null) {
             throw new IllegalArgumentException(
-                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds, boolean resendNotifications) - 'noteStoringTO.creationSource' can not be null");
+                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds) - 'noteStoringTO.creationSource' can not be null");
         }
         if (noteStoringTO.getContent() == null || noteStoringTO.getContent().trim().length() == 0) {
             throw new IllegalArgumentException(
-                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds, boolean resendNotifications) - 'noteStoringTO.content' can not be null or empty");
+                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds) - 'noteStoringTO.content' can not be null or empty");
         }
         if (noteStoringTO.getContentType() == null) {
             throw new IllegalArgumentException(
-                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds, boolean resendNotifications) - 'noteStoringTO.contentType' can not be null");
+                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds) - 'noteStoringTO.contentType' can not be null");
         }
         if (noteId == null) {
             throw new IllegalArgumentException(
-                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds, boolean resendNotifications) - 'noteId' can not be null");
+                    "NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds) - 'noteId' can not be null");
         }
         try {
-            return this.handleUpdateNote(noteStoringTO, noteId, additionalBlogNameIds,
-                    resendNotifications);
+            return this.handleUpdateNote(noteStoringTO, noteId, additionalBlogNameIds);
         } catch (RuntimeException rt) {
             throw new NoteManagementException(
-                    "Error performing 'NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds, boolean resendNotifications)' --> "
+                    "Error performing 'NoteManagement.updateNote(NoteStoringTO noteStoringTO, Long noteId, java.util.Set<String> additionalBlogNameIds)' --> "
                             + rt, rt);
         }
     }
