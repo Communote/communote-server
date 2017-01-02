@@ -26,7 +26,8 @@ import com.communote.server.model.user.UserStatus;
 import com.communote.server.persistence.blog.NoteDao;
 
 /**
- * Base class for note post processors that inform users about created and edited notes.
+ * Base class for note post processors that inform users about created and edited notes. The
+ * notifications are sent in the asynchronous processing phase.
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
@@ -42,9 +43,30 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
     private NotificationService notificationService;
 
     /**
+     * Whether this notification processor wants to send notifications. This method is called by
+     * {@link #process(Note, NoteStoringTO, Map)} in the synchronous processing phase.
+     * Implementations of this check should be fast.
+     *
+     * @param note
+     *            the note which was created or updated
+     * @param orginalNoteStoringTO
+     *            the TO which was used to create or update the note
+     * @param properties
+     *            Properties that can be used to pass some data to the asynchronous post-processing.
+     *            They will be available in the NoteStoringPostProcessorContext.
+     * @param resendDetails
+     *            if the note was updated and the author does not which to resend notifications this
+     *            object will contain details about notifications send for the note before the
+     *            update. Will be null in all other cases.
+     * @return true if this processor wants to send notifications, false otherwise
+     */
+    protected abstract boolean isSendNotifications(Note note, NoteStoringTO orginalNoteStoringTO,
+            Map<String, String> properties, NoteNotificationDetails resendDetails);
+
+    /**
      * Extracts the IDs of the users to not notify from the context properties and adds them to the
      * context attributes so it can be reused by all notification processors handling the same note.
-     * 
+     *
      * @param context
      *            the post processing context
      * @return the IDs of the users to not notify
@@ -124,18 +146,15 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
                 .getTransientProperty(EditNotificationNoteStoringPreProcessor.TRANSIENT_PROPERTY_KEY_RESEND_NOTIFICATION);
         if (resendDetailsProperty instanceof NoteNotificationDetails) {
             resendDetails = (NoteNotificationDetails) resendDetailsProperty;
-            new HashSet<Long>();
             if (resendDetails.getMentionedUserIds().size() > 0) {
                 properties.put(PROPERTY_KEY_USER_IDS_TO_SKIP,
                         StringUtils.join(resendDetails.getMentionedUserIds(), ','));
             }
         }
-        return sendNotifications(note, orginalNoteStoringTO, properties, resendDetails);
+        return orginalNoteStoringTO.isSendNotifications()
+                && isSendNotifications(note, orginalNoteStoringTO, properties, resendDetails);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void processAsynchronously(Long noteId, NoteStoringPostProcessorContext context) {
         Note note = getNoteDao().load(noteId);
@@ -163,9 +182,6 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
         }
     }
 
-    protected abstract boolean sendNotifications(Note note, NoteStoringTO orginalNoteStoringTO,
-            Map<String, String> properties, NoteNotificationDetails resendDetails);
-
     /**
      * @param noteDao
      *            The note dao.
@@ -176,7 +192,7 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
 
     /**
      * @param notificationService
-     *            the notificationService to set
+     *            the notification service to set
      */
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;

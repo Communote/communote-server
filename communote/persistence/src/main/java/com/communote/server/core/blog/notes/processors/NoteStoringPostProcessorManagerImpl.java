@@ -4,20 +4,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.communote.common.string.StringHelper;
 import com.communote.common.util.DescendingOrderComparator;
 import com.communote.server.api.core.blog.BlogRightsManagement;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringPostProcessor;
 import com.communote.server.api.core.note.processor.NoteStoringPostProcessorContext;
 import com.communote.server.api.core.note.processor.NoteStoringPostProcessorManager;
+import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.api.core.task.TaskAlreadyExistsException;
 import com.communote.server.api.core.task.TaskManagement;
 import com.communote.server.core.general.RunInTransaction;
@@ -34,6 +39,15 @@ import com.communote.server.model.note.Note;
 @Service("noteStoringPostProcessorManager")
 public class NoteStoringPostProcessorManagerImpl implements NoteStoringPostProcessorManager {
 
+    private static final char PROCESSOR_IDS_SEPARATOR_CHAR = ' ';
+    private static final int PROPERTY_VALUE_LENGTH = 1024;
+    private static final String PROPERTY_KEY_PREFIX_PROCESSOR_IDS = PropertyManagement.KEY_GROUP
+            + ".processorIds";
+    // backwards compatibility: old property key for saving the note id in the task properties
+    private static final String LEGACY_PROPERTY_KEY_NOTE_ID = "noteId";
+    private static final String PROPERTY_KEY_NOTE_ID = PropertyManagement.KEY_GROUP + "."
+            + LEGACY_PROPERTY_KEY_NOTE_ID;
+
     @Autowired
     private TransactionManagement transactionManagement;
     @Autowired
@@ -48,7 +62,7 @@ public class NoteStoringPostProcessorManagerImpl implements NoteStoringPostProce
     @Autowired
     private QueryManagement queryManagement;
 
-    private final HashMap<Class<? extends NoteStoringPostProcessor>, NoteStoringPostProcessor> registeredProcessors;
+    private final HashMap<String, NoteStoringPostProcessor> registeredProcessors;
     private ArrayList<NoteStoringPostProcessor> sortedProcessors;
 
     private final DescendingOrderComparator extensionComparator;
@@ -57,28 +71,69 @@ public class NoteStoringPostProcessorManagerImpl implements NoteStoringPostProce
      * Default constructor.
      */
     public NoteStoringPostProcessorManagerImpl() {
-        registeredProcessors = new HashMap<Class<? extends NoteStoringPostProcessor>, NoteStoringPostProcessor>();
+        registeredProcessors = new HashMap<String, NoteStoringPostProcessor>();
         sortedProcessors = new ArrayList<NoteStoringPostProcessor>();
         extensionComparator = new DescendingOrderComparator();
     }
 
-    /**
-     * Add a processor. If there is already a processor of the same type, nothing will happen.
-     *
-     * @param processor
-     *            the processor to register
-     */
-    @Override
-    public synchronized void addProcessor(NoteStoringPostProcessor processor) {
-        if (!registeredProcessors.containsKey(processor.getClass())) {
-            registeredProcessors.put(processor.getClass(), processor);
-            ArrayList<NoteStoringPostProcessor> newProcessors = new ArrayList<>(sortedProcessors);
-            newProcessors.add(processor);
-            if (newProcessors.size() > 1) {
-                Collections.sort(newProcessors, extensionComparator);
-            }
-            sortedProcessors = newProcessors;
+    private void addAsynchronousProcessorIds(List<String> processorIds,
+            Map<String, String> properties) {
+        String allIds = StringUtils.join(processorIds, PROCESSOR_IDS_SEPARATOR_CHAR);
+        // values of task properties are limited in length -> use additional properties if necessary
+        int count = 0;
+        while (allIds.length() > PROPERTY_VALUE_LENGTH) {
+            String firstChunk = allIds.substring(0, PROPERTY_VALUE_LENGTH);
+            properties.put(PROPERTY_KEY_PREFIX_PROCESSOR_IDS + count, firstChunk);
+            allIds = allIds.substring(PROPERTY_VALUE_LENGTH);
+            count++;
         }
+        properties.put(PROPERTY_KEY_PREFIX_PROCESSOR_IDS + count, allIds);
+    }
+
+    @Override
+    public boolean addProcessor(NoteStoringPostProcessor processor) {
+        String processorId = getNormalizedProcessorId(processor.getId());
+        if (processorId == null) {
+            throw new IllegalArgumentException("Processor ID cannot be null, empty or blank");
+        }
+        synchronized (this) {
+            if (!registeredProcessors.containsKey(processorId)) {
+                registeredProcessors.put(processorId, processor);
+                ArrayList<NoteStoringPostProcessor> newProcessors = new ArrayList<>(
+                        sortedProcessors);
+                newProcessors.add(processor);
+                if (newProcessors.size() > 1) {
+                    Collections.sort(newProcessors, extensionComparator);
+                }
+                sortedProcessors = newProcessors;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Set<String> extractProcessorIds(Map<String, String> properties) {
+        HashSet<String> ids = new HashSet<>();
+        int count = 0;
+        StringBuilder allIds = new StringBuilder();
+        String chunk = properties.get(PROPERTY_KEY_PREFIX_PROCESSOR_IDS + count);
+        while (chunk != null) {
+            allIds.append(chunk);
+            count++;
+            chunk = properties.get(PROPERTY_KEY_PREFIX_PROCESSOR_IDS + count);
+        }
+        if (allIds.length() > 0) {
+            Collections.addAll(ids,
+                    StringUtils.split(allIds.toString(), PROCESSOR_IDS_SEPARATOR_CHAR));
+        }
+        return ids;
+    }
+
+    private String getNormalizedProcessorId(String id) {
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
+        return id.replace(' ', '_');
     }
 
     /**
@@ -130,9 +185,25 @@ public class NoteStoringPostProcessorManagerImpl implements NoteStoringPostProce
     }
 
     @Override
-    public void processAsynchronously(Long noteId, NoteStoringPostProcessorContext context) {
+    public void processAsynchronously(NoteStoringPostProcessorContext context) {
+        Long noteId = StringHelper.getStringAsLong(context.getProperties()
+                .get(PROPERTY_KEY_NOTE_ID), null);
+        boolean callAllProcessors = false;
+        if (noteId == null) {
+            // for backwards compatibility check old property. If this property is set, invoke all
+            // processors to conform to the old buggy implementation.
+            noteId = StringHelper.getStringAsLong(
+                    context.getProperties().get(LEGACY_PROPERTY_KEY_NOTE_ID), null);
+            if (noteId == null) {
+                throw new IllegalArgumentException("Note ID is not contained in context properties");
+            }
+            callAllProcessors = true;
+        }
+        Set<String> ids = extractProcessorIds(context.getProperties());
         for (NoteStoringPostProcessor processor : sortedProcessors) {
-            invokeProcessor(processor, noteId, context);
+            if (callAllProcessors || ids.contains(processor.getId())) {
+                invokeProcessor(processor, noteId, context);
+            }
         }
     }
 
@@ -155,15 +226,14 @@ public class NoteStoringPostProcessorManagerImpl implements NoteStoringPostProce
         if (properties == null) {
             properties = new HashMap<>();
         }
+        List<String> idsForAsynchronousProcessing = new ArrayList<>();
         // process synchronously and check if asynchronous processing is required
-        boolean interested = false;
         for (NoteStoringPostProcessor processor : processors) {
             if (processor.process(note, orginalNoteStoringTO, properties)) {
-                interested = true;
-                break;
+                idsForAsynchronousProcessing.add(processor.getId());
             }
         }
-        if (interested) {
+        if (!idsForAsynchronousProcessing.isEmpty()) {
             Map<String, String> mergedProperties = new HashMap<String, String>();
             mergedProperties.putAll(properties);
 
@@ -180,20 +250,30 @@ public class NoteStoringPostProcessorManagerImpl implements NoteStoringPostProce
             if (editOperation) {
                 taskId += "_" + note.getLastModificationDate().getTime();
             }
-            mergedProperties.put(NotePostProcessTaskHandler.PROPERTY_KEY_NOTE_ID, note.getId()
-                    .toString());
+            mergedProperties.put(PROPERTY_KEY_NOTE_ID, note.getId().toString());
+            addAsynchronousProcessorIds(idsForAsynchronousProcessing, mergedProperties);
             taskManagement.addTask(taskId, true, 0L, null, mergedProperties,
                     NotePostProcessTaskHandler.class);
         }
     }
 
     @Override
-    public synchronized void removeProcessor(Class<? extends NoteStoringPostProcessor> processorType) {
-        NoteStoringPostProcessor processor = registeredProcessors.remove(processorType);
-        if (processor != null) {
-            ArrayList<NoteStoringPostProcessor> newProcessors = new ArrayList<>();
-            newProcessors.remove(processor);
-            sortedProcessors = newProcessors;
+    public boolean removeProcessor(NoteStoringPostProcessor processor) {
+        return removeProcessor(processor.getId());
+    }
+
+    @Override
+    public boolean removeProcessor(String processorId) {
+        processorId = getNormalizedProcessorId(processorId);
+        synchronized (this) {
+            NoteStoringPostProcessor processor = registeredProcessors.remove(processorId);
+            if (processor != null) {
+                ArrayList<NoteStoringPostProcessor> newProcessors = new ArrayList<>();
+                newProcessors.remove(processor);
+                sortedProcessors = newProcessors;
+                return true;
+            }
         }
+        return false;
     }
 }

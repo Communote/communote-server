@@ -12,9 +12,9 @@ import com.communote.server.api.core.note.processor.NoteStoringPostProcessorMana
 /**
  * This waits for new {@link NoteStoringPostProcessor} and registers them within the
  * {@link NotePostProcessorRegistryExtensionPoint}.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 @Component
 @Instantiate(name = "NotePostProcessorRegistryRegistry")
@@ -22,25 +22,25 @@ public class NotePostProcessorRegistry {
 
     /**
      * Adds the given processor to the list of processors.
-     * 
+     *
      * @param notePostProcessor
      *            The processor.
      */
     @Bind(id = "registerProcessor", optional = true, aggregate = true)
     public void registerNotePreProcessor(NoteStoringPostProcessor notePostProcessor) {
         ServiceLocator.instance().getService(NoteStoringPostProcessorManager.class)
-                .addProcessor(notePostProcessor);
+        .addProcessor(notePostProcessor);
     }
 
     /**
      * Removes the given processor from the list of processors.
-     * 
+     *
      * @param notePostProcessor
      *            The processor.
      */
     @Unbind(id = "registerProcessor", optional = true, aggregate = true)
     public void removeNotePreProcessor(NoteStoringPostProcessor notePostProcessor) {
         ServiceLocator.instance().getService(NoteStoringPostProcessorManager.class)
-                .removeProcessor(notePostProcessor.getClass());
+        .removeProcessor(notePostProcessor);
     }
 }

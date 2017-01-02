@@ -16,36 +16,32 @@ import com.communote.server.model.user.User;
  */
 public class UserNotificationNoteProcessor extends NotificationNoteProcessor {
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public String getId() {
+        return "userMention";
+    }
+
     @Override
     public int getOrder() {
         return 100;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Collection<User> getUsersToNotify(Note note, NoteStoringPostProcessorContext context,
             Set<Long> userIdsToSkip) {
         return note.getUsersToBeNotified();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean notifyAuthor() {
         return true;
     }
 
     @Override
-    protected boolean sendNotifications(Note note, NoteStoringTO noteStoringTO,
+    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
             Map<String, String> properties, NoteNotificationDetails resendDetails) {
-        boolean processMe = noteStoringTO.isSendNotifications()
-                && note.getUsersToBeNotified() != null && !note.getUsersToBeNotified().isEmpty();
+        boolean processMe = note.getUsersToBeNotified() != null
+                && !note.getUsersToBeNotified().isEmpty();
         // TODO only process if not in already informed users?
         return processMe;
     }

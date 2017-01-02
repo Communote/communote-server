@@ -17,7 +17,7 @@ public class NoteStoringPostProcessorContext {
      * Creates a new context
      *
      * @param properties
-     *            the properties which were added by NoteStoringPosProcessors during synchronous
+     *            the properties which were added by NoteStoringPostProcessors during synchronous
      *            processing
      */
     public NoteStoringPostProcessorContext(Map<String, String> properties) {
@@ -35,7 +35,7 @@ public class NoteStoringPostProcessorContext {
     }
 
     /**
-     * @return the properties which were added by NoteStoringPosProcessors during synchronous
+     * @return the properties which were added by NoteStoringPostProcessors during synchronous
      *         processing
      */
     public Map<String, String> getProperties() {

@@ -40,6 +40,11 @@ public class NotificationNoteProcessorTest {
     private class TestNotificationNoteProcessor extends NotificationNoteProcessor {
 
         @Override
+        public String getId() {
+            return "test";
+        }
+
+        @Override
         protected NotificationService getNotificationService() {
             return new NotificationService() {
                 @Override
@@ -77,10 +82,9 @@ public class NotificationNoteProcessorTest {
         }
 
         @Override
-        protected boolean sendNotifications(Note note, NoteStoringTO noteStoringTO,
+        protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
                 Map<String, String> properties, NoteNotificationDetails resendDetails) {
-            boolean processMe = noteStoringTO.isSendNotifications()
-                    && note.getUsersToBeNotified() != null
+            boolean processMe = note.getUsersToBeNotified() != null
                     && !note.getUsersToBeNotified().isEmpty();
             return processMe;
         }

@@ -19,16 +19,19 @@ import com.communote.server.model.note.Note;
 public interface NoteStoringPostProcessorManager {
 
     /**
-     * Add a processor. If there is already a processor of the same type, nothing will happen.
+     * Add a processor. If there is already a processor with the same type, nothing will happen. If
+     * the ID of the processor contains space characters they will be replaced by underscores.
      *
      * @param processor
      *            the processor to register
+     * @return true if the processor was registered, false if there is already one with the same ID
      */
-    void addProcessor(NoteStoringPostProcessor processor);
+    boolean addProcessor(NoteStoringPostProcessor processor);
 
     /**
      * Process the provided notes synchronously by the registered processors. This will also
      * schedule any asynchronous processing if necessary.
+     *
      * @param notes
      *            the notes to add
      * @param orginalNoteStoringTO
@@ -45,18 +48,28 @@ public interface NoteStoringPostProcessorManager {
     /**
      * Process a note asynchronously by invoking all registered processors.
      *
-     * @param noteId
-     *            the id of the note
      * @param context
-     *            the context with details to be passed to the extensions
+     *            the context with details to be passed to the processors
+     * @throws IllegalArgumentException
+     *             in case the context did not contain a note ID
      */
-    void processAsynchronously(Long noteId, NoteStoringPostProcessorContext context);
+    void processAsynchronously(NoteStoringPostProcessorContext context);
 
     /**
      * Remove a processor if it is present.
      *
-     * @param processorType
+     * @param processor
      *            the processor to unregister
+     * @return true if the processor was registered, false otherwise
      */
-    void removeProcessor(Class<? extends NoteStoringPostProcessor> processorType);
+    boolean removeProcessor(NoteStoringPostProcessor processor);
+
+    /**
+     * Remove a processor if it is present.
+     *
+     * @param processorId
+     *            the ID of the processor to unregister
+     * @return true if the processor was registered, false otherwise
+     */
+    boolean removeProcessor(String processorId);
 }

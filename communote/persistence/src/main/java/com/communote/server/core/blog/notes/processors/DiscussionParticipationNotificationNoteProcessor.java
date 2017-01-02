@@ -51,9 +51,9 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
      * Starts at a root note and collects all authors of all children recursively.
      *
      * @param rootNote
-     *            the root noot to start from
+     *            the root note to start from
      * @param blogId
-     *            the ID of the blog of the root note
+     *            the ID of the topic of the root note
      * @param currentAuthorId
      *            the ID of the author to skip because it refers to the author of the note which
      *            triggered this processor
@@ -98,6 +98,11 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
             return getNoteDao().load(discussionId);
         }
         return null;
+    }
+
+    @Override
+    public String getId() {
+        return "discussionParticipation";
     }
 
     @Override
@@ -183,12 +188,11 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected boolean sendNotifications(Note note, NoteStoringTO noteStoringTO,
+    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
             Map<String, String> properties, NoteNotificationDetails resendDetails) {
-        return noteStoringTO.isSendNotifications() && note.getParent() != null && !note.isDirect();
+        // TODO do not notify participating authors if resendDetails is not null (and thus editing
+        // with disabled resend flag)?
+        return note.getParent() != null && !note.isDirect();
     }
 }

@@ -62,6 +62,73 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
         this.queryManagement = queryManagement;
     }
 
+    private void assertNotTooManyUsers(Note note, Set<Long> userIdsToSkip, boolean includeReaders,
+            boolean includeAuthors, boolean includeManagers) {
+        int maxUsers = ClientProperty.MAX_NUMBER_OF_MENTIONED_USERS
+                .getValue(ClientProperty.DEFAULT_MAX_NUMBER_OF_MENTIONED_USERS);
+        if (maxUsers <= 0) {
+            return;
+        }
+        // Shortcut for readers and allCanRead via active user count
+        if (includeReaders && note.getBlog().isAllCanRead()
+                && maxUsers < userManagement.getActiveUserCount() - userIdsToSkip.size()) {
+            throw new TooManyMentionedUsersNoteManagementException();
+        }
+        Collection<User> usersToNotify = internalGetUsersToNotify(note, includeReaders,
+                includeAuthors, includeManagers);
+        if (maxUsers < usersToNotify.size()) {
+            // fail-fast if still too many if skipping all
+            if (maxUsers < usersToNotify.size() - userIdsToSkip.size()) {
+                throw new TooManyMentionedUsersNoteManagementException();
+            }
+            // check if users to skip are actually among those to notify
+            int usersToNotifyCount = 0;
+            for (User user : usersToNotify) {
+                if (!userIdsToSkip.contains(user.getId())) {
+                    usersToNotifyCount++;
+                }
+            }
+            if (maxUsers < usersToNotifyCount) {
+                throw new TooManyMentionedUsersNoteManagementException();
+            }
+        }
+    }
+
+    @Override
+    protected boolean isSendNotifications(Note note, NoteStoringTO orginalNoteStoringTO,
+            Map<String, String> properties, NoteNotificationDetails resendDetails) {
+        if (!note.isDirect()) {
+            boolean includeAuthors;
+            boolean includeManagers;
+            boolean includeReaders;
+            Set<Long> userIdsToSkip;
+            if (resendDetails != null) {
+                includeAuthors = note.isMentionTopicAuthors()
+                        && !resendDetails.isMentionTopicAuthors();
+                includeManagers = note.isMentionTopicManagers()
+                        && !resendDetails.isMentionTopicManagers();
+                includeReaders = note.isMentionTopicReaders()
+                        && !resendDetails.isMentionTopicReaders();
+                userIdsToSkip = resendDetails.getMentionedUserIds();
+            } else {
+                includeAuthors = note.isMentionTopicAuthors();
+                includeManagers = note.isMentionTopicManagers();
+                includeReaders = note.isMentionTopicReaders();
+                userIdsToSkip = new HashSet<>();
+            }
+            if (includeAuthors || includeManagers || includeReaders) {
+                assertNotTooManyUsers(note, userIdsToSkip, includeReaders, includeAuthors,
+                        includeManagers);
+                properties
+                .put(PROPERTY_KEY_TOPIC_MENTIONS,
+                        encodeMentionPropertyValue(includeReaders, includeAuthors,
+                                includeManagers));
+                return true;
+            }
+        }
+        return false;
+    }
+
     private String encodeMentionPropertyValue(boolean includeReaders, boolean includeAuthors,
             boolean includeManagers) {
         StringBuilder value = new StringBuilder();
@@ -81,6 +148,11 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
             value.append(TOPIC_MENTION_MANAGERS);
         }
         return value.toString();
+    }
+
+    @Override
+    public String getId() {
+        return "topicMention";
     }
 
     /**
@@ -174,51 +246,5 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
             }
         }
         return usersToNotify;
-    }
-
-    @Override
-    protected boolean sendNotifications(Note note, NoteStoringTO orginalNoteStoringTO,
-            Map<String, String> properties, NoteNotificationDetails resendDetails) {
-        if (!note.isDirect()) {
-            boolean includeAuthors;
-            boolean includeManagers;
-            boolean includeReaders;
-            int usersToSkip;
-            if (resendDetails != null) {
-                includeAuthors = note.isMentionTopicAuthors()
-                        && !resendDetails.isMentionTopicAuthors();
-                includeManagers = note.isMentionTopicManagers()
-                        && !resendDetails.isMentionTopicManagers();
-                includeReaders = note.isMentionTopicReaders()
-                        && !resendDetails.isMentionTopicReaders();
-                usersToSkip = resendDetails.getMentionedUserIds().size();
-            } else {
-                includeAuthors = note.isMentionTopicAuthors();
-                includeManagers = note.isMentionTopicManagers();
-                includeReaders = note.isMentionTopicReaders();
-                usersToSkip = 0;
-            }
-            if (includeAuthors || includeManagers || includeReaders) {
-                int maxUsers = ClientProperty.MAX_NUMBER_OF_MENTIONED_USERS
-                        .getValue(ClientProperty.DEFAULT_MAX_NUMBER_OF_MENTIONED_USERS);
-                // Shortcut for readers and allCanRead via active user count
-                if (note.isMentionTopicReaders() && note.getBlog().isAllCanRead()
-                        && maxUsers < userManagement.getActiveUserCount() - usersToSkip) {
-                    throw new TooManyMentionedUsersNoteManagementException();
-                }
-                // TODO how to get information about users to skip at check time?
-                if (maxUsers > 0
-                        && maxUsers < internalGetUsersToNotify(note, includeReaders,
-                                includeAuthors, includeManagers).size()) {
-                    throw new TooManyMentionedUsersNoteManagementException();
-                }
-                properties
-                .put(PROPERTY_KEY_TOPIC_MENTIONS,
-                        encodeMentionPropertyValue(includeReaders, includeAuthors,
-                                includeManagers));
-                return true;
-            }
-        }
-        return false;
     }
 }
