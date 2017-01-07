@@ -50,7 +50,6 @@ var CreateNoteWidget = new Class({
         // can hold additional details to run the action. The allowed values depend on the action
         actionOptions: undefined
     },
-    communoteLocalStorage: new CommunoteLocalStorage(),
     defaultTagStoreAlias: 'DefaultNoteTagStore',
     // whether the editor is currently dirty. Will be reset after a successful autosave.
     dirty: false,
@@ -593,15 +592,15 @@ var CreateNoteWidget = new Class({
     },
 
     /**
-     * Defines if already notified user will receive notifcations again
+     * Define if already notified user should receive notifications again
      */
     changeResendNotificationMode: function(activate) {
       this.resendNotificationProperty = {
-        "key": "editNote.resendNotification",
-        "keyGroup": "com.communote",
-        "value": activate
+        'key': 'editNote.resendNotification',
+        'keyGroup': 'com.communote',
+        'value': activate
       };
-      communoteLocalStorage.setItem("com.communote.editNote.resendNotification", activate);
+      communoteLocalStorage.setItem('com.communote.editNote.resendNotification', activate);
     },
 
     /**
@@ -1435,9 +1434,9 @@ var CreateNoteWidget = new Class({
 
         if (this.action === 'edit') {
           // Load the latest setting for the resend notification option via Local Storage
-          resendNotification = communoteLocalStorage.getItem("com.communote.editNote.resendNotification");
-          if(resendNotification === "true") {
-            $(this.widgetId + '-resend-notification').set('checked', (resendNotification === "true"));
+          resendNotification = communoteLocalStorage.getItem('com.communote.editNote.resendNotification');
+          if(resendNotification === 'true') {
+            $(this.widgetId + '-resend-notification').set('checked', true);
           }
           this.changeResendNotificationMode(resendNotification);
         }
