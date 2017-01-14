@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Object describing which users should be or have been mentioned and thus should be or have been
+ * notified about a note.
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class NoteNotificationDetails {
@@ -32,53 +35,57 @@ public class NoteNotificationDetails {
     }
 
     /**
-     * <p>
-     * Flag to show, that all users with at least one message on the discussion will be notified.
-     * </p>
+     * @return whether all active users with at least one note in the discussion should be notified
      */
     public boolean isMentionDiscussionAuthors() {
         return this.mentionDiscussionAuthors;
     }
 
     /**
-     * <p>
-     * Flag to show, that all (active) users with at least one note in the topic where notified.
-     * </p>
+     * @return whether all active users with at least one note in the topic should be notified
      */
     public boolean isMentionTopicAuthors() {
         return this.mentionTopicAuthors;
     }
 
     /**
-     * <p>
-     * Flag to show, that all users with management access of the topic where mentioned.
-     * </p>
+     * @return whether all active users with management access to the topic should be notified
      */
     public boolean isMentionTopicManagers() {
         return this.mentionTopicManagers;
     }
 
     /**
-     * <p>
-     * Flag to show, that all users with at least read access of the topic should where mentioned.
-     * </p>
+     * @return whether all active users with at least read access to the topic should be notified
      */
     public boolean isMentionTopicReaders() {
         return this.mentionTopicReaders;
     }
 
+    /**
+     * @see #isMentionDiscussionAuthors()
+     */
     public void setMentionDiscussionAuthors(boolean mentionDiscussionAuthors) {
         this.mentionDiscussionAuthors = mentionDiscussionAuthors;
     }
 
+    /**
+     * @see #isMentionTopicAuthors()
+     */
     public void setMentionTopicAuthors(boolean mentionTopicAuthors) {
         this.mentionTopicAuthors = mentionTopicAuthors;
     }
 
+    /**
+     * @see #isMentionTopicManagers()
+     */
     public void setMentionTopicManagers(boolean mentionTopicManagers) {
         this.mentionTopicManagers = mentionTopicManagers;
     }
 
+    /**
+     * @see #isMentionTopicReaders()
+     */
     public void setMentionTopicReaders(boolean mentionTopicReaders) {
         this.mentionTopicReaders = mentionTopicReaders;
     }
