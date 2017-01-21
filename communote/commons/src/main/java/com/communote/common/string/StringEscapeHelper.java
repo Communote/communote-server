@@ -99,7 +99,7 @@ public final class StringEscapeHelper {
     }
 
     /**
-     * Escape characters that are note in the slightly extended word regex character class with an
+     * Escape characters that are not in the slightly extended word regex character class with an
      * underscore. That is all characters that are not in [A-Za-z0-9_.-] will be replaced with an
      * underscore.
      *

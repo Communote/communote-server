@@ -73,7 +73,7 @@ public class UrlHelper {
             Pattern.CASE_INSENSITIVE);
 
     private static final char[] LINK_TERMINATING_CHARS = { '.', '?', '!', ')', ',', ';', '"', '\'',
-        ']', '}' };
+            ']', '}' };
 
     /**
      * Checks if url is well formed. If not an {@link IllegalArgumentException} is thrown
@@ -126,7 +126,7 @@ public class UrlHelper {
                     // value?
                     if ((remainingText.startsWith(URL_SHORTENING_INDICATOR)
                             || remainingText.startsWith("&" + URL_SHORTENING_INDICATOR) || remainingText
-                            .startsWith("?" + URL_SHORTENING_INDICATOR))
+                                .startsWith("?" + URL_SHORTENING_INDICATOR))
                             && href.startsWith(foundUrl)) {
                         // replace with href value
                         processedContent.append(href);
@@ -134,7 +134,7 @@ public class UrlHelper {
                                 : 4;
                         // append value right of match and break
                         processedContent
-                        .append(innerHTML.substring(urlMatcher.end(0) + symbolCount));
+                                .append(innerHTML.substring(urlMatcher.end(0) + symbolCount));
                         anchorProcessed = true;
                         break loop;
                     }
@@ -361,8 +361,13 @@ public class UrlHelper {
     }
 
     /**
+     * <p>
      * URL encode (application/x-www-form-urlencoded format) the path component of a URL. The method
      * uses the UTF-8 encoding scheme.
+     * </p>
+     *
+     * Note: the application/x-www-form-urlencoded format encodes spaces with the plus character.
+     * For proper URI encoding better use {@link UriUtils#encodeUriComponent(String)}!
      *
      * @param path
      *            the path component of a URL. If parts of the path are already URL encoded these

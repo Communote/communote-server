@@ -1,15 +1,13 @@
 package com.communote.server.core.retrieval.helper;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
+import com.communote.common.util.UriUtils;
 import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.attachment.AttachmentData;
 import com.communote.server.api.core.security.AuthorizationException;
@@ -26,8 +24,6 @@ import com.communote.server.persistence.user.client.ClientUrlHelper;
  */
 public final class AttachmentHelper {
 
-    /** Logger. */
-    private final static Logger LOG = Logger.getLogger(AttachmentHelper.class);
     /**
      * Changing this also check CreateNote.js
      */
@@ -162,8 +158,7 @@ public final class AttachmentHelper {
      *            HTTP protocol.
      * @return the absolute URL as a String
      */
-    public static String determineAbsoluteAttachmentUrl(AttachmentData resource,
-            boolean isSecure) {
+    public static String determineAbsoluteAttachmentUrl(AttachmentData resource, boolean isSecure) {
         return determineAttachmentUrl(resource.getId(), resource.getFileName(), true, isSecure);
     }
 
@@ -186,24 +181,20 @@ public final class AttachmentHelper {
         if (useAbsoluteUrl) {
             // use security settings as defined in channel settings for the client (the channel is
             // always web since it is a URL in /portal/....)
-            url = ClientUrlHelper
-                    .renderConfiguredAbsoluteUrl(null, isSecure
-                            || ServiceLocator.findService(ChannelManagement.class).isForceSsl(
-                                    ChannelType.WEB));
+            url = ClientUrlHelper.renderConfiguredAbsoluteUrl(
+                    null,
+                    isSecure
+                    || ServiceLocator.findService(ChannelManagement.class).isForceSsl(
+                            ChannelType.WEB));
         }
         String encodeFilename = "download.file";
-        try {
-            encodeFilename = URLEncoder.encode(fileName, "UTF-8");
-            int lastDot = encodeFilename.lastIndexOf(".");
-            if (lastDot != -1) {
-                encodeFilename = encodeFilename.substring(0, lastDot).replace(".", "_")
-                        + encodeFilename.substring(lastDot);
-            }
-        } catch (UnsupportedEncodingException e) {
-            // This exception is no problem, as the filename in the url is not important for the
-            // final download.
-            LOG.warn("There was a problem encoding the files name: " + e.getMessage());
+        encodeFilename = UriUtils.encodeUriComponent(fileName);
+        int lastDot = encodeFilename.lastIndexOf(".");
+        if (lastDot != -1) {
+            encodeFilename = encodeFilename.substring(0, lastDot).replace(".", "_")
+                    + encodeFilename.substring(lastDot);
         }
+
         return url + "/portal/files/" + id + "/" + encodeFilename;
     }
 
