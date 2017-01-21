@@ -1,8 +1,6 @@
 package com.communote.server.web.external.spring.security;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
+import com.communote.common.util.UriUtils;
 import com.communote.server.core.common.session.SessionHandler;
 import com.communote.server.persistence.user.client.ClientUrlHelper;
 
@@ -20,7 +19,7 @@ import com.communote.server.persistence.user.client.ClientUrlHelper;
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class CommunoteAuthenticationProcessingFilterEntryPoint extends
-LoginUrlAuthenticationEntryPoint {
+        LoginUrlAuthenticationEntryPoint {
     private String targetUrlParameter;
 
     /**
@@ -64,36 +63,31 @@ LoginUrlAuthenticationEntryPoint {
         StringBuilder url = new StringBuilder(moduleClientPart);
         ClientUrlHelper.appendUrlPath(url, getLoginFormUrl());
         if (targetUrlParameter != null) {
-            try {
-                // save request URL with parameters as URL parameter for the redirect URL
-                StringBuilder originalUrl = null;
-                String path = request.getServletPath();
-                String pathInfo = request.getPathInfo();
-                if (pathInfo != null) {
-                    path += pathInfo;
-                }
-                if (path.startsWith(moduleClientPart)) {
-                    originalUrl = new StringBuilder(path.substring(moduleClientPart.length()));
-                }
-                if (originalUrl == null || originalUrl.length() == 0) {
-                    // use absolute URL if pathinfo is missing
-                    originalUrl = new StringBuilder(request.getRequestURL().toString());
-                }
-                if (request.getQueryString() != null) {
-                    originalUrl.append('?');
-                    originalUrl.append(request.getQueryString());
-                }
-                String targetUrl = URLEncoder.encode(originalUrl.toString(), "UTF8");
-                if (url.toString().indexOf('?') < 0) {
-                    url.append("?");
-                } else {
-                    url.append("&");
-                }
-                url.append(targetUrlParameter).append("=").append(targetUrl);
-            } catch (UnsupportedEncodingException e) {
-                // should not occur
-                throw new RuntimeException(e);
+            // save request URL with parameters as URL parameter for the redirect URL
+            StringBuilder originalUrl = null;
+            String path = request.getServletPath();
+            String pathInfo = request.getPathInfo();
+            if (pathInfo != null) {
+                path += pathInfo;
             }
+            if (path.startsWith(moduleClientPart)) {
+                originalUrl = new StringBuilder(path.substring(moduleClientPart.length()));
+            }
+            if (originalUrl == null || originalUrl.length() == 0) {
+                // use absolute URL if pathinfo is missing
+                originalUrl = new StringBuilder(request.getRequestURL().toString());
+            }
+            if (request.getQueryString() != null) {
+                originalUrl.append('?');
+                originalUrl.append(request.getQueryString());
+            }
+            String targetUrl = UriUtils.encodeUriComponent(originalUrl.toString());
+            if (url.toString().indexOf('?') < 0) {
+                url.append("?");
+            } else {
+                url.append("&");
+            }
+            url.append(targetUrlParameter).append("=").append(targetUrl);
         }
         return url.toString();
     }

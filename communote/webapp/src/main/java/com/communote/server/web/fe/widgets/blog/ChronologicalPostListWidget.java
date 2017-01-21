@@ -6,8 +6,6 @@ import static com.communote.server.core.vo.query.TimelineFilterViewType.THREAD;
 import static com.communote.server.web.fe.widgets.WidgetConstants.PARAM_BLOG_POST_ID;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.communote.common.matcher.Matcher;
 import com.communote.common.util.PageableList;
 import com.communote.common.util.ParameterHelper;
+import com.communote.common.util.UriUtils;
 import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.common.NotFoundException;
 import com.communote.server.api.core.note.NoteData;
@@ -150,7 +149,7 @@ public class ChronologicalPostListWidget extends AbstractPagedListWidget<NoteDat
 
     /**
      * Appends all supplied parameters to the StringBuilder if the params are not in the
-     * paramsToIgnore array. The parameter values will be URL encoded (utf-8).
+     * paramsToIgnore array. The parameter values will be URI encoded.
      *
      * @param rssParams
      *            the StringBuilder used for appending
@@ -165,14 +164,7 @@ public class ChronologicalPostListWidget extends AbstractPagedListWidget<NoteDat
                     && StringUtils.isNotEmpty(getParameters().get(params[z]))) {
                 rssParams.append(params[z]);
                 rssParams.append("=");
-                try {
-                    // making assumption that parameter encoding is utf-8 (in
-                    // HTTP there is no way
-                    // of determining the used encoding)
-                    rssParams.append(URLEncoder.encode(getParameters().get(params[z]), "utf-8"));
-                } catch (UnsupportedEncodingException e) {
-                    rssParams.append(getParameters().get(params[z]));
-                }
+                rssParams.append(UriUtils.encodeUriComponent(getParameters().get(params[z])));
                 rssParams.append("&");
             }
         }

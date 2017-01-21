@@ -1,8 +1,6 @@
 package com.communote.plugins.confluence.image;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLEncoder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -18,6 +16,7 @@ import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.communote.common.util.UriUtils;
 import com.communote.server.api.ServiceLocator;
 import com.communote.server.core.ConfigurationManagement;
 import com.communote.server.core.image.type.HttpExternalUserImageProvider;
@@ -31,11 +30,11 @@ import com.communote.server.service.UserService;
 
 /**
  * This image provider loads the image from Confluence, if the user is a Confluence user.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class ConfluenceUserImageProvider extends
-        HttpExternalUserImageProvider<ConfluenceConfiguration> {
+HttpExternalUserImageProvider<ConfluenceConfiguration> {
     /**
      * Key of a plugin property to store the last modification timestamp of the confluence
      * configuration since the configuration does not provide this information.
@@ -94,8 +93,8 @@ public class ConfluenceUserImageProvider extends
     }
 
     /**
-     * Returns the ID of the user in the external system. The ID will be URL-encoded.
-     * 
+     * Returns the ID of the user in the external system. The ID will be URI-encoded.
+     *
      * @param userId
      *            the local user ID
      * @return the ID or null if the user does not have a user ID in the external system.
@@ -110,11 +109,7 @@ public class ConfluenceUserImageProvider extends
                 .getExternalUserId(ConfigurationManagement.DEFAULT_CONFLUENCE_SYSTEM_ID);
 
         if (externalUserId != null) {
-            try {
-                return URLEncoder.encode(externalUserId, "utf-8");
-            } catch (UnsupportedEncodingException e) {
-                LOGGER.error("Exception in creating URL encoded external user alias.", e);
-            }
+            return UriUtils.encodeUriComponent(externalUserId);
         }
         return null;
     }
@@ -148,10 +143,9 @@ public class ConfluenceUserImageProvider extends
             ConfluenceConfiguration config) {
         HttpHost targetHost = new HttpHost(imageUrl.getHost(), imageUrl.getPort());
         CredentialsProvider credentialsProviderProvider = new BasicCredentialsProvider();
-        credentialsProviderProvider.setCredentials(
-                new AuthScope(targetHost.getHostName(), targetHost.getPort()),
-                new UsernamePasswordCredentials(config.getAdminLogin(),
-                        config.getAdminPassword()));
+        credentialsProviderProvider.setCredentials(new AuthScope(targetHost.getHostName(),
+                targetHost.getPort()), new UsernamePasswordCredentials(config.getAdminLogin(),
+                config.getAdminPassword()));
 
         AuthCache authCache = new BasicAuthCache();
         BasicScheme basicAuth = new BasicScheme();

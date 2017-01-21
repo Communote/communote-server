@@ -1,11 +1,9 @@
 package com.communote.server.core.blog.export;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.communote.common.util.UriUtils;
 import com.communote.server.api.ServiceLocator;
 import com.communote.server.core.security.ssl.ChannelManagement;
 import com.communote.server.core.tag.TagManagement;
@@ -130,13 +128,8 @@ public class DefaultPermalinkGenerator implements PermalinkGenerator {
         if (tag == null) {
             throw new IllegalArgumentException("tag cannot be null or empty");
         }
-        try {
-            return getPermalink(PERMA_ID_TAGS,
-                    tagId + "/" + URLEncoder.encode(tag.getTagStoreTagId(), "UTF-8"), secure);
-        } catch (UnsupportedEncodingException e) {
-            LOG.warn("A tag can't be encoded: " + tag);
-        }
-        return StringUtils.EMPTY;
+        return getPermalink(PERMA_ID_TAGS,
+                tagId + "/" + UriUtils.encodeUriComponent(tag.getTagStoreTagId()), secure);
     }
 
     @Override
@@ -152,12 +145,7 @@ public class DefaultPermalinkGenerator implements PermalinkGenerator {
         if (StringUtils.isEmpty(tag)) {
             throw new IllegalArgumentException("tag cannot be null or empty");
         }
-        try {
-            return getPermalink(PERMA_ID_TAGS, URLEncoder.encode(tag, "UTF-8"), secure);
-        } catch (UnsupportedEncodingException e) {
-            LOG.warn("A tag can't be encoded: " + tag);
-        }
-        return StringUtils.EMPTY;
+        return getPermalink(PERMA_ID_TAGS, UriUtils.encodeUriComponent(tag), secure);
     }
 
     @Override

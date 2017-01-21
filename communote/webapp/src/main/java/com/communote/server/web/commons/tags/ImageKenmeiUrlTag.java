@@ -1,11 +1,9 @@
 package com.communote.server.web.commons.tags;
 
-import java.net.URLEncoder;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
 
+import com.communote.common.util.UriUtils;
 import com.communote.common.util.UrlHelper;
 import com.communote.server.core.image.CoreImageType;
 import com.communote.server.model.user.ImageSizeType;
@@ -42,11 +40,7 @@ public class ImageKenmeiUrlTag extends KenmeiUrlTag {
                 imageSize);
         value = UrlHelper.insertSessionIdInUrl(value,
                 ((HttpServletRequest) pageContext.getRequest()).getSession().getId());
-        try {
-            setValue(encodeQueryUrl ? URLEncoder.encode(value, "UTF-8") : value);
-        } catch (Exception e) {
-            throw new JspTagException("IO Error: " + e.getMessage(), e);
-        }
+        setValue(encodeQueryUrl ? UriUtils.encodeUriComponent(value) : value);
         return super.doEndTag();
     }
 

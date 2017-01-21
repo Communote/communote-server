@@ -1,8 +1,6 @@
 package com.communote.server.web.external.spring.security;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +14,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.Assert;
 
+import com.communote.common.util.UriUtils;
 import com.communote.server.external.acegi.UserAccountException;
 import com.communote.server.external.acegi.UserAccountTemporarilyLockedException;
 import com.communote.server.web.commons.helper.ControllerHelper;
@@ -54,19 +53,15 @@ public class CommunoteAuthenticationFailureHandler extends SimpleUrlAuthenticati
      */
     private String appendTargetUrl(String url, HttpServletRequest request) {
         if (targetUrlParameter != null) {
-            try {
-                String targetUrlParamString = request.getParameter(targetUrlParameter);
-                if (targetUrlParamString != null && targetUrlParamString.length() > 0) {
-                    targetUrlParamString = targetUrlParameter + "="
-                            + URLEncoder.encode(targetUrlParamString, "UTF8");
-                    if (url.indexOf('?') < 0) {
-                        url += "?" + targetUrlParamString;
-                    } else {
-                        url += "&" + targetUrlParamString;
-                    }
+            String targetUrlParamString = request.getParameter(targetUrlParameter);
+            if (targetUrlParamString != null && targetUrlParamString.length() > 0) {
+                targetUrlParamString = targetUrlParameter + "="
+                        + UriUtils.encodeUriComponent(targetUrlParamString);
+                if (url.indexOf('?') < 0) {
+                    url += "?" + targetUrlParamString;
+                } else {
+                    url += "&" + targetUrlParamString;
                 }
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("Unexpected exception", e);
             }
         }
         return url;
@@ -84,7 +79,7 @@ public class CommunoteAuthenticationFailureHandler extends SimpleUrlAuthenticati
             if (authenticationException instanceof UserAccountTemporarilyLockedException) {
                 url += "&lockedTimeout="
                         + ((UserAccountTemporarilyLockedException) authenticationException)
-                        .getLockedTimeout().getTime();
+                                .getLockedTimeout().getTime();
             }
             if (authenticationException instanceof UserAccountException) {
                 url += "&username="
