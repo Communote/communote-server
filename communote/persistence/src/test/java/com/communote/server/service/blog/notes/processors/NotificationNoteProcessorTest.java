@@ -84,9 +84,7 @@ public class NotificationNoteProcessorTest {
         @Override
         protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
                 Map<String, String> properties, NoteNotificationDetails resendDetails) {
-            boolean processMe = note.getUsersToBeNotified() != null
-                    && !note.getUsersToBeNotified().isEmpty();
-            return processMe;
+            return !note.getUsersToBeNotified().isEmpty();
         }
     }
 

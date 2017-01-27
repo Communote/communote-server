@@ -41,31 +41,6 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
         this.topicRightsManagement = topicRightsManagement;
     }
 
-    @Override
-    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
-            Map<String, String> properties, NoteNotificationDetails resendDetails) {
-        if (noteStoringTO.isMentionDiscussionAuthors() && !ignoreDiscussion(note)) {
-            Set<Long> userIdsToSkip = new HashSet<>();
-            if (resendDetails != null) {
-                if (resendDetails.isMentionDiscussionAuthors()) {
-                    // if edited note already notified the discussion members, don't do it again
-                    return false;
-                }
-                userIdsToSkip = resendDetails.getMentionedUserIds();
-            }
-            // all notes with a parent note should be processed
-            int maxUsers = ClientProperty.MAX_NUMBER_OF_MENTIONED_USERS
-                    .getValue(ClientProperty.DEFAULT_MAX_NUMBER_OF_MENTIONED_USERS);
-            if (maxUsers > 0
-                    && maxUsers < getUsersToNotify(note, new NoteStoringPostProcessorContext(null),
-                            userIdsToSkip).size()) {
-                throw new TooManyMentionedUsersNoteManagementException();
-            }
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Starts at a root note and collects all authors of all children recursively.
      *
@@ -142,27 +117,27 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
         // authors, but ignore the author of this note
         Long currentAuthorId = Boolean.getBoolean("com.communote.mention.discussion.ignore-author") ? note
                 .getUser().getId() : -1L;
-                if (this.parentTreeOnly) {
-                    Note parent;
-                    Set<Long> processedNotes = new HashSet<Long>();
-                    while ((parent = note.getParent()) != null) {
-                        User author = parent.getUser();
-                        processAuthor(author, note.getBlog().getId(), currentAuthorId, usersToNotify,
-                                usersNoReadAccess, userIdsToSkip);
-                        note = parent;
-                        if (processedNotes.contains(note.getId())) {
-                            break;
-                        }
-                        processedNotes.add(note.getId());
-                    }
-                } else {
-                    Note discussionRoot = getDiscussionRootNote(note);
-                    if (discussionRoot != null) {
-                        extractAuthorsFromDiscussionSubTree(discussionRoot, note.getBlog().getId(),
-                                currentAuthorId, usersToNotify, usersNoReadAccess, userIdsToSkip);
-                    }
+        if (this.parentTreeOnly) {
+            Note parent;
+            Set<Long> processedNotes = new HashSet<Long>();
+            while ((parent = note.getParent()) != null) {
+                User author = parent.getUser();
+                processAuthor(author, note.getBlog().getId(), currentAuthorId, usersToNotify,
+                        usersNoReadAccess, userIdsToSkip);
+                note = parent;
+                if (processedNotes.contains(note.getId())) {
+                    break;
                 }
-                return usersToNotify;
+                processedNotes.add(note.getId());
+            }
+        } else {
+            Note discussionRoot = getDiscussionRootNote(note);
+            if (discussionRoot != null) {
+                extractAuthorsFromDiscussionSubTree(discussionRoot, note.getBlog().getId(),
+                        currentAuthorId, usersToNotify, usersNoReadAccess, userIdsToSkip);
+            }
+        }
+        return usersToNotify;
     }
 
     private boolean ignoreDiscussion(Note note) {
@@ -174,6 +149,31 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
                 Set<Note> children = note.getChildren();
                 return children == null || children.isEmpty();
             }
+        }
+        return false;
+    }
+
+    @Override
+    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
+            Map<String, String> properties, NoteNotificationDetails resendDetails) {
+        if (noteStoringTO.isMentionDiscussionAuthors() && !ignoreDiscussion(note)) {
+            Set<Long> userIdsToSkip = new HashSet<>();
+            if (resendDetails != null) {
+                if (resendDetails.isMentionDiscussionAuthors()) {
+                    // if edited note already notified the discussion members, don't do it again
+                    return false;
+                }
+                userIdsToSkip = resendDetails.getMentionedUserIds();
+            }
+            // all notes with a parent note should be processed
+            int maxUsers = ClientProperty.MAX_NUMBER_OF_MENTIONED_USERS
+                    .getValue(ClientProperty.DEFAULT_MAX_NUMBER_OF_MENTIONED_USERS);
+            if (maxUsers > 0
+                    && maxUsers < getUsersToNotify(note, new NoteStoringPostProcessorContext(null),
+                            userIdsToSkip).size()) {
+                throw new TooManyMentionedUsersNoteManagementException();
+            }
+            return true;
         }
         return false;
     }

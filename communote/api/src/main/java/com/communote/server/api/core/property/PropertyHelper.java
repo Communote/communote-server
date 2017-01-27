@@ -148,16 +148,15 @@ public class PropertyHelper {
      */
     public static StringPropertyTO removePropertyTO(Iterable<StringPropertyTO> properties,
             String group, String key) {
-        if (properties != null) {
-            Iterator<StringPropertyTO> propsIter = properties.iterator();
-            while (propsIter.hasNext()) {
-                StringPropertyTO property = propsIter.next();
-                if (property.getKeyGroup() != null && property.getKeyGroup().equals(group)
-                        && property.getPropertyKey() != null
-                        && property.getPropertyKey().equals(key)) {
-                    propsIter.remove();
-                    return property;
-                }
+        if (properties == null || group == null || key == null) {
+            return null;
+        }
+        Iterator<StringPropertyTO> propsIter = properties.iterator();
+        while (propsIter.hasNext()) {
+            StringPropertyTO property = propsIter.next();
+            if (group.equals(property.getKeyGroup()) && key.equals(property.getPropertyKey())) {
+                propsIter.remove();
+                return property;
             }
         }
         return null;

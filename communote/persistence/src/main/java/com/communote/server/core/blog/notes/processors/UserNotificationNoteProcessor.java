@@ -33,16 +33,14 @@ public class UserNotificationNoteProcessor extends NotificationNoteProcessor {
     }
 
     @Override
-    public boolean notifyAuthor() {
-        return true;
+    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
+            Map<String, String> properties, NoteNotificationDetails resendDetails) {
+        // TODO only process if not in already informed users?
+        return !note.getUsersToBeNotified().isEmpty();
     }
 
     @Override
-    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
-            Map<String, String> properties, NoteNotificationDetails resendDetails) {
-        boolean processMe = note.getUsersToBeNotified() != null
-                && !note.getUsersToBeNotified().isEmpty();
-        // TODO only process if not in already informed users?
-        return processMe;
+    public boolean notifyAuthor() {
+        return true;
     }
 }

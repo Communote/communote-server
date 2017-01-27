@@ -209,12 +209,9 @@ DataAccessNoteConverter<SimpleNoteListItem, O> {
      *            The resulting data.
      */
     private void convertNotifiedUsers(Note note, NoteData target) {
-        if (note.getUsersToBeNotified() != null) {
-            for (User user : note.getUsersToBeNotified()) {
-                target.getNotifiedUsers().add(userConverter.convert(user));
-                target.setForMe(target.isForMe()
-                        || user.getId().equals(currentUserId));
-            }
+        for (User user : note.getUsersToBeNotified()) {
+            target.getNotifiedUsers().add(userConverter.convert(user));
+            target.setForMe(target.isForMe() || user.getId().equals(currentUserId));
         }
         target.setMentionDiscussionAuthors(note.isMentionDiscussionAuthors());
         target.setMentionTopicAuthors(note.isMentionTopicAuthors());

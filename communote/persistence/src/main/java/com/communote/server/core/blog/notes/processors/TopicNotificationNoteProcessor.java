@@ -201,15 +201,14 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
             boolean includeAuthors, boolean includeManagers) {
         Collection<User> usersToNotify = new HashSet<User>();
         Set<BlogRole> roles = new HashSet<BlogRole>();
-        if (includeManagers) {
-            roles.add(BlogRole.MANAGER);
-        }
         if (includeReaders) {
             if (note.getBlog().isAllCanRead()) {
                 return userManagement.findUsersByRole(UserRole.ROLE_KENMEI_USER, UserStatus.ACTIVE);
             }
             roles.add(BlogRole.VIEWER);
             roles.add(BlogRole.MEMBER);
+            roles.add(BlogRole.MANAGER);
+        } else if (includeManagers) {
             roles.add(BlogRole.MANAGER);
         }
         if (roles.size() > 0) {

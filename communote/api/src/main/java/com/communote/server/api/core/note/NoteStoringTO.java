@@ -45,7 +45,7 @@ public class NoteStoringTO implements java.io.Serializable {
     private boolean mentionTopicAuthors;
     private boolean mentionTopicManagers;
     private boolean mentionDiscussionAuthors;
-    private Map<String, Object> transientProperties;
+    private final Map<String, Object> transientProperties = new HashMap<>();
 
     /**
      * @return the additionalBlogs
@@ -175,10 +175,7 @@ public class NoteStoringTO implements java.io.Serializable {
      * @see #setTransientProperty(String, Object)
      */
     public Object getTransientProperty(String key) {
-        if (transientProperties != null) {
-            return transientProperties.get(key);
-        }
-        return null;
+        return transientProperties.get(key);
     }
 
     /**
@@ -283,10 +280,7 @@ public class NoteStoringTO implements java.io.Serializable {
      * @see #setTransientProperty(String, Object)
      */
     public Object removeTransientProperty(String key) {
-        if (transientProperties != null) {
-            return transientProperties.remove(key);
-        }
-        return null;
+        return transientProperties.remove(key);
     }
 
     /**
@@ -430,9 +424,6 @@ public class NoteStoringTO implements java.io.Serializable {
      *            the value of the property
      */
     public void setTransientProperty(String key, Object value) {
-        if (transientProperties == null) {
-            transientProperties = new HashMap<>();
-        }
         transientProperties.put(key, value);
     }
 
