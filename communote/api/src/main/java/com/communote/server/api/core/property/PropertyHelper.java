@@ -145,6 +145,7 @@ public class PropertyHelper {
      * @param key
      *            the key of the property
      * @return the removed property or null if it was not contained
+     * @since 3.5
      */
     public static StringPropertyTO removePropertyTO(Iterable<StringPropertyTO> properties,
             String group, String key) {

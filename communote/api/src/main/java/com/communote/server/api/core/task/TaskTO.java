@@ -111,6 +111,7 @@ public class TaskTO {
 
     /**
      * @return all properties stored with the task
+     * @since 3.5
      */
     public Map<String, String> getProperties() {
         return taskProperties;

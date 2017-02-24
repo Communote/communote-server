@@ -173,6 +173,7 @@ public class NoteStoringTO implements java.io.Serializable {
      *            the key of the property to get
      * @return the value of the transient property or null if the property was not set
      * @see #setTransientProperty(String, Object)
+     * @since 3.5
      */
     public Object getTransientProperty(String key) {
         return transientProperties.get(key);
@@ -278,6 +279,7 @@ public class NoteStoringTO implements java.io.Serializable {
      *            the key of the property to remove
      * @return the value of the removed property or null if there was no property for the key
      * @see #setTransientProperty(String, Object)
+     * @since 3.5
      */
     public Object removeTransientProperty(String key) {
         return transientProperties.remove(key);
@@ -422,6 +424,7 @@ public class NoteStoringTO implements java.io.Serializable {
      *            replaced.
      * @param value
      *            the value of the property
+     * @since 3.5
      */
     public void setTransientProperty(String key, Object value) {
         transientProperties.put(key, value);
