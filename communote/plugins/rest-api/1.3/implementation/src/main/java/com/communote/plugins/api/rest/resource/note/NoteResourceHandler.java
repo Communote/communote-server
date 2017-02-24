@@ -43,9 +43,8 @@ import com.communote.server.service.NoteService;
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class NoteResourceHandler
-        extends
-        DefaultResourceHandler
-        <CreateNoteParameter, EditNoteParameter, DeleteNoteParameter, GetNoteParameter, GetCollectionNoteParameter> {
+extends
+DefaultResourceHandler<CreateNoteParameter, EditNoteParameter, DeleteNoteParameter, GetNoteParameter, GetCollectionNoteParameter> {
 
     /**
      *
@@ -70,8 +69,7 @@ public class NoteResourceHandler
     private void cleanupAttachments(Request request, String attribute, Long[] attachmentIds)
             throws AuthorizationException {
         Set<Long> uploadedAttachments = ResourceHandlerHelper.getUploadedAttachmentsFromSession(
-                request,
-                attribute);
+                request, attribute);
         if (uploadedAttachments != null) {
             // remove all IDs that were saved with note
             if (attachmentIds != null) {
@@ -79,8 +77,8 @@ public class NoteResourceHandler
                     uploadedAttachments.remove(id);
                 }
             }
-            ServiceLocator.findService(ResourceStoringManagement.class)
-                    .deleteOrphanedAttachments(uploadedAttachments);
+            ServiceLocator.findService(ResourceStoringManagement.class).deleteOrphanedAttachments(
+                    uploadedAttachments);
             ResourceHandlerHelper.removeUploadedAttachmentsFromSession(request, attribute);
         }
     }
@@ -134,8 +132,8 @@ public class NoteResourceHandler
      */
     private List<NoteResource> getNotesOfDirectNotifyFollowedFilter(
             GetCollectionNoteParameter getCollectionNoteParameter, NoteRenderContext renderContext,
-            boolean showDirectMessages, boolean showNotesForMe,
-            boolean showFollowedItems, Request request) {
+            boolean showDirectMessages, boolean showNotesForMe, boolean showFollowedItems,
+            Request request) {
         // TODO: KENMEI-3019
         if ((showDirectMessages ? 1 : 0) + (showNotesForMe ? 1 : 0) + (showFollowedItems ? 1 : 0) > 1) {
             // Currently there is no opportunity to set a correct offset for
@@ -206,9 +204,9 @@ public class NoteResourceHandler
     @Override
     public Response handleCreateInternally(CreateNoteParameter createNoteParameter,
             String requestedMimeType, UriInfo uriInfo, String sessionId, Request request)
-            throws IllegalRequestParameterException, BlogNotFoundException,
-            AuthorizationException, NoteStoringPreProcessorException, ResponseBuildException,
-            ExtensionNotSupportedException {
+                    throws IllegalRequestParameterException, BlogNotFoundException, AuthorizationException,
+            NoteStoringPreProcessorException, ResponseBuildException,
+                    ExtensionNotSupportedException {
 
         NoteStoringTO noteStoringTO = NoteResourceHelper.buildNoteStoringTO(createNoteParameter);
 
@@ -266,13 +264,11 @@ public class NoteResourceHandler
     @Override
     public Response handleDeleteInternally(DeleteNoteParameter deleteNoteParameter,
             String requestedMimeType, UriInfo uriInfo, String sessionId, Request request)
-            throws AuthorizationException, ResponseBuildException,
-            ExtensionNotSupportedException {
+                    throws AuthorizationException, ResponseBuildException, ExtensionNotSupportedException {
         ServiceLocator.instance().getService(NoteService.class)
-                .deleteNote(deleteNoteParameter.getNoteId(), false, false);
+        .deleteNote(deleteNoteParameter.getNoteId(), false, false);
         return ResponseHelper.buildSuccessResponse(null, request,
-                "restapi.message.resource.note.delete",
-                deleteNoteParameter.getNoteId());
+                "restapi.message.resource.note.delete", deleteNoteParameter.getNoteId());
     }
 
     /**
@@ -308,9 +304,9 @@ public class NoteResourceHandler
     @Override
     public Response handleEditInternally(EditNoteParameter editNoteParameter,
             String requestedMimeType, UriInfo uriInfo, String sessionId, Request request)
-            throws IllegalRequestParameterException, NoteNotFoundException,
-            AuthorizationException, BlogNotFoundException, NoteStoringPreProcessorException,
-            ResponseBuildException, ExtensionNotSupportedException {
+                    throws IllegalRequestParameterException, NoteNotFoundException, AuthorizationException,
+            BlogNotFoundException, NoteStoringPreProcessorException, ResponseBuildException,
+            ExtensionNotSupportedException {
 
         NoteModificationResult result;
 
@@ -323,8 +319,7 @@ public class NoteResourceHandler
                 .getCrossPostTopicAliases());
 
         result = ServiceLocator.instance().getService(NoteService.class)
-                .updateNote(noteStoringTO, editNoteParameter.getNoteId(),
-                        additionalBlogNameIds, true);
+                .updateNote(noteStoringTO, editNoteParameter.getNoteId(), additionalBlogNameIds);
 
         if (noteStoringTO.isPublish()) {
             // pass the upload session ID directly because it's not in the request anymore
@@ -362,8 +357,8 @@ public class NoteResourceHandler
     @Override
     public Response handleGetInternally(GetNoteParameter getNoteParameter,
             String requestedMimeType, UriInfo uriInfo, String sessionId, Request request)
-            throws AuthorizationException, NoteNotFoundException, ResponseBuildException,
-            ExtensionNotSupportedException {
+                    throws AuthorizationException, NoteNotFoundException, ResponseBuildException,
+                    ExtensionNotSupportedException {
         // don't beautify because single GETs are usually made to edit the note later on
         NoteRenderContext context = NoteResourceHelper.createNoteRenderContext(
                 getNoteParameter.getFilterHtml(), false, request);
@@ -396,19 +391,16 @@ public class NoteResourceHandler
     @Override
     public Response handleListInternally(GetCollectionNoteParameter getCollectionNoteParameter,
             String requestedMimeType, UriInfo uriInfo, String sessionId, Request request)
-            throws ResponseBuildException, ExtensionNotSupportedException {
+                    throws ResponseBuildException, ExtensionNotSupportedException {
 
         Boolean filterHtml = getCollectionNoteParameter.getFilterHtml();
         NoteQueryParameters noteQueryInstance;
-        boolean showDirectMessages = (getCollectionNoteParameter
-                .getF_showDirectMessages() == null) ? false : getCollectionNoteParameter
-                .getF_showDirectMessages();
-        boolean showNotesForMe = (getCollectionNoteParameter
-                .getF_showNotesForMe() == null) ? false : getCollectionNoteParameter
-                .getF_showNotesForMe();
-        boolean showFollowedItems = (getCollectionNoteParameter
-                .getF_showFollowedItems() == null) ? false : getCollectionNoteParameter
-                .getF_showFollowedItems();
+        boolean showDirectMessages = (getCollectionNoteParameter.getF_showDirectMessages() == null) ? false
+                : getCollectionNoteParameter.getF_showDirectMessages();
+        boolean showNotesForMe = (getCollectionNoteParameter.getF_showNotesForMe() == null) ? false
+                : getCollectionNoteParameter.getF_showNotesForMe();
+        boolean showFollowedItems = (getCollectionNoteParameter.getF_showFollowedItems() == null) ? false
+                : getCollectionNoteParameter.getF_showFollowedItems();
         NoteRenderContext renderContext = NoteResourceHelper.createNoteRenderContext(filterHtml,
                 true, request);
         if (!(showDirectMessages || showNotesForMe || showFollowedItems)) {

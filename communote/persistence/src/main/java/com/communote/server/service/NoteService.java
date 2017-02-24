@@ -277,7 +277,7 @@ public class NoteService {
      */
     public DiscussionNoteData getNoteWithComments(Long noteId,
             QueryResultConverter<SimpleNoteListItem, DiscussionNoteData> converter)
-                    throws NoteNotFoundException, AuthorizationException {
+            throws NoteNotFoundException, AuthorizationException {
         return noteManagement.getNoteWithComments(noteId, converter);
     }
 
@@ -395,8 +395,6 @@ public class NoteService {
      * @param additionalBlogNameIds
      *            set of blog aliases for creating crossposts. These aliases will be ignore, if the
      *            note is a comment to another note.
-     * @param resendNotifications
-     *            whether to send notifications to mentioned users
      * @return The result of this operation.
      * @throws BlogNotFoundException
      *             in case the target blog does not exist
@@ -411,10 +409,9 @@ public class NoteService {
      *             Thrown, when the user tries to move a note, which is not a parent root.
      */
     public NoteModificationResult updateNote(NoteStoringTO noteStoringTO, Long noteId,
-            Set<String> additionalBlogNameIds, boolean resendNotifications)
-                    throws BlogNotFoundException, NoteNotFoundException,
-                    NoteManagementAuthorizationException, NoteStoringPreProcessorException,
-                    MovingOfNonRootNotesNotAllowedException {
+            Set<String> additionalBlogNameIds) throws BlogNotFoundException, NoteNotFoundException,
+            NoteManagementAuthorizationException, NoteStoringPreProcessorException,
+            MovingOfNonRootNotesNotAllowedException {
         if (noteId != null && noteStoringTO.getBlogId() != null
                 && noteStoringTO.getContent() == null) {
             // This has to be done in two separate transaction, because
@@ -431,7 +428,7 @@ public class NoteService {
             return result;
         }
         NoteModificationResult result = noteManagement.updateNote(noteStoringTO, noteId,
-                additionalBlogNameIds, resendNotifications);
+                additionalBlogNameIds);
         if (noteStoringTO.isPublish() && result.getStatus().equals(NoteModificationStatus.SUCCESS)) {
             Note editedNote = getNote(result.getNoteId(), new IdentityConverter<Note>());
             Long discussionId = editedNote.getDiscussionId();

@@ -77,18 +77,18 @@ public class NoteManagementTestForTags extends CommunoteIntegrationTest {
 
         TagTO tag = new TagTO(UUID.randomUUID().toString(), TagStoreType.Types.NOTE);
         noteStoringTO.getTags().add(tag);
-        noteManagement.updateNote(noteStoringTO, noteId, new HashSet<String>(), false);
+        noteManagement.updateNote(noteStoringTO, noteId, new HashSet<String>());
         NoteRenderContext context = new NoteRenderContext(null, Locale.ENGLISH);
         NoteData note = noteManagement.getNote(noteId, context);
         Assert.assertEquals(note.getTags().size(), 2);
         noteStoringTO.getTags().clear();
         noteStoringTO.getTags().add(tag);
-        noteManagement.updateNote(noteStoringTO, noteId, new HashSet<String>(), false);
+        noteManagement.updateNote(noteStoringTO, noteId, new HashSet<String>());
         note = noteManagement.getNote(noteId, context);
         Assert.assertEquals(note.getTags().size(), 1);
         Assert.assertEquals(note.getTags().iterator().next().getName(), tag.getDefaultName());
         noteStoringTO.getTags().clear();
-        noteManagement.updateNote(noteStoringTO, noteId, new HashSet<String>(), false);
+        noteManagement.updateNote(noteStoringTO, noteId, new HashSet<String>());
         note = noteManagement.getNote(noteId, context);
         Assert.assertEquals(note.getTags().size(), 0);
     }

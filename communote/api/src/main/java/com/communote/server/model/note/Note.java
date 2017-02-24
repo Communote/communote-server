@@ -468,7 +468,8 @@ public class Note implements Serializable, Followable, Propertyable, Taggable {
     }
 
     /**
-     *
+     * @return the users who were explicitly mentioned in the note. In case no users were mentioned
+     *         the set will be empty. Never returns null.
      */
     public Set<User> getUsersToBeNotified() {
         return this.usersToBeNotified;
@@ -666,6 +667,9 @@ public class Note implements Serializable, Followable, Propertyable, Taggable {
     }
 
     public void setUsersToBeNotified(Set<User> usersToBeNotified) {
+        if (usersToBeNotified == null) {
+            usersToBeNotified = new HashSet<>();
+        }
         this.usersToBeNotified = usersToBeNotified;
     }
 

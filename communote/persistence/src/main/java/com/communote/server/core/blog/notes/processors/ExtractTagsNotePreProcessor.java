@@ -7,16 +7,19 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import com.communote.server.api.core.note.NoteManagementAuthorizationException;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringImmutableContentPreProcessor;
+import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
 import com.communote.server.core.tag.TagParser;
 import com.communote.server.core.tag.TagParserFactory;
+import com.communote.server.model.note.Note;
 
 /**
  * This processor extracts tags from the note content and adds them to the meta data of the note.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class ExtractTagsNotePreProcessor implements NoteStoringImmutableContentPreProcessor {
     /** Pattern for extracting tags from plain content */
@@ -39,9 +42,6 @@ public class ExtractTagsNotePreProcessor implements NoteStoringImmutableContentP
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NoteStoringTO process(NoteStoringTO note) {
         Set<String> extractedTags = new HashSet<String>();
@@ -69,5 +69,11 @@ public class ExtractTagsNotePreProcessor implements NoteStoringImmutableContentP
             note.setUnparsedTags(finalUnparsedTags);
         }
         return note;
+    }
+
+    @Override
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        return process(noteStoringTO);
     }
 }

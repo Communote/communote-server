@@ -89,8 +89,7 @@ public class AssertCommentPreProcessor implements NoteStoringImmutableContentPre
         Note parentNote = noteDao.load(noteStoringTO.getParentNoteId());
         if (parentNote == null) {
             LOGGER.error("Comment creation failed because the parent post with id "
-                    + noteStoringTO.getParentNoteId()
-                    + " was not found.");
+                    + noteStoringTO.getParentNoteId() + " was not found.");
 
             throw new ParentDoesNotExistsNotePreProcessorException("", new NoteNotFoundException(
                     "Cannot create a comment because the parent post does not exist"));
@@ -111,5 +110,12 @@ public class AssertCommentPreProcessor implements NoteStoringImmutableContentPre
         }
         assertCommentOnDirectMessage(noteStoringTO, parentNote);
         return noteStoringTO;
+    }
+
+    @Override
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        // TODO just return the TO?
+        return process(noteStoringTO);
     }
 }

@@ -1,7 +1,9 @@
 package com.communote.server.api.core.note;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.communote.server.api.core.property.StringPropertyTO;
@@ -43,6 +45,7 @@ public class NoteStoringTO implements java.io.Serializable {
     private boolean mentionTopicAuthors;
     private boolean mentionTopicManagers;
     private boolean mentionDiscussionAuthors;
+    private final Map<String, Object> transientProperties = new HashMap<>();
 
     /**
      * @return the additionalBlogs
@@ -60,9 +63,9 @@ public class NoteStoringTO implements java.io.Serializable {
 
     /**
      * public Long[] getAttachmentIds() { return this.attachmentIds; }
-     * 
+     *
      * /**
-     * 
+     *
      */
     public Long getAutosaveNoteId() {
         return this.autosaveNoteId;
@@ -78,7 +81,7 @@ public class NoteStoringTO implements java.io.Serializable {
     }
 
     /**
-     * 
+     *
      */
     public String getContent() {
         return this.content;
@@ -97,7 +100,7 @@ public class NoteStoringTO implements java.io.Serializable {
     /**
      * The creation date is the date as this {@link NoteStoringTO} got constructed. If the note is
      * an update it will be used as last modification date, and if it is a create as creation date.
-     * 
+     *
      * @return the creation date of this note, will never be null (is set on constructing or using
      *         {@link #setCreationDate(Timestamp)}
      */
@@ -125,7 +128,7 @@ public class NoteStoringTO implements java.io.Serializable {
 
     /**
      * Get the failDefinition
-     * 
+     *
      */
     public com.communote.server.api.core.note.NoteStoringFailDefinition getFailDefinition() {
         return this.failDefinition;
@@ -161,6 +164,19 @@ public class NoteStoringTO implements java.io.Serializable {
      */
     public Set<TagTO> getTags() {
         return tags;
+    }
+
+    /**
+     * Get the value of previously added transient property.
+     *
+     * @param key
+     *            the key of the property to get
+     * @return the value of the transient property or null if the property was not set
+     * @see #setTransientProperty(String, Object)
+     * @since 3.5
+     */
+    public Object getTransientProperty(String key) {
+        return transientProperties.get(key);
     }
 
     /**
@@ -257,6 +273,19 @@ public class NoteStoringTO implements java.io.Serializable {
     }
 
     /**
+     * Remove a previously added transient property.
+     *
+     * @param key
+     *            the key of the property to remove
+     * @return the value of the removed property or null if there was no property for the key
+     * @see #setTransientProperty(String, Object)
+     * @since 3.5
+     */
+    public Object removeTransientProperty(String key) {
+        return transientProperties.remove(key);
+    }
+
+    /**
      * @param additionalBlogs
      *            the additionalBlogs to set
      */
@@ -289,7 +318,7 @@ public class NoteStoringTO implements java.io.Serializable {
     }
 
     /**
-     * 
+     *
      * @param creationDate
      *            the creation date for the note, if null (default) it will be the current time
      */
@@ -302,8 +331,7 @@ public class NoteStoringTO implements java.io.Serializable {
         }
     }
 
-    public void setCreationSource(
-            com.communote.server.model.note.NoteCreationSource creationSource) {
+    public void setCreationSource(com.communote.server.model.note.NoteCreationSource creationSource) {
         this.creationSource = creationSource;
     }
 
@@ -367,8 +395,7 @@ public class NoteStoringTO implements java.io.Serializable {
         this.parentNoteId = parentNoteId;
     }
 
-    public void setProperties(
-            Set<StringPropertyTO> properties) {
+    public void setProperties(Set<StringPropertyTO> properties) {
         this.properties = properties;
     }
 
@@ -388,6 +415,21 @@ public class NoteStoringTO implements java.io.Serializable {
         this.tags = tags;
     }
 
+    /**
+     * Add a property which will not be persisted with the note. This can for example be used to
+     * exchange information between a NoteStoringPreProcessor and a NoteStoringPostProcessor.
+     *
+     * @param key
+     *            the key of the property. If there is already a property with that key it will be
+     *            replaced.
+     * @param value
+     *            the value of the property
+     * @since 3.5
+     */
+    public void setTransientProperty(String key, Object value) {
+        transientProperties.put(key, value);
+    }
+
     public void setUnparsedTags(String unparsedTags) {
         this.unparsedTags = unparsedTags;
     }
@@ -398,7 +440,7 @@ public class NoteStoringTO implements java.io.Serializable {
 
     /**
      * <p>
-     * 
+     *
      * @param usersToNotify
      *            A set of alias strings of users that should be notified about the creation of the
      *            user tagged item. Only those users whose alias is known within Communote will be

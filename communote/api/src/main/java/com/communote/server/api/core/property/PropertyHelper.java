@@ -3,6 +3,7 @@ package com.communote.server.api.core.property;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.communote.common.util.Pair;
@@ -58,8 +59,8 @@ public class PropertyHelper {
      *            the key of the property
      * @return the found property or null
      */
-    public static StringPropertyTO getPropertyTO(Iterable<StringPropertyTO> properties, String group,
-            String key) {
+    public static StringPropertyTO getPropertyTO(Iterable<StringPropertyTO> properties,
+            String group, String key) {
         if (properties != null) {
             for (StringPropertyTO property : properties) {
                 if (property.getKeyGroup() != null && property.getKeyGroup().equals(group)
@@ -132,6 +133,34 @@ public class PropertyHelper {
             }
         }
         return target;
+    }
+
+    /**
+     * Remove the identified property from the provided collection.
+     *
+     * @param properties
+     *            the properties to search
+     * @param group
+     *            the group key of the property
+     * @param key
+     *            the key of the property
+     * @return the removed property or null if it was not contained
+     * @since 3.5
+     */
+    public static StringPropertyTO removePropertyTO(Iterable<StringPropertyTO> properties,
+            String group, String key) {
+        if (properties == null || group == null || key == null) {
+            return null;
+        }
+        Iterator<StringPropertyTO> propsIter = properties.iterator();
+        while (propsIter.hasNext()) {
+            StringPropertyTO property = propsIter.next();
+            if (group.equals(property.getKeyGroup()) && key.equals(property.getPropertyKey())) {
+                propsIter.remove();
+                return property;
+            }
+        }
+        return null;
     }
 
     /**

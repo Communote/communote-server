@@ -20,6 +20,7 @@ import com.communote.server.api.core.note.processor.NoteStoringPreProcessorManag
 import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.core.storing.ResourceStoringManagement;
 import com.communote.server.core.template.TemplateNoteStoringPreProcessor;
+import com.communote.server.model.note.Note;
 
 /**
  * Extension point for registering processors to manipulate notes before they are persisted. Typical
@@ -33,7 +34,7 @@ import com.communote.server.core.template.TemplateNoteStoringPreProcessor;
  */
 // TODO wrap NoteStoringTO in another object or path another object (a context) to process method to
 // transfer some additional data like a plain text version of text (for easier blog, user, etc.
-// extraction patterns)
+// extraction patterns) or add these transient data to the transient properties of the TO
 
 @Service("noteStoringPreProcessorManager")
 public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcessorManager {
@@ -112,6 +113,8 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
      *
      * @param preProcessors
      *            the preprocessors to call
+     * @param noteToEdit
+     *            the note to edit or null if creating a new note
      * @param noteStoringTO
      *            the current note TO
      * @return the modified note TO
@@ -121,11 +124,16 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
      *             thrown to indicate that the pre-processing failed and the note cannot be created
      */
     private NoteStoringTO invokeEditableContentProcessors(
-            List<NoteStoringEditableContentPreProcessor> preProcessors, NoteStoringTO noteStoringTO)
-            throws NoteManagementAuthorizationException, NoteStoringPreProcessorException {
+            List<NoteStoringEditableContentPreProcessor> preProcessors, Note noteToEdit,
+            NoteStoringTO noteStoringTO) throws NoteManagementAuthorizationException,
+            NoteStoringPreProcessorException {
         for (NoteStoringEditableContentPreProcessor notePreProcessor : preProcessors) {
             if (noteStoringTO.isPublish() || notePreProcessor.isProcessAutosave()) {
-                noteStoringTO = notePreProcessor.process(noteStoringTO);
+                if (noteToEdit == null) {
+                    noteStoringTO = notePreProcessor.process(noteStoringTO);
+                } else {
+                    noteStoringTO = notePreProcessor.processEdit(noteToEdit, noteStoringTO);
+                }
             }
         }
         return noteStoringTO;
@@ -136,6 +144,8 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
      *
      * @param preProcessors
      *            the preprocessors to call
+     * @param noteToEdit
+     *            the note to edit or null if creating a new note
      * @param noteStoringTO
      *            the current note TO
      * @return the modified note TO
@@ -145,11 +155,16 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
      *             thrown to indicate that the pre-processing failed and the note cannot be created
      */
     private NoteStoringTO invokeImmutableContentProcessors(
-            List<NoteStoringImmutableContentPreProcessor> preProcessors, NoteStoringTO noteStoringTO)
-            throws NoteManagementAuthorizationException, NoteStoringPreProcessorException {
+            List<NoteStoringImmutableContentPreProcessor> preProcessors, Note noteToEdit,
+            NoteStoringTO noteStoringTO) throws NoteManagementAuthorizationException,
+            NoteStoringPreProcessorException {
         for (NoteStoringImmutableContentPreProcessor notePreProcessor : preProcessors) {
             if (noteStoringTO.isPublish() || notePreProcessor.isProcessAutosave()) {
-                noteStoringTO = notePreProcessor.process(noteStoringTO);
+                if (noteToEdit == null) {
+                    noteStoringTO = notePreProcessor.process(noteStoringTO);
+                } else {
+                    noteStoringTO = notePreProcessor.processEdit(noteToEdit, noteStoringTO);
+                }
             }
         }
         return noteStoringTO;
@@ -163,11 +178,18 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
         addProcessor(new ExtractUsersNotePreProcessor());
         addProcessor(new RepostNoteStoringPreProcessor(notePermissionManagement,
                 propertyManagement, resourceStoringManagement));
+        addProcessor(new EditNotificationNoteStoringPreProcessor());
     }
 
     @Override
     public void process(NoteStoringTO noteStoringTO) throws NoteStoringPreProcessorException,
-            NoteManagementAuthorizationException {
+    NoteManagementAuthorizationException {
+        processEdit(null, noteStoringTO);
+    }
+
+    @Override
+    public void processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
         // do some normalizations
         // pre-processors usually assume that the content is not null, also it can be (e.g. template
         // notes). Hint: that the content is not blank will be checked by one of the
@@ -176,13 +198,18 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
             noteStoringTO.setContent("");
         }
         // first invoke the preprocessors that can modify the content
-        noteStoringTO = invokeEditableContentProcessors(noteContentPreProcessors, noteStoringTO);
-        noteStoringTO = invokeEditableContentProcessors(runAfterContentPreProcessors, noteStoringTO);
+        noteStoringTO = invokeEditableContentProcessors(noteContentPreProcessors, noteToEdit,
+                noteStoringTO);
+        noteStoringTO = invokeEditableContentProcessors(runAfterContentPreProcessors, noteToEdit,
+                noteStoringTO);
         // save current content and run preprocessors that do not modify the content
         String savedContent = noteStoringTO.getContent();
-        noteStoringTO = invokeImmutableContentProcessors(notePreProcessors, noteStoringTO);
-        noteStoringTO = invokeImmutableContentProcessors(runAfterPreProcessors, noteStoringTO);
+        noteStoringTO = invokeImmutableContentProcessors(notePreProcessors, noteToEdit,
+                noteStoringTO);
+        noteStoringTO = invokeImmutableContentProcessors(runAfterPreProcessors, noteToEdit,
+                noteStoringTO);
         noteStoringTO.setContent(savedContent);
+
     }
 
     @Override
@@ -195,13 +222,6 @@ public class NoteStoringPreProcessorManagerImpl implements NoteStoringPreProcess
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.communote.server.core.blog.notes.processors.NoteStoringPreProcessorManager#
-     * removePreProcessor
-     * (com.communote.server.core.blog.notes.processors.NoteStoringImmutableContentPreProcessor)
-     */
     @Override
     public void removeProcessor(NoteStoringImmutableContentPreProcessor notePreProcessor) {
         synchronized (notePreProcessors) {

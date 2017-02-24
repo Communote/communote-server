@@ -19,7 +19,7 @@ import com.communote.server.model.user.User;
 /**
  * Processor, which collects users, which want's to be notified about discussions they participated
  * explicitly without being explicitly notified.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class DiscussionParticipationNotificationNoteProcessor extends NotificationNoteProcessor {
@@ -30,7 +30,7 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
 
     /**
      * Constructor which creates a new notification note processor
-     * 
+     *
      * @param parentTreeOnly
      *            if true only the notes which are in the parent tree of the note to process will be
      *            considered. If false all notes of the discussion will be considered.
@@ -49,11 +49,11 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
 
     /**
      * Starts at a root note and collects all authors of all children recursively.
-     * 
+     *
      * @param rootNote
-     *            the root noot to start from
+     *            the root note to start from
      * @param blogId
-     *            the ID of the blog of the root note
+     *            the ID of the topic of the root note
      * @param currentAuthorId
      *            the ID of the author to skip because it refers to the author of the note which
      *            triggered this processor
@@ -86,7 +86,7 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
 
     /**
      * Returns the first note of a discussion
-     * 
+     *
      * @param note
      *            the note for which the discussion root note should be returned
      * @return the root note of the discussion or null if the passed in note is the first note of
@@ -98,6 +98,11 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
             return getNoteDao().load(discussionId);
         }
         return null;
+    }
+
+    @Override
+    public String getId() {
+        return "discussionParticipation";
     }
 
     @Override
@@ -117,7 +122,8 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
      * {@inheritDoc}
      */
     @Override
-    protected Collection<User> getUsersToNotify(Note note, NoteStoringPostProcessorContext context) {
+    protected Collection<User> getUsersToNotify(Note note, NoteStoringPostProcessorContext context,
+            Set<Long> userIdsToSkip) {
         Set<User> usersToNotify = new HashSet<User>();
         if (note.getParent() == null || note.isDirect()) {
             return usersToNotify;
@@ -132,33 +138,23 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
             while ((parent = note.getParent()) != null) {
                 User author = parent.getUser();
                 processAuthor(author, note.getBlog().getId(), currentAuthorId, usersToNotify,
-                        usersNoReadAccess, context.getUserIdsToSkip());
+                        usersNoReadAccess, userIdsToSkip);
                 note = parent;
             }
         } else {
             Note discussionRoot = getDiscussionRootNote(note);
             if (discussionRoot != null) {
                 extractAuthorsFromDiscussionSubTree(discussionRoot, note.getBlog().getId(),
-                        currentAuthorId, usersToNotify, usersNoReadAccess,
-                        context.getUserIdsToSkip());
+                        currentAuthorId, usersToNotify, usersNoReadAccess, userIdsToSkip);
             }
         }
         return usersToNotify;
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean process(Note note, NoteStoringTO noteStoringTO,
-            Map<String, String> properties) {
-        return noteStoringTO.isSendNotifications() && note.getParent() != null && !note.isDirect();
-    }
-
-    /**
      * Stores the author in the usersToNotify collection if he has read access and should not be
      * skipped
-     * 
+     *
      * @param author
      *            the author to process
      * @param topicId
@@ -190,5 +186,13 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
         } else {
             usersNoReadAccess.add(authorId);
         }
+    }
+
+    @Override
+    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
+            Map<String, String> properties, NoteNotificationDetails resendDetails) {
+        // TODO do not notify participating authors if resendDetails is not null (and thus editing
+        // with disabled resend flag)?
+        return note.getParent() != null && !note.isDirect();
     }
 }

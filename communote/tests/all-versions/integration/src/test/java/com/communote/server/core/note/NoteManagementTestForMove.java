@@ -97,7 +97,7 @@ public class NoteManagementTestForMove extends CommunoteIntegrationTest {
      */
     @Test
     public void moveToTopicWithDMs() throws NoteManagementAuthorizationException,
-    InterruptedException {
+            InterruptedException {
         Long rootNoteId = TestUtils.createAndStoreCommonNote(topic1, user1.getId(), "Hi");
         Long directReplyNoteId = TestUtils.createAndStoreCommonNote(topic1, user2.getId(), "d @"
                 + user1.getAlias() + " Hi", rootNoteId);
@@ -169,7 +169,7 @@ public class NoteManagementTestForMove extends CommunoteIntegrationTest {
         AuthenticationTestUtils.setSecurityContext(user);
         NoteStoringTO noteStoringTO = new NoteStoringTO();
         noteStoringTO.setBlogId(targetTopic.getId());
-        noteService.updateNote(noteStoringTO, noteId, null, false);
+        noteService.updateNote(noteStoringTO, noteId, null);
 
         // caused the constraint violation
         topicManagement.deleteBlog(sourceTopic.getId(), null);

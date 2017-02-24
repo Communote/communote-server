@@ -57,7 +57,7 @@ public class TaskTO {
      *             Thrown, if it was not possible to initialize the handler class.
      */
     public TaskTO(Task task, boolean skipHandlerCreation) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
+    InstantiationException, IllegalAccessException {
         if (!skipHandlerCreation) {
             Class<?> forName = Class.forName(task.getHandlerClassName());
             this.handler = (TaskHandler) forName.newInstance();
@@ -107,6 +107,14 @@ public class TaskTO {
      */
     public Date getNextExecution() {
         return nextExecution;
+    }
+
+    /**
+     * @return all properties stored with the task
+     * @since 3.5
+     */
+    public Map<String, String> getProperties() {
+        return taskProperties;
     }
 
     /**

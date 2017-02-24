@@ -17,6 +17,12 @@ import com.communote.server.model.note.Note;
 public interface NoteStoringPostProcessor extends Orderable {
 
     /**
+     * @return a string which uniquely identifies this processor. The string should not contain
+     *         spaces.
+     */
+    String getId();
+
+    /**
      * @return the order value which is interpreted as the priority of the extension. The higher the
      *         priority, the earlier this extension will be called.
      */
@@ -25,14 +31,15 @@ public interface NoteStoringPostProcessor extends Orderable {
 
     /**
      * Allows synchronous processing of a note after it was created or updated. Synchronous means
-     * that this method is run within the transaction in which the note was created or updated.
-     * Moreover, this method returns whether an asynchronous post-processing of the note by this
-     * processor is required. An implementation should be fast and must not modify the note in a way
-     * which leads to a semantically invalid note or note hierarchy.
+     * that this method is run within the transaction in which the note was created or updated. In
+     * addition to the synchronous processing, this method returns whether an asynchronous
+     * post-processing of the note by this processor is required. An implementation should be fast
+     * and must not modify the note in a way which leads to a semantically invalid note or note
+     * hierarchy.
      *
      * @param note
      *            the note to process
-     * @param orginalNoteStoringTO
+     * @param originalNoteStoringTO
      *            the noteStoringTO that holds the original data which was passed to the note
      *            creation/update process
      * @param properties
@@ -41,7 +48,7 @@ public interface NoteStoringPostProcessor extends Orderable {
      *
      * @return true if this processor also wants to process this note asynchronously
      */
-    boolean process(Note note, NoteStoringTO orginalNoteStoringTO, Map<String, String> properties);
+    boolean process(Note note, NoteStoringTO originalNoteStoringTO, Map<String, String> properties);
 
     /**
      * Allows asynchronous processing of a note after it was stored. This method is only called if

@@ -18,12 +18,14 @@ import org.slf4j.LoggerFactory;
 import com.communote.common.util.Orderable;
 import com.communote.plugins.mediaparser.RichMediaExtractor;
 import com.communote.server.api.ServiceLocator;
+import com.communote.server.api.core.note.NoteManagementAuthorizationException;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringImmutableContentPreProcessor;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
 import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.api.core.property.StringPropertyTO;
 import com.communote.server.model.attachment.Attachment;
+import com.communote.server.model.note.Note;
 import com.communote.server.persistence.resource.AttachmentDao;
 
 /**
@@ -36,13 +38,12 @@ import com.communote.server.persistence.resource.AttachmentDao;
 @Provides
 @Instantiate(name = "ContentTypeNotePreProcessor")
 public class ContentTypeNotePreProcessor implements NoteStoringImmutableContentPreProcessor,
-        Orderable {
+Orderable {
 
     /** Logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(ContentTypeNotePreProcessor.class);
 
-    private final static Map<ContentTypes, StringPropertyTO> DEFAULT_PROPERTIES =
-            new HashMap<ContentTypes, StringPropertyTO>();
+    private final static Map<ContentTypes, StringPropertyTO> DEFAULT_PROPERTIES = new HashMap<ContentTypes, StringPropertyTO>();
 
     private final static Set<String> VALID_DOCUMENT_TYPES = new HashSet<String>();
 
@@ -51,24 +52,20 @@ public class ContentTypeNotePreProcessor implements NoteStoringImmutableContentP
     private final static Map<ContentTypes, String[]> PROPERTIES_TO_TAGS = new HashMap<ContentTypes, String[]>();
 
     static {
-        DEFAULT_PROPERTIES.put(ContentTypes.DOCUMENT,
-                new StringPropertyTO(null, PropertyManagement.KEY_GROUP,
-                        ContentTypes.DOCUMENT.getPropertyKey(), new Date()));
-        DEFAULT_PROPERTIES.put(ContentTypes.IDEA,
-                new StringPropertyTO(null, PropertyManagement.KEY_GROUP,
-                        ContentTypes.IDEA.getPropertyKey(), new Date()));
-        DEFAULT_PROPERTIES.put(ContentTypes.QUESTION,
-                new StringPropertyTO(null, PropertyManagement.KEY_GROUP,
-                        ContentTypes.QUESTION.getPropertyKey(), new Date()));
-        DEFAULT_PROPERTIES.put(ContentTypes.IMAGE,
-                new StringPropertyTO(null, PropertyManagement.KEY_GROUP,
-                        ContentTypes.IMAGE.getPropertyKey(), new Date()));
-        DEFAULT_PROPERTIES.put(ContentTypes.LINK,
-                new StringPropertyTO(null, PropertyManagement.KEY_GROUP,
-                        ContentTypes.LINK.getPropertyKey(), new Date()));
-        DEFAULT_PROPERTIES.put(ContentTypes.RICH_MEDIA,
-                new StringPropertyTO(null, PropertyManagement.KEY_GROUP,
-                        ContentTypes.RICH_MEDIA.getPropertyKey(), new Date()));
+        DEFAULT_PROPERTIES.put(ContentTypes.DOCUMENT, new StringPropertyTO(null,
+                PropertyManagement.KEY_GROUP, ContentTypes.DOCUMENT.getPropertyKey(), new Date()));
+        DEFAULT_PROPERTIES.put(ContentTypes.IDEA, new StringPropertyTO(null,
+                PropertyManagement.KEY_GROUP, ContentTypes.IDEA.getPropertyKey(), new Date()));
+        DEFAULT_PROPERTIES.put(ContentTypes.QUESTION, new StringPropertyTO(null,
+                PropertyManagement.KEY_GROUP, ContentTypes.QUESTION.getPropertyKey(), new Date()));
+        DEFAULT_PROPERTIES.put(ContentTypes.IMAGE, new StringPropertyTO(null,
+                PropertyManagement.KEY_GROUP, ContentTypes.IMAGE.getPropertyKey(), new Date()));
+        DEFAULT_PROPERTIES.put(ContentTypes.LINK, new StringPropertyTO(null,
+                PropertyManagement.KEY_GROUP, ContentTypes.LINK.getPropertyKey(), new Date()));
+        DEFAULT_PROPERTIES
+                .put(ContentTypes.RICH_MEDIA, new StringPropertyTO(null,
+                        PropertyManagement.KEY_GROUP, ContentTypes.RICH_MEDIA.getPropertyKey(),
+                        new Date()));
         PROPERTIES_TO_TAGS.put(ContentTypes.IDEA, new String[] { "idea", "idee" });
         PROPERTIES_TO_TAGS.put(ContentTypes.QUESTION, new String[] { "question", "frage" });
         String[] validDocumentTypes = {
@@ -84,8 +81,7 @@ public class ContentTypeNotePreProcessor implements NoteStoringImmutableContentP
                 "application/vnd.ms-excel.sheet.macroEnabled.12",
                 "application/vnd.ms-excel.template.macroEnabled.12",
                 "application/vnd.ms-officetheme docm=application/vnd.ms-word.document.macroEnabled.12",
-                "application/vnd.ms-outlook",
-                "application/vnd.ms-powerpoint",
+                "application/vnd.ms-outlook", "application/vnd.ms-powerpoint",
                 "application/vnd.ms-powerpoint.addin.macroEnabled.12",
                 "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
                 "application/vnd.ms-powerpoint.slide.macroEnabled.12",
@@ -104,8 +100,7 @@ public class ContentTypeNotePreProcessor implements NoteStoringImmutableContentP
                 "application/vnd.oasis.opendocument.text",
                 "application/vnd.oasis.opendocument.text-master",
                 "application/vnd.oasis.opendocument.text-template",
-                "application/vnd.oasis.opendocument.text-web",
-                "application/vnd.openxmlformats",
+                "application/vnd.oasis.opendocument.text-web", "application/vnd.openxmlformats",
                 "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                 "application/vnd.openxmlformats-officedocument.presentationml.slide",
                 "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
@@ -115,11 +110,7 @@ public class ContentTypeNotePreProcessor implements NoteStoringImmutableContentP
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-                "application/x-msg",
-                "image/vnd.microsoft.icon",
-                "text/plain",
-                "text/rtf"
-        };
+                "application/x-msg", "image/vnd.microsoft.icon", "text/plain", "text/rtf" };
         for (String validDocumentType : validDocumentTypes) {
             VALID_DOCUMENT_TYPES.add(validDocumentType);
         }
@@ -154,6 +145,25 @@ public class ContentTypeNotePreProcessor implements NoteStoringImmutableContentP
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NoteStoringTO process(NoteStoringTO note) throws NoteStoringPreProcessorException {
+        Map<ContentTypes, StringPropertyTO> properties = new HashMap<ContentTypes, StringPropertyTO>(
+                DEFAULT_PROPERTIES);
+        if (note.getContent().contains("<a href")) {
+            properties.put(ContentTypes.LINK, getProperty(ContentTypes.LINK));
+        }
+        if (!RICH_MEDIA_EXTRACTOR.getRichMediaDescriptions(note.getContent()).isEmpty()) {
+            properties.put(ContentTypes.RICH_MEDIA, getProperty(ContentTypes.RICH_MEDIA));
+        }
+        processAttachments(note, properties);
+        processTags(note.getUnparsedTags(), properties);
+        note.getProperties().addAll(properties.values());
+        return note;
+    }
+
+    /**
      * This processes the notes attachments.
      *
      * @param note
@@ -172,17 +182,12 @@ public class ContentTypeNotePreProcessor implements NoteStoringImmutableContentP
             try {
                 Attachment attachment = attachmentDao.load(attachmentId);
                 String mimeType = attachment.getContentType();
-                if (mimeType.startsWith("image/")
-                        || attachment.getName().endsWith(".ai")) {
-                    properties.put(ContentTypes.IMAGE,
-                            getProperty(ContentTypes.IMAGE));
-                } else if (mimeType.startsWith("video/")
-                        || attachment.getName().endsWith(".ai")) {
-                    properties.put(ContentTypes.RICH_MEDIA,
-                            getProperty(ContentTypes.RICH_MEDIA));
+                if (mimeType.startsWith("image/") || attachment.getName().endsWith(".ai")) {
+                    properties.put(ContentTypes.IMAGE, getProperty(ContentTypes.IMAGE));
+                } else if (mimeType.startsWith("video/") || attachment.getName().endsWith(".ai")) {
+                    properties.put(ContentTypes.RICH_MEDIA, getProperty(ContentTypes.RICH_MEDIA));
                 } else if (VALID_DOCUMENT_TYPES.contains(mimeType)) {
-                    properties.put(ContentTypes.DOCUMENT,
-                            getProperty(ContentTypes.DOCUMENT));
+                    properties.put(ContentTypes.DOCUMENT, getProperty(ContentTypes.DOCUMENT));
                 }
             } catch (Exception e) {
                 LOGGER.error("There was a problem with attachment {}.", attachmentId, e);
@@ -190,23 +195,10 @@ public class ContentTypeNotePreProcessor implements NoteStoringImmutableContentP
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public NoteStoringTO process(NoteStoringTO note) throws NoteStoringPreProcessorException {
-        Map<ContentTypes, StringPropertyTO> properties = new HashMap<ContentTypes, StringPropertyTO>(
-                DEFAULT_PROPERTIES);
-        if (note.getContent().contains("<a href")) {
-            properties.put(ContentTypes.LINK, getProperty(ContentTypes.LINK));
-        }
-        if (!RICH_MEDIA_EXTRACTOR.getRichMediaDescriptions(note.getContent()).isEmpty()) {
-            properties.put(ContentTypes.RICH_MEDIA, getProperty(ContentTypes.RICH_MEDIA));
-        }
-        processAttachments(note, properties);
-        processTags(note.getUnparsedTags(), properties);
-        note.getProperties().addAll(properties.values());
-        return note;
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        return process(noteStoringTO);
     }
 
     /**

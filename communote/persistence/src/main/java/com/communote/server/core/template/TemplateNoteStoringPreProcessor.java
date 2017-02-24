@@ -14,12 +14,13 @@ import com.communote.server.api.core.note.processor.NoteStoringPreProcessorExcep
 import com.communote.server.api.core.property.PropertyHelper;
 import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.api.core.property.StringPropertyTO;
+import com.communote.server.model.note.Note;
 import com.communote.server.persistence.user.client.ClientHelper;
 
 /**
  * Note storing pre-processor which will set the default content of a template note by rendering the
  * template with default language and plain text render mode.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class TemplateNoteStoringPreProcessor implements NoteStoringEditableContentPreProcessor {
@@ -64,8 +65,8 @@ public class TemplateNoteStoringPreProcessor implements NoteStoringEditableConte
             NoteRenderContext context = new NoteRenderContext(NoteRenderMode.PLAIN, locale);
             try {
                 String rendered = getTemplateService().renderTemplate(
-                        templateIdProperty.getPropertyValue(),
-                        templatePropertiesJSON, context, true);
+                        templateIdProperty.getPropertyValue(), templatePropertiesJSON, context,
+                        true);
                 noteStoringTO.setContent(rendered);
                 noteStoringTO.setContentType(NoteContentType.PLAIN_TEXT);
             } catch (NoteTemplateNotFoundException e) {
@@ -79,4 +80,9 @@ public class TemplateNoteStoringPreProcessor implements NoteStoringEditableConte
         return noteStoringTO;
     }
 
+    @Override
+    public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+            throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+        return process(noteStoringTO);
+    }
 }

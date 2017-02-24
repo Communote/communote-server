@@ -388,14 +388,14 @@ public class DirectMessageTest extends CommunoteIntegrationTest {
         Assert.assertTrue(noteManagement.getNote(noteId, new IdentityConverter<Note>()).isDirect());
 
         // Should work.
-        noteManagement.updateNote(noteStoringTO, noteId, null, false);
+        noteManagement.updateNote(noteStoringTO, noteId, null);
 
         TestUtils.createAndStoreCommonNote(topic, user.getId(),
                 "d @" + user.getAlias() + " blabla", noteId);
 
         // Should fail.
         try {
-            noteManagement.updateNote(noteStoringTO, noteId, null, false);
+            noteManagement.updateNote(noteStoringTO, noteId, null);
             Assert.fail("It should not be possible to edit a direct message which has comments.");
         } catch (NoteManagementAuthorizationException e) {
             // Okay

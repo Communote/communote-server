@@ -7,12 +7,14 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.communote.server.api.core.note.NoteManagementAuthorizationException;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringEditableContentPreProcessor;
 import com.communote.server.api.core.note.processor.NoteStoringImmutableContentPreProcessor;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorException;
 import com.communote.server.api.core.note.processor.NoteStoringPreProcessorManager;
 import com.communote.server.core.blog.notes.processors.NoteStoringPreProcessorManagerImpl;
+import com.communote.server.model.note.Note;
 
 /**
  *
@@ -64,6 +66,12 @@ public class NotePreProcessorManagementTest {
             return note;
         }
 
+        @Override
+        public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+                throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+            return process(noteStoringTO);
+        }
+
     }
 
     /**
@@ -108,6 +116,12 @@ public class NotePreProcessorManagementTest {
         public NoteStoringTO process(NoteStoringTO note) throws NoteStoringPreProcessorException {
             callOrder.add(order);
             return note;
+        }
+
+        @Override
+        public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
+                throws NoteStoringPreProcessorException, NoteManagementAuthorizationException {
+            return process(noteStoringTO);
         }
 
     }

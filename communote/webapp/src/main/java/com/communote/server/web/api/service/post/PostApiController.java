@@ -150,7 +150,7 @@ public class PostApiController extends BaseRestApiController {
             }
             try {
                 ServiceLocator.findService(ResourceStoringManagement.class)
-                .deleteOrphanedAttachments(uploadedAttachments);
+                        .deleteOrphanedAttachments(uploadedAttachments);
             } catch (AuthorizationException e) {
                 LOGGER.error(e.getMessage(), e);
             }
@@ -476,8 +476,7 @@ public class PostApiController extends BaseRestApiController {
                 noteStoringTO.setParentNoteId(parentNoteId);
                 result = noteManagement.createNote(noteStoringTO, crossPostBlogAliasesSet);
             } else {
-                result = noteManagement.updateNote(noteStoringTO, noteId, crossPostBlogAliasesSet,
-                        true);
+                result = noteManagement.updateNote(noteStoringTO, noteId, crossPostBlogAliasesSet);
             }
             if (!result.getStatus().equals(NoteModificationStatus.SUCCESS)) {
                 errorMessage = CreateBlogPostHelper.getFeedbackMessageAfterModification(result,

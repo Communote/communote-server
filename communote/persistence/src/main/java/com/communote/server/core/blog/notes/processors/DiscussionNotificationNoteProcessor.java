@@ -18,7 +18,7 @@ import com.communote.server.model.user.User;
  * <p>
  * Notifies all authors of parent notes of a note and thus all users that participated in the
  * discussion the note is a part of.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class DiscussionNotificationNoteProcessor extends NotificationNoteProcessor {
@@ -28,7 +28,7 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
 
     /**
      * Constructor which creates a new notification note processor
-     * 
+     *
      * @param parentTreeOnly
      *            if true only the notes which are in the parent tree of the note to process will be
      *            considered. If false all notes of the discussion will be considered.
@@ -43,7 +43,7 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
 
     /**
      * Starts at a root note and collects all authors of all children recursively.
-     * 
+     *
      * @param rootNote
      *            the root noot to start from
      * @param blogId
@@ -77,18 +77,22 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
 
     /**
      * Returns the first note of a discussion
-     * 
+     *
      * @param note
      *            the note for which the discussion root note should be returned
-     * @return the root note of the discussion or null if the passed in note is the first note of
-     *         the discussion
+     * @return the root note of the discussion
      */
     private Note getDiscussionRootNote(Note note) {
         Long discussionId = note.getDiscussionId();
         if (!note.getId().equals(discussionId)) {
             return getNoteDao().load(discussionId);
         }
-        return null;
+        return note;
+    }
+
+    @Override
+    public String getId() {
+        return "discussionMention";
     }
 
     /**
@@ -100,28 +104,26 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
         return 90;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected Collection<User> getUsersToNotify(Note note, NoteStoringPostProcessorContext context) {
+    protected Collection<User> getUsersToNotify(Note note, NoteStoringPostProcessorContext context,
+            Set<Long> userIdsToSkip) {
         Set<User> usersToNotify = new HashSet<User>();
-        if (!note.isMentionDiscussionAuthors() || note.getParent() == null) {
+        if (!note.isMentionDiscussionAuthors() || ignoreDiscussion(note)) {
             return usersToNotify;
         }
         Set<Long> usersNoReadAccess = new HashSet<Long>();
         // to get all users participating in the discussion we have to walk the discussion tree
         // upwards to the root note and than collect all children recursively and return the
         // authors, but ignore the author of this note
-        Long currentAuthorId = Boolean.getBoolean("com.communote.mention.discussion.ignore-author")
-                ? note.getUser().getId() : -1L;
+        Long currentAuthorId = Boolean.getBoolean("com.communote.mention.discussion.ignore-author") ? note
+                .getUser().getId() : -1L;
         if (this.parentTreeOnly) {
             Note parent;
             Set<Long> processedNotes = new HashSet<Long>();
             while ((parent = note.getParent()) != null) {
                 User author = parent.getUser();
                 processAuthor(author, note.getBlog().getId(), currentAuthorId, usersToNotify,
-                        usersNoReadAccess, context.getUserIdsToSkip());
+                        usersNoReadAccess, userIdsToSkip);
                 note = parent;
                 if (processedNotes.contains(note.getId())) {
                     break;
@@ -132,39 +134,54 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
             Note discussionRoot = getDiscussionRootNote(note);
             if (discussionRoot != null) {
                 extractAuthorsFromDiscussionSubTree(discussionRoot, note.getBlog().getId(),
-                        currentAuthorId, usersToNotify, usersNoReadAccess,
-                        context.getUserIdsToSkip());
+                        currentAuthorId, usersToNotify, usersNoReadAccess, userIdsToSkip);
             }
         }
         return usersToNotify;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean process(Note note, NoteStoringTO noteStoringTO,
-            Map<String, String> properties) {
-        // all notes with a parent note should be processed
-        int maxUsers = ClientProperty.MAX_NUMBER_OF_MENTIONED_USERS
-                .getValue(ClientProperty.DEFAULT_MAX_NUMBER_OF_MENTIONED_USERS);
-        // TODO how to get information about users to skip at check time?
-        if (maxUsers > 0
-                && maxUsers < getUsersToNotify(note, new NoteStoringPostProcessorContext(new Long[0]))
-                        .size()) {
-            throw new TooManyMentionedUsersNoteManagementException();
+    private boolean ignoreDiscussion(Note note) {
+        if (note.getParent() == null) {
+            // edit case of parent note
+            if (parentTreeOnly) {
+                return true;
+            } else {
+                Set<Note> children = note.getChildren();
+                return children == null || children.isEmpty();
+            }
         }
-        boolean processMe = noteStoringTO.isSendNotifications()
-                && noteStoringTO.isMentionDiscussionAuthors()
-                && note.getParent() != null;
+        return false;
+    }
 
-        return processMe;
+    @Override
+    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
+            Map<String, String> properties, NoteNotificationDetails resendDetails) {
+        if (noteStoringTO.isMentionDiscussionAuthors() && !ignoreDiscussion(note)) {
+            Set<Long> userIdsToSkip = new HashSet<>();
+            if (resendDetails != null) {
+                if (resendDetails.isMentionDiscussionAuthors()) {
+                    // if edited note already notified the discussion members, don't do it again
+                    return false;
+                }
+                userIdsToSkip = resendDetails.getMentionedUserIds();
+            }
+            // all notes with a parent note should be processed
+            int maxUsers = ClientProperty.MAX_NUMBER_OF_MENTIONED_USERS
+                    .getValue(ClientProperty.DEFAULT_MAX_NUMBER_OF_MENTIONED_USERS);
+            if (maxUsers > 0
+                    && maxUsers < getUsersToNotify(note, new NoteStoringPostProcessorContext(null),
+                            userIdsToSkip).size()) {
+                throw new TooManyMentionedUsersNoteManagementException();
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
      * Stores the author in the usersToNotify collection if he has read access and should not be
      * skipped
-     * 
+     *
      * @param author
      *            the author to process
      * @param blogId
@@ -186,8 +203,7 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
         // avoid unnecessary blog access checks
         if (!authorId.equals(currentAuthorId) && !usersNoReadAccess.contains(authorId)
                 && !userIdsToSkip.contains(authorId) && !usersToNotify.contains(author)) {
-            boolean readAccess = topicRightsManagement.userHasReadAccess(blogId, authorId,
-                    false);
+            boolean readAccess = topicRightsManagement.userHasReadAccess(blogId, authorId, false);
             if (readAccess) {
                 usersToNotify.add(author);
             } else {
