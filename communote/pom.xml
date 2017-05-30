@@ -3,7 +3,7 @@
     <groupId>com.communote.server</groupId>
     <artifactId>communote-server-build</artifactId>
     <packaging>pom</packaging>
-    <version>3.4.1</version>
+    <version>3.4.2-SNAPSHOT</version>
     <description>The Communote Project</description>
     <name>Communote - Build</name>
     <url>https://communote.github.io/</url>
