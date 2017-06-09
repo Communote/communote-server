@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.communote.common.converter.CollectionConverter;
 import com.communote.common.converter.IdentityConverter;
 import com.communote.common.util.PageableList;
@@ -35,6 +38,8 @@ import com.communote.server.model.user.UserStatus;
  */
 public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TopicNotificationNoteProcessor.class); 
+    
     private final BlogRightsManagement topicRightsManagement;
     private final UserManagement userManagement;
     private final QueryManagement queryManagement;
@@ -73,6 +78,14 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
             return null; // Only managers are allowed and these are already resolved.
         }
         Collection<User> usersToNotify = internalGetUsersToNotify(note);
+        if (LOGGER.isDebugEnabled()) {
+            StringBuilder message = new StringBuilder("Users to notify about note ");
+            message.append(note.getId()).append(":");
+            for (User user : usersToNotify) {
+                message.append(" ").append(user.getAlias());
+            }
+            LOGGER.debug(message.toString());
+        }
         return usersToNotify;
     }
 
