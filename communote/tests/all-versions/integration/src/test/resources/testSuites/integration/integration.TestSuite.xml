@@ -101,6 +101,7 @@
     <test name="Communote Integrationstests - Security">
         <classes>
             <class name="com.communote.server.core.security.SecurityManagementTest"/>
+            <class name="com.communote.server.core.user.security.UserPasswordManagement"/>
         </classes>
     </test>
     <test name="Communote Integrationstests - Query">
