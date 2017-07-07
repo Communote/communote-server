@@ -9,24 +9,23 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.common.NotFoundException;
-import com.communote.server.api.core.security.SecurityCodeManagement;
+import com.communote.server.api.core.user.UserNotFoundException;
 import com.communote.server.core.common.exceptions.PasswordLengthException;
-import com.communote.server.core.user.ExternalUsersMayNotChangeTheirPasswordException;
-import com.communote.server.core.user.UserManagement;
-import com.communote.server.model.security.SecurityCode;
-import com.communote.server.model.user.User;
-import com.communote.server.model.user.security.ForgottenPasswordSecurityCode;
-import com.communote.server.persistence.common.messages.ResourceBundleManager;
+import com.communote.server.core.user.ExternalUserPasswordChangeNotAllowedException;
+import com.communote.server.core.user.security.UserPasswordManagement;
+import com.communote.server.persistence.common.security.SecurityCodeNotFoundException;
 import com.communote.server.web.commons.MessageHelper;
 import com.communote.server.web.commons.controller.BaseFormController;
 import com.communote.server.web.fe.portal.user.forms.ForgottenPWForm;
 
 /**
  * Controller to request a new and confirm a password
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class ForgottenPWController extends BaseFormController {
+
+    private static final String MSG_KEY_NO_SECURITYCODE_FOUND = "user.forgotten.password.no.securitycode.found";
 
     /**
      * @param request
@@ -42,47 +41,29 @@ public class ForgottenPWController extends BaseFormController {
      *             in case of an show form error
      */
     private ModelAndView confirmNewPassword(HttpServletRequest request, BindException errors,
-            ForgottenPWForm form, SecurityCode secCode) throws Exception {
+            ForgottenPWForm form, String secCode) throws Exception {
         ModelAndView mav = null;
-        try {
-            User user = secCode.getUser();
-            // assume the pasword is plain, if not provided the code to the
-            // cgange password
-            // method
-            ServiceLocator.instance().getService(UserManagement.class).changePassword(user.getId(),
-                    form.getPassword());
-            // mav = new ModelAndView(getFormView(), getCommandName(),
-            // command);
-            mav = new ModelAndView(getSuccessView());
-            MessageHelper.saveMessage(request, ResourceBundleManager.instance().getText(
-                    "user.forgotten.password.changing.successful", user.getLanguageLocale()));
-            ServiceLocator.instance().getService(SecurityCodeManagement.class)
-                    .deleteAllCodesByUser(
-                            user.getId(), ForgottenPasswordSecurityCode.class);
-        } catch (PasswordLengthException e) {
-            errors.rejectValue("password", "error.password.must.have.at.least.6.characters",
-                    "The password is too short!");
-            mav = showForm(request, errors, getFormView());
-        }
+        if (secCode == null) {
+            errors.rejectValue("password1", MSG_KEY_NO_SECURITYCODE_FOUND,
+                    "The given security code is null");
+        } else {
+            try {
+                ServiceLocator.instance().getService(UserPasswordManagement.class)
+                        .changePassword(secCode, form.getPassword());
+                mav = new ModelAndView(getSuccessView());
+                MessageHelper.saveMessageFromKey(request,
+                        "user.forgotten.password.changing.successful");
 
+            } catch (SecurityCodeNotFoundException e) {
+                errors.rejectValue("password1", MSG_KEY_NO_SECURITYCODE_FOUND,
+                        "The given security code does not exist");
+            } catch (PasswordLengthException e) {
+                errors.rejectValue("password", "error.password.must.have.at.least.6.characters",
+                        "The password is too short!");
+                mav = showForm(request, errors, getFormView());
+            }
+        }
         return mav;
-    }
-
-    /**
-     * Extracts the security code from the request object.
-     * 
-     * @param request
-     *            the request
-     * @return the security code or null if not found
-     */
-    private SecurityCode extractSecurityCode(HttpServletRequest request) {
-        SecurityCode secCode = null;
-        String code = request.getParameter("code");
-        if (StringUtils.isNotBlank(code)) {
-            secCode = ServiceLocator.instance().getService(SecurityCodeManagement.class)
-                    .findByCode(code);
-        }
-        return secCode;
     }
 
     /**
@@ -111,14 +92,8 @@ public class ForgottenPWController extends BaseFormController {
             if (StringUtils.equals(ForgottenPWForm.SEND_PW_LINK, form.getAction())) {
                 mav = sendPasswordLink(request, errors, form);
             } else if (StringUtils.equals(ForgottenPWForm.CONFIRM_NEW_PASSWORD, form.getAction())) {
-                SecurityCode secCode = extractSecurityCode(request);
-                if (secCode != null) {
-                    mav = confirmNewPassword(request, errors, form, secCode);
-                } else {
-                    errors.rejectValue("password1",
-                            "user.forgotten.password.no.securitycode.found",
-                            "The given security code is null");
-                }
+                String code = request.getParameter("code");
+                mav = confirmNewPassword(request, errors, form, code);
             }
         }
         if (errors.hasErrors()) {
@@ -133,7 +108,7 @@ public class ForgottenPWController extends BaseFormController {
 
     /**
      * Sends the password link to the user
-     * 
+     *
      * @param request
      *            the request
      * @param errors
@@ -145,21 +120,17 @@ public class ForgottenPWController extends BaseFormController {
     private ModelAndView sendPasswordLink(HttpServletRequest request, BindException errors,
             ForgottenPWForm form) {
         ModelAndView mav = null;
-        UserManagement userManagement = ServiceLocator.instance().getService(UserManagement.class);
-        User user = userManagement.findUserByEmail(
-                form.getEmail());
-        if (user != null) {
-            try {
-                userManagement.sendNewPWLink(user);
-                mav = new ModelAndView(getSuccessView());
-                MessageHelper.saveMessage(request, ResourceBundleManager.instance().getText(
-                        "user.forgotten.password.email.sending.successful",
-                        user.getLanguageLocale()));
-            } catch (ExternalUsersMayNotChangeTheirPasswordException e) {
-                errors.rejectValue("email", "user.forgotten.password.user.is.external",
-                        "No user for this email");
-            }
-        } else {
+        UserPasswordManagement userPasswordManagement = ServiceLocator.instance()
+                .getService(UserPasswordManagement.class);
+        try {
+            userPasswordManagement.requestPasswordChange(form.getEmail());
+            mav = new ModelAndView(getSuccessView());
+            MessageHelper.saveMessageFromKey(request,
+                    "user.forgotten.password.email.sending.successful");
+        } catch (ExternalUserPasswordChangeNotAllowedException e) {
+            errors.rejectValue("email", "user.forgotten.password.user.is.external",
+                    "No user for this email");
+        } catch (UserNotFoundException e) {
             errors.rejectValue("email", "user.forgotten.password.user.not.exist",
                     "No user for this email");
         }

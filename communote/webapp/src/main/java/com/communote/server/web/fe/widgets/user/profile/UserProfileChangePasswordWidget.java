@@ -2,17 +2,14 @@ package com.communote.server.web.fe.widgets.user.profile;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
 
-import com.communote.common.encryption.HashCodeGenerator;
 import com.communote.server.api.ServiceLocator;
 import com.communote.server.core.common.exceptions.PasswordLengthException;
 import com.communote.server.core.security.SecurityHelper;
-import com.communote.server.core.user.UserManagement;
-import com.communote.server.model.user.User;
+import com.communote.server.core.user.security.UserPasswordManagement;
 import com.communote.server.web.commons.MessageHelper;
 import com.communote.server.web.fe.portal.user.profile.forms.UserProfileChangePasswordForm;
 import com.communote.server.web.fe.portal.user.profile.validator.UserProfileChangePasswordValidator;
@@ -23,8 +20,8 @@ import com.communote.server.widgets.springmvc.SpringFormWidget;
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
-public class UserProfileChangePasswordWidget extends
-        SpringFormWidget<UserProfileChangePasswordForm> {
+public class UserProfileChangePasswordWidget
+        extends SpringFormWidget<UserProfileChangePasswordForm> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(UserProfileChangePasswordWidget.class);
@@ -37,7 +34,8 @@ public class UserProfileChangePasswordWidget extends
 
     public UserProfileChangePasswordWidget(boolean currentPasswordRequired) {
         this.currentPasswordRequired = currentPasswordRequired;
-        this.setValidator(new UserProfileChangePasswordValidator(currentPasswordRequired));
+        this.setValidator(new UserProfileChangePasswordValidator(
+                ServiceLocator.findService(UserPasswordManagement.class), currentPasswordRequired));
     }
 
     @Override
@@ -72,41 +70,32 @@ public class UserProfileChangePasswordWidget extends
     protected void onSubmit(HttpServletRequest request,
             UserProfileChangePasswordForm formBackingObject, BindingResult errors) {
         String newPassword = formBackingObject.getNewPassword();
-        UserManagement userManagement = ServiceLocator.findService(UserManagement.class);
+        UserPasswordManagement userPasswordManagement = ServiceLocator
+                .findService(UserPasswordManagement.class);
         Long userId = getUserId(request);
         if (userId == null) {
             LOGGER.error("No user ID provided");
             errors.reject("error.application.exception.unspecified", "No user ID provided");
         } else {
             if (isCurrentPasswordRequired()) {
-                User user = userManagement.findUserByUserId(userId);
-
-                String confirm = user.getPassword();
                 String oldPassword = formBackingObject.getOldPassword();
-
-                // checking process is copied from
-                // DatabaseAuthenticationProvider.assertPasswords(String, String, String)
-                if (!StringUtils.equals(confirm, oldPassword)) {
-                    // in case it was a plain text password try the md5 one
-                    if (!StringUtils
-                            .equals(confirm, HashCodeGenerator.generateMD5HashCode(oldPassword))) {
-                        errors.rejectValue("oldPassword",
-                                "user.profile.password.error.wrong.password",
-                                "The password is incorrect.");
-                    }
+                if (oldPassword == null
+                        || !userPasswordManagement.checkPassword(userId, oldPassword)) {
+                    errors.rejectValue("oldPassword", "user.profile.password.error.wrong.password",
+                            "The password is incorrect.");
                 }
             }
         }
         if (!errors.hasErrors()) {
             try {
-                userManagement.changePassword(userId, newPassword);
-                MessageHelper.saveMessage(request, MessageHelper.getText(request,
-                        "user.profile.password.success"));
+                userPasswordManagement.changePassword(userId, newPassword);
+                MessageHelper.saveMessage(request,
+                        MessageHelper.getText(request, "user.profile.password.success"));
             } catch (PasswordLengthException e) {
-                errors.rejectValue("newPassword",
-                        "error.password.must.have.at.least.6.characters",
+                errors.rejectValue("newPassword", "error.password.must.have.at.least.6.characters",
                         "The password is not long enough.");
             } catch (Exception e) {
+                LOGGER.error("Updating password of user with ID " + userId + " failed", e);
                 errors.rejectValue("newPassword", "user.profile.password.error",
                         "Changing the password failed!");
             }

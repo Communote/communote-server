@@ -122,16 +122,14 @@ public class UserDaoImpl extends UserDaoBase {
      *            the source vo
      * @param target
      *            the entity
-     * @param copyIfNull
-     *            true if copy always (overwrite)
      */
-    private void copyAuthorities(UserVO source, User target, boolean copyIfNull) {
-        if (copyIfNull || source.getRoles() != null) {
+    private void copyAuthorities(UserVO source, User target) {
+        if (source.getRoles() != null) {
             if (target.getUserAuthorities() != null && target.getUserAuthorities().size() > 0) {
                 getUserAuthorityDao().remove(target.getUserAuthorities());
             }
-            Set<UserAuthority> authorities = UserAuthorityHelper.getUserAuthorities(source
-                    .getRoles());
+            Set<UserAuthority> authorities = UserAuthorityHelper
+                    .getUserAuthorities(source.getRoles());
             getUserAuthorityDao().create(authorities);
             target.setUserAuthorities(authorities);
         }
@@ -181,10 +179,8 @@ public class UserDaoImpl extends UserDaoBase {
         }
         if (StringUtils.isNotBlank(systemId)) {
             criteria.createAlias(UserConstants.EXTERNALAUTHENTICATIONS, "externalAuth");
-            criteria.add(Restrictions.eq("externalAuth."
-                    + ExternalUserAuthenticationConstants.SYSTEMID, systemId));
-        } else {
-            criteria.add(Restrictions.isNotNull(UserConstants.PASSWORD));
+            criteria.add(Restrictions
+                    .eq("externalAuth." + ExternalUserAuthenticationConstants.SYSTEMID, systemId));
         }
         Object result = criteria.list().get(0);
         return (Long) result;
@@ -225,8 +221,8 @@ public class UserDaoImpl extends UserDaoBase {
         mailConfig.setType(MessagerConnectorType.MAIL);
         mailConfig.setPriority(NotificationManagementConstants.MAIL_PRIORITY);
         mailConfig.setProperties(null);
-        ServiceLocator.findService(UserProfileManagement.class).addMessagingConnectorConfig(
-                notificationConfigId, mailConfig);
+        ServiceLocator.findService(UserProfileManagement.class)
+                .addMessagingConnectorConfig(notificationConfigId, mailConfig);
     }
 
     /**
@@ -235,9 +231,9 @@ public class UserDaoImpl extends UserDaoBase {
     @Override
     protected User handleFindByAlias(String alias) {
 
-        List<?> results = getHibernateTemplate().find(
-                "from " + UserConstants.CLASS_NAME + " where lower(" + UserConstants.ALIAS
-                        + ") = ?", alias.toLowerCase().replace("\0", ""));
+        List<?> results = getHibernateTemplate().find("from " + UserConstants.CLASS_NAME
+                + " where lower(" + UserConstants.ALIAS + ") = ?",
+                alias.toLowerCase().replace("\0", ""));
         if (results.size() > 1) {
             throw new IllegalDatabaseState("Cannot have more than one user with the same alias, "
                     + "Alias is: '" + alias + "'");
@@ -359,11 +355,10 @@ public class UserDaoImpl extends UserDaoBase {
             final boolean reminderMailSent) {
         List<?> result = getHibernateTemplate().findByNamedParam(
                 "select user" + " from " + UserConstants.CLASS_NAME + " user JOIN user."
-                        + UserConstants.USERAUTHORITIES + " auth WHERE user."
-                        + UserConstants.STATUS + " IN (:status) AND " + "user."
-                        + UserConstants.REMINDERMAILSENT + " = :sent and " + "user."
-                        + UserConstants.STATUSCHANGED + " <= :date and " + "auth."
-                        + UserAuthorityConstants.ROLE + " NOT IN (:authorities)",
+                        + UserConstants.USERAUTHORITIES + " auth WHERE user." + UserConstants.STATUS
+                        + " IN (:status) AND " + "user." + UserConstants.REMINDERMAILSENT
+                        + " = :sent and " + "user." + UserConstants.STATUSCHANGED + " <= :date and "
+                        + "auth." + UserAuthorityConstants.ROLE + " NOT IN (:authorities)",
                 new String[] { "status", "sent", "date", "authorities" },
                 new Object[] { new UserStatus[] { UserStatus.INVITED, UserStatus.REGISTERED },
                         reminderMailSent, before, new UserRole[] { UserRole.ROLE_SYSTEM_USER } });
@@ -385,8 +380,8 @@ public class UserDaoImpl extends UserDaoBase {
         if (excludeSystemUsers) {
             query += " AND " + CommunoteEntityConstants.ID + " NOT IN (SELECT user."
                     + CommunoteEntityConstants.ID + " FROM " + UserConstants.CLASS_NAME
-                    + " user INNER JOIN user." + UserConstants.USERAUTHORITIES
-                    + " auth WHERE auth." + UserAuthorityConstants.ROLE + " = :authorities) ";
+                    + " user INNER JOIN user." + UserConstants.USERAUTHORITIES + " auth WHERE auth."
+                    + UserAuthorityConstants.ROLE + " = :authorities) ";
             paramNames.add("authorities");
             params.add(UserRole.ROLE_SYSTEM_USER);
         }
@@ -482,11 +477,10 @@ public class UserDaoImpl extends UserDaoBase {
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 Query query = session
-                        .createQuery(
-                                "from " + UserConstants.CLASS_NAME + " where "
-                                        + UserConstants.TERMSACCEPTED + " = ? AND ("
-                                        + UserConstants.STATUS + "= ? OR " + UserConstants.STATUS
-                                        + "= ?) AND " + CommunoteEntityConstants.ID + " != ?")
+                        .createQuery("from " + UserConstants.CLASS_NAME + " where "
+                                + UserConstants.TERMSACCEPTED + " = ? AND (" + UserConstants.STATUS
+                                + "= ? OR " + UserConstants.STATUS + "= ?) AND "
+                                + CommunoteEntityConstants.ID + " != ?")
                         .setParameter(0, Boolean.TRUE).setParameter(1, UserStatus.ACTIVE)
                         .setParameter(2, UserStatus.TEMPORARILY_DISABLED)
                         .setParameter(3, userIdToIgnore);
@@ -524,7 +518,7 @@ public class UserDaoImpl extends UserDaoBase {
     @Override
     public User userVOToEntity(UserVO kenmeiUserVO) {
         User user = User.Factory.newInstance();
-        this.userVOToEntity(kenmeiUserVO, user, false);
+        this.userVOToEntity(kenmeiUserVO, user);
         return user;
     }
 
@@ -532,34 +526,27 @@ public class UserDaoImpl extends UserDaoBase {
      * {@inheritDoc}
      */
     @Override
-    public void userVOToEntity(UserVO source, User target, boolean copyIfNull) {
-        if (copyIfNull || source.getEmail() != null) {
+    public void userVOToEntity(UserVO source, User target) {
+        if (source.getEmail() != null) {
             target.setEmail(source.getEmail());
         }
-        if (copyIfNull || source.getAlias() != null) {
+        if (source.getAlias() != null) {
             target.setAlias(source.getAlias());
         }
-        if (copyIfNull || source.getPassword() != null) {
-            if (source.isPlainPassword()) {
-                target.setPlainPassword(source.getPassword());
-            } else {
-                target.setPassword(source.getPassword());
-            }
-        }
-        if (copyIfNull || source.getLanguage() != null) {
+        if (source.getLanguage() != null) {
             target.setLanguageLocale(source.getLanguage());
         }
-        copyAuthorities(source, target, copyIfNull);
+        copyAuthorities(source, target);
 
         if (target.getProfile() == null) {
             target.setProfile(getDefaultProfile());
         }
         UserProfile profile = target.getProfile();
 
-        if (copyIfNull || source.getFirstName() != null) {
+        if (source.getFirstName() != null) {
             profile.setFirstName(source.getFirstName());
         }
-        if (copyIfNull || source.getLastName() != null) {
+        if (source.getLastName() != null) {
             profile.setLastName(source.getLastName());
         }
         // TimeZone cannot be empty

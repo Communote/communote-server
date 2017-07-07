@@ -8,7 +8,6 @@ import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.application.CommunoteRuntime;
 import com.communote.server.api.core.config.ConfigurationManager;
 import com.communote.server.core.common.ldap.LdapUserAttribute;
-import com.communote.server.core.security.AuthenticationHelper;
 import com.communote.server.core.security.authentication.ldap.LdapAuthenticator;
 import com.communote.server.core.user.UserManagement;
 import com.communote.server.model.config.LdapConfiguration;
@@ -49,7 +48,8 @@ public class ClientManagementLdapTest extends LdapCommunoteIntegrationTest {
      * @throws Exception
      *             when user creation fails
      */
-    @Test(groups = { "ldap-client-management-test" }, dependsOnMethods = { "testOnTestClient5CreateLdapAuthenticationConfiguration" })
+    @Test(groups = { "ldap-client-management-test" }, dependsOnMethods = {
+            "testOnTestClient5CreateLdapAuthenticationConfiguration" })
     public void testOnTestClient6CreateLdapUser() throws Exception {
         LdapConfiguration ldapConfig = CommunoteRuntime.getInstance().getConfigurationManager()
                 .getClientConfigurationProperties().getLdapConfiguration();
@@ -65,7 +65,7 @@ public class ClientManagementLdapTest extends LdapCommunoteIntegrationTest {
         userVO.setUpdateFirstName(true);
         userVO.setUpdateLanguage(true);
         userVO.setUpdateLastName(true);
-        userVO.setUpdatePassword(false);
+        userVO.setClearPassword(false);
 
         userVO.setSystemId(ldapConfig.getSystemId());
         AuthenticationHelper.setInternalSystemToSecurityContext();
@@ -84,7 +84,8 @@ public class ClientManagementLdapTest extends LdapCommunoteIntegrationTest {
      * @throws Exception
      *             client id is invalid
      */
-    @Test(groups = { "ldap-client-management-test" }, dependsOnMethods = { "testOnTestClient6CreateLdapUser" })
+    @Test(groups = { "ldap-client-management-test" }, dependsOnMethods = {
+            "testOnTestClient6CreateLdapUser" })
     public void testOnTestClient7UpdateLdapAuthenticationConfiguration() throws Exception {
         AuthenticationTestUtils.setManagerContext();
         ConfigurationManager configurationManager = CommunoteRuntime.getInstance()
@@ -101,8 +102,8 @@ public class ClientManagementLdapTest extends LdapCommunoteIntegrationTest {
                 .getLdapConfiguration();
         try {
             LdapAuthenticator authenticator = new LdapAuthenticator(ldapConfig);
-            authenticator.authenticate(TEST_CLIENT_LDAPUSER_USERNAME,
-                    TEST_CLIENT_LDAPUSER_PASSWORD, LdapUserAttribute.ALIAS);
+            authenticator.authenticate(TEST_CLIENT_LDAPUSER_USERNAME, TEST_CLIENT_LDAPUSER_PASSWORD,
+                    LdapUserAttribute.ALIAS);
             Assert.fail("Authentication should fail with not existing bind user");
         } catch (AuthenticationException e) {
             // expected

@@ -15,7 +15,7 @@ import com.communote.server.api.core.tag.TagTO;
 import com.communote.server.api.core.user.UserNotFoundException;
 import com.communote.server.api.core.user.UserVO;
 import com.communote.server.core.common.exceptions.InvalidOperationException;
-import com.communote.server.core.common.exceptions.PasswordLengthException;
+import com.communote.server.core.common.exceptions.PasswordValidationException;
 import com.communote.server.core.security.UserIdentification;
 import com.communote.server.core.user.validation.UserActivationValidationException;
 import com.communote.server.core.user.validation.UserActivationValidator;
@@ -61,8 +61,8 @@ public interface UserManagement {
      *             in case the user has status <code>TERMS_NOT_ACCEPTED</code> but cannot be
      *             activated after accepting the terms
      */
-    public void acceptTermsOfUse(Long userId) throws AuthorizationException, UserNotFoundException,
-    UserActivationValidationException;
+    public void acceptTermsOfUse(Long userId)
+            throws AuthorizationException, UserNotFoundException, UserActivationValidationException;
 
     /**
      * Delete a user by anonymizing his profile and removing the content (notes, topics if possible)
@@ -109,8 +109,8 @@ public interface UserManagement {
      *             in case the user is already a system or a crawl user or the role to assign is the
      *             system or crawl user role
      */
-    public User assignUserRole(Long userId, UserRole role) throws AuthorizationException,
-    InvalidOperationException;
+    public User assignUserRole(Long userId, UserRole role)
+            throws AuthorizationException, InvalidOperationException;
 
     /**
      * Method to change the users alias.
@@ -125,8 +125,8 @@ public interface UserManagement {
      * @throws AliasInvalidException
      *             Thrown, when the alias is syntactically invalid.
      */
-    public boolean changeAlias(Long userId, String newAlias) throws AliasAlreadyExistsException,
-            AliasInvalidException;
+    public boolean changeAlias(Long userId, String newAlias)
+            throws AliasAlreadyExistsException, AliasInvalidException;
 
     /**
      * Changes the email address of an user and validates this new address.
@@ -142,14 +142,6 @@ public interface UserManagement {
      */
     public boolean changeEmailAddress(Long userId, String newEmail, boolean sendConfirmationLink)
             throws EmailValidationException, EmailAlreadyExistsException;
-
-    /**
-     * Changes the password of an user.
-     *
-     * @param userId
-     *            If of the user, which password should be changed.
-     */
-    public void changePassword(Long userId, String newPassword) throws PasswordLengthException;
 
     /**
      * Change the status of a user.
@@ -189,8 +181,8 @@ public interface UserManagement {
      * @param securityCode
      *            The security code.
      */
-    public void confirmNewEmailAddress(String securityCode) throws SecurityCodeNotFoundException,
-            EmailAlreadyExistsException;
+    public void confirmNewEmailAddress(String securityCode)
+            throws SecurityCodeNotFoundException, EmailAlreadyExistsException;
 
     /**
      * <p>
@@ -198,9 +190,10 @@ public interface UserManagement {
      * confirmed.
      * </p>
      */
-    public User confirmUser(String securitycode, UserVO user) throws SecurityCodeNotFoundException,
-    EmailValidationException, EmailAlreadyExistsException, AliasAlreadyExistsException,
-    PasswordLengthException, InvalidUserStatusTransitionException;
+    public User confirmUser(String securitycode, UserVO user)
+            throws SecurityCodeNotFoundException, EmailValidationException,
+            EmailAlreadyExistsException, AliasAlreadyExistsException, PasswordValidationException,
+            InvalidUserStatusTransitionException, ExternalUserPasswordChangeNotAllowedException;
 
     /**
      * Creates or updates a user with data retrieved from a external user repository (e.g. via
@@ -251,12 +244,12 @@ public interface UserManagement {
      *             in case the provided email address is not valid
      * @throws AliasAlreadyExistsException
      *             in case the provided user alias already exists
-     * @throws PasswordLengthException
-     *             in case the provided password is not long enough
+     * @throws PasswordValidationException
+     *             in case the provided password does not meet the minimum security requirements
      */
     public User createUser(UserVO user, boolean emailConfirmationRequired,
             boolean managerConfirmationRequired) throws EmailAlreadyExistsException,
-            EmailValidationException, AliasAlreadyExistsException, PasswordLengthException;
+            EmailValidationException, AliasAlreadyExistsException, PasswordValidationException;
 
     /**
      * Returns a collection with all users that do not have one of the deleted statuses.
@@ -285,7 +278,8 @@ public interface UserManagement {
      *            true if the external auths of the user should be loaded as well
      * @return the user found
      */
-    public User findUser(UserIdentification userIdentification, boolean loadExternalAuthentications);
+    public User findUser(UserIdentification userIdentification,
+            boolean loadExternalAuthentications);
 
     /**
      * Find the User by the given alias s
@@ -372,8 +366,7 @@ public interface UserManagement {
      *
      * @param systemId
      *            ID of an external system to only count the users which originate from this
-     *            external system. If null only internal users which can login (have a password)
-     *            will be counted.
+     *            external system. If null, all user are counted.
      * @param role
      *            the role of a user. If not null only the users with that role will be counted
      *            otherwise all roles (including system users) are considered.
@@ -415,6 +408,16 @@ public interface UserManagement {
     public <T> T getUserById(Long userId, Converter<User, T> converter);
 
     /**
+     * @param userId
+     *            The users id.
+     * @param externalSystemId
+     *            ID of an external system
+     * @return true if the user has an external authentication with the given ID
+     */
+    @Transactional(readOnly = true)
+    public boolean hasExternalAuthentication(long userId, String externalSystemId);
+
+    /**
      * @throws BlogAccessException
      *             in case the current user is not allowed to invite a user
      * @throws AuthorizationException
@@ -425,9 +428,9 @@ public interface UserManagement {
             EmailAlreadyExistsException, PermanentIdMissmatchException, BlogAccessException,
             AuthorizationException;
 
-    public User inviteUserToClient(UserVO user) throws EmailValidationException,
-    EmailAlreadyExistsException, AliasAlreadyExistsException,
-    PermanentIdMissmatchException, AuthorizationException;
+    public User inviteUserToClient(UserVO user)
+            throws EmailValidationException, EmailAlreadyExistsException,
+            AliasAlreadyExistsException, PermanentIdMissmatchException, AuthorizationException;
 
     /**
      * <p>
@@ -481,8 +484,8 @@ public interface UserManagement {
      *             role
      *
      */
-    public User removeUserRole(Long userId, UserRole role) throws AuthorizationException,
-    InvalidOperationException, NoClientManagerLeftException;
+    public User removeUserRole(Long userId, UserRole role)
+            throws AuthorizationException, InvalidOperationException, NoClientManagerLeftException;
 
     /**
      * <p>
@@ -501,11 +504,6 @@ public interface UserManagement {
      *             in case the current user is not client manager or internal system user
      */
     public void resetTermsOfUse() throws AuthorizationException;
-
-    /**
-     *
-     */
-    public void sendNewPWLink(User user) throws ExternalUsersMayNotChangeTheirPasswordException;
 
     /**
      *
@@ -569,9 +567,9 @@ public interface UserManagement {
      *             in case the user cannot be activated
      */
     public User updateExternalUser(ExternalUserVO userVO) throws AliasAlreadyExistsException,
-    EmailAlreadyExistsException, EmailValidationException,
-    InvalidUserStatusTransitionException, NoClientManagerLeftException,
-    PermanentIdMissmatchException, UserActivationValidationException;
+            EmailAlreadyExistsException, EmailValidationException,
+            InvalidUserStatusTransitionException, NoClientManagerLeftException,
+            PermanentIdMissmatchException, UserActivationValidationException;
 
     /**
      * Sets the language of the given user to the given language.

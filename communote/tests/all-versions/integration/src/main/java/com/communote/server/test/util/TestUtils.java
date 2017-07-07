@@ -120,8 +120,8 @@ public class TestUtils {
             List<Timestamp> crawlDates) throws InterruptedException {
         final Timestamp latest = crawlDates.size() > 0 ? crawlDates.get(crawlDates.size() - 1)
                 : null;
-        final com.communote.server.model.note.Note note = ServiceLocator.findService(
-                NoteService.class).getNote(noteId, new IdentityConverter<Note>());
+        final com.communote.server.model.note.Note note = ServiceLocator
+                .findService(NoteService.class).getNote(noteId, new IdentityConverter<Note>());
 
         addAndCheckCrawlLastModificationDate(crawlDates, latest,
                 note.getCrawlLastModificationDate());
@@ -139,8 +139,8 @@ public class TestUtils {
      * @throws InterruptedException
      */
     public static void addAndCheckCrawlLastModificationDateForTopic(Long topicId,
-            List<Timestamp> crawlDates) throws BlogNotFoundException, BlogAccessException,
-            InterruptedException {
+            List<Timestamp> crawlDates)
+            throws BlogNotFoundException, BlogAccessException, InterruptedException {
         final Timestamp latest = crawlDates.size() > 0 ? crawlDates.get(crawlDates.size() - 1)
                 : null;
         final Blog topic = ServiceLocator.findService(BlogManagement.class).getBlogById(topicId,
@@ -336,8 +336,8 @@ public class TestUtils {
      */
     public static Attachment createAttachment() throws AuthorizationException {
         String content = RandomStringUtils.randomAlphanumeric(100);
-        AttachmentTO attachment = new AttachmentStreamTO(new ByteArrayInputStream(
-                content.getBytes()));
+        AttachmentTO attachment = new AttachmentStreamTO(
+                new ByteArrayInputStream(content.getBytes()));
         attachment.setStatus(AttachmentStatus.UPLOADED);
         attachment.setMetadata(new ContentMetadata());
         attachment.getMetadata().setDate(new Date());
@@ -347,8 +347,8 @@ public class TestUtils {
     }
 
     public static AttachmentTO createAttachment(final String fileName) {
-        AttachmentTO attachement = new AttachmentStreamTO(new ByteArrayInputStream(
-                "Test attachment".getBytes()), AttachmentStatus.UPLOADED);
+        AttachmentTO attachement = new AttachmentStreamTO(
+                new ByteArrayInputStream("Test attachment".getBytes()), AttachmentStatus.UPLOADED);
         attachement.setMetadata(new ContentMetadata());
         attachement.getMetadata().setFilename(fileName);
         attachement.setStatus(AttachmentStatus.UPLOADED);
@@ -700,8 +700,8 @@ public class TestUtils {
     @Deprecated
     public static User createRandomUser(boolean isManager, boolean managerConfirmationRequired,
             String externalSystemId) throws TestUtilsException {
-        UserRole[] roles = isManager ? new UserRole[] { UserRole.ROLE_KENMEI_USER,
-                UserRole.ROLE_KENMEI_CLIENT_MANAGER }
+        UserRole[] roles = isManager
+                ? new UserRole[] { UserRole.ROLE_KENMEI_USER, UserRole.ROLE_KENMEI_CLIENT_MANAGER }
                 : new UserRole[] { UserRole.ROLE_KENMEI_USER };
         return createRandomUser(managerConfirmationRequired, externalSystemId, roles);
     }
@@ -768,17 +768,12 @@ public class TestUtils {
         User createdUser;
         try {
             if (StringUtils.isNotBlank(externalSystemId)) {
-                createdUser = ServiceLocator
-                        .instance()
-                        .getService(UserManagement.class)
+                createdUser = ServiceLocator.instance().getService(UserManagement.class)
                         .createOrUpdateExternalUser(
                                 createExternalKenmeiUserVO(externalSystemId, alias, roles));
             } else {
-                createdUser = ServiceLocator
-                        .instance()
-                        .getService(UserManagement.class)
-                        .createUser(createKenmeiUserVO(alias, roles), false,
-                                managerActivationRequired);
+                createdUser = ServiceLocator.instance().getService(UserManagement.class).createUser(
+                        createKenmeiUserVO(alias, roles), false, managerActivationRequired);
             }
         } catch (Exception e) {
             throw new TestUtilsException(e);
@@ -815,9 +810,7 @@ public class TestUtils {
 
         User createKenmeiUser;
         try {
-            createKenmeiUser = ServiceLocator
-                    .instance()
-                    .getService(UserManagement.class)
+            createKenmeiUser = ServiceLocator.instance().getService(UserManagement.class)
                     .createOrUpdateExternalUser(
                             createRandomUserVoForExternalSystem(externalSystemId));
         } catch (Exception e) {
@@ -842,7 +835,7 @@ public class TestUtils {
         user.setUpdateFirstName(false);
         user.setUpdateLastName(false);
         user.setUpdateLanguage(false);
-        user.setUpdatePassword(false);
+        user.setClearPassword(false);
         return user;
     }
 
@@ -856,8 +849,8 @@ public class TestUtils {
      * @return A new user.
      */
     public static User createUser(String alias, boolean isManager, boolean setOriginalAuth) {
-        UserRole[] roles = isManager ? new UserRole[] { UserRole.ROLE_KENMEI_USER,
-                UserRole.ROLE_KENMEI_CLIENT_MANAGER }
+        UserRole[] roles = isManager
+                ? new UserRole[] { UserRole.ROLE_KENMEI_USER, UserRole.ROLE_KENMEI_CLIENT_MANAGER }
                 : new UserRole[] { UserRole.ROLE_KENMEI_USER };
 
         return createRandomUser(alias, false, null, setOriginalAuth, roles);
@@ -865,13 +858,12 @@ public class TestUtils {
 
     public static UserVO fillKenmeiUserVO(UserVO user, String alias, UserRole... roles) {
 
-        user.setPlainPassword(false);
         user.setLanguage(Locale.ENGLISH);
 
         user.setEmail(createEmailFromAlias(alias));
         user.setRoles(roles);
         user.setAlias(alias);
-        user.setPassword(alias);
+        user.setPassword(UUID.randomUUID().toString());
         user.setFirstName(UUID.randomUUID().toString());
         user.setLastName(UUID.randomUUID().toString());
         user.setTimeZoneId(TimeZone.getDefault().getID());
@@ -908,11 +900,11 @@ public class TestUtils {
     public static AttachmentTO getAttachmentFromDefaultFilesystemConnectorByContentId(
             String contentIdStr) throws ContentRepositoryException {
 
-        RepositoryConnector filesystemConnector = ServiceLocator.findService(
-                RepositoryConnectorDelegate.class).getDefaultRepositoryConnector();
+        RepositoryConnector filesystemConnector = ServiceLocator
+                .findService(RepositoryConnectorDelegate.class).getDefaultRepositoryConnector();
         Assert.assertNotNull(filesystemConnector);
-        final ContentId contentId = new ContentId(contentIdStr, filesystemConnector
-                .getConfiguration().getConnectorId());
+        final ContentId contentId = new ContentId(contentIdStr,
+                filesystemConnector.getConfiguration().getConnectorId());
 
         AttachmentTO attachmentTO = filesystemConnector
                 .getContent(new ExtendedContentId(contentId));

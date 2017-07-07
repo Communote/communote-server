@@ -10,6 +10,7 @@ import com.communote.server.api.core.security.AuthorizationException;
 import com.communote.server.api.core.user.UserNotFoundException;
 import com.communote.server.api.core.user.UserVO;
 import com.communote.server.core.common.exceptions.InvalidOperationException;
+import com.communote.server.core.common.exceptions.PasswordValidationException;
 import com.communote.server.core.user.validation.UserActivationValidationException;
 import com.communote.server.model.user.User;
 import com.communote.server.model.user.UserRole;
@@ -38,7 +39,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.acceptTermsOfUse(Long userId)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -58,8 +60,8 @@ public abstract class UserManagementBase implements UserManagement {
     }
 
     @Override
-    public User assignUserRole(Long userId, UserRole role) throws AuthorizationException,
-            InvalidOperationException {
+    public User assignUserRole(Long userId, UserRole role)
+            throws AuthorizationException, InvalidOperationException {
         if (userId == null) {
             throw new IllegalArgumentException(
                     "com.communote.server.service.user.UserManagement.assignUserRole(Long userId, UserRole role) - 'userId' can not be null");
@@ -73,7 +75,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.assignUserRole(Long userId, UserRole role)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -97,30 +100,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.changeEmailAddress(Long userId, String newEmail)' --> "
-                            + rt, rt);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void changePassword(Long userId, String newPassword)
-            throws com.communote.server.core.common.exceptions.PasswordLengthException {
-        if (userId == null) {
-            throw new IllegalArgumentException(
-                    "com.communote.server.service.user.UserManagement.changePassword(Long userId, String newPassword) - 'userId' can not be null");
-        }
-        if (newPassword == null || newPassword.trim().length() == 0) {
-            throw new IllegalArgumentException(
-                    "com.communote.server.service.user.UserManagement.changePassword(Long userId, String newPassword) - 'newPassword' can not be null or empty");
-        }
-        try {
-            this.handleChangePassword(userId, newPassword);
-        } catch (RuntimeException rt) {
-            throw new UserManagementException(
-                    "Error performing 'com.communote.server.service.user.UserManagement.changePassword(Long userId, String newPassword)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -150,7 +131,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.confirmNewEmailAddress(String securityCode)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -158,9 +140,8 @@ public abstract class UserManagementBase implements UserManagement {
     public User confirmUser(String securitycode, UserVO user)
             throws com.communote.server.persistence.common.security.SecurityCodeNotFoundException,
             com.communote.server.api.core.common.EmailValidationException,
-            EmailAlreadyExistsException, AliasAlreadyExistsException,
-            com.communote.server.core.common.exceptions.PasswordLengthException,
-            InvalidUserStatusTransitionException {
+            EmailAlreadyExistsException, AliasAlreadyExistsException, PasswordValidationException,
+            InvalidUserStatusTransitionException, ExternalUserPasswordChangeNotAllowedException {
         if (securitycode == null || securitycode.trim().length() == 0) {
             throw new IllegalArgumentException(
                     "com.communote.server.service.user.UserManagement.confirmUser(String securitycode, UserVO user) - 'securitycode' can not be null or empty");
@@ -186,7 +167,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.confirmUser(String securitycode, UserVO user)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -214,7 +196,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.createOrUpdateExternalUser(ExternalUserVO userVO)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -222,8 +205,7 @@ public abstract class UserManagementBase implements UserManagement {
     public User createUser(UserVO user, boolean emailConfirmation, boolean managerConfirmation)
             throws EmailAlreadyExistsException,
             com.communote.server.api.core.common.EmailValidationException,
-            AliasAlreadyExistsException,
-            com.communote.server.core.common.exceptions.PasswordLengthException {
+            AliasAlreadyExistsException, PasswordValidationException {
         if (user == null) {
             throw new IllegalArgumentException(
                     "com.communote.server.service.user.UserManagement.createKenmeiUser(UserVO user, boolean emailConfirmation, boolean managerConfirmation) - 'user' can not be null");
@@ -245,7 +227,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.createKenmeiUser(UserVO user, boolean emailConfirmation, boolean managerConfirmation)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -261,7 +244,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.findKenmeiUserByAlias(String alias)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -277,7 +261,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.findKenmeiUserByEmail(String email)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -293,7 +278,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.findKenmeiUserByEmailAlias(String username)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -316,7 +302,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.findKenmeiUserByExternalUserId(String externalUserId, String systemId)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -335,7 +322,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.findKenmeiUserByUserId(Long userId)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -350,7 +338,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.getActiveUserCount()' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -377,14 +366,13 @@ public abstract class UserManagementBase implements UserManagement {
         try {
             return this.handleGetRolesOfUser(userId);
         } catch (RuntimeException rt) {
-            throw new UserManagementException(
-                    "Error performing 'com.communote.server.service.user."
-                            + "UserManagement.getRolesOfUser(Long userId)' --> " + rt, rt);
+            throw new UserManagementException("Error performing 'com.communote.server.service.user."
+                    + "UserManagement.getRolesOfUser(Long userId)' --> " + rt, rt);
         }
     }
 
-    protected abstract void handleAcceptTermsOfUse(Long userId) throws UserNotFoundException,
-    AuthorizationException, UserActivationValidationException;
+    protected abstract void handleAcceptTermsOfUse(Long userId)
+            throws UserNotFoundException, AuthorizationException, UserActivationValidationException;
 
     /**
      * Performs the core logic for {@link #anonymizeUser(Long, Long[], boolean)}
@@ -420,14 +408,8 @@ public abstract class UserManagementBase implements UserManagement {
      */
     protected abstract boolean handleChangeEmailAddress(Long userId, String newEmail,
             boolean sendConfirmationLink)
-                    throws com.communote.server.api.core.common.EmailValidationException,
-                    EmailAlreadyExistsException;
-
-    /**
-     * Performs the core logic for {@link #changePassword(Long, String)}
-     */
-    protected abstract void handleChangePassword(Long userId, String newPassword)
-            throws com.communote.server.core.common.exceptions.PasswordLengthException;
+            throws com.communote.server.api.core.common.EmailValidationException,
+            EmailAlreadyExistsException;
 
     protected abstract void handleChangeUserStatusByManager(Long userId, UserStatus newStatus)
             throws UserActivationValidationException, InvalidUserStatusTransitionException,
@@ -446,9 +428,8 @@ public abstract class UserManagementBase implements UserManagement {
     protected abstract User handleConfirmUser(String securitycode, UserVO user)
             throws com.communote.server.persistence.common.security.SecurityCodeNotFoundException,
             com.communote.server.api.core.common.EmailValidationException,
-            EmailAlreadyExistsException, AliasAlreadyExistsException,
-            com.communote.server.core.common.exceptions.PasswordLengthException,
-            InvalidUserStatusTransitionException;
+            EmailAlreadyExistsException, AliasAlreadyExistsException, PasswordValidationException,
+            InvalidUserStatusTransitionException, ExternalUserPasswordChangeNotAllowedException;
 
     /**
      * Performs the core logic for {@link #createOrUpdateExternalUser(ExternalUserVO)}
@@ -465,8 +446,7 @@ public abstract class UserManagementBase implements UserManagement {
     protected abstract User handleCreateUser(UserVO user, boolean emailConfirmation,
             boolean managerConfirmation) throws EmailAlreadyExistsException,
             com.communote.server.api.core.common.EmailValidationException,
-            AliasAlreadyExistsException,
-            com.communote.server.core.common.exceptions.PasswordLengthException;
+            AliasAlreadyExistsException, PasswordValidationException;
 
     /**
      * Performs the core logic for {@link #findUserByAlias(String)}
@@ -518,18 +498,18 @@ public abstract class UserManagementBase implements UserManagement {
      */
     protected abstract User handleInviteUserToClient(UserVO user)
             throws com.communote.server.api.core.common.EmailValidationException,
-            EmailAlreadyExistsException, AliasAlreadyExistsException,
-            PermanentIdMissmatchException, AuthorizationException;
+            EmailAlreadyExistsException, AliasAlreadyExistsException, PermanentIdMissmatchException,
+            AuthorizationException;
 
     /**
      * Performs the core logic for {@link #permanentlyDisableUser(Long, Long[], boolean)}
      */
     protected abstract void handlePermanentlyDisableUser(Long userId, Long[] blogIds,
             boolean becomeManager)
-                    throws com.communote.server.api.core.security.AuthorizationException,
-                    NoClientManagerLeftException, UserDeletionDisabledException,
-                    InvalidUserStatusTransitionException,
-                    com.communote.server.api.core.blog.NoBlogManagerLeftException;
+            throws com.communote.server.api.core.security.AuthorizationException,
+            NoClientManagerLeftException, UserDeletionDisabledException,
+            InvalidUserStatusTransitionException,
+            com.communote.server.api.core.blog.NoBlogManagerLeftException;
 
     /**
      * Performs the core logic for {@link #registerUser(String, java.util.Locale)}
@@ -559,14 +539,6 @@ public abstract class UserManagementBase implements UserManagement {
      */
     protected abstract void handleResetPermanentId(String systemId)
             throws com.communote.server.api.core.security.AuthorizationException;
-
-    /**
-     * Performs the core logic for {@link #sendNewPWLink(User)}
-     *
-     * @throws ExternalUsersMayNotChangeTheirPasswordException
-     */
-    protected abstract void handleSendNewPWLink(User user)
-            throws ExternalUsersMayNotChangeTheirPasswordException;
 
     /**
      * Performs the core logic for {@link #unlockUser(String)}
@@ -624,15 +596,16 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.inviteUserToBlog(Long blogId, User inviter, UserVO userData, com.communote.server.persistence.blog.BlogRole role)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
     @Override
     public User inviteUserToClient(UserVO user)
             throws com.communote.server.api.core.common.EmailValidationException,
-            EmailAlreadyExistsException, AliasAlreadyExistsException,
-            PermanentIdMissmatchException, AuthorizationException {
+            EmailAlreadyExistsException, AliasAlreadyExistsException, PermanentIdMissmatchException,
+            AuthorizationException {
         if (user == null) {
             throw new IllegalArgumentException(
                     "com.communote.server.service.user.UserManagement.inviteUserToClient(User inviter, UserVO user) - 'user' can not be null");
@@ -654,7 +627,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.inviteUserToClient(User inviter, UserVO user)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -694,13 +668,14 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.registerUser(String email, java.util.Locale local)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
     @Override
-    public User removeUserRole(Long userId, UserRole role) throws AuthorizationException,
-            InvalidOperationException, NoClientManagerLeftException {
+    public User removeUserRole(Long userId, UserRole role)
+            throws AuthorizationException, InvalidOperationException, NoClientManagerLeftException {
         if (userId == null) {
             throw new IllegalArgumentException(
                     "com.communote.server.service.user.UserManagement.removeUserRole(Long userId, UserRole role) - 'userId' can not be null");
@@ -714,7 +689,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.removeUserRole(Long userId, UserRole role)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -733,25 +709,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.resetExternalUserId(String systemId)' --> "
-                            + rt, rt);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void sendNewPWLink(User user) throws ExternalUsersMayNotChangeTheirPasswordException {
-        if (user == null) {
-            throw new IllegalArgumentException(
-                    "com.communote.server.service.user.UserManagement.sendNewPWLink(User user) - 'user' can not be null");
-        }
-        try {
-            this.handleSendNewPWLink(user);
-        } catch (RuntimeException rt) {
-            throw new UserManagementException(
-                    "Error performing 'com.communote.server.service.user.UserManagement.sendNewPWLink(User user)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -770,13 +729,14 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.unlockUser(String securityCode)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
     @Override
-    public User updateExternalUser(ExternalUserVO userVO) throws AliasAlreadyExistsException,
-            EmailAlreadyExistsException,
+    public User updateExternalUser(ExternalUserVO userVO)
+            throws AliasAlreadyExistsException, EmailAlreadyExistsException,
             com.communote.server.api.core.common.EmailValidationException,
             UserActivationValidationException, InvalidUserStatusTransitionException,
             NoClientManagerLeftException, PermanentIdMissmatchException {
@@ -798,7 +758,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.updateExternalUser(ExternalUserVO userVO)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -820,7 +781,8 @@ public abstract class UserManagementBase implements UserManagement {
         } catch (RuntimeException rt) {
             throw new UserManagementException(
                     "Error performing 'com.communote.server.service.user.UserManagement.updateLanguage(Long userId, String languageCode)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 }

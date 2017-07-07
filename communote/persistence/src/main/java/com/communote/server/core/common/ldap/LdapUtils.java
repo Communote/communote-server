@@ -34,7 +34,7 @@ public class LdapUtils {
 
     /**
      * Close a naming enumeration to free up resources.
-     * 
+     *
      * @param enumeration
      *            the enumeration to close. If null, this method does nothing.
      */
@@ -215,9 +215,10 @@ public class LdapUtils {
             } else {
                 userNameAttribute = LdapUserAttribute.ALIAS;
             }
-            CommunoteLdapUserSearch ldapSearch = new CommunoteLdapUserSearch(CommunoteRuntime
-                    .getInstance().getConfigurationManager().getClientConfigurationProperties()
-                    .getLdapConfiguration(), userNameAttribute);
+            CommunoteLdapUserSearch ldapSearch = new CommunoteLdapUserSearch(
+                    CommunoteRuntime.getInstance().getConfigurationManager()
+                            .getClientConfigurationProperties().getLdapConfiguration(),
+                    userNameAttribute);
             ExternalUserVO userVO = ldapSearch.searchForUserTransformed(emailOrAlias);
 
             // set fields to be synchronized
@@ -251,7 +252,7 @@ public class LdapUtils {
         userVO.setUpdateFirstName(true);
         userVO.setUpdateLanguage(true);
         userVO.setUpdateLastName(true);
-        userVO.setUpdatePassword(false);
+        userVO.setClearPassword(false);
     }
 
     /**

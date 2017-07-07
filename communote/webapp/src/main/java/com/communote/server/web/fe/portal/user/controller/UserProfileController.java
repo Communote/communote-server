@@ -1,7 +1,6 @@
 package com.communote.server.web.fe.portal.user.controller;
 
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +14,6 @@ import com.communote.server.api.core.config.type.ApplicationProperty;
 import com.communote.server.core.config.ClientConfigurationHelper;
 import com.communote.server.core.security.SecurityHelper;
 import com.communote.server.core.user.UserManagement;
-import com.communote.server.model.user.ExternalUserAuthentication;
 import com.communote.server.web.commons.controller.VelocityViewController;
 import com.communote.server.web.commons.helper.ControllerHelper;
 
@@ -38,15 +36,9 @@ public class UserProfileController extends VelocityViewController {
         if (primaryExternalAuthentication == null) {
             return true;
         }
-        Set<ExternalUserAuthentication> externalAuthentications = ServiceLocator.instance()
-                .getService(UserManagement.class)
-                .getExternalExternalUserAuthentications(SecurityHelper.getCurrentUserId());
-        for (ExternalUserAuthentication externalAuthentication : externalAuthentications) {
-            if (externalAuthentication.getSystemId().equals(primaryExternalAuthentication)) {
-                return false;
-            }
-        }
-        return true;
+        return !ServiceLocator.instance().getService(UserManagement.class)
+                .hasExternalAuthentication(SecurityHelper.getCurrentUserId(),
+                        primaryExternalAuthentication);
     }
 
     /**

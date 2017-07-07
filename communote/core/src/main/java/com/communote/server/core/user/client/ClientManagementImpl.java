@@ -31,7 +31,7 @@ import com.communote.server.api.core.security.AuthorizationException;
 import com.communote.server.api.core.user.UserVO;
 import com.communote.server.core.ConfigurationManagement;
 import com.communote.server.core.common.caching.CacheManager;
-import com.communote.server.core.common.exceptions.PasswordLengthException;
+import com.communote.server.core.common.exceptions.PasswordValidationException;
 import com.communote.server.core.config.ClientConfigurationHelper;
 import com.communote.server.core.security.AuthenticationHelper;
 import com.communote.server.core.user.AliasAlreadyExistsException;
@@ -123,9 +123,9 @@ public class ClientManagementImpl extends ClientManagementBase {
             initialClientConfig.put(ClientProperty.UNIQUE_CLIENT_IDENTIFER,
                     ClientHelper.createUniqueClientId());
             try {
-                initialClientConfig.put(ClientProperty.CREATION_DATE, EncryptionUtils.encrypt(
-                        Long.toString(creationTime.getTime()),
-                        ApplicationProperty.INSTALLATION_UNIQUE_ID.getValue()));
+                initialClientConfig.put(ClientProperty.CREATION_DATE,
+                        EncryptionUtils.encrypt(Long.toString(creationTime.getTime()),
+                                ApplicationProperty.INSTALLATION_UNIQUE_ID.getValue()));
             } catch (EncryptionException e) {
                 throw new ClientManagementException("Was not able to encrypt a property.", e);
             }
@@ -148,20 +148,20 @@ public class ClientManagementImpl extends ClientManagementBase {
 
         try {
             User existingUser = null;
-            List<User> managerList = userManagement.findUsersByRole(
-                    UserRole.ROLE_KENMEI_CLIENT_MANAGER, UserStatus.ACTIVE);
+            List<User> managerList = userManagement
+                    .findUsersByRole(UserRole.ROLE_KENMEI_CLIENT_MANAGER, UserStatus.ACTIVE);
             if (!managerList.isEmpty()) {
                 existingUser = managerList.get(0);
             }
             if (existingUser != null) {
-                kenmeiUserDao.userVOToEntity(userVO, existingUser, false);
+                kenmeiUserDao.userVOToEntity(userVO, existingUser);
             } else {
                 User admin = userManagement.createUser(userVO, false, false);
 
                 postProcessFirstClientManager(admin);
 
             }
-        } catch (PasswordLengthException e) {
+        } catch (PasswordValidationException e) {
             throw new ClientManagementException("Unexpected exception", e);
         } catch (EmailAlreadyExistsException e) {
             // should not occur when creating the first user
@@ -200,8 +200,8 @@ public class ClientManagementImpl extends ClientManagementBase {
     private void postProcessFirstClientManager(User admin) throws AuthorizationException {
         SecurityContext currentContext = AuthenticationHelper.setInternalSystemToSecurityContext();
         try {
-            ServiceLocator.findService(NavigationItemService.class).createBuiltInNavigationItems(
-                    admin.getId());
+            ServiceLocator.findService(NavigationItemService.class)
+                    .createBuiltInNavigationItems(admin.getId());
         } finally {
             AuthenticationHelper.setSecurityContext(currentContext);
         }

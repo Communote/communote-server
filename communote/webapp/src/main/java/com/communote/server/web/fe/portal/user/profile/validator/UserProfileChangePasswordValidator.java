@@ -5,8 +5,8 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import com.communote.server.core.helper.ValidationHelper;
+import com.communote.server.core.user.security.UserPasswordManagement;
 import com.communote.server.web.fe.portal.user.profile.forms.UserProfileChangePasswordForm;
-
 
 /**
  * The Class UserProfileChangePasswordValidator validates the input from the user profile form.
@@ -16,21 +16,17 @@ import com.communote.server.web.fe.portal.user.profile.forms.UserProfileChangePa
 public class UserProfileChangePasswordValidator implements Validator {
 
     private boolean currentPasswordRequired = true;
-
-    /**
-     * Default constructor
-     */
-    public UserProfileChangePasswordValidator() {
-        super();
-    }
+    private final UserPasswordManagement userPasswordManagement;
 
     /**
      * Constructor to define whether the current password is required
-     * 
+     *
      * @param currentPasswordRequired
      *            set to false if the old one is not required to change the password
      */
-    public UserProfileChangePasswordValidator(boolean currentPasswordRequired) {
+    public UserProfileChangePasswordValidator(UserPasswordManagement userPasswordManagement,
+            boolean currentPasswordRequired) {
+        this.userPasswordManagement = userPasswordManagement;
         this.setCurrentPasswordRequired(currentPasswordRequired);
     }
 
@@ -68,7 +64,7 @@ public class UserProfileChangePasswordValidator implements Validator {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "oldPassword",
                     "string.validation.empty");
         }
-        ValidationHelper.validatePasswords("newPassword", form.getNewPassword(),
-                "newPasswordConfirm", form.getNewPasswordConfirm(), errors);
+        ValidationHelper.validatePasswords(userPasswordManagement, "newPassword",
+                form.getNewPassword(), "newPasswordConfirm", form.getNewPasswordConfirm(), errors);
     }
 }

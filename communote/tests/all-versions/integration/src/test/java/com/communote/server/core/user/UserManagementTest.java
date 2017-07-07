@@ -35,6 +35,7 @@ import com.communote.server.api.core.user.UserVO;
 import com.communote.server.core.filter.listitems.SimpleNoteListItem;
 import com.communote.server.core.query.QueryManagement;
 import com.communote.server.core.security.SecurityHelper;
+import com.communote.server.core.user.security.UserPasswordManagement;
 import com.communote.server.core.vo.blog.NoteModificationResult;
 import com.communote.server.core.vo.blog.NoteModificationStatus;
 import com.communote.server.core.vo.content.AttachmentTO;
@@ -116,6 +117,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
     @Autowired
     private UserManagement userManagement;
     @Autowired
+    private UserPasswordManagement userPasswordManagement;
+    @Autowired
     private UserService userService;
     @Autowired
     private NoteService noteService;
@@ -144,9 +147,11 @@ public class UserManagementTest extends CommunoteIntegrationTest {
      * @param anonymizeEnabled
      *            whether anonymization should be enabled
      */
-    private void changeEnabledStateOfUserDeletion(boolean disableEnabled, boolean anonymizeEnabled) {
+    private void changeEnabledStateOfUserDeletion(boolean disableEnabled,
+            boolean anonymizeEnabled) {
         HashMap<ClientConfigurationPropertyConstant, String> map = new HashMap<ClientConfigurationPropertyConstant, String>();
-        map.put(ClientProperty.DELETE_USER_BY_ANONYMIZE_ENABLED, Boolean.toString(anonymizeEnabled));
+        map.put(ClientProperty.DELETE_USER_BY_ANONYMIZE_ENABLED,
+                Boolean.toString(anonymizeEnabled));
         map.put(ClientProperty.DELETE_USER_BY_DISABLE_ENABLED, Boolean.toString(disableEnabled));
         CommunoteRuntime.getInstance().getConfigurationManager()
                 .updateClientConfigurationProperties(map);
@@ -182,24 +187,16 @@ public class UserManagementTest extends CommunoteIntegrationTest {
     @AfterClass
     public void cleanupTests() {
         // put a manager in security context
-        AuthenticationTestUtils.setSecurityContext(userManagement
-                .findUserByAlias(InstallerTest.TEST_MANAGER_USER_ALIAS));
-        CommunoteRuntime
-                .getInstance()
-                .getConfigurationManager()
-                .updateClientConfigurationProperty(
-                        ClientProperty.ALLOW_ALL_CAN_READ_WRITE_FOR_ALL_USERS,
-                        Boolean.toString(oldAllCanReadWriteAllowed));
-        CommunoteRuntime
-                .getInstance()
-                .getConfigurationManager()
-                .updateClientConfigurationProperty(ClientProperty.AUTOMATIC_USER_ACTIVATION,
-                        Boolean.toString(oldAutomaticUserActivation));
-        CommunoteRuntime
-                .getInstance()
-                .getConfigurationManager()
-                .updateClientConfigurationProperty(ClientProperty.CREATE_PERSONAL_BLOG,
-                        Boolean.toString(oldCreatePresonalTopic));
+        AuthenticationTestUtils.setSecurityContext(
+                userManagement.findUserByAlias(InstallerTest.TEST_MANAGER_USER_ALIAS));
+        CommunoteRuntime.getInstance().getConfigurationManager().updateClientConfigurationProperty(
+                ClientProperty.ALLOW_ALL_CAN_READ_WRITE_FOR_ALL_USERS,
+                Boolean.toString(oldAllCanReadWriteAllowed));
+        CommunoteRuntime.getInstance().getConfigurationManager().updateClientConfigurationProperty(
+                ClientProperty.AUTOMATIC_USER_ACTIVATION,
+                Boolean.toString(oldAutomaticUserActivation));
+        CommunoteRuntime.getInstance().getConfigurationManager().updateClientConfigurationProperty(
+                ClientProperty.CREATE_PERSONAL_BLOG, Boolean.toString(oldCreatePresonalTopic));
         AuthenticationTestUtils.setAuthentication(null);
     }
 
@@ -219,7 +216,6 @@ public class UserManagementTest extends CommunoteIntegrationTest {
             userVo.setRoles(new UserRole[] { UserRole.ROLE_KENMEI_USER });
         }
         userVo.setPassword(TEST_USER_CLEAR_PASSWORD);
-        userVo.setPlainPassword(true);
         userVo.setLanguage(Locale.ENGLISH);
         return userVo;
     }
@@ -391,8 +387,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
     public void prepareDeleteTestUserByManagerTests() {
         try {
             createUserForDeletion();
-            AuthenticationTestUtils.setSecurityContext(userManagement
-                    .findUserByAlias(InstallerTest.TEST_MANAGER_USER_ALIAS));
+            AuthenticationTestUtils.setSecurityContext(
+                    userManagement.findUserByAlias(InstallerTest.TEST_MANAGER_USER_ALIAS));
         } catch (Exception e) {
             Assert.fail("Preparing the user deletion by manager failed.", e);
         }
@@ -419,8 +415,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         try {
             User userToDel = createUserForDeletion(TEST_DEL_USER_2_EMAIL, TEST_DEL_USER_2_ALIAS);
             createTestBlogsAndPost(userToDel);
-            AuthenticationTestUtils.setSecurityContext(userManagement
-                    .findUserByAlias(InstallerTest.TEST_MANAGER_USER_ALIAS));
+            AuthenticationTestUtils.setSecurityContext(
+                    userManagement.findUserByAlias(InstallerTest.TEST_MANAGER_USER_ALIAS));
         } catch (Exception e) {
             Assert.fail("Preparing the deletion of a user with blogs failed.", e);
         }
@@ -469,7 +465,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
      * @throws Exception
      *             in case of an error
      */
-    @Test(groups = { "DeleteTestUserByManager" }, dependsOnMethods = { "testPermanentlyDisableUser" })
+    @Test(groups = { "DeleteTestUserByManager" }, dependsOnMethods = {
+            "testPermanentlyDisableUser" })
     public void testAnonymizePermanentlyDisabledUser() throws Exception {
         internalTestAnonymizeUser(TEST_DEL_USER_EMAIL, TEST_DEL_USER_ALIAS);
     }
@@ -493,7 +490,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
      * @throws Exception
      *             in case the test failed
      */
-    @Test(groups = { "DeleteTestUserByUser" }, dependsOnMethods = { "testDeleteUserByUserAccessRestrictions" })
+    @Test(groups = { "DeleteTestUserByUser" }, dependsOnMethods = {
+            "testDeleteUserByUserAccessRestrictions" })
     public void testAnonymizeUserByUser() throws Exception {
         internalTestAnonymizeUser(TEST_DEL_USER_EMAIL, TEST_DEL_USER_ALIAS);
     }
@@ -525,8 +523,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
             NoteModificationResult result = noteService.createNote(storingTO, null);
 
             AttachmentTO attachmentTO = TestUtils
-                    .getAttachmentFromDefaultFilesystemConnectorByContentId(attachment
-                            .getContentIdentifier());
+                    .getAttachmentFromDefaultFilesystemConnectorByContentId(
+                            attachment.getContentIdentifier());
             Assert.assertNotNull(attachmentTO);
 
             noteIds.add(result.getNoteId());
@@ -567,7 +565,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
      * @throws Exception
      *             in case the test failed
      */
-    @Test(groups = { "DeleteTestUserWithBlogs" }, dependsOnMethods = { "testAnonymizeUserWithBlogsRemoveBlogs" })
+    @Test(groups = { "DeleteTestUserWithBlogs" }, dependsOnMethods = {
+            "testAnonymizeUserWithBlogsRemoveBlogs" })
     public void testAnonymizeUserWithBlogsBecomeManager() throws Exception {
         User user = createUserForDeletion(TEST_DEL_USER_2_EMAIL, TEST_DEL_USER_2_ALIAS);
         // re-create the blogs
@@ -578,8 +577,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         } catch (NoBlogManagerLeftException e) {
             validateNoBlogManagerLeftException(e, blogsToHandle, topicManagement);
         }
-        AuthenticationTestUtils.setSecurityContext(userManagement
-                .findUserByAlias(InstallerTest.TEST_MANAGER_USER_ALIAS));
+        AuthenticationTestUtils.setSecurityContext(
+                userManagement.findUserByAlias(InstallerTest.TEST_MANAGER_USER_ALIAS));
         // handle the manager-less blogs by becoming manager
         userService.anonymizeUser(user.getId(), blogsToHandle, true);
         validateUserAnonymizationSuccess(TEST_DEL_USER_2_EMAIL, TEST_DEL_USER_2_ALIAS);
@@ -589,7 +588,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         // assert there is only one member
         validateCorrectBlogMember(TEST_DEL_USER_2_USED_BLOG_ALIAS,
                 InstallerTest.TEST_MANAGER_USER_ALIAS);
-        validateCorrectBlogMember(TEST_DEL_USER_2_BLOG_ALIAS, InstallerTest.TEST_MANAGER_USER_ALIAS);
+        validateCorrectBlogMember(TEST_DEL_USER_2_BLOG_ALIAS,
+                InstallerTest.TEST_MANAGER_USER_ALIAS);
         // assert posts are removed
         validateCorrectRegularPostCount(TEST_DEL_USER_2_BLOG_ALIAS, 0, topicManagement);
         // cleanup by removing the remaining blogs
@@ -619,8 +619,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         // make sure the blogs are removed
         Assert.assertNull(topicManagement.findBlogByIdentifier(TEST_DEL_USER_2_PRIV_BLOG_ALIAS),
                 "Blog " + TEST_DEL_USER_2_PRIV_BLOG_ALIAS + " still exists.");
-        Assert.assertNull(topicManagement.findBlogByIdentifier(TEST_DEL_USER_2_BLOG_ALIAS), "Blog "
-                + TEST_DEL_USER_2_BLOG_ALIAS + " still exists.");
+        Assert.assertNull(topicManagement.findBlogByIdentifier(TEST_DEL_USER_2_BLOG_ALIAS),
+                "Blog " + TEST_DEL_USER_2_BLOG_ALIAS + " still exists.");
         Assert.assertNull(topicManagement.findBlogByIdentifier(TEST_DEL_USER_2_USED_BLOG_ALIAS),
                 "Blog " + TEST_DEL_USER_2_USED_BLOG_ALIAS + " still exists.");
     }
@@ -636,8 +636,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         testCreateUser(TEST_USER_EMAILCHANGE_EMAIL, TEST_USER_EMAILCHANGE_ALIAS);
         User user = findUser(TEST_USER_EMAILCHANGE_EMAIL);
         AuthenticationTestUtils.setManagerContext();
-        Assert.assertTrue(userManagement.changeEmailAddress(user.getId(),
-                "newemailaddress@localhost", true));
+        Assert.assertTrue(
+                userManagement.changeEmailAddress(user.getId(), "newemailaddress@localhost", true));
     }
 
     /**
@@ -651,9 +651,10 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         testCreateUser(TEST_USER_PASSWORDCHANGE_EMAIL, TEST_USER_PASSWORDCHANGE_ALIAS);
         User user = findUser(TEST_USER_PASSWORDCHANGE_EMAIL);
         String oldPwd = user.getPassword();
-        userManagement.changePassword(user.getId(), "newPassword");
+        userPasswordManagement.changePassword(user.getId(), "newPassword");
         String newPwd = findUser(TEST_USER_PASSWORDCHANGE_EMAIL).getPassword();
         Assert.assertFalse(oldPwd.equals(newPwd), "The password was not changed.");
+        Assert.assertTrue(userPasswordManagement.checkPassword(user.getId(), "newPassword"));
     }
 
     /**
@@ -665,8 +666,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
      *             the email adress already exists
      */
     @Test(groups = { "CreateTestUser" }, dependsOnMethods = { "testChangeEmailAddress" })
-    public void testConfirmEmailAddress() throws SecurityCodeNotFoundException,
-            EmailAlreadyExistsException {
+    public void testConfirmEmailAddress()
+            throws SecurityCodeNotFoundException, EmailAlreadyExistsException {
         SecurityCode code = emailSecurityCodeDao.findByEmailAddress("newemailaddress@localhost");
         userManagement.confirmNewEmailAddress(code.getCode());
         Assert.assertNotNull(userManagement.findUserByEmail("newemailaddress@localhost"));
@@ -698,10 +699,10 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         UserVO userVo = new UserVO();
         userVo.setAlias(user.getAlias());
         userVo.setEmail(user.getEmail());
+        String password = TEST_USER_CLEAR_PASSWORD + "_changed";
+        userVo.setPassword(password);
         userVo.setFirstName(user.getProfile().getFirstName());
         userVo.setLastName(user.getProfile().getLastName());
-        userVo.setPassword(user.getPassword());
-        userVo.setPlainPassword(false);
         userVo.setRoles(userManagement.getRolesOfUser(user.getId()));
         userVo.setLanguage(user.getLanguageLocale());
 
@@ -711,7 +712,7 @@ public class UserManagementTest extends CommunoteIntegrationTest {
             Assert.fail("Unable to confirm " + user.getEmail() + ": " + e.getMessage());
         }
         Assert.assertEquals(user.getStatus(), UserStatus.CONFIRMED);
-
+        Assert.assertTrue(userPasswordManagement.checkPassword(user.getId(), password));
         // Activate user
         userManagement.changeUserStatusByManager(user.getId(), UserStatus.ACTIVE);
         user = userManagement.getUserById(user.getId(), new IdentityConverter<User>());
@@ -729,8 +730,9 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         UserManagement um = userManagement;
         UserVO userVo = createCommonUserVoBase(false);
         for (int i = 1; i <= TEST_MASS_USER_COUNT; i++) {
-            setEmailAlias(userVo, new Formatter().format(TEST_MASS_USER_EMAIL_PATTERN, i)
-                    .toString(), new Formatter().format(TEST_MASS_USER_ALIAS_PATTERN, i).toString());
+            setEmailAlias(userVo,
+                    new Formatter().format(TEST_MASS_USER_EMAIL_PATTERN, i).toString(),
+                    new Formatter().format(TEST_MASS_USER_ALIAS_PATTERN, i).toString());
             um.createUser(userVo, false, true);
         }
     }
@@ -759,7 +761,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
     public void testCreateUser(@Optional("new_normal-user@localhost") String email,
             @Optional("new_nuser") String alias) throws Exception {
         UserVO userVo = setEmailAlias(createCommonUserVoBase(false), email, alias);
-        userManagement.createUser(userVo, true, false);
+        Long userId = userManagement.createUser(userVo, true, false).getId();
+        Assert.assertTrue(userPasswordManagement.checkPassword(userId, TEST_USER_CLEAR_PASSWORD));
     }
 
     /**
@@ -860,7 +863,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
      * @throws Exception
      *             in case the test failed
      */
-    @Test(groups = { "DeleteTestUserWithBlogs" }, dependsOnMethods = { "testAnonymizeUserWithBlogsBecomeManager" })
+    @Test(groups = { "DeleteTestUserWithBlogs" }, dependsOnMethods = {
+            "testAnonymizeUserWithBlogsBecomeManager" })
     public void testPermanentlyDisableUserWithBlogs() throws Exception {
         User user = createUserForDeletion(TEST_DEL_USER_2_EMAIL, TEST_DEL_USER_2_ALIAS);
         // re-create the blogs
@@ -875,13 +879,15 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         userManagement.permanentlyDisableUser(user.getId(), blogsToHandle, true);
         validateUserPermanentlyDisableSuccess(TEST_DEL_USER_2_EMAIL, TEST_DEL_USER_2_ALIAS);
         // make sure the private blog is not removed
-        Assert.assertNotNull(topicManagement
-                .findBlogByIdentifierWithoutAuthorizationCheck(TEST_DEL_USER_2_PRIV_BLOG_ALIAS),
+        Assert.assertNotNull(
+                topicManagement.findBlogByIdentifierWithoutAuthorizationCheck(
+                        TEST_DEL_USER_2_PRIV_BLOG_ALIAS),
                 "Blog " + TEST_DEL_USER_2_PRIV_BLOG_ALIAS + " does not exist.");
         // assert there is only one member
         validateCorrectBlogMember(TEST_DEL_USER_2_USED_BLOG_ALIAS,
                 InstallerTest.TEST_MANAGER_USER_ALIAS);
-        validateCorrectBlogMember(TEST_DEL_USER_2_BLOG_ALIAS, InstallerTest.TEST_MANAGER_USER_ALIAS);
+        validateCorrectBlogMember(TEST_DEL_USER_2_BLOG_ALIAS,
+                InstallerTest.TEST_MANAGER_USER_ALIAS);
         // assert the post is still there
         validateCorrectRegularPostCount(TEST_DEL_USER_2_BLOG_ALIAS, 1, topicManagement);
     }
@@ -899,8 +905,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
     private void validateCorrectBlogMember(String blogNameId, String managerAlias)
             throws BlogAccessException {
         Blog topic = topicManagement.findBlogByIdentifier(blogNameId);
-        Collection<UserToBlogRoleMapping> mappings = userToBlogRoleMappingDao.findMappings(
-                topic.getId(), null, null, false, null);
+        Collection<UserToBlogRoleMapping> mappings = userToBlogRoleMappingDao
+                .findMappings(topic.getId(), null, null, false, null);
         int mappingsFound = mappings.size();
         mappings = userToBlogRoleMappingDao.findMappings(topic.getId(), null, null, true, null);
         mappingsFound += mappings.size();
@@ -927,8 +933,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         TaggingCoreItemUTPExtension utpExt = queryInstance.getTypeSpecificExtension();
         utpExt.setTopicAccessLevel(TopicAccessLevel.READ);
         utpExt.setUserId(SecurityHelper.getCurrentUserId());
-        utpExt.setBlogFilter(new Long[] { blogManagement
-                .findBlogByIdentifierWithoutAuthorizationCheck(blogNameId).getId() });
+        utpExt.setBlogFilter(new Long[] {
+                blogManagement.findBlogByIdentifierWithoutAuthorizationCheck(blogNameId).getId() });
         Collection<SimpleNoteListItem> items = queryManagement.executeQueryComplete(query,
                 queryInstance);
         int regularPosts = 0;
@@ -966,8 +972,8 @@ public class UserManagementTest extends CommunoteIntegrationTest {
         Long idBlog2 = bm.findBlogByIdentifier(TEST_DEL_USER_2_USED_BLOG_ALIAS).getId();
         for (Long id : blogIds) {
             boolean expectedBlog = id.equals(idBlog1) || id.equals(idBlog2);
-            Assert.assertTrue(expectedBlog, "Blog " + id
-                    + " was falsly categorized as blog with no other manager left.");
+            Assert.assertTrue(expectedBlog,
+                    "Blog " + id + " was falsly categorized as blog with no other manager left.");
             blogsToHandle[i] = id;
             i++;
         }

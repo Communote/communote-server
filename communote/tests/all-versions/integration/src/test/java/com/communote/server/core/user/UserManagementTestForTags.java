@@ -13,7 +13,6 @@ import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.tag.TagStoreType;
 import com.communote.server.api.core.tag.TagTO;
 import com.communote.server.api.core.user.UserVO;
-import com.communote.server.core.user.UserManagement;
 import com.communote.server.model.user.User;
 import com.communote.server.model.user.UserRole;
 import com.communote.server.test.CommunoteIntegrationTest;
@@ -49,7 +48,7 @@ public class UserManagementTestForTags extends CommunoteIntegrationTest {
      *             Exception.
      */
     public void testUpdateKenmeiUserForTagTO() throws Exception {
-        UserVO userVO = new UserVO(true, Locale.ENGLISH, random() + "@" + random(),
+        UserVO userVO = new UserVO(Locale.ENGLISH, random() + "@" + random(),
                 new UserRole[] { UserRole.ROLE_KENMEI_USER });
         userVO.setPassword(random());
         userVO.setAlias(random());

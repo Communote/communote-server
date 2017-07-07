@@ -1,7 +1,5 @@
 package com.communote.server.web.fe.portal.user.forms;
 
-import static com.communote.server.web.commons.FeConstants.PASSWORD_FORMAT_PLAIN;
-
 import java.io.Serializable;
 import java.util.Locale;
 
@@ -35,11 +33,8 @@ public class RegistrationForm implements Serializable {
      */
     private String timeZoneOffsetList = StringUtils.EMPTY;
 
-    /** The password format. */
-    private String passwordFormat = PASSWORD_FORMAT_PLAIN;
-
     /** The user. */
-    private UserVO user = new UserVO(StringUtils.EMPTY, true, null, StringUtils.EMPTY, null,
+    private UserVO user = new UserVO(StringUtils.EMPTY, null, StringUtils.EMPTY, null,
             StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, null);
 
     private String confirmationCode = null;
@@ -203,15 +198,6 @@ public class RegistrationForm implements Serializable {
     }
 
     /**
-     * Checks if is plain password.
-     *
-     * @return true, if is plain password
-     */
-    public boolean isPlainPassword() {
-        return PASSWORD_FORMAT_PLAIN.equals(passwordFormat);
-    }
-
-    /**
      * Sets the alias.
      *
      * @param alias
@@ -304,17 +290,6 @@ public class RegistrationForm implements Serializable {
     }
 
     /**
-     * Sets the password format.
-     *
-     * @param passwordFormat
-     *            the new password format
-     */
-    public void setPasswordFormat(String passwordFormat) {
-        this.passwordFormat = passwordFormat == null ? null : passwordFormat.trim();
-        setUserPassword();
-    }
-
-    /**
      * Has the user agreed to the Terms of use?.
      *
      * @return true, if checkbox was set, otherwise false
@@ -364,10 +339,8 @@ public class RegistrationForm implements Serializable {
      */
     private void setUserPassword() {
         user.setPassword(null);
-        user.setPlainPassword(true);
         if (StringUtils.isNotBlank(password) && StringUtils.equals(password, password2)) {
             user.setPassword(password);
-            user.setPlainPassword(PASSWORD_FORMAT_PLAIN.equals(passwordFormat));
         }
     }
 }

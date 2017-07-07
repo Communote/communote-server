@@ -19,11 +19,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.communote.common.util.Base64Utils;
 
-
 /**
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class EncryptionUtils {
 
@@ -32,13 +31,12 @@ public class EncryptionUtils {
 
     private static final int PBE_ITERATION_COUNT = 1024;
     private static final String SEPARATOR = ":";
-    private static final int SALT_DEFAULT_MIN_LENGTH = 6;
-    private static final int SALT_DEFAULT_MAX_LENGTH = 20;
+    private static final int SALT_DEFAULT_SIZE = 32;
 
     /**
      * Decrypts text and returns the readable clear text. If the encrypted input is blank then it is
      * returned without processing.
-     * 
+     *
      * @param encryptedText
      *            the encrypted string (required)
      * @param password
@@ -46,7 +44,7 @@ public class EncryptionUtils {
      * @return the decrypted version of text
      * @throws EncryptionException
      *             in the event of an encryption failure
-     * 
+     *
      */
     public static String decrypt(String encryptedText, String password) throws EncryptionException {
         if (StringUtils.isBlank(encryptedText)) {
@@ -59,8 +57,8 @@ public class EncryptionUtils {
             SecretKey aesKey = getSecretKey(password, saltDecoded);
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, aesKey);
-            byte[] encryptedTextAsByte = Base64Utils.decode(StringUtils.substringBeforeLast(
-                    encryptedText, SEPARATOR));
+            byte[] encryptedTextAsByte = Base64Utils
+                    .decode(StringUtils.substringBeforeLast(encryptedText, SEPARATOR));
             recoveredBytes = cipher.doFinal(encryptedTextAsByte);
         } catch (InvalidKeyException e) {
             throw new EncryptionException("Invalid key for encrypt password", e);
@@ -84,7 +82,7 @@ public class EncryptionUtils {
     /**
      * Encrypt the clear text and adds a random salt. If the input text is blank then it is returned
      * without processing.
-     * 
+     *
      * @param clearText
      *            the string to encrypt (required)
      * @param password
@@ -100,7 +98,7 @@ public class EncryptionUtils {
     /**
      * Encrypt the clear text with a defined salt. If the input text is blank then it is returned
      * without processing.
-     * 
+     *
      * @param clearText
      *            the string to encrypt (required)
      * @param salt
@@ -150,30 +148,24 @@ public class EncryptionUtils {
     }
 
     /**
-     * Generates random bits that are used to encrypt a text. The lower and upper bound of the
-     * length of the salt is set to default.
-     * 
-     * @return a secure and random salt
+     * Generates secure random bytes.
+     *
+     * @return a secure random salt with a size of {@value #SALT_DEFAULT_SIZE} bytes
      */
     public static byte[] generateSalt() {
-        return generateSalt(SALT_DEFAULT_MIN_LENGTH, SALT_DEFAULT_MAX_LENGTH);
+        return generateSalt(SALT_DEFAULT_SIZE);
     }
 
     /**
-     * Generates random bits that are used to encrypt a text. The lower and upper bound of the
-     * length of the salt can set.
-     * 
-     * @param minLength
-     *            the min length for the salt
-     * @param maxLength
-     *            the max length for the salt
-     * @return a secure and random salt
+     * Generates secure random bytes.
+     *
+     * @param saltSize
+     *            the length for the salt in bytes
+     * @return a secure random salt
      */
-    public static byte[] generateSalt(int minLength, int maxLength) {
-        int range = maxLength - minLength;
+    public static byte[] generateSalt(int saltSize) {
 
         SecureRandom r = new SecureRandom();
-        int saltSize = r.nextInt(range) + minLength;
         byte[] salt = new byte[saltSize];
         r.nextBytes(salt);
 
@@ -182,7 +174,7 @@ public class EncryptionUtils {
 
     /**
      * returns the stored salt (encoded) of a encrypted value
-     * 
+     *
      * @param encryptedText
      *            the encrypted text
      * @return the salt of the encryption
@@ -199,7 +191,7 @@ public class EncryptionUtils {
      * @return the "secret" key
      * @throws NoSuchAlgorithmException
      *             in case of an error
-     * 
+     *
      * @throws InvalidKeySpecException
      *             in case of an error
      */

@@ -158,8 +158,7 @@ public interface UserDao {
      *
      * @param systemId
      *            ID of an external system to only count the users which originate from this
-     *            external system. If null only internal users which can login (have a password)
-     *            will be counted.
+     *            external system. If null, all users are counted.
      * @param role
      *            the role of a user. If not null only the users with that role will be counted
      *            otherwise all roles (including system users) are considered.
@@ -296,17 +295,15 @@ public interface UserDao {
     public boolean userFollowsItem(Long userId, Long globalId);
 
     /**
-     * Converts an instance of type {@link UserVO} to this DAO's entity.
+     * Creates a new (not persisted) entity and copies the fields of the VO to the corresponding
+     * fields of the entity. Null values and the password are not copied.
      */
     public User userVOToEntity(UserVO userVO);
 
     /**
-     * Copies the fields of {@link UserVO} to the specified entity.
-     *
-     * @param copyIfNull
-     *            If FALSE, the value object's field will not be copied to the entity if the value
-     *            is NULL. If TRUE, it will be copied regardless of its value.
+     * Copies the fields of the VO to the corresponding fields of the entity. Null values and the
+     * password are not copied.
      */
-    public void userVOToEntity(UserVO source, User target, boolean copyIfNull);
+    public void userVOToEntity(UserVO source, User target);
 
 }

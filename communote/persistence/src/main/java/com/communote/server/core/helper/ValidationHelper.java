@@ -10,14 +10,15 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
 import com.communote.common.validation.EmailValidator;
+import com.communote.server.core.common.exceptions.PasswordValidationException;
+import com.communote.server.core.user.security.UserPasswordManagement;
 import com.communote.server.model.user.PhoneNumber;
-
 
 /**
  * Helper class for validation.
- * 
+ *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- * 
+ *
  */
 public class ValidationHelper {
 
@@ -35,14 +36,11 @@ public class ValidationHelper {
     public static final String STRING_WRONG_REGEX_FORMAT = "string.validation.no.regex.matches";
 
     /** */
-    public static final String STRING_WRONG_REGEX_FORMAT_ALL_LETTERS =
-            "string.validation.no.regex.matches.letters.only";
+    public static final String STRING_WRONG_REGEX_FORMAT_ALL_LETTERS = "string.validation.no.regex.matches.letters.only";
     /** */
-    public static final String STRING_WRONG_REGEX_FORMAT_ALL_LETTERS_AND_OTHER =
-            "string.validation.no.regex.matches.letters.more";
+    public static final String STRING_WRONG_REGEX_FORMAT_ALL_LETTERS_AND_OTHER = "string.validation.no.regex.matches.letters.more";
     /** */
-    public static final String STRING_WRONG_REGEX_FORMAT_ALL_DIGITS =
-            "string.validation.no.regex.matches.digits.only";
+    public static final String STRING_WRONG_REGEX_FORMAT_ALL_DIGITS = "string.validation.no.regex.matches.digits.only";
 
     private static final String ALL_LETTERS_REGEX_CLASS = "\\p{L}";
 
@@ -61,15 +59,9 @@ public class ValidationHelper {
     /** max length for port numbers */
     public static final int PORT_NUMBERS_MAX_LENGTH = 5;
 
-    /** minimal number of symbols for a password */
-    public static final int PASSWORD_MIN_LENGTH = 6;
-
-    /** maximal number of symbols for a password */
-    public static final int PASSWORD_MAX_LENGTH = 255;
-
     /**
      * Validates a string by regex expression
-     * 
+     *
      * @param input
      *            the input of a form field.
      * @param regex
@@ -100,7 +92,7 @@ public class ValidationHelper {
 
     /**
      * Returns a suited error message key for a given regex.
-     * 
+     *
      * @param regex
      *            the regex
      * @return the message key
@@ -123,7 +115,7 @@ public class ValidationHelper {
 
     /**
      * Modifies the regex Expression to show it the user with the characters which are allowed.
-     * 
+     *
      * @param regex
      *            Regex to modify
      * @return Regex without starting [ or ending ]* and without escaping characters
@@ -139,7 +131,7 @@ public class ValidationHelper {
 
     /**
      * Validate the e-mail address.
-     * 
+     *
      * @param fieldName
      *            the field name.
      * @param input
@@ -174,7 +166,8 @@ public class ValidationHelper {
     }
 
     /**
-     * 
+     * @param userPasswordManagement
+     *            the user password management service
      * @param passwordField
      *            the name of the password field.
      * @param passwordInput
@@ -187,8 +180,9 @@ public class ValidationHelper {
      *            Errors.
      * @return {@code true} if the password is valid otherwise {@code false}
      */
-    public static boolean validatePasswords(String passwordField, String passwordInput,
-            String passwordConfirmField, String passwordConfirmInput, Errors errors) {
+    public static boolean validatePasswords(UserPasswordManagement userPasswordManagement,
+            String passwordField, String passwordInput, String passwordConfirmField,
+            String passwordConfirmInput, Errors errors) {
 
         boolean isValid = true;
 
@@ -205,12 +199,14 @@ public class ValidationHelper {
                     "The passwords are not matching!");
         }
 
-        // check if password is greater or equal than 6
-        if (!errors.hasFieldErrors(passwordField)
-                && passwordInput.length() < ValidationHelper.PASSWORD_MIN_LENGTH) {
+        if (!errors.hasFieldErrors(passwordField)) {
 
-            errors.rejectValue(passwordField, "error.password.must.have.at.least.6.characters",
-                    "The password is too short!");
+            try {
+                userPasswordManagement.validatePassword(passwordInput);
+            } catch (PasswordValidationException e) {
+                errors.rejectValue(passwordField, "error.password.must.have.at.least.6.characters",
+                        "The password is too short!");
+            }
         }
 
         if (errors.hasFieldErrors(passwordField)) {
@@ -222,7 +218,7 @@ public class ValidationHelper {
 
     /**
      * Validates a phone number.
-     * 
+     *
      * @param phoneNumber
      *            the phone number to validate
      * @param field
@@ -252,7 +248,7 @@ public class ValidationHelper {
     /**
      * Validate port numbers. Checks if the input consists only of digits and if the number is a
      * value between 0 and 65535.
-     * 
+     *
      * @param fieldName
      *            the field name.
      * @param input
@@ -269,8 +265,7 @@ public class ValidationHelper {
         if (StringUtils.isNotBlank(input)) {
             // only digits allowed
             if (!errors.hasFieldErrors(fieldName)) {
-                validateStringByRegex(input, ValidationHelper.REGEX_DIGITS,
-                        fieldName, errors);
+                validateStringByRegex(input, ValidationHelper.REGEX_DIGITS, fieldName, errors);
             }
 
             if (!errors.hasFieldErrors(fieldName)) {
@@ -290,7 +285,7 @@ public class ValidationHelper {
 
     /**
      * Validates a string.
-     * 
+     *
      * @param field
      *            the field
      * @param errors
@@ -306,14 +301,14 @@ public class ValidationHelper {
             int maxLength) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, field, "error.valueEmpty");
         if (!errors.hasFieldErrors(field)) {
-            validateString(field, (String) errors.getFieldValue(field), true,
-                    maxLength, minLength, pattern, errors);
+            validateString(field, (String) errors.getFieldValue(field), true, maxLength, minLength,
+                    pattern, errors);
         }
     }
 
     /**
      * Validates a string.
-     * 
+     *
      * @param fieldName
      *            the field name.
      * @param input
@@ -328,7 +323,7 @@ public class ValidationHelper {
      *            A regular expression for the given string, can be {@code null} to skip this test
      * @param errors
      *            the error object (reference to a {@code BindException} object).
-     * 
+     *
      * @return {@code true} if the string is valid otherwise {@code false}
      */
     public static boolean validateString(String fieldName, String input, boolean isRequired,
@@ -363,7 +358,7 @@ public class ValidationHelper {
 
     /**
      * Validates a string by regular expression.
-     * 
+     *
      * @param inputStr
      *            String
      * @param regex

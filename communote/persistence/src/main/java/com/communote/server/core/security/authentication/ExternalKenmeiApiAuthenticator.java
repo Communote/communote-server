@@ -1,11 +1,6 @@
 package com.communote.server.core.security.authentication;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
-
-import com.communote.server.api.core.common.NotFoundException;
-import com.communote.server.api.util.JsonHelper;
-import com.communote.server.core.security.UnknownHostAuthenticationServiceException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -26,11 +21,13 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.util.Assert;
 
+import com.communote.server.api.util.JsonHelper;
+import com.communote.server.core.security.UnknownHostAuthenticationServiceException;
 import com.communote.server.persistence.user.ExternalUserVO;
 
 /**
  * Authenticator that runs against an external api. The api is defined by kenmei.
- * 
+ *
  * @param <R>
  *            The type of the authentication request the class can handle
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
@@ -98,7 +95,7 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
 
     /**
      * Test whether a provided JSON object has all the given members and throw an exception if not.
-     * 
+     *
      * @param jsonNode
      *            the JSON object
      * @param fieldNames
@@ -109,8 +106,8 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
     protected void assertFieldsExist(ObjectNode jsonNode, String... fieldNames) {
         for (String fieldName : fieldNames) {
             if (!jsonNode.has(fieldName)) {
-                throw new AuthenticationServiceException("JSON response is missing field "
-                        + fieldName);
+                throw new AuthenticationServiceException(
+                        "JSON response is missing field " + fieldName);
             }
         }
     }
@@ -118,7 +115,7 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
     /**
      * Does the authentication. If the token is set it will be used, otherwise the email address,
      * password is used.
-     * 
+     *
      * @param authenticationRequest
      *            the context holding all the parameters
      * @return a value object with details about the successfully authenticated user
@@ -138,7 +135,8 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
 
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                    throw new BadCredentialsException("Authentication against " + name + " failed.");
+                    throw new BadCredentialsException(
+                            "Authentication against " + name + " failed.");
                 }
                 throw new AuthenticationServiceException("Error contacting " + name + " url="
                         + getAuthenticationApiUrl() + " Unexpected Http Status Code: " + response);
@@ -163,12 +161,12 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
 
             return userVO;
         } catch (JsonProcessingException e) {
-            throw new AuthenticationServiceException(
-                    "Error contacting " + name + " url=" + getAuthenticationApiUrl()
-                            + " Error parsing JSON response: " + e.getMessage(), e);
+            throw new AuthenticationServiceException("Error contacting " + name + " url="
+                    + getAuthenticationApiUrl() + " Error parsing JSON response: " + e.getMessage(),
+                    e);
         } catch (IOException e) {
-            throw new UnknownHostAuthenticationServiceException("Error contacting " + name
-                    + " url=" + getAuthenticationApiUrl(), e);
+            throw new UnknownHostAuthenticationServiceException(
+                    "Error contacting " + name + " url=" + getAuthenticationApiUrl(), e);
 
         }
     }
@@ -176,7 +174,7 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
     /**
      * Hook to be overwritten to configure the http client prior to executing a method. Is only
      * called if {@link #httpClientReusable} is false.
-     * 
+     *
      * @param httpClient
      *            the client to configure
      * @param authenticationRequest
@@ -197,14 +195,14 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
 
     /**
      * Creates a prepared value object.
-     * 
+     *
      * @return the value object
      */
     protected abstract ExternalUserVO createUserVO();
 
     /**
      * Copies user data from a JSON object to a value object.
-     * 
+     *
      * @param jsonUser
      *            the JSON object
      * @param userVO
@@ -222,7 +220,7 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
 
     /**
      * If {@link #reusableHttpClient} is true the instance returned is always the same.
-     * 
+     *
      * @param authenticationRequest
      *            the external auth for the currrent request
      * @return the http client to be used
@@ -230,8 +228,8 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
     private HttpClient getHttpClient(R authenticationRequest) {
         AbstractHttpClient httpClient = httpClientReusable ? reusableHttpClient
                 : new DefaultHttpClient();
-        httpClient.getParams()
-                .setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.IGNORE_COOKIES);
+        httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY,
+                CookiePolicy.IGNORE_COOKIES);
         if (!httpClientReusable) {
             configureHttpClient(httpClient, authenticationRequest);
         }
@@ -240,7 +238,7 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
 
     /**
      * Returns the response body as a JSON object.
-     * 
+     *
      * @param jsonResponse
      *            the response
      * @return the JSON object
@@ -249,8 +247,8 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
      * @throws IOException
      *             in case the content is no legal JSON
      */
-    private ObjectNode getResponseAsJSON(String jsonResponse) throws JsonProcessingException,
-            IOException {
+    private ObjectNode getResponseAsJSON(String jsonResponse)
+            throws JsonProcessingException, IOException {
         JsonNode jsonUser = JsonHelper.getSharedObjectMapper().readTree(jsonResponse);
         if (jsonUser instanceof ObjectNode) {
             return (ObjectNode) jsonUser;
@@ -260,7 +258,7 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
 
     /**
      * Can be used to validate the received user after receiving it from the foreign system.
-     * 
+     *
      * @param jsonUser
      *            The retrieved user as Json object
      * @return True (default), if the user is valid.
@@ -271,7 +269,7 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
 
     /**
      * Creates a prepared value object with all update options set to true.
-     * 
+     *
      * @return the value object
      */
     protected ExternalUserVO prepareDefaultUserVO() {
@@ -280,14 +278,13 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
         userVO.setUpdateFirstName(true);
         userVO.setUpdateLanguage(true);
         userVO.setUpdateLastName(true);
-        userVO.setUpdatePassword(true);
-        userVO.setPlainPassword(true);
+        userVO.setClearPassword(false);
         return userVO;
     }
 
     /**
      * Queries the external system for data about a user
-     * 
+     *
      * @param authenticationRequest
      *            the authentication request
      * @return the data of the user (firstname, lastname and email) or null if not found
@@ -310,8 +307,8 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
                 }
                 userVO = createUserVO();
                 extractUserData(jsonUser, userVO);
-                userVO.setPassword("");
-                userVO.setUpdatePassword(false);
+                userVO.setPassword(null);
+                userVO.setClearPassword(false);
             } else {
                 LOGGER.info("Error contacting " + name + " url=" + getAuthenticationApiUrl()
                         + " status=" + response);
@@ -331,7 +328,7 @@ public abstract class ExternalKenmeiApiAuthenticator<R extends AuthenticationReq
     /**
      * Method is called after an authentication call has been made. Validate the user here and
      * thrown an exception if the user is not valid.
-     * 
+     *
      * @param authenticationRequest
      *            the request
      * @param retrievedVO

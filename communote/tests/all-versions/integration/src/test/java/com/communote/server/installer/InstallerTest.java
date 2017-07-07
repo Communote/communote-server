@@ -108,8 +108,8 @@ public class InstallerTest {
      */
     @BeforeSuite(dependsOnMethods = "installationStep1InitializeDatabase")
     public void installationStep2CreateGlobalClient() throws Exception {
-        CommunoteRuntime.getInstance().getInstaller()
-        .createCommunoteAccount("Global Test Client", "time.zones.gmt.Europe/Amsterdam");
+        CommunoteRuntime.getInstance().getInstaller().createCommunoteAccount("Global Test Client",
+                "time.zones.gmt.Europe/Amsterdam");
     }
 
     /**
@@ -144,18 +144,14 @@ public class InstallerTest {
         settings.put(ApplicationPropertyMailing.FROM_ADDRESS_NAME, fromName);
         conf.updateApplicationConfigurationProperties(settings);
 
-        Assert.assertEquals(
-                conf.getApplicationConfigurationProperties().getProperty(
-                        ApplicationPropertyMailing.HOST), mailOutHost);
-        Assert.assertEquals(
-                conf.getApplicationConfigurationProperties().getProperty(
-                        ApplicationPropertyMailing.PORT), mailOutPort);
-        Assert.assertEquals(
-                conf.getApplicationConfigurationProperties().getProperty(
-                        ApplicationPropertyMailing.FROM_ADDRESS), fromAddress);
-        Assert.assertEquals(
-                conf.getApplicationConfigurationProperties().getProperty(
-                        ApplicationPropertyMailing.FROM_ADDRESS_NAME), fromName);
+        Assert.assertEquals(conf.getApplicationConfigurationProperties()
+                .getProperty(ApplicationPropertyMailing.HOST), mailOutHost);
+        Assert.assertEquals(conf.getApplicationConfigurationProperties()
+                .getProperty(ApplicationPropertyMailing.PORT), mailOutPort);
+        Assert.assertEquals(conf.getApplicationConfigurationProperties()
+                .getProperty(ApplicationPropertyMailing.FROM_ADDRESS), fromAddress);
+        Assert.assertEquals(conf.getApplicationConfigurationProperties()
+                .getProperty(ApplicationPropertyMailing.FROM_ADDRESS_NAME), fromName);
     }
 
     /**
@@ -173,7 +169,6 @@ public class InstallerTest {
         userVo.setLanguage(Locale.ENGLISH);
         userVo.setLastName("Admin");
         userVo.setPassword("123456");
-        userVo.setPlainPassword(true);
         userVo.setTimeZoneId("time.zones.gmt.Europe/Amsterdam");
 
         Map<ApplicationProperty, String> params = new HashMap<ApplicationProperty, String>();
@@ -210,8 +205,8 @@ public class InstallerTest {
     public void installationStep5InitializeApplication() throws Exception {
         CommunoteRuntime.getInstance().getInstaller().initializeApplicationAfterInstallation();
         // set the global client as current client
-        ClientTO client = ServiceLocator.findService(ClientRetrievalService.class).findClient(
-                ClientHelper.getGlobalClientId());
+        ClientTO client = ServiceLocator.findService(ClientRetrievalService.class)
+                .findClient(ClientHelper.getGlobalClientId());
         ClientAndChannelContextHolder.setClient(client);
         Date creationDate = client.getCreationDate();
         Timestamp encryptedCreationDate = ClientHelper.getCreationDate();
@@ -270,9 +265,8 @@ public class InstallerTest {
         this.databaseName = dbName;
         this.databaseUsername = dbUsername;
         this.databasePassword = dbPassword;
-        String jdbcTempUrl = databaseType.getProtocol()
-                + databaseType.getDefaultProtocolSeperator() + dbHost + ":" + dbPort + "/"
-                + tempDbName + jdbcURLQueryString;
+        String jdbcTempUrl = databaseType.getProtocol() + databaseType.getDefaultProtocolSeperator()
+                + dbHost + ":" + dbPort + "/" + tempDbName + jdbcURLQueryString;
         String suUsername;
         String suPassword;
         if (StringUtils.isBlank(dbSuUsername)) {
@@ -304,33 +298,32 @@ public class InstallerTest {
             @Optional("communote-test-mail@localhost") String mailingReceiverAddress)
             throws Exception {
         File testBaseDir = new File(testBaseDirectory);
-        Assert.assertTrue(testBaseDir.isDirectory(), "Test base " + testBaseDir.getAbsolutePath()
-                + " is not an directory");
+        Assert.assertTrue(testBaseDir.isDirectory(),
+                "Test base " + testBaseDir.getAbsolutePath() + " is not an directory");
         File applicationRealDir = new File(testBaseDir, "communote");
-        File manifestFile = new File(applicationRealDir, "META-INF" + File.separator
-                + "MANIFEST.MF");
-        Assert.assertTrue(manifestFile.exists(), "Manifest file " + manifestFile.getAbsolutePath()
-                + " does not exist");
+        File manifestFile = new File(applicationRealDir,
+                "META-INF" + File.separator + "MANIFEST.MF");
+        Assert.assertTrue(manifestFile.exists(),
+                "Manifest file " + manifestFile.getAbsolutePath() + " does not exist");
         // fake catalina base dir
         File catalinaBaseDir = new File(testBaseDir, "catalina-base");
         FileUtils.deleteQuietly(catalinaBaseDir);
-        Assert.assertFalse(catalinaBaseDir.exists(),
-                "Catalina base directory " + catalinaBaseDir.getAbsolutePath()
-                        + " could not be removed");
-        Assert.assertTrue(catalinaBaseDir.mkdir(),
-                "Catalina base directory " + catalinaBaseDir.getAbsolutePath()
-                        + " could not be created");
+        Assert.assertFalse(catalinaBaseDir.exists(), "Catalina base directory "
+                + catalinaBaseDir.getAbsolutePath() + " could not be removed");
+        Assert.assertTrue(catalinaBaseDir.mkdir(), "Catalina base directory "
+                + catalinaBaseDir.getAbsolutePath() + " could not be created");
         System.setProperty("catalina.base", catalinaBaseDir.getAbsolutePath());
 
-        System.setProperty("java.naming.factory.initial", MockInitialContextFactory.class.getName());
+        System.setProperty("java.naming.factory.initial",
+                MockInitialContextFactory.class.getName());
         Context mockInitialContext = EasyMock.createMock(Context.class);
         Context mockJeeEnvContext = EasyMock.createMock(Context.class);
         EasyMock.expect(mockInitialContext.lookup("java:comp/env")).andReturn(mockJeeEnvContext);
-        EasyMock.expect(mockJeeEnvContext.lookup("communote.instance.name")).andReturn(
-                "communote-test");
+        EasyMock.expect(mockJeeEnvContext.lookup("communote.instance.name"))
+                .andReturn("communote-test");
         // use default config dir
-        EasyMock.expect(mockJeeEnvContext.lookup("communote.config.dir")).andThrow(
-                new NamingException("Not bound"));
+        EasyMock.expect(mockJeeEnvContext.lookup("communote.config.dir"))
+                .andThrow(new NamingException("Not bound"));
         EasyMock.replay(mockInitialContext);
         EasyMock.replay(mockJeeEnvContext);
         MockInitialContextFactory.setMockContext(mockInitialContext);
@@ -347,8 +340,8 @@ public class InstallerTest {
         IOUtils.closeQuietly(out);
 
         DefaultRuntimeBuilder runtimeBuilder = DefaultRuntimeBuilder.getInstance();
-        runtimeBuilder
-        .addApplicationContextConfigLocation("classpath:com/communote/server/test/spring/applicationContext-test.xml");
+        runtimeBuilder.addApplicationContextConfigLocation(
+                "classpath:com/communote/server/test/spring/applicationContext-test.xml");
         runtimeBuilder.setApplicationDirectory(applicationRealDir.getAbsolutePath());
         CommunoteRuntime.init(runtimeBuilder);
         Assert.assertNotNull(CommunoteRuntime.getInstance());

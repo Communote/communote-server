@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.communote.common.encryption.HashCodeGenerator;
 import com.communote.common.util.LocaleHelper;
 import com.communote.server.model.global.GlobalId;
 import com.communote.server.model.user.security.AuthenticationFailedStatus;
@@ -237,9 +236,8 @@ public class User extends CommunoteEntity {
     }
 
     /**
-     * <p>
-     * The password as MD5 hashcode
-     * </p>
+     * @return the password hash of the user. Can be null if the user is an external user of the
+     *         primary external repository.
      */
     public String getPassword() {
         return this.password;
@@ -293,6 +291,24 @@ public class User extends CommunoteEntity {
      */
     public java.util.Set<UserAuthority> getUserAuthorities() {
         return this.userAuthorities;
+    }
+
+    /**
+     * Test whether the user has an external authentication with the given ID.
+     *
+     * @param externalSystemId
+     *            the ID of the external system
+     * @return true if the user has an external authentication with the given ID
+     */
+    public boolean hasExternalAuthentication(String externalSystemId) {
+        if (externalAuthentications != null) {
+            for (ExternalUserAuthentication externalAuthentication : externalAuthentications) {
+                if (externalAuthentication.getSystemId().equals(externalSystemId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -397,10 +413,6 @@ public class User extends CommunoteEntity {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setPlainPassword(String plainPassword) {
-        setPassword(HashCodeGenerator.generateMD5HashCode(plainPassword));
     }
 
     public void setProfile(UserProfile profile) {

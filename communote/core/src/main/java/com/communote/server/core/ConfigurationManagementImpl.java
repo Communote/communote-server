@@ -210,8 +210,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
         ClientConfiguration clientConfiguration = configuration.getClientConfig();
         if (clientConfiguration != null && clientConfiguration.getLogoImage() != null) {
             clientConfiguration.setLogoImage(null);
-            clientConfiguration.setLastLogoImageModificationDate(new Timestamp(System
-                    .currentTimeMillis()));
+            clientConfiguration
+                    .setLastLogoImageModificationDate(new Timestamp(System.currentTimeMillis()));
             getClientConfigurationDao().update(clientConfiguration);
         }
     }
@@ -222,12 +222,11 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
     @Override
     protected void handleUpdateApplicationSettings(
             Map<ApplicationConfigurationPropertyConstant, String> settings)
-                    throws AuthorizationException {
+            throws AuthorizationException {
         boolean installed = CommunoteRuntime.getInstance().getConfigurationManager()
                 .getStartupProperties().isInstallationDone();
-        if (installed
-                && !(ClientHelper.isCurrentClientGlobal() && (SecurityHelper.isClientManager() || SecurityHelper
-                        .isInternalSystem()))) {
+        if (installed && !(ClientHelper.isCurrentClientGlobal()
+                && (SecurityHelper.isClientManager() || SecurityHelper.isInternalSystem()))) {
             throw new AuthorizationException(
                     "The current user is not allowed to update the application properties");
         }
@@ -260,8 +259,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
         } catch (VirusScannerException e) {
             throw new ConfigurationManagementException("Unable to scan content", e);
         } catch (VirusFoundException e) {
-            LOGGER.warn("Virus found uploading content. userId="
-                    + SecurityHelper.getCurrentUserId() + " " + e.getMessage());
+            LOGGER.warn("Virus found uploading content. userId=" + SecurityHelper.getCurrentUserId()
+                    + " " + e.getMessage());
             throw new ConfigurationManagementException("Virus was detected in byte array", e);
         }
         ImageFormatType format;
@@ -273,8 +272,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
             format = ImageFormatType.png;
         }
         // TODO why scaling here and not just storing the image in the uploaded size
-        ImageSize size = ServiceLocator.findService(ImageManager.class).getImageSize(
-                ClientImageDescriptor.IMAGE_TYPE_NAME, ImageSizeType.LARGE);
+        ImageSize size = ServiceLocator.findService(ImageManager.class)
+                .getImageSize(ClientImageDescriptor.IMAGE_TYPE_NAME, ImageSizeType.LARGE);
         image = new ImageScaler(size, format).resizeImage(image);
         if (image == null) {
             LOGGER.warn("The user uploaded an illegal image. User: "
@@ -282,8 +281,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
             throw new IllegalArgumentException("Illegal image uploaded");
         }
         clientConfiguration.setLogoImage(image);
-        clientConfiguration.setLastLogoImageModificationDate(new Timestamp(System
-                .currentTimeMillis()));
+        clientConfiguration
+                .setLastLogoImageModificationDate(new Timestamp(System.currentTimeMillis()));
         getClientConfigurationDao().update(clientConfiguration);
     }
 
@@ -294,7 +293,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
      *      String)
      */
     @Override
-    protected void handleUpdateClientSetting(ClientConfigurationPropertyConstant key, String value) {
+    protected void handleUpdateClientSetting(ClientConfigurationPropertyConstant key,
+            String value) {
         // fail for key ALLOW_DB_AUTH because a change requires special handling
         if (key.equals(ClientPropertySecurity.ALLOW_DB_AUTH_ON_EXTERNAL)) {
             throw new IllegalArgumentException(
@@ -326,9 +326,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
     protected void handleUpdateClientTimeZoneId(String timeZoneId) {
         Configuration configuration = handleGetConfiguration();
         ClientConfiguration clientConfiguration = configuration.getClientConfig();
-        if (clientConfiguration != null
-                && (clientConfiguration.getTimeZoneId() == null || !clientConfiguration
-                .getTimeZoneId().equals(timeZoneId))) {
+        if (clientConfiguration != null && (clientConfiguration.getTimeZoneId() == null
+                || !clientConfiguration.getTimeZoneId().equals(timeZoneId))) {
             clientConfiguration.setTimeZoneId(timeZoneId);
             getClientConfigurationDao().update(clientConfiguration);
         }
@@ -347,8 +346,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
         assertCurrentUserIsManager();
         confluenceAuthConfig.setSystemId(DEFAULT_CONFLUENCE_SYSTEM_ID);
 
-        Long id = getExternalSystemConfigurationDao().findBySystemId(
-                confluenceAuthConfig.getSystemId());
+        Long id = getExternalSystemConfigurationDao()
+                .findBySystemId(confluenceAuthConfig.getSystemId());
         Configuration config = handleGetConfiguration();
 
         ConfluenceConfiguration existingConfig;
@@ -414,24 +413,24 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
                 || existingConfig.getUserSearch().getPropertyMapping() == null;
 
         if (!permanentIdChanged) {
-            Map<String, String> newMapping = StringHelper.getStringAsMap(ldapConfig.getUserSearch()
-                    .getPropertyMapping());
-            Map<String, String> oldMapping = StringHelper.getStringAsMap(existingConfig
-                    .getUserSearch().getPropertyMapping());
+            Map<String, String> newMapping = StringHelper
+                    .getStringAsMap(ldapConfig.getUserSearch().getPropertyMapping());
+            Map<String, String> oldMapping = StringHelper
+                    .getStringAsMap(existingConfig.getUserSearch().getPropertyMapping());
             permanentIdChanged = !StringUtils.equals(
                     newMapping.get(LdapUserAttribute.UID.getName()),
                     oldMapping.get(LdapUserAttribute.UID.getName()));
         }
         existingConfig.setUserIdentifierIsBinary(ldapConfig.isUserIdentifierIsBinary());
         existingConfig.getUserSearch()
-        .setSearchFilter(ldapConfig.getUserSearch().getSearchFilter());
-        existingConfig.getUserSearch().setPropertyMapping(
-                ldapConfig.getUserSearch().getPropertyMapping());
+                .setSearchFilter(ldapConfig.getUserSearch().getSearchFilter());
+        existingConfig.getUserSearch()
+                .setPropertyMapping(ldapConfig.getUserSearch().getPropertyMapping());
         if (existingConfig.getId() == null) {
             existingConfig = getLdapConfigurationDao().create(existingConfig);
         }
-        internalSyncSearchBases(existingConfig.getUserSearch(), ldapConfig.getUserSearch()
-                .getSearchBases());
+        internalSyncSearchBases(existingConfig.getUserSearch(),
+                ldapConfig.getUserSearch().getSearchBases());
         // only update group config if group sync is activated otherwise the input is not validated
         if (ldapConfig.isSynchronizeUserGroups()) {
             internalUpdateLdapGroupConfig(existingConfig, ldapConfig.getGroupSyncConfig());
@@ -464,12 +463,12 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
             for (i = 0; i < newSearchBases.size(); i++) {
                 if (existingSearchBases.size() == i) {
                     existingSearchBases.add(LdapSearchBaseDefinition.Factory.newInstance(
-                            newSearchBases.get(i).getSearchBase(), newSearchBases.get(i)
-                            .isSearchSubtree()));
+                            newSearchBases.get(i).getSearchBase(),
+                            newSearchBases.get(i).isSearchSubtree()));
                 } else {
                     existingSearchBases.get(i).setSearchBase(newSearchBases.get(i).getSearchBase());
-                    existingSearchBases.get(i).setSearchSubtree(
-                            newSearchBases.get(i).isSearchSubtree());
+                    existingSearchBases.get(i)
+                            .setSearchSubtree(newSearchBases.get(i).isSearchSubtree());
                 }
             }
             // remove other
@@ -494,17 +493,13 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
      */
     private void internalUpdateExternalSystemConfig(Configuration config,
             ExternalSystemConfiguration existingConfig, ExternalSystemConfiguration newConfig)
-                    throws PrimaryAuthenticationException {
-        // when a primary external authentication is disabled, assert enough client managers exist
+            throws PrimaryAuthenticationException {
         if (!newConfig.isAllowExternalAuthentication()
                 && existingConfig.isAllowExternalAuthentication()
                 && existingConfig.isPrimaryAuthentication()) {
-            if (userManagement.getActiveUserCount(null, UserRole.ROLE_KENMEI_CLIENT_MANAGER) == 0) {
-                throw new PrimaryAuthenticationException(
-                        "There are not enough admins left for internal", null,
-                        PrimaryAuthenticationException.Reasons.NOT_ENOUGH_INTERNAL_ADMINS);
-            }
             // because the external auth is disabled it cannot be primary anymore
+            // Note: no need to check whether there are enough admins because the current user is
+            // one (and can request a password after the primary auth is disabled)
             existingConfig.setPrimaryAuthentication(false);
         }
         existingConfig.setAllowExternalAuthentication(newConfig.isAllowExternalAuthentication());
@@ -534,12 +529,12 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
         }
         existingGroupConfig.setGroupIdentifierIsBinary(newGroupConfig.isGroupIdentifierIsBinary());
         existingGroupConfig.setMemberMode(newGroupConfig.isMemberMode());
-        existingGroupConfig.getGroupSearch().setSearchFilter(
-                newGroupConfig.getGroupSearch().getSearchFilter());
-        existingGroupConfig.getGroupSearch().setPropertyMapping(
-                newGroupConfig.getGroupSearch().getPropertyMapping());
-        internalSyncSearchBases(existingGroupConfig.getGroupSearch(), newGroupConfig
-                .getGroupSearch().getSearchBases());
+        existingGroupConfig.getGroupSearch()
+                .setSearchFilter(newGroupConfig.getGroupSearch().getSearchFilter());
+        existingGroupConfig.getGroupSearch()
+                .setPropertyMapping(newGroupConfig.getGroupSearch().getPropertyMapping());
+        internalSyncSearchBases(existingGroupConfig.getGroupSearch(),
+                newGroupConfig.getGroupSearch().getSearchBases());
     }
 
     /**
@@ -568,7 +563,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
             if (currentPrimaryAuthentication.equals(externalSystemId)) {
                 currentPrimaryExternalSystemConfiguration = externalSystemConfiguration;
             } else {
-                currentPrimaryExternalSystemConfiguration = assertExternalSystemConfiguration(currentPrimaryAuthentication);
+                currentPrimaryExternalSystemConfiguration = assertExternalSystemConfiguration(
+                        currentPrimaryAuthentication);
             }
         }
         // check if the primary system changed
@@ -607,8 +603,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
             String value) {
         String keyString = key.getKeyString();
 
-        ApplicationConfigurationSetting setting = getApplicationConfigurationSettingDao().load(
-                keyString);
+        ApplicationConfigurationSetting setting = getApplicationConfigurationSettingDao()
+                .load(keyString);
         if (setting == null) {
             if (value != null) {
                 setting = ApplicationConfigurationSetting.Factory.newInstance();
