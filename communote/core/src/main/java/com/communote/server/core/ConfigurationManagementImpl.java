@@ -210,6 +210,7 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
         ClientConfiguration clientConfiguration = configuration.getClientConfig();
         if (clientConfiguration != null && clientConfiguration.getLogoImage() != null) {
             clientConfiguration.setLogoImage(null);
+            // TODO modification time should be updated in configuration when setting the logo
             clientConfiguration
                     .setLastLogoImageModificationDate(new Timestamp(System.currentTimeMillis()));
             getClientConfigurationDao().update(clientConfiguration);
@@ -259,8 +260,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
         } catch (VirusScannerException e) {
             throw new ConfigurationManagementException("Unable to scan content", e);
         } catch (VirusFoundException e) {
-            LOGGER.warn("Virus found uploading content. userId=" + SecurityHelper.getCurrentUserId()
-                    + " " + e.getMessage());
+            LOGGER.warn("Virus found uploading content. userId={}, {}",
+                    SecurityHelper.getCurrentUserId(), e.getMessage());
             throw new ConfigurationManagementException("Virus was detected in byte array", e);
         }
         ImageFormatType format;
@@ -276,8 +277,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
                 .getImageSize(ClientImageDescriptor.IMAGE_TYPE_NAME, ImageSizeType.LARGE);
         image = new ImageScaler(size, format).resizeImage(image);
         if (image == null) {
-            LOGGER.warn("The user uploaded an illegal image. User: "
-                    + SecurityHelper.getCurrentUserAlias());
+            LOGGER.warn("The user {} uploaded an unparsable image.",
+                    SecurityHelper.getCurrentUserAlias());
             throw new IllegalArgumentException("Illegal image uploaded");
         }
         clientConfiguration.setLogoImage(image);
@@ -663,8 +664,8 @@ public class ConfigurationManagementImpl extends ConfigurationManagementBase {
     private void updateLdapSaslMode(LdapConfiguration config, String newMode) {
         if (newMode != null && !SASL_MODE_CRAM_MD5.equals(newMode)
                 && !SASL_MODE_DIGEST_MD5.equals(newMode)) {
-            LOGGER.warn("SASL mode " + newMode
-                    + " is not supported. Falling back to simple authentication.");
+            LOGGER.warn("SASL mode {} is not supported. Falling back to simple authentication.",
+                    newMode);
             newMode = null;
         }
         config.setSaslMode(newMode);

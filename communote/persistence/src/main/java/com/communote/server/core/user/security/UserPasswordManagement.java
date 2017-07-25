@@ -24,14 +24,17 @@ public interface UserPasswordManagement {
      * @throws PasswordValidationException
      *             in case the new password doesn't fulfill the minimum security requirements to be
      *             used in user accounts
+     * @throws UserNotFoundException
+     *             in case the user with the given ID does not exist
      * @throws AuthorizationException
      *             in case the current user is not the user with the userId or the current user is
      *             not client admin or internal system user
      * @throws ExternalUserPasswordChangeNotAllowedException
      *             in case the user was provided by the primary external user repository
      */
-    void changePassword(Long userId, String newPassword) throws PasswordValidationException,
-            AuthorizationException, ExternalUserPasswordChangeNotAllowedException;
+    void changePassword(Long userId, String newPassword)
+            throws PasswordValidationException, UserNotFoundException, AuthorizationException,
+            ExternalUserPasswordChangeNotAllowedException;
 
     /**
      * Change the password of a user who used the forgotten password feature

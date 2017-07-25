@@ -43,7 +43,6 @@ public enum ApplicationPropertyUserPassword implements ApplicationConfigurationP
 
     @Override
     public String getKeyString() {
-        // TODO Auto-generated method stub
         return key;
     }
 

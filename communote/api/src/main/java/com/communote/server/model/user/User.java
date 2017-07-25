@@ -1,5 +1,6 @@
 package com.communote.server.model.user;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -71,17 +72,17 @@ public class User extends CommunoteEntity {
 
     private String authenticationToken;
 
-    private java.util.Set<UserAuthority> userAuthorities = new java.util.HashSet<UserAuthority>();
+    private Set<UserAuthority> userAuthorities = new HashSet<>();
 
-    private java.util.Set<AuthenticationFailedStatus> failedAuthentication = new java.util.HashSet<>();
+    private Set<AuthenticationFailedStatus> failedAuthentication = new HashSet<>();
 
     private UserProfile profile;
 
-    private java.util.Set<ExternalUserAuthentication> externalAuthentications = new java.util.HashSet<ExternalUserAuthentication>();
+    private Set<ExternalUserAuthentication> externalAuthentications = new HashSet<>();
 
-    private java.util.Set<com.communote.server.model.global.GlobalId> followedItems = new java.util.HashSet<com.communote.server.model.global.GlobalId>();
+    private Set<GlobalId> followedItems = new HashSet<>();
 
-    private java.util.Set<UserProperty> properties = new java.util.HashSet<UserProperty>();
+    private Set<UserProperty> properties = new HashSet<>();
 
     private Locale locale;
 
@@ -182,23 +183,23 @@ public class User extends CommunoteEntity {
     }
 
     /**
-     *
+     * @return the authentications of a user which were provided by an external system. Never null.
      */
-    public java.util.Set<ExternalUserAuthentication> getExternalAuthentications() {
+    public Set<ExternalUserAuthentication> getExternalAuthentications() {
         return this.externalAuthentications;
     }
 
     /**
      *
      */
-    public java.util.Set<AuthenticationFailedStatus> getFailedAuthentication() {
+    public Set<AuthenticationFailedStatus> getFailedAuthentication() {
         return this.failedAuthentication;
     }
 
     /**
      *
      */
-    public java.util.Set<com.communote.server.model.global.GlobalId> getFollowedItems() {
+    public Set<GlobalId> getFollowedItems() {
         return this.followedItems;
     }
 
@@ -254,7 +255,7 @@ public class User extends CommunoteEntity {
      *
      */
     @Override
-    public java.util.Set<UserProperty> getProperties() {
+    public Set<UserProperty> getProperties() {
         return this.properties;
     }
 
@@ -289,7 +290,7 @@ public class User extends CommunoteEntity {
     /**
      *
      */
-    public java.util.Set<UserAuthority> getUserAuthorities() {
+    public Set<UserAuthority> getUserAuthorities() {
         return this.userAuthorities;
     }
 
@@ -301,11 +302,9 @@ public class User extends CommunoteEntity {
      * @return true if the user has an external authentication with the given ID
      */
     public boolean hasExternalAuthentication(String externalSystemId) {
-        if (externalAuthentications != null) {
-            for (ExternalUserAuthentication externalAuthentication : externalAuthentications) {
-                if (externalAuthentication.getSystemId().equals(externalSystemId)) {
-                    return true;
-                }
+        for (ExternalUserAuthentication externalAuthentication : externalAuthentications) {
+            if (externalAuthentication.getSystemId().equals(externalSystemId)) {
+                return true;
             }
         }
         return false;
@@ -383,17 +382,19 @@ public class User extends CommunoteEntity {
     }
 
     public void setExternalAuthentications(
-            java.util.Set<ExternalUserAuthentication> externalAuthentications) {
-        this.externalAuthentications = externalAuthentications;
+            Set<ExternalUserAuthentication> externalAuthentications) {
+        if (externalAuthentications == null) {
+            this.externalAuthentications = new HashSet<>();
+        } else {
+            this.externalAuthentications = externalAuthentications;
+        }
     }
 
-    public void setFailedAuthentication(
-            java.util.Set<AuthenticationFailedStatus> failedAuthentication) {
+    public void setFailedAuthentication(Set<AuthenticationFailedStatus> failedAuthentication) {
         this.failedAuthentication = failedAuthentication;
     }
 
-    public void setFollowedItems(
-            java.util.Set<com.communote.server.model.global.GlobalId> followedItems) {
+    public void setFollowedItems(Set<GlobalId> followedItems) {
         this.followedItems = followedItems;
     }
 
@@ -419,7 +420,7 @@ public class User extends CommunoteEntity {
         this.profile = profile;
     }
 
-    public void setProperties(java.util.Set<UserProperty> properties) {
+    public void setProperties(Set<UserProperty> properties) {
         this.properties = properties;
     }
 
@@ -439,7 +440,7 @@ public class User extends CommunoteEntity {
         this.termsAccepted = termsAccepted;
     }
 
-    public void setUserAuthorities(java.util.Set<UserAuthority> userAuthorities) {
+    public void setUserAuthorities(Set<UserAuthority> userAuthorities) {
         this.userAuthorities = userAuthorities;
     }
 }

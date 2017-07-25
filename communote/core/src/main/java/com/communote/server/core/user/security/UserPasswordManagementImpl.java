@@ -77,14 +77,15 @@ public class UserPasswordManagementImpl implements UserPasswordManagement {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void changePassword(Long userId, String newPassword) throws PasswordValidationException,
-            AuthorizationException, ExternalUserPasswordChangeNotAllowedException {
+    public void changePassword(Long userId, String newPassword)
+            throws PasswordValidationException, UserNotFoundException, AuthorizationException,
+            ExternalUserPasswordChangeNotAllowedException {
         if (userId == null) {
             throw new IllegalArgumentException("User ID and password must not be null.");
         }
         User user = userDao.load(userId);
         if (user == null) {
-            return;
+            throw new UserNotFoundException("User with ID " + userId + " does not exist");
         }
         Long currentUserId = SecurityHelper.getCurrentUserId();
         if (userId.equals(currentUserId) || SecurityHelper.isClientManager()
@@ -124,6 +125,7 @@ public class UserPasswordManagementImpl implements UserPasswordManagement {
         validatePassword(newPassword);
         assertLocalUser(user);
         user.setPassword(getHash(newPassword));
+        // TODO send event (who changed password of whom)?
     }
 
     @Override
