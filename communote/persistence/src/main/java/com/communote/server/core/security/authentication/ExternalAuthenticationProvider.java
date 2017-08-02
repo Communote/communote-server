@@ -54,8 +54,8 @@ public abstract class ExternalAuthenticationProvider extends BaseCommunoteAuthen
      */
     protected UserIdentification createUserIdentification(ExternalUserVO userVO) {
         FieldUserIdentification userIdentification = new FieldUserIdentification()
-                .setPreviousExternalUser(userVO).setExternalSystemId(
-                        getConfiguration().getSystemId());
+                .setPreviousExternalUser(userVO)
+                .setExternalSystemId(getConfiguration().getSystemId());
         return userIdentification;
     }
 
@@ -76,11 +76,9 @@ public abstract class ExternalAuthenticationProvider extends BaseCommunoteAuthen
      *             in case user was not found
      */
     protected User getUser(UserIdentification userIdentification) throws UserNotFoundException {
-        User user = ServiceLocator
-                .instance()
-                .getService(UserService.class)
-                .getUser(userIdentification, UserServiceRetrievalFlag.CREATE,
-                        UserServiceRetrievalFlag.FORCE_EXTERNAL_REPO_CHECK);
+        User user = ServiceLocator.instance().getService(UserService.class).getUser(
+                userIdentification, UserServiceRetrievalFlag.CREATE,
+                UserServiceRetrievalFlag.FORCE_EXTERNAL_REPO_CHECK);
         return user;
     }
 
@@ -254,9 +252,9 @@ public abstract class ExternalAuthenticationProvider extends BaseCommunoteAuthen
         try {
             try {
                 userVO = retrieveExternalUser(authentication);
-                userVO.setUpdatePassword(getConfiguration().isPrimaryAuthentication());
+                userVO.setClearPassword(getConfiguration().isPrimaryAuthentication());
+                // just to be on the safe side...
                 userVO.setPassword(null);
-                userVO.setPlainPassword(false);
                 // if the external system did not provide a locale and a locale context is
                 // available, take the locale of that context (e.g. exposed by Communote's request
                 // filter chain).

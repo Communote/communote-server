@@ -30,7 +30,7 @@ public class ExternalUserVO extends UserVO implements Serializable {
 
     private boolean updateEmail;
 
-    private boolean updatePassword;
+    private boolean clearPassword;
 
     private String systemId;
 
@@ -52,7 +52,7 @@ public class ExternalUserVO extends UserVO implements Serializable {
         this.updateLastName = false;
         this.updateLanguage = false;
         this.updateEmail = false;
-        this.updatePassword = false;
+        this.clearPassword = false;
         this.systemId = null;
     }
 
@@ -125,6 +125,15 @@ public class ExternalUserVO extends UserVO implements Serializable {
     }
 
     /**
+     * Whether to clear the password of the local user.
+     *
+     * @return true if the password should be cleared
+     */
+    public boolean isClearPassword() {
+        return this.clearPassword;
+    }
+
+    /**
      * Whether to update the email address of the user if it is provided. Setting this to false will
      * prevent synchronization of an existing local user entry with data retrieved from the external
      * repository.
@@ -169,17 +178,6 @@ public class ExternalUserVO extends UserVO implements Serializable {
     }
 
     /**
-     * Whether to update the password if it is provided. Setting this to false will prevent
-     * synchronization of an existing local user entry with data retrieved from the external
-     * repository.
-     *
-     * @return the password
-     */
-    public boolean isUpdatePassword() {
-        return this.updatePassword;
-    }
-
-    /**
      * Set the additional property.
      *
      * @param additionalProperty
@@ -187,6 +185,18 @@ public class ExternalUserVO extends UserVO implements Serializable {
      */
     public void setAdditionalProperty(String additionalProperty) {
         this.additionalProperty = additionalProperty;
+    }
+
+    /**
+     * Set whether a password stored for the local user belonging to this external user should be
+     * cleared. This should be true if this VO was created by the primary authentication provider to
+     * avoid logins with an old password after changing it in the external system.
+     *
+     * @param clearPassword
+     *            true to clear the password
+     */
+    public void setClearPassword(boolean clearPassword) {
+        this.clearPassword = clearPassword;
     }
 
     /**
@@ -289,16 +299,6 @@ public class ExternalUserVO extends UserVO implements Serializable {
      */
     public void setUpdateLastName(boolean updateLastName) {
         this.updateLastName = updateLastName;
-    }
-
-    /**
-     * Set the password.
-     *
-     * @param updatePassword
-     *            the password
-     */
-    public void setUpdatePassword(boolean updatePassword) {
-        this.updatePassword = updatePassword;
     }
 
 }

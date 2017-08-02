@@ -11,9 +11,9 @@ import com.communote.server.model.user.User;
  * @see com.communote.server.model.user.User
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
-public abstract class UserDaoBase extends
-        org.springframework.orm.hibernate3.support.HibernateDaoSupport implements
-        com.communote.server.persistence.user.UserDao {
+public abstract class UserDaoBase
+        extends org.springframework.orm.hibernate3.support.HibernateDaoSupport
+        implements com.communote.server.persistence.user.UserDao {
 
     private com.communote.server.persistence.global.GlobalIdDao globalIdDao;
 
@@ -81,20 +81,18 @@ public abstract class UserDaoBase extends
         if (entities == null) {
             throw new IllegalArgumentException("User.create - 'entities' can not be null");
         }
-        this.getHibernateTemplate()
-                .executeWithNativeSession(
-                        new org.springframework.orm.hibernate3.HibernateCallback<com.communote.server.model.user.User>() {
-                            @Override
-                            public com.communote.server.model.user.User doInHibernate(
-                                    org.hibernate.Session session)
-                                    throws org.hibernate.HibernateException {
-                                for (java.util.Iterator<com.communote.server.model.user.User> entityIterator = entities
-                                        .iterator(); entityIterator.hasNext();) {
-                                    create(transform, entityIterator.next());
-                                }
-                                return null;
-                            }
-                        });
+        this.getHibernateTemplate().executeWithNativeSession(
+                new org.springframework.orm.hibernate3.HibernateCallback<com.communote.server.model.user.User>() {
+                    @Override
+                    public com.communote.server.model.user.User doInHibernate(
+                            org.hibernate.Session session) throws org.hibernate.HibernateException {
+                        for (java.util.Iterator<com.communote.server.model.user.User> entityIterator = entities
+                                .iterator(); entityIterator.hasNext();) {
+                            create(transform, entityIterator.next());
+                        }
+                        return null;
+                    }
+                });
         return entities;
     }
 
@@ -122,7 +120,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.createMailNotificationConfig(Long notificationConfigId)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -148,7 +147,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.findByAlias(String alias)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -166,7 +166,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.findByEmail(String email)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -184,7 +185,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.findByExternalSystemId(String systemId)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -207,7 +209,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.findByExternalUserId(String userId, String systemId)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -228,7 +231,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.findByRole(UserRole userRole, UserStatus status)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -251,7 +255,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.findLatestBySystemId(String externalSystemId, Long userId, int maxCount)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -271,7 +276,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.findNotConfirmedUser(java.util.Date before, boolean reminderMailSent)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -286,7 +292,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.findNotDeletedUser()' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -303,7 +310,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.findNotLoggedInActiveUser' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -322,7 +330,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.getFollowedBlogs(Long userId, long blogIdRangeStart, long blogIdRangeEnd)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -342,7 +351,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.getFollowedDiscussions(Long userId, long discussionIdRangeStart, long discussionIdRangeEnd)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -369,7 +379,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.getFollowedTags(Long userId, Long rangeStart, Long rangeEnd)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -388,7 +399,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.getFollowedUsers(Long userId, long userIdRangeStart, long userIdRangeEnd)' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -527,8 +539,8 @@ public abstract class UserDaoBase extends
         if (id == null) {
             throw new IllegalArgumentException("User.load - 'id' can not be null");
         }
-        final Object entity = this.getHibernateTemplate().get(
-                com.communote.server.model.user.User.class, id);
+        final Object entity = this.getHibernateTemplate()
+                .get(com.communote.server.model.user.User.class, id);
         return transformEntity(transform, (com.communote.server.model.user.User) entity);
     }
 
@@ -555,8 +567,8 @@ public abstract class UserDaoBase extends
      */
     @Override
     public java.util.Collection<?> loadAll(final int transform) {
-        final java.util.Collection<?> results = this.getHibernateTemplate().loadAll(
-                com.communote.server.model.user.User.class);
+        final java.util.Collection<?> results = this.getHibernateTemplate()
+                .loadAll(com.communote.server.model.user.User.class);
         this.transformEntities(transform, results);
         return results;
     }
@@ -604,7 +616,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.resetTermsAccepted()' --> "
-                            + rt, rt);
+                            + rt,
+                    rt);
         }
     }
 
@@ -788,20 +801,18 @@ public abstract class UserDaoBase extends
         if (entities == null) {
             throw new IllegalArgumentException("User.update - 'entities' can not be null");
         }
-        this.getHibernateTemplate()
-                .executeWithNativeSession(
-                        new org.springframework.orm.hibernate3.HibernateCallback<com.communote.server.model.user.User>() {
-                            @Override
-                            public com.communote.server.model.user.User doInHibernate(
-                                    org.hibernate.Session session)
-                                    throws org.hibernate.HibernateException {
-                                for (java.util.Iterator<com.communote.server.model.user.User> entityIterator = entities
-                                        .iterator(); entityIterator.hasNext();) {
-                                    update(entityIterator.next());
-                                }
-                                return null;
-                            }
-                        });
+        this.getHibernateTemplate().executeWithNativeSession(
+                new org.springframework.orm.hibernate3.HibernateCallback<com.communote.server.model.user.User>() {
+                    @Override
+                    public com.communote.server.model.user.User doInHibernate(
+                            org.hibernate.Session session) throws org.hibernate.HibernateException {
+                        for (java.util.Iterator<com.communote.server.model.user.User> entityIterator = entities
+                                .iterator(); entityIterator.hasNext();) {
+                            update(entityIterator.next());
+                        }
+                        return null;
+                    }
+                });
     }
 
     /**
@@ -822,25 +833,8 @@ public abstract class UserDaoBase extends
         } catch (RuntimeException rt) {
             throw new RuntimeException(
                     "Error performing 'com.communote.server.persistence.user.UserDao.userFollowsItem(Long userId, Long globalId)' --> "
-                            + rt, rt);
-        }
-    }
-
-    /**
-     * @see com.communote.server.persistence.user.UserDao#userVOToEntity(com.communote.server.api.core.user.UserVO,
-     *      com.communote.server.model.user.User)
-     */
-    @Override
-    public void userVOToEntity(com.communote.server.api.core.user.UserVO source,
-            com.communote.server.model.user.User target, boolean copyIfNull) {
-        if (copyIfNull || source.getPassword() != null) {
-            target.setPassword(source.getPassword());
-        }
-        if (copyIfNull || source.getEmail() != null) {
-            target.setEmail(source.getEmail());
-        }
-        if (copyIfNull || source.getAlias() != null) {
-            target.setAlias(source.getAlias());
+                            + rt,
+                    rt);
         }
     }
 

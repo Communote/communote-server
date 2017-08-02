@@ -97,11 +97,11 @@ public class SecurityCodeConfirmationController extends AbstractController {
         try {
             ServiceLocator.instance().getService(UserManagement.class)
                     .confirmNewEmailAddress(securityCode.getCode());
-            return new SecurityCodeConfirmationResult(true, new MessageKeyLocalizedMessage(
-                    "code.confirmation.new.email.success"));
+            return new SecurityCodeConfirmationResult(true,
+                    new MessageKeyLocalizedMessage("code.confirmation.new.email.success"));
         } catch (EmailAlreadyExistsException e) {
-            return new SecurityCodeConfirmationResult(false, new MessageKeyLocalizedMessage(
-                    "error.email.already.exists"));
+            return new SecurityCodeConfirmationResult(false,
+                    new MessageKeyLocalizedMessage("error.email.already.exists"));
         }
     }
 
@@ -116,13 +116,12 @@ public class SecurityCodeConfirmationController extends AbstractController {
      * @throws SecurityCodeNotFoundException
      *             in case the code does not exist
      */
-    private SecurityCodeConfirmationResult confirmUnlockUserSecurityCode(
-            HttpServletRequest request, SecurityCode securityCode)
-                    throws SecurityCodeNotFoundException {
+    private SecurityCodeConfirmationResult confirmUnlockUserSecurityCode(HttpServletRequest request,
+            SecurityCode securityCode) throws SecurityCodeNotFoundException {
         ServiceLocator.instance().getService(UserManagement.class)
-        .unlockUser(securityCode.getCode());
-        return new SecurityCodeConfirmationResult(true, new MessageKeyLocalizedMessage(
-                "code.confirmation.unlock.user.success"));
+                .unlockUser(securityCode.getCode());
+        return new SecurityCodeConfirmationResult(true,
+                new MessageKeyLocalizedMessage("code.confirmation.unlock.user.success"));
     }
 
     /**
@@ -146,7 +145,8 @@ public class SecurityCodeConfirmationController extends AbstractController {
         if (action != null) {
             try {
                 SecurityCodeAction codeAction = SecurityCodeAction.fromString(action);
-                SecurityCodeConfirmationHandler handler = handlers.get(codeAction);
+                SecurityCodeConfirmationHandler handler = handlers != null
+                        ? handlers.get(codeAction) : null;
                 if (handler != null) {
                     return handler.getWarningForMissingCode(request, code);
                 }
@@ -184,8 +184,8 @@ public class SecurityCodeConfirmationController extends AbstractController {
         ModelAndView mav;
         try {
             if (StringUtils.isNotBlank(code)) {
-                securityCode = ServiceLocator.findService(SecurityCodeManagement.class).findByCode(
-                        code);
+                securityCode = ServiceLocator.findService(SecurityCodeManagement.class)
+                        .findByCode(code);
             }
             if (securityCode != null) {
                 // try handlers first, if there isn't one to handle the code fallback to built-in
@@ -243,10 +243,10 @@ public class SecurityCodeConfirmationController extends AbstractController {
         } else if (SecurityCodeAction.UNLOCK_USER.equals(securityCode.getAction())) {
             confirmationResult = confirmUnlockUserSecurityCode(request, securityCode);
         } else {
-            LOG.info("There is no handler for the SecurityCode action {}", securityCode.getAction()
-                    .getValue());
-            throw new SecurityCodeNotFoundException("The action " + securityCode.getAction()
-                    + " of the code cannot be handled");
+            LOG.info("There is no handler for the SecurityCode action {}",
+                    securityCode.getAction().getValue());
+            throw new SecurityCodeNotFoundException(
+                    "The action " + securityCode.getAction() + " of the code cannot be handled");
         }
         handleConfirmationResult(request, confirmationResult);
     }

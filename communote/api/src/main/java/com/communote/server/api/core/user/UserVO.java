@@ -1,5 +1,7 @@
 package com.communote.server.api.core.user;
 
+import com.communote.server.model.user.UserRole;
+
 /**
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
@@ -11,13 +13,11 @@ public class UserVO implements java.io.Serializable {
 
     private String password;
 
-    private boolean plainPassword;
-
     private java.util.Locale language;
 
     private String email;
 
-    private com.communote.server.model.user.UserRole[] roles;
+    private UserRole[] roles;
 
     private String alias;
 
@@ -28,25 +28,20 @@ public class UserVO implements java.io.Serializable {
     private String timeZoneId;
 
     public UserVO() {
-        this.plainPassword = false;
         this.language = null;
         this.email = null;
         this.roles = null;
     }
 
-    public UserVO(boolean plainPassword, java.util.Locale language, String email,
-            com.communote.server.model.user.UserRole[] roles) {
-        this.plainPassword = plainPassword;
+    public UserVO(java.util.Locale language, String email, UserRole[] roles) {
         this.language = language;
         this.email = email;
         this.roles = roles;
     }
 
-    public UserVO(String password, boolean plainPassword, java.util.Locale language, String email,
-            com.communote.server.model.user.UserRole[] roles, String alias, String firstName,
-            String lastName, String timeZoneId) {
+    public UserVO(String password, java.util.Locale language, String email, UserRole[] roles,
+            String alias, String firstName, String lastName, String timeZoneId) {
         this.password = password;
-        this.plainPassword = plainPassword;
         this.language = language;
         this.email = email;
         this.roles = roles;
@@ -101,7 +96,7 @@ public class UserVO implements java.io.Serializable {
     /**
      *
      */
-    public com.communote.server.model.user.UserRole[] getRoles() {
+    public UserRole[] getRoles() {
         return this.roles;
     }
 
@@ -112,13 +107,6 @@ public class UserVO implements java.io.Serializable {
      */
     public String getTimeZoneId() {
         return this.timeZoneId;
-    }
-
-    /**
-     *
-     */
-    public boolean isPlainPassword() {
-        return this.plainPassword;
     }
 
     public void setAlias(String alias) {
@@ -145,11 +133,7 @@ public class UserVO implements java.io.Serializable {
         this.password = password;
     }
 
-    public void setPlainPassword(boolean plainPassword) {
-        this.plainPassword = plainPassword;
-    }
-
-    public void setRoles(com.communote.server.model.user.UserRole[] roles) {
+    public void setRoles(UserRole[] roles) {
         this.roles = roles;
     }
 

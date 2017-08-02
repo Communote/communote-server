@@ -30,6 +30,7 @@ import com.communote.server.api.core.blog.BlogNotFoundException;
 import com.communote.server.api.core.blog.CreationBlogTO;
 import com.communote.server.api.core.blog.NonUniqueBlogIdentifierException;
 import com.communote.server.api.core.common.ClientAndChannelContextHolder;
+import com.communote.server.api.core.config.ApplicationConfigurationProperties;
 import com.communote.server.api.core.config.ClientConfigurationProperties;
 import com.communote.server.api.core.config.type.ClientProperty;
 import com.communote.server.api.core.config.type.ClientPropertySecurity;
@@ -49,10 +50,13 @@ import com.communote.server.core.general.TransactionManagement;
 import com.communote.server.core.mail.MailManagement;
 import com.communote.server.core.mail.messages.user.ManagerSecurityWarnMailMessage;
 import com.communote.server.core.mail.messages.user.UserLockedMailMessage;
+import com.communote.server.core.security.authentication.AuthAgainstInternalDBWhileExternalUserAccountException;
 import com.communote.server.core.security.event.UserAuthenticatedEvent;
 import com.communote.server.core.tag.TagParserFactory;
 import com.communote.server.core.user.UserManagement;
 import com.communote.server.core.user.UserManagementHelper;
+import com.communote.server.core.user.security.ApplicationPropertyUserPassword;
+import com.communote.server.core.user.security.UserPasswordManagement;
 import com.communote.server.core.user.validation.UserActivationValidationException;
 import com.communote.server.core.vo.blog.NoteModificationStatus;
 import com.communote.server.model.blog.Blog;
@@ -102,6 +106,37 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
     private SecurityCodeManagement securityCodeManagement;
     @Autowired
     private EventDispatcher eventDispatcher;
+    @Autowired
+    private UserPasswordManagement userPasswordManagement;
+
+    /**
+     * Asserts that the user was not provided by the active primary external user repository.
+     *
+     * @param user
+     *            The user.
+     * @throws AuthAgainstInternalDBWhileExternalUserAccountException
+     *             in case the user was provided by the active primary external user repository
+     */
+    private void assertExternalSystem(User user)
+            throws AuthAgainstInternalDBWhileExternalUserAccountException {
+        ClientConfigurationProperties props = getClientConfigurationProperties();
+        String primaryExternalAuthentication = props.getPrimaryExternalAuthentication();
+        if (primaryExternalAuthentication == null) {
+            return;
+        }
+        if (!props.isDBAuthenticationAllowed()) {
+            throw new AuthAgainstInternalDBWhileExternalUserAccountException(
+                    "Authentication agaings the internal db is deactivated for the external system.",
+                    user.getAlias(), primaryExternalAuthentication);
+        }
+        if (user.hasExternalAuthentication(primaryExternalAuthentication)) {
+
+            throw new AuthAgainstInternalDBWhileExternalUserAccountException(
+                    "The user can't be authenticated against the internl db,"
+                            + " as an external system is activated the user has a configuration for.",
+                    user.getAlias(), primaryExternalAuthentication);
+        }
+    }
 
     /**
      * check if the user account is locked
@@ -113,8 +148,8 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
      * @throws AccountTemporarilyLockedException
      *             if a user account is temporarily locked
      */
-    private void checkIfUserIsLocked(User user) throws AccountPermanentlyLockedException,
-    AccountTemporarilyLockedException {
+    private void checkIfUserIsLocked(User user)
+            throws AccountPermanentlyLockedException, AccountTemporarilyLockedException {
 
         ChannelType channel = ClientAndChannelContextHolder.getChannel();
         AuthenticationFailedStatus authFailedStatus = authenticationFailedStatusDao
@@ -125,8 +160,8 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
         if (authFailedStatus.getFailedAuthCounter() >= getFailedAuthLimitPermlock()) {
             // send email with security code
             // create code UnlockUserSecurityCode code
-            UnlockUserSecurityCode code = unlockUserSecurityCodeDao.findByUserAndChannel(
-                    user.getId(), channel);
+            UnlockUserSecurityCode code = unlockUserSecurityCodeDao
+                    .findByUserAndChannel(user.getId(), channel);
             if (code == null) {
                 code = unlockUserSecurityCodeDao.createCode(user, channel);
             }
@@ -136,11 +171,39 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
             mailManagement.sendMail(message);
             throw new AccountPermanentlyLockedException("The user account is permanently locked");
         }
-        if (authFailedStatus.getLockedTimeout() != null
-                && authFailedStatus.getLockedTimeout().after(new Date(System.currentTimeMillis()))) {
+        if (authFailedStatus.getLockedTimeout() != null && authFailedStatus.getLockedTimeout()
+                .after(new Date(System.currentTimeMillis()))) {
             throw new AccountTemporarilyLockedException(authFailedStatus.getLockedTimeout());
         }
 
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public UserDetails checkLocalUserPasswordOnLogin(String username, String password)
+            throws UserNotFoundException, AccountNotActivatedException,
+            AuthAgainstInternalDBWhileExternalUserAccountException {
+        User user = userManagement.findUserByEmailAlias(username);
+        if (user == null) {
+            throw new UserNotFoundException("User with username '" + username + "' does not exist");
+        }
+        if (user.getStatus() == UserStatus.INVITED || user.getStatus() == UserStatus.REGISTERED) {
+            throw new AccountNotActivatedException("The account of user '" + username
+                    + "' is still in status REGISTERED or INVITED");
+        }
+        assertExternalSystem(user);
+        boolean passwordCorrect;
+        if (getApplicationConfigurationProperties().getProperty(
+                ApplicationPropertyUserPassword.LOCAL_USER_PASSWORD_UPDATE_ON_LOGIN,
+                ApplicationPropertyUserPassword.DEFAULT_LOCAL_USER_PASSWORD_UPDATE_ON_LOGIN)) {
+            passwordCorrect = userPasswordManagement.checkAndUpdatePassword(user, password);
+        } else {
+            passwordCorrect = userPasswordManagement.checkPassword(user, password);
+        }
+        if (passwordCorrect) {
+            return new UserDetails(user, username);
+        }
+        return null;
     }
 
     /**
@@ -154,7 +217,8 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
      * @throws UserNotFoundException
      *             if the user does not exist
      */
-    private void checkTermsOfUse(User user) throws TermsNotAcceptedException, UserNotFoundException {
+    private void checkTermsOfUse(User user)
+            throws TermsNotAcceptedException, UserNotFoundException {
         if (!UserManagementHelper.isSystemUser(user)) {
             boolean termsNotAccpeted = user.hasStatus(UserStatus.TERMS_NOT_ACCEPTED);
             // accepting changed terms currently only required on WEB login
@@ -192,22 +256,22 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
      *            the user to create the blog for
      */
     private void createPersonalTopic(User user) {
-        if (!Boolean.parseBoolean(ClientProperty.CREATE_PERSONAL_BLOG.getValue(Boolean
-                .toString(ClientProperty.DEFAULT_CREATE_PERSONAL_BLOG)))) {
+        if (!Boolean.parseBoolean(ClientProperty.CREATE_PERSONAL_BLOG
+                .getValue(Boolean.toString(ClientProperty.DEFAULT_CREATE_PERSONAL_BLOG)))) {
             return;
         }
         Locale locale = user.getLanguageLocale();
         Object[] nameArgs = getPersonalBlogNameArguments(user);
-        String personalBlogName = ResourceBundleManager.instance().getText(
-                "blog.welcome.personal.blog.name", locale, nameArgs);
-        String personalBlogDescription = ResourceBundleManager.instance().getText(
-                "blog.welcome.personal.blog.description", locale, nameArgs);
-        String personalBlogTags = ResourceBundleManager.instance().getText(
-                "blog.welcome.personal.blog.tags", locale, nameArgs);
-        String welcomePostMessage = ResourceBundleManager.instance().getText(
-                "blog.welcome.personal.blog.post.text.message", locale, nameArgs);
-        String welcomePostMessageTags = ResourceBundleManager.instance().getText(
-                "blog.welcome.personal.blog.post.text.tags", locale, nameArgs);
+        String personalBlogName = ResourceBundleManager.instance()
+                .getText("blog.welcome.personal.blog.name", locale, nameArgs);
+        String personalBlogDescription = ResourceBundleManager.instance()
+                .getText("blog.welcome.personal.blog.description", locale, nameArgs);
+        String personalBlogTags = ResourceBundleManager.instance()
+                .getText("blog.welcome.personal.blog.tags", locale, nameArgs);
+        String welcomePostMessage = ResourceBundleManager.instance()
+                .getText("blog.welcome.personal.blog.post.text.message", locale, nameArgs);
+        String welcomePostMessageTags = ResourceBundleManager.instance()
+                .getText("blog.welcome.personal.blog.post.text.tags", locale, nameArgs);
 
         CreationBlogTO blogDetails = new CreationBlogTO();
         blogDetails.setAllCanRead(false);
@@ -215,8 +279,8 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
         blogDetails.setCreatorUserId(user.getId());
         blogDetails.setTitle(personalBlogName);
         blogDetails.setDescription(personalBlogDescription);
-        blogDetails.setUnparsedTags(TagParserFactory.instance().getDefaultTagParser()
-                .parseTags(personalBlogTags));
+        blogDetails.setUnparsedTags(
+                TagParserFactory.instance().getDefaultTagParser().parseTags(personalBlogTags));
 
         StringPropertyTO personalTopicProp = new StringPropertyTO();
         personalTopicProp.setKeyGroup(PropertyManagement.KEY_GROUP);
@@ -270,22 +334,24 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
                     TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
                 }
             } catch (NoteManagementAuthorizationException e) {
-                LOGGER.error(
-                        "Error creating personal post for user on first login: "
-                                + user.attributesToString(), e);
+                LOGGER.error("Error creating personal post for user on first login: "
+                        + user.attributesToString(), e);
                 // ignore it to not disable login
             } catch (BlogNotFoundException e) {
-                LOGGER.error(
-                        "Error creating personal post for user on first login: "
-                                + user.attributesToString(), e);
+                LOGGER.error("Error creating personal post for user on first login: "
+                        + user.attributesToString(), e);
                 // ignore it to not disable login
             } catch (NoteStoringPreProcessorException e) {
-                LOGGER.error(
-                        "Error creating personal post for user on first login: "
-                                + user.attributesToString(), e);
+                LOGGER.error("Error creating personal post for user on first login: "
+                        + user.attributesToString(), e);
                 // ignore it to not disable login
             }
         }
+    }
+
+    private ApplicationConfigurationProperties getApplicationConfigurationProperties() {
+        return CommunoteRuntime.getInstance().getConfigurationManager()
+                .getApplicationConfigurationProperties();
     }
 
     /**
@@ -359,53 +425,6 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
         return nameArgs;
     }
 
-    private void incrementAuthenticationFailedCount(User user) {
-        if (user == null) {
-            return;
-        }
-        // needed cause delay increment (transaction)
-        int failedAuthCount = 1;
-        // create/update AuthenticationFailedStatus
-        AuthenticationFailedStatus authFailedStatus = authenticationFailedStatusDao
-                .findByUserAndChannel(user, ClientAndChannelContextHolder.getChannel());
-        if (authFailedStatus == null) {
-            authFailedStatus = AuthenticationFailedStatus.Factory.newInstance(1,
-                    ClientAndChannelContextHolder.getChannel());
-            authenticationFailedStatusDao.create(authFailedStatus);
-            authFailedStatus.setLockedTimeout(new Timestamp(System.currentTimeMillis()));
-            user.getFailedAuthentication().add(authFailedStatus);
-            userDao.update(user);
-        } else {
-            authenticationFailedStatusDao.incFailedAuthCount(authFailedStatus.getId());
-            failedAuthCount = authFailedStatus.getFailedAuthCounter() + 1;
-        }
-        if (failedAuthCount == getFailedAuthLimitPermlock()) {
-            // send high level warn message to manager only once
-            prepareSendUserLockedMessage(user, authFailedStatus);
-        } else if (failedAuthCount % getFailedAuthStepsTemplock() == 0) {
-            int multiplierCount = failedAuthCount / getFailedAuthStepsTemplock();
-            authenticationFailedStatusDao.updateLockedTimeout(authFailedStatus.getId(),
-                    new Timestamp(System.currentTimeMillis() + getFailedAuthLockedTimespan()
-                            * multiplierCount * 1000));
-
-            float muliplierMail = multiplierCount / getFailedAuthStepsRiskLevel();
-            prepareSendPossibleHackMessages(user, authFailedStatus, getFailedAuthLockedTimespan()
-                    * multiplierCount,
-                    muliplierMail > 1 ? ManagerSecurityWarnMailMessage.RISK_LEVEL_HIGH
-                            : muliplierMail > 0 ? ManagerSecurityWarnMailMessage.RISK_LEVEL_MEDIUM
-                                    : ManagerSecurityWarnMailMessage.RISK_LEVEL_LOW);
-        }
-        try {
-            // We only want to sent out the mail here, so no further
-            // exception handling is necessary.
-            checkIfUserIsLocked(user);
-        } catch (AccountPermanentlyLockedException e) {
-            LOGGER.warn(e.getMessage());
-        } catch (AccountTemporarilyLockedException e) {
-            LOGGER.warn(e.getMessage());
-        }
-    }
-
     @Override
     protected User handleOnSuccessfulAuthentication(Authentication authentication) {
 
@@ -415,8 +434,8 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
             details = (UserDetails) authentication.getPrincipal();
         }
         if (details == null) {
-            throw new AuthenticationServiceException("Prinicpial is not a UserDetails instance! "
-                    + authentication.toString());
+            throw new AuthenticationServiceException(
+                    "Prinicpial is not a UserDetails instance! " + authentication.toString());
         }
 
         User user = userManagement.findUserByUserId(details.getUserId());
@@ -435,7 +454,8 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
                     ForgottenPasswordSecurityCode.class);
         } catch (Exception e) {
             LOGGER.error(
-                    "Error deleting security codeds on login user: " + user.attributesToString(), e);
+                    "Error deleting security codeds on login user: " + user.attributesToString(),
+                    e);
         }
 
         internalLoginDatePersonalBlogTx(userId, user);
@@ -480,6 +500,53 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
         checkTermsOfUse(user);
         if (!user.getStatus().equals(UserStatus.ACTIVE)) {
             throw new AccountNotActivatedException("The account is not in status active.");
+        }
+    }
+
+    private void incrementAuthenticationFailedCount(User user) {
+        if (user == null) {
+            return;
+        }
+        // needed cause delay increment (transaction)
+        int failedAuthCount = 1;
+        // create/update AuthenticationFailedStatus
+        AuthenticationFailedStatus authFailedStatus = authenticationFailedStatusDao
+                .findByUserAndChannel(user, ClientAndChannelContextHolder.getChannel());
+        if (authFailedStatus == null) {
+            authFailedStatus = AuthenticationFailedStatus.Factory.newInstance(1,
+                    ClientAndChannelContextHolder.getChannel());
+            authenticationFailedStatusDao.create(authFailedStatus);
+            authFailedStatus.setLockedTimeout(new Timestamp(System.currentTimeMillis()));
+            user.getFailedAuthentication().add(authFailedStatus);
+            userDao.update(user);
+        } else {
+            authenticationFailedStatusDao.incFailedAuthCount(authFailedStatus.getId());
+            failedAuthCount = authFailedStatus.getFailedAuthCounter() + 1;
+        }
+        if (failedAuthCount == getFailedAuthLimitPermlock()) {
+            // send high level warn message to manager only once
+            prepareSendUserLockedMessage(user, authFailedStatus);
+        } else if (failedAuthCount % getFailedAuthStepsTemplock() == 0) {
+            int multiplierCount = failedAuthCount / getFailedAuthStepsTemplock();
+            authenticationFailedStatusDao.updateLockedTimeout(authFailedStatus.getId(),
+                    new Timestamp(System.currentTimeMillis()
+                            + getFailedAuthLockedTimespan() * multiplierCount * 1000));
+
+            float muliplierMail = multiplierCount / getFailedAuthStepsRiskLevel();
+            prepareSendPossibleHackMessages(user, authFailedStatus,
+                    getFailedAuthLockedTimespan() * multiplierCount,
+                    muliplierMail > 1 ? ManagerSecurityWarnMailMessage.RISK_LEVEL_HIGH
+                            : muliplierMail > 0 ? ManagerSecurityWarnMailMessage.RISK_LEVEL_MEDIUM
+                                    : ManagerSecurityWarnMailMessage.RISK_LEVEL_LOW);
+        }
+        try {
+            // We only want to sent out the mail here, so no further
+            // exception handling is necessary.
+            checkIfUserIsLocked(user);
+        } catch (AccountPermanentlyLockedException e) {
+            LOGGER.warn(e.getMessage());
+        } catch (AccountTemporarilyLockedException e) {
+            LOGGER.warn(e.getMessage());
         }
     }
 
@@ -574,7 +641,8 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
     }
 
     @Override
-    public void onUsernamePasswordAuthenticationFailed(String externalUserId, String externalSystemId) {
+    public void onUsernamePasswordAuthenticationFailed(String externalUserId,
+            String externalSystemId) {
         User user = userManagement.findUserByExternalUserId(externalUserId, externalSystemId);
         incrementAuthenticationFailedCount(user);
     }
@@ -634,7 +702,8 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
      * @param authFailedStatus
      *            status of failed authentication process
      */
-    private void prepareSendUserLockedMessage(User user, AuthenticationFailedStatus authFailedStatus) {
+    private void prepareSendUserLockedMessage(User user,
+            AuthenticationFailedStatus authFailedStatus) {
         // set message properties
         Object[] messageProps = new Object[3];
         messageProps[0] = user.getAlias();
@@ -656,4 +725,5 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
             mailManagement.sendMail(message);
         }
     }
+
 }

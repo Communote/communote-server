@@ -1,6 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@page import="com.communote.server.core.helper.ValidationHelper"%>
 
 <script type="text/javascript">
 window.addEvent('domready', function() {
@@ -104,7 +103,7 @@ window.addEvent('domready', function() {
                 <form:password path="userPassword" cssClass="text password" cssErrorClass="text password error" autocomplete="off" htmlEscape="true" showPassword="true" onkeyup="updateQualityMeter(this);" />
             </div>
             <div class="advice">
-                <ct:tip key="installer.step.admin.tooltip.password" args="<%= new Object[] { ValidationHelper.PASSWORD_MIN_LENGTH } %>" />
+                <ct:tip key="installer.step.admin.tooltip.password" />
             </div>
             <div class="pwd-strength-indicator">
                 <span class="pwd-strength-label"><fmt:message key="user.register.password_strength.low" /></span>

@@ -178,9 +178,8 @@ public class InstallationController extends AbstractWizardFormController {
         if (!StringUtils.equals(startupProps.getDatabaseHost(), form.getDatabaseHost())) {
             settings.put(CorePropertyDatabase.DATABASE_HOST, form.getDatabaseHost());
         }
-        if (startupProps.getDatabasePort() == null
-                || !StringUtils.equals(startupProps.getDatabasePort().toString(),
-                        form.getDatabasePort())) {
+        if (startupProps.getDatabasePort() == null || !StringUtils
+                .equals(startupProps.getDatabasePort().toString(), form.getDatabasePort())) {
             settings.put(CorePropertyDatabase.DATABASE_PORT, form.getDatabasePort());
         }
         if (!StringUtils.equals(startupProps.getDatabaseName(), form.getDatabaseName())) {
@@ -189,7 +188,8 @@ public class InstallationController extends AbstractWizardFormController {
         if (!StringUtils.equals(startupProps.getDatabaseUserName(), form.getDatabaseUser())) {
             settings.put(CorePropertyDatabase.DATABASE_USER_NAME, form.getDatabaseUser());
         }
-        if (!StringUtils.equals(startupProps.getDatabaseUserPassword(), form.getDatabasePassword())) {
+        if (!StringUtils.equals(startupProps.getDatabaseUserPassword(),
+                form.getDatabasePassword())) {
             settings.put(CorePropertyDatabase.DATABASE_USER_PASSWORD, form.getDatabasePassword());
         }
         settings.put(CorePropertyDatabase.DATABASE_SPECIFIC_FULL_TEXT_SEARCH,
@@ -242,7 +242,6 @@ public class InstallationController extends AbstractWizardFormController {
         userVo.setAlias(form.getUserAlias());
 
         userVo.setPassword(form.getUserPassword());
-        userVo.setPlainPassword(true);
 
         String webProtocol = request.getParameter("webProtocol");
         String webPort = request.getParameter("webPort");
@@ -260,8 +259,8 @@ public class InstallationController extends AbstractWizardFormController {
         }
 
         try {
-            CommunoteRuntime.getInstance().getInstaller()
-                    .initializeCommunoteAccount(userVo, params);
+            CommunoteRuntime.getInstance().getInstaller().initializeCommunoteAccount(userVo,
+                    params);
         } catch (EmailValidationException e) {
             errors.rejectValue("userEmail", "error.email.not.valid");
         } catch (ConfigurationInitializationException e) {
@@ -398,9 +397,8 @@ public class InstallationController extends AbstractWizardFormController {
         }
         if (!errors.hasErrors()) {
             // support address
-            if (!StringUtils.equals(
-                    conf.getClientConfigurationProperties().getProperty(
-                            ClientProperty.SUPPORT_EMAIL_ADDRESS), form.getSupportAddress())) {
+            if (!StringUtils.equals(conf.getClientConfigurationProperties()
+                    .getProperty(ClientProperty.SUPPORT_EMAIL_ADDRESS), form.getSupportAddress())) {
                 conf.updateClientConfigurationProperty(ClientProperty.SUPPORT_EMAIL_ADDRESS,
                         form.getSupportAddress());
             }
@@ -479,7 +477,8 @@ public class InstallationController extends AbstractWizardFormController {
      * @param form
      *            form object with request parameters bound onto it
      */
-    private boolean loadExistingApplicationDetails(CommunoteInstaller installer, InstallerForm form) {
+    private boolean loadExistingApplicationDetails(CommunoteInstaller installer,
+            InstallerForm form) {
         LOG.info("Search for some application details (application name and time zone).");
         ClientTO client = installer.getCommunoteAccount();
         if (client != null) {
@@ -528,8 +527,8 @@ public class InstallationController extends AbstractWizardFormController {
 
         form.setSmtpHost(applicationProps.getProperty(ApplicationPropertyMailing.HOST));
         form.setSmtpPort(applicationProps.getProperty(ApplicationPropertyMailing.PORT));
-        form.setSmtpStartTls(applicationProps.getProperty(ApplicationPropertyMailing.USE_STARTTLS,
-                false));
+        form.setSmtpStartTls(
+                applicationProps.getProperty(ApplicationPropertyMailing.USE_STARTTLS, false));
 
         form.setSmtpUser(applicationProps.getProperty(ApplicationPropertyMailing.LOGIN));
         String decryptedPassword = EncryptionUtils.decrypt(
@@ -537,11 +536,12 @@ public class InstallationController extends AbstractWizardFormController {
                 ApplicationProperty.INSTALLATION_UNIQUE_ID.getValue());
         form.setSmtpPassword(decryptedPassword);
 
-        form.setSenderName(applicationProps
-                .getProperty(ApplicationPropertyMailing.FROM_ADDRESS_NAME));
-        form.setSenderAddress(applicationProps.getProperty(ApplicationPropertyMailing.FROM_ADDRESS));
-        form.setSupportAddress(conf.getClientConfigurationProperties().getProperty(
-                ClientProperty.SUPPORT_EMAIL_ADDRESS, null));
+        form.setSenderName(
+                applicationProps.getProperty(ApplicationPropertyMailing.FROM_ADDRESS_NAME));
+        form.setSenderAddress(
+                applicationProps.getProperty(ApplicationPropertyMailing.FROM_ADDRESS));
+        form.setSupportAddress(conf.getClientConfigurationProperties()
+                .getProperty(ClientProperty.SUPPORT_EMAIL_ADDRESS, null));
     }
 
     @Override
@@ -675,7 +675,7 @@ public class InstallationController extends AbstractWizardFormController {
      */
     private Map<ApplicationConfigurationPropertyConstant, String> setMailSettings(
             InstallerForm form, ApplicationConfigurationProperties applicationProps)
-                    throws EncryptionException {
+            throws EncryptionException {
         Map<ApplicationConfigurationPropertyConstant, String> settings = null;
         settings = new HashMap<ApplicationConfigurationPropertyConstant, String>();
 

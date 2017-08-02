@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,7 +48,7 @@ import com.communote.server.web.fe.portal.user.validator.RegisterUserValidator;
 public class ConfirmUserController extends AbstractWizardFormController {
 
     /** Logger for this class. */
-    private static final Logger LOG = Logger.getLogger(ConfirmUserController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ConfirmUserController.class);
 
     /** the parameter key for the code. */
     public static final String PARAM_SECURITY_CODE = "securityCode";
@@ -69,8 +70,8 @@ public class ConfirmUserController extends AbstractWizardFormController {
      */
     private boolean acceptsCode(SecurityCode code) {
         return code != null
-                && (code instanceof UserSecurityCode
-                        || code instanceof InviteUserToBlogSecurityCode || code instanceof InviteUserToClientSecurityCode);
+                && (code instanceof UserSecurityCode || code instanceof InviteUserToBlogSecurityCode
+                        || code instanceof InviteUserToClientSecurityCode);
     }
 
     /**
@@ -108,8 +109,8 @@ public class ConfirmUserController extends AbstractWizardFormController {
                 if (userData.length > 1) {
                     form.setLastName(StringUtils.capitalize(userData[1]));
                 }
-                form.setAlias(ServiceLocator.findService(UserManagement.class).generateUniqueAlias(
-                        null, user.getEmail()));
+                form.setAlias(ServiceLocator.findService(UserManagement.class)
+                        .generateUniqueAlias(null, user.getEmail()));
             }
         }
         form.setTimeZoneOffsetList(RegistrationHelper.buildTimeZoneOffsetList());
@@ -165,12 +166,11 @@ public class ConfirmUserController extends AbstractWizardFormController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        ClientConfigurationProperties clientConfigurationProperties = CommunoteRuntime
-                .getInstance().getConfigurationManager().getClientConfigurationProperties();
+        ClientConfigurationProperties clientConfigurationProperties = CommunoteRuntime.getInstance()
+                .getConfigurationManager().getClientConfigurationProperties();
         String code = request.getParameter(PARAM_SECURITY_CODE);
         if (code == null) {
-            MessageHelper.saveErrorMessage(
-                    request,
+            MessageHelper.saveErrorMessage(request,
                     ResourceBundleManager.instance().getText("error.security.code.not.provided",
                             SessionHandler.instance().getCurrentLocale(request)));
             return ControllerHelper.replaceModuleInMAV(new ModelAndView(getErrorView()));
@@ -178,22 +178,21 @@ public class ConfirmUserController extends AbstractWizardFormController {
         SecurityCode securityCode = ServiceLocator.instance()
                 .getService(SecurityCodeManagement.class).findByCode(code);
         if (!acceptsCode(securityCode)) {
-            MessageHelper.saveErrorMessage(
-                    request,
+            MessageHelper.saveErrorMessage(request,
                     ResourceBundleManager.instance().getText("error.security.code.not.found",
                             SessionHandler.instance().getCurrentLocale(request)));
-            MessageHelper.saveErrorMessage(
-                    request,
+            MessageHelper.saveErrorMessage(request,
                     ResourceBundleManager.instance().getText("error.register.already.registered",
                             SessionHandler.instance().getCurrentLocale(request)));
             return ControllerHelper.replaceModuleInMAV(new ModelAndView(getErrorView()));
         }
         if (!clientConfigurationProperties.isRegistrationAllowed()
-                && !(securityCode instanceof InviteUserToClientSecurityCode && clientConfigurationProperties
-                        .isDBAuthenticationAllowed())
-                && !(securityCode instanceof InviteUserToBlogSecurityCode && invitationByClientManager((InviteUserToBlogSecurityCode) securityCode))) {
-            MessageHelper.saveErrorMessage(
-                    request,
+                && !(securityCode instanceof InviteUserToClientSecurityCode
+                        && clientConfigurationProperties.isDBAuthenticationAllowed())
+                && !(securityCode instanceof InviteUserToBlogSecurityCode
+                        && invitationByClientManager(
+                                (InviteUserToBlogSecurityCode) securityCode))) {
+            MessageHelper.saveErrorMessage(request,
                     ResourceBundleManager.instance().getText(
                             "error.register.external.auth.activated",
                             SessionHandler.instance().getCurrentLocale(request)));
@@ -282,8 +281,8 @@ public class ConfirmUserController extends AbstractWizardFormController {
 
         // user registration not allowed if external authentication is activated, but internal
         // authentication disabled.
-        ClientConfigurationProperties clientConfigurationProperties = CommunoteRuntime
-                .getInstance().getConfigurationManager().getClientConfigurationProperties();
+        ClientConfigurationProperties clientConfigurationProperties = CommunoteRuntime.getInstance()
+                .getConfigurationManager().getClientConfigurationProperties();
         if (!clientConfigurationProperties.isDBAuthenticationAllowed()) {
             ControllerHelper.sendInternalRedirectToStartPage(request, response);
             return null;
@@ -293,7 +292,6 @@ public class ConfirmUserController extends AbstractWizardFormController {
         try {
             UserVO userVo = new UserVO();
             userVo.setEmail(form.getEmail());
-            userVo.setPlainPassword(form.isPlainPassword());
             userVo.setPassword(form.getPassword());
             userVo.setLanguage(form.getLocale());
             userVo.setAlias(form.getAlias());
@@ -302,18 +300,15 @@ public class ConfirmUserController extends AbstractWizardFormController {
             userVo.setRoles(new UserRole[] { UserRole.ROLE_KENMEI_USER });
             userVo.setTimeZoneId(form.getTimeZoneId());
 
-            User user = ServiceLocator.findService(UserManagement.class).confirmUser(
-                    form.getConfirmationCode(), userVo);
-            if (user.hasStatus(UserStatus.ACTIVE) || user.hasStatus(UserStatus.TERMS_NOT_ACCEPTED)) {
-                MessageHelper.saveMessage(
-                        request,
-                        ResourceBundleManager.instance().getText("code.confirmation.new.user",
-                                pageLocale));
+            User user = ServiceLocator.findService(UserManagement.class)
+                    .confirmUser(form.getConfirmationCode(), userVo);
+            if (user.hasStatus(UserStatus.ACTIVE)
+                    || user.hasStatus(UserStatus.TERMS_NOT_ACCEPTED)) {
+                MessageHelper.saveMessage(request, ResourceBundleManager.instance()
+                        .getText("code.confirmation.new.user", pageLocale));
             } else {
-                MessageHelper.saveMessage(
-                        request,
-                        ResourceBundleManager.instance().getText(
-                                "code.confirmation.new.user.not.activated", pageLocale));
+                MessageHelper.saveMessage(request, ResourceBundleManager.instance()
+                        .getText("code.confirmation.new.user.not.activated", pageLocale));
             }
         } catch (EmailValidationException e) {
             errors.rejectValue("email", "error.email.not.valid",
@@ -327,12 +322,12 @@ public class ConfirmUserController extends AbstractWizardFormController {
             errors.rejectValue("password", "user.forgotten.password.no.securitycode.found",
                     "The given security code is null");
         } catch (SecurityCodeNotFoundException e) {
-            errorMessage = ResourceBundleManager.instance().getText(
-                    "error.security.code.not.found", pageLocale);
+            errorMessage = ResourceBundleManager.instance().getText("error.security.code.not.found",
+                    pageLocale);
         } catch (Exception e) {
             LOG.error("error while confirming user", e);
-            errorMessage = ResourceBundleManager.instance().getText(
-                    "code.confirmation.unexpected.error", pageLocale);
+            errorMessage = ResourceBundleManager.instance()
+                    .getText("code.confirmation.unexpected.error", pageLocale);
         }
         ModelAndView result = processResult(request, errors, errorMessage);
         result = ControllerHelper.replaceModuleInMAV(result);
@@ -460,8 +455,8 @@ public class ConfirmUserController extends AbstractWizardFormController {
             // can not use the alias if another user alreay exists with the
             // alias
             User userByAliasFound = um.findUserByAlias(form.getAlias());
-            if (!errors.hasFieldErrors("alias") && userByAliasFound != null
-                    && (userByCode == null || !userByAliasFound.getId().equals(userByCode.getId()))) {
+            if (!errors.hasFieldErrors("alias") && userByAliasFound != null && (userByCode == null
+                    || !userByAliasFound.getId().equals(userByCode.getId()))) {
                 errors.rejectValue("alias", "error.alias.already.exists",
                         "The login already exists!");
             }

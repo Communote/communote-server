@@ -3,6 +3,7 @@ package com.communote.server.core.security;
 import org.springframework.security.core.Authentication;
 
 import com.communote.server.api.core.user.UserNotFoundException;
+import com.communote.server.core.security.authentication.AuthAgainstInternalDBWhileExternalUserAccountException;
 import com.communote.server.model.user.User;
 
 /**
@@ -15,24 +16,26 @@ import com.communote.server.model.user.User;
 public interface AuthenticationManagement {
 
     /**
-     * Should be called if a username and password authentication for a user failed because of a
-     * wrong password.
+     * Check the password of a local user for a match with a given clear text password. This method
+     * should be called as part of the login process of a local user to validate the password and do
+     * some additional tests. A local user is a user who wasn't provided by the active primary
+     * external user repository.
      *
      * @param username
-     *            the internal login name (e-mail or alias) of the user whose authentication failed
+     *            the login name which can be the alias or the email address of the user
+     * @param password
+     *            the clear text password to test against
+     * @return the user details of the user or null if the password check failed
+     * @throws UserNotFoundException
+     *             in case the user does not exist
+     * @throws AccountNotActivatedException
+     *             in case the user account is not active
+     * @throws AuthAgainstInternalDBWhileExternalUserAccountException
+     *             in case the user was provided by the active primary external user repository
      */
-    public void onUsernamePasswordAuthenticationFailed(String username);
-
-    /**
-     * Should be called if a username and password authentication for a user failed because of a
-     * wrong password.
-     *
-     * @param externalUserId
-     *            the login name of the user in the external system whose authentication failed
-     * @param externalSystemId
-     *            the ID of the external system
-     */
-    public void onUsernamePasswordAuthenticationFailed(String externalUserId, String externalSystemId);
+    UserDetails checkLocalUserPasswordOnLogin(String username, String password)
+            throws UserNotFoundException, AccountNotActivatedException,
+            AuthAgainstInternalDBWhileExternalUserAccountException;
 
     /**
      * This method finalizes the login process of a user. It uses the given user to create the
@@ -68,6 +71,27 @@ public interface AuthenticationManagement {
     void onSuccessfulAuthentication(Long userId) throws UserNotFoundException;
 
     /**
+     * Should be called if a username and password authentication for a user failed because of a
+     * wrong password.
+     *
+     * @param username
+     *            the internal login name (e-mail or alias) of the user whose authentication failed
+     */
+    public void onUsernamePasswordAuthenticationFailed(String username);
+
+    /**
+     * Should be called if a username and password authentication for a user failed because of a
+     * wrong password.
+     *
+     * @param externalUserId
+     *            the login name of the user in the external system whose authentication failed
+     * @param externalSystemId
+     *            the ID of the external system
+     */
+    public void onUsernamePasswordAuthenticationFailed(String externalUserId,
+            String externalSystemId);
+
+    /**
      *
      * Does additional login checks. This includes testing whether the account is locked, the user
      * is active and has accepted the terms of use. If one of the login checks fails an appropriate
@@ -84,9 +108,9 @@ public interface AuthenticationManagement {
      * @throws AccountPermanentlyDisabledException
      * @throws AccountTemporarilyDisabledException
      */
-    public void validateUserLogin(Long userId) throws AccountPermanentlyLockedException,
-    AccountTemporarilyLockedException, AccountNotActivatedException,
-    TermsNotAcceptedException, UserNotFoundException, AccountPermanentlyDisabledException,
-    AccountTemporarilyDisabledException;
+    public void validateUserLogin(Long userId)
+            throws AccountPermanentlyLockedException, AccountTemporarilyLockedException,
+            AccountNotActivatedException, TermsNotAcceptedException, UserNotFoundException,
+            AccountPermanentlyDisabledException, AccountTemporarilyDisabledException;
 
 }

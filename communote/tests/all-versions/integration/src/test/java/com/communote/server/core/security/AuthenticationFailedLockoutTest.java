@@ -72,9 +72,7 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
      * @return specific value
      */
     private int getFailedAuthLimitPermlock() {
-        return CommunoteRuntime
-                .getInstance()
-                .getConfigurationManager()
+        return CommunoteRuntime.getInstance().getConfigurationManager()
                 .getClientConfigurationProperties()
                 .getProperty(ClientPropertySecurity.FAILED_AUTH_LIMIT_PERMLOCK,
                         ClientPropertySecurity.DEFAULT_FAILED_AUTH_LIMIT_PERMLOCK);
@@ -86,9 +84,7 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
      * @return specific value
      */
     private int getFailedAuthLockedTimespan() {
-        return CommunoteRuntime
-                .getInstance()
-                .getConfigurationManager()
+        return CommunoteRuntime.getInstance().getConfigurationManager()
                 .getClientConfigurationProperties()
                 .getProperty(ClientPropertySecurity.FAILED_AUTH_LOCKED_TIMESPAN,
                         ClientPropertySecurity.DEFAULT_FAILED_AUTH_LOCKED_TIMESPAN);
@@ -100,9 +96,7 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
      * @return specific value
      */
     private int getFailedAuthStepsTemplock() {
-        return CommunoteRuntime
-                .getInstance()
-                .getConfigurationManager()
+        return CommunoteRuntime.getInstance().getConfigurationManager()
                 .getClientConfigurationProperties()
                 .getProperty(ClientPropertySecurity.FAILED_AUTH_STEPS_TEMPLOCK,
                         ClientPropertySecurity.DEFAULT_FAILED_AUTH_STEPS_TEMPLOCK);
@@ -122,7 +116,6 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
     public void init() throws Exception {
         UserVO userVO = TestUtils.createKenmeiUserVO(TestUtils.createRandomUserAlias(),
                 UserRole.ROLE_KENMEI_USER);
-        userVO.setPlainPassword(true);
         userVO.setPassword("123456");
         AuthenticationTestUtils.setManagerContext();
         userManagement.createUser(userVO, false, false);
@@ -133,7 +126,7 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
         // set shorter wait time for temporarily locked users
         map.put(ClientPropertySecurity.FAILED_AUTH_LOCKED_TIMESPAN, String.valueOf(3));
         CommunoteRuntime.getInstance().getConfigurationManager()
-        .updateClientConfigurationProperties(map);
+                .updateClientConfigurationProperties(map);
         AuthenticationTestUtils.setAuthentication(null);
         // initiate authenticationManager
         ArrayList<AuthenticationProvider> providers = new ArrayList<>();
@@ -142,7 +135,8 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
         providerManager.setAuthenticationEventPublisher(new AuthenticationFailedEventPublisher());
         authManager = providerManager;
         // create valid user + password-token
-        validAuth = new UsernamePasswordAuthenticationToken(userVO.getAlias(), userVO.getPassword());
+        validAuth = new UsernamePasswordAuthenticationToken(userVO.getAlias(),
+                userVO.getPassword());
         // create invalid user + password-token
         invalidAuth = new UsernamePasswordAuthenticationToken(userVO.getAlias(),
                 userVO.getPassword() + "invalid");
@@ -175,7 +169,8 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
                 Assert.fail("a invalid login passed through auth process");
             } catch (AuthenticationException failed) {
                 if (failed instanceof UserAccountTemporarilyLockedException) {
-                    Assert.fail("UserAccountTemporarilyLockedException was thrown in the false place");
+                    Assert.fail(
+                            "UserAccountTemporarilyLockedException was thrown in the false place");
                 }
             }
         }
@@ -183,7 +178,8 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
         // 3. STEP: check if the user account for channel is temporary locked
         try {
             authProcess(validAuth, ChannelType.WEB);
-            Assert.fail("the user account was not temporary locked although the limit was exceeded");
+            Assert.fail(
+                    "the user account was not temporary locked although the limit was exceeded");
         } catch (UserAccountTemporarilyLockedException failed) {
             // Do nothing.
         }
@@ -222,7 +218,8 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
                     sleep((lockedTimespan + 1) * tempLockedCount * 1000);
                 }
                 if (failed instanceof UserAccountPermanentlyLockedException) {
-                    Assert.fail("UserAccountPermanentlyLockedException was thrown in the false place");
+                    Assert.fail(
+                            "UserAccountPermanentlyLockedException was thrown in the false place");
                 }
             }
         }
@@ -230,7 +227,8 @@ public class AuthenticationFailedLockoutTest extends CommunoteIntegrationTest {
         // 8. STEP: check if the user can authenticate on RSS channel
         try {
             authProcess(validAuth, ChannelType.RSS);
-            Assert.fail("the user account was not permanently locked although the limit was exceeded");
+            Assert.fail(
+                    "the user account was not permanently locked although the limit was exceeded");
         } catch (UserAccountPermanentlyLockedException failed) {
         }
 

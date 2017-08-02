@@ -33,7 +33,7 @@
     </issueManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.bouncycastle>1.46</version.bouncycastle>
+        <version.bouncycastle>1.57</version.bouncycastle>
         <!-- Bug https://github.com/restlet/restlet-framework-java/issues/603 in restlet-framework blocks an update. Latest version checked where the bug still exists is 2.1.6. -->
         <version.restlet>2.0.15</version.restlet>
         <version.spring>3.2.5.RELEASE</version.spring>
@@ -671,17 +671,7 @@
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcmail-jdk15</artifactId>
-                <version>${version.bouncycastle}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15</artifactId>
-                <version>${version.bouncycastle}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.bouncycastle</groupId>
-                <artifactId>bctsp-jdk15</artifactId>
+                <artifactId>bcprov-jdk15on</artifactId>
                 <version>${version.bouncycastle}</version>
             </dependency>
             <dependency>

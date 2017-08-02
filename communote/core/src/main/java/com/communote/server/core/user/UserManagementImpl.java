@@ -57,11 +57,10 @@ import com.communote.server.api.core.user.CommunoteEntityNotFoundException;
 import com.communote.server.api.core.user.UserNotFoundException;
 import com.communote.server.api.core.user.UserVO;
 import com.communote.server.core.common.exceptions.InvalidOperationException;
-import com.communote.server.core.common.exceptions.PasswordLengthException;
+import com.communote.server.core.common.exceptions.PasswordValidationException;
 import com.communote.server.core.config.ClientConfigurationHelper;
 import com.communote.server.core.mail.MailManagement;
 import com.communote.server.core.mail.MailMessageHelper;
-import com.communote.server.core.mail.messages.ForgottenPWMailMessage;
 import com.communote.server.core.mail.messages.GenericMailMessage;
 import com.communote.server.core.mail.messages.MailMessage;
 import com.communote.server.core.mail.messages.MailModelPlaceholderConstants;
@@ -86,6 +85,7 @@ import com.communote.server.core.user.events.UserStatusChangedEvent;
 import com.communote.server.core.user.groups.SynchronizeExternalUserTaskHandler;
 import com.communote.server.core.user.helper.ValidationPatterns;
 import com.communote.server.core.user.listener.UserLimitNotificationOnUserActivation;
+import com.communote.server.core.user.security.UserPasswordManagement;
 import com.communote.server.core.user.validation.UserActivationValidationException;
 import com.communote.server.core.user.validation.UserActivationValidator;
 import com.communote.server.model.blog.Blog;
@@ -103,7 +103,6 @@ import com.communote.server.model.user.UserRole;
 import com.communote.server.model.user.UserStatus;
 import com.communote.server.model.user.security.AuthenticationFailedStatus;
 import com.communote.server.model.user.security.EmailSecurityCode;
-import com.communote.server.model.user.security.ForgottenPasswordSecurityCode;
 import com.communote.server.model.user.security.InviteUserToBlogSecurityCode;
 import com.communote.server.model.user.security.InviteUserToClientSecurityCode;
 import com.communote.server.model.user.security.UnlockUserSecurityCode;
@@ -120,7 +119,6 @@ import com.communote.server.persistence.user.UserProfileDao;
 import com.communote.server.persistence.user.client.ClientHelper;
 import com.communote.server.persistence.user.security.AuthenticationFailedStatusDao;
 import com.communote.server.persistence.user.security.EmailSecurityCodeDao;
-import com.communote.server.persistence.user.security.ForgottenPasswordSecurityCodeDao;
 import com.communote.server.persistence.user.security.InviteSecurityCodeDao;
 import com.communote.server.persistence.user.security.InviteUserToBlogSecurityCodeDao;
 import com.communote.server.persistence.user.security.InviteUserToClientSecurityCodeDao;
@@ -152,15 +150,14 @@ public class UserManagementImpl extends UserManagementBase {
 
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private UserPasswordManagement userPasswordManagement;
 
     @Autowired
     private UserSecurityCodeDao userSecurityCodeDao;
 
     @Autowired
     private EmailSecurityCodeDao emailSecurityCodeDao;
-
-    @Autowired
-    private ForgottenPasswordSecurityCodeDao forgottenPasswordSecurityCodeDao;
 
     @Autowired
     private ExternalUserAuthenticationDao externalUserAuthenticationDao;
@@ -268,8 +265,8 @@ public class UserManagementImpl extends UserManagementBase {
      * {@inheritDoc}
      */
     @Override
-    public boolean changeAlias(Long userId, String newAlias) throws AliasAlreadyExistsException,
-    AliasInvalidException {
+    public boolean changeAlias(Long userId, String newAlias)
+            throws AliasAlreadyExistsException, AliasInvalidException {
         SecurityHelper.assertCurrentUserIsClientManager();
         User user = userDao.load(userId);
         newAlias = newAlias == null ? null : newAlias.trim();
@@ -277,8 +274,8 @@ public class UserManagementImpl extends UserManagementBase {
             return false;
         }
         if (newAlias == null || !newAlias.matches(ValidationPatterns.PATTERN_ALIAS)) {
-            throw new AliasInvalidException("The alias is invalid: " + newAlias == null ? "null"
-                    : newAlias);
+            throw new AliasInvalidException(
+                    "The alias is invalid: " + newAlias == null ? "null" : newAlias);
         }
         validateAlias(newAlias, user);
         user.setAlias(newAlias);
@@ -332,8 +329,8 @@ public class UserManagementImpl extends UserManagementBase {
                 .getUserByLocale(clientManager);
         Collection<NewUserConfirmedForManagerMessage> result = new ArrayList<NewUserConfirmedForManagerMessage>();
         for (Entry<Locale, Collection<User>> item : localizedUsers.entrySet()) {
-            result.add(new NewUserConfirmedForManagerMessage(confirmedUser, item.getValue(), item
-                    .getKey()));
+            result.add(new NewUserConfirmedForManagerMessage(confirmedUser, item.getValue(),
+                    item.getKey()));
         }
         return result;
     }
@@ -351,7 +348,8 @@ public class UserManagementImpl extends UserManagementBase {
     }
 
     @Override
-    public User findUser(UserIdentification userIdentification, boolean loadExternalAuthentications) {
+    public User findUser(UserIdentification userIdentification,
+            boolean loadExternalAuthentications) {
         User user = null;
 
         if (userIdentification.getUserId() != null) {
@@ -404,7 +402,8 @@ public class UserManagementImpl extends UserManagementBase {
      * @param newStatus
      *            the new status
      */
-    private void fireUserStatusChangedEvent(Long userId, UserStatus oldStatus, UserStatus newStatus) {
+    private void fireUserStatusChangedEvent(Long userId, UserStatus oldStatus,
+            UserStatus newStatus) {
         // ensure status was changed
         if (newStatus != null && !newStatus.equals(oldStatus)) {
             eventDispatcher.fire(new UserStatusChangedEvent(userId, oldStatus, newStatus));
@@ -414,7 +413,8 @@ public class UserManagementImpl extends UserManagementBase {
     @Override
     @Transactional(readOnly = true)
     public String generateUniqueAlias(String externalUserName, String emailAddress) {
-        if (externalUserName != null && externalUserName.matches(ValidationPatterns.PATTERN_ALIAS)) {
+        if (externalUserName != null
+                && externalUserName.matches(ValidationPatterns.PATTERN_ALIAS)) {
             if (handleFindUserByAlias(externalUserName) == null) {
                 return externalUserName;
             }
@@ -505,7 +505,7 @@ public class UserManagementImpl extends UserManagementBase {
 
     @Override
     protected void handleAcceptTermsOfUse(Long userId) throws UserNotFoundException,
-    AuthorizationException, UserActivationValidationException {
+            AuthorizationException, UserActivationValidationException {
         User user = userDao.load(userId);
         if (user == null) {
             throw new UserNotFoundException("User with ID " + userId + " does not exist");
@@ -521,8 +521,8 @@ public class UserManagementImpl extends UserManagementBase {
                 internalChangeUserStatus(user, UserStatus.ACTIVE, false, false);
             } catch (InvalidUserStatusTransitionException e) {
                 // this should not occur
-                LOGGER.error(
-                        "Unexpected exception while accepting terms of use for user " + userId, e);
+                LOGGER.error("Unexpected exception while accepting terms of use for user " + userId,
+                        e);
                 throw new UserManagementException(
                         "Unexpected exception while accepting terms of use", e);
             }
@@ -538,9 +538,8 @@ public class UserManagementImpl extends UserManagementBase {
             com.communote.server.core.user.NoClientManagerLeftException,
             UserDeletionDisabledException {
         try {
-            assertUserDeletionPossible(userId,
-                    ClientProperty.DELETE_USER_BY_ANONYMIZE_ENABLED
-                            .getValue(ClientProperty.DEFAULT_DELETE_USER_BY_ANONYMIZE_ENABLED));
+            assertUserDeletionPossible(userId, ClientProperty.DELETE_USER_BY_ANONYMIZE_ENABLED
+                    .getValue(ClientProperty.DEFAULT_DELETE_USER_BY_ANONYMIZE_ENABLED));
         } catch (UserDeletionDisabledException e) {
             throw new UserAnonymizationDisabledException(
                     "Deleting a user by making his profile anonymous is not enabled.");
@@ -549,8 +548,8 @@ public class UserManagementImpl extends UserManagementBase {
     }
 
     @Override
-    protected User handleAssignUserRole(Long userId, UserRole role) throws AuthorizationException,
-            InvalidOperationException {
+    protected User handleAssignUserRole(Long userId, UserRole role)
+            throws AuthorizationException, InvalidOperationException {
         assertClientManager();
         User user = userDao.load(userId);
         if (user != null) {
@@ -598,9 +597,10 @@ public class UserManagementImpl extends UserManagementBase {
 
     @Override
     protected boolean handleChangeEmailAddress(Long userId, String newEmail,
-            boolean sendConfirmationEmail) throws EmailAlreadyExistsException,
-            EmailValidationException {
-        if (!userId.equals(SecurityHelper.getCurrentUserId()) && !SecurityHelper.isClientManager()) {
+            boolean sendConfirmationEmail)
+            throws EmailAlreadyExistsException, EmailValidationException {
+        if (!userId.equals(SecurityHelper.getCurrentUserId())
+                && !SecurityHelper.isClientManager()) {
             throw new AccessDeniedException(
                     "Only the user itself or a client manager can change the email address.");
         }
@@ -626,17 +626,6 @@ public class UserManagementImpl extends UserManagementBase {
     }
 
     @Override
-    protected void handleChangePassword(Long userId, String newPassword)
-            throws PasswordLengthException {
-        User user = userDao.load(userId);
-        if (user == null) {
-            return;
-        }
-        validatePassword(newPassword, user.getRoles());
-        user.setPlainPassword(newPassword);
-    }
-
-    @Override
     protected void handleChangeUserStatusByManager(Long userId, UserStatus newStatus)
             throws UserActivationValidationException, InvalidUserStatusTransitionException,
             UserNotFoundException, NoClientManagerLeftException {
@@ -649,14 +638,14 @@ public class UserManagementImpl extends UserManagementBase {
             throw new UserNotFoundException("The user with ID " + userId + " does not exist.");
         }
         if (SecurityHelper.getCurrentUserId().equals(user.getId())
-                && newStatus.equals(UserStatus.TEMPORARILY_DISABLED) && onlyOneClientManagerLeft()) {
+                && newStatus.equals(UserStatus.TEMPORARILY_DISABLED)
+                && onlyOneClientManagerLeft()) {
             throw new NoClientManagerLeftException(
                     "The current user cannot be disabled, because he is the last client manager.");
         }
-        if (UserStatus.ACTIVE.equals(newStatus)
-                && user.hasStatus(UserStatus.TERMS_NOT_ACCEPTED)
+        if (UserStatus.ACTIVE.equals(newStatus) && user.hasStatus(UserStatus.TERMS_NOT_ACCEPTED)
                 && ClientProperty.TERMS_OF_USE_USERS_MUST_ACCEPT
-                .getValue(ClientProperty.DEFAULT_TERMS_OF_USE_USERS_MUST_ACCEPT)) {
+                        .getValue(ClientProperty.DEFAULT_TERMS_OF_USE_USERS_MUST_ACCEPT)) {
             // do nothing because the user should accept the terms of use himself
             return;
         }
@@ -679,16 +668,16 @@ public class UserManagementImpl extends UserManagementBase {
             userDao.update(user);
             securityCodeDao.deleteAllCodesByUser(user.getId(), EmailSecurityCode.class);
         } else {
-            throw new SecurityCodeNotFoundException("The security code '" + securityCode
-                    + "' could not be found");
+            throw new SecurityCodeNotFoundException(
+                    "The security code '" + securityCode + "' could not be found");
         }
     }
 
     @Override
     protected User handleConfirmUser(String securitycode, UserVO data)
             throws SecurityCodeNotFoundException, EmailValidationException,
-            EmailAlreadyExistsException, AliasAlreadyExistsException, PasswordLengthException,
-            InvalidUserStatusTransitionException {
+            EmailAlreadyExistsException, AliasAlreadyExistsException, PasswordValidationException,
+            InvalidUserStatusTransitionException, ExternalUserPasswordChangeNotAllowedException {
         if (!getClientConfigurationProperties().isDBAuthenticationAllowed()) {
             throw new AccessDeniedException(
                     "Confirmation of user is not allowed as the database authentication is deactivated.");
@@ -697,8 +686,8 @@ public class UserManagementImpl extends UserManagementBase {
         User user = null;
         List<MimeMessagePreparator> mails = new ArrayList<MimeMessagePreparator>();
         if (code == null) {
-            throw new SecurityCodeNotFoundException("The security code '" + securitycode
-                    + "' could not be found!");
+            throw new SecurityCodeNotFoundException(
+                    "The security code '" + securitycode + "' could not be found!");
         }
         user = code.getUser();
         if (code instanceof UserSecurityCode || code instanceof InviteUserToClientSecurityCode
@@ -708,12 +697,11 @@ public class UserManagementImpl extends UserManagementBase {
 
                 validateEmail(data.getEmail(), user, true);
                 validateAlias(data.getAlias(), user);
-                if (data.isPlainPassword()) {
-                    validatePassword(data.getPassword(), user.getRoles());
-                }
-
                 // update user with vo data
-                userDao.userVOToEntity(data, user, false);
+                userDao.userVOToEntity(data, user);
+                if (data.getPassword() != null) {
+                    userPasswordManagement.changePassword(user, data.getPassword());
+                }
                 // update user status to confirmed
                 user.setStatus(UserStatus.CONFIRMED);
                 user.setStatusChanged(new Timestamp(new Date().getTime()));
@@ -759,13 +747,14 @@ public class UserManagementImpl extends UserManagementBase {
     // not necessary. But what about the unit tests?
     @Override
     protected User handleCreateUser(UserVO userVo, boolean emailConfirmation,
-            boolean managerActivation) throws EmailAlreadyExistsException,
-            EmailValidationException, AliasAlreadyExistsException, PasswordLengthException {
-        if (userVo.isPlainPassword()) {
-            validatePassword(userVo.getPassword(), userVo.getRoles());
+            boolean managerActivation) throws EmailAlreadyExistsException, EmailValidationException,
+            AliasAlreadyExistsException, PasswordValidationException {
+        try {
+            return internalCreateUser(userVo, emailConfirmation, managerActivation);
+        } catch (ExternalUserPasswordChangeNotAllowedException e) {
+            // does not occur since user is local user
+            throw new UserManagementException("Unexpected exception creating local user", e);
         }
-        User user = internalCreateUser(userVo, emailConfirmation, managerActivation);
-        return user;
     }
 
     @Override
@@ -846,9 +835,9 @@ public class UserManagementImpl extends UserManagementBase {
     }
 
     @Override
-    protected User handleInviteUserToClient(UserVO userVo) throws EmailValidationException,
-    EmailAlreadyExistsException, AliasAlreadyExistsException,
-    PermanentIdMissmatchException, AuthorizationException {
+    protected User handleInviteUserToClient(UserVO userVo)
+            throws EmailValidationException, EmailAlreadyExistsException,
+            AliasAlreadyExistsException, PermanentIdMissmatchException, AuthorizationException {
 
         User inviter = getCurrentUser(UserRole.ROLE_KENMEI_CLIENT_MANAGER);
 
@@ -865,11 +854,11 @@ public class UserManagementImpl extends UserManagementBase {
         User invitedUser = invitationDetails.getLeft();
 
         if (userVo instanceof ExternalUserVO) {
-            mails.add(new InviteUserToClientWithExternalAuthMailMessage(inviter, userVo
-                    .getLanguage(), userVo.getEmail()));
+            mails.add(new InviteUserToClientWithExternalAuthMailMessage(inviter,
+                    userVo.getLanguage(), userVo.getEmail()));
         } else {
-            mails.add(new InviteUserToClientMailMessage(inviter, userVo.getLanguage(), userVo
-                    .getEmail(), invitationDetails.getRight()));
+            mails.add(new InviteUserToClientMailMessage(inviter, userVo.getLanguage(),
+                    userVo.getEmail(), invitationDetails.getRight()));
         }
         sendMail(mails);
         return invitedUser;
@@ -881,17 +870,16 @@ public class UserManagementImpl extends UserManagementBase {
     @Override
     protected void handlePermanentlyDisableUser(Long userId, Long[] blogIds, boolean becomeManager)
             throws com.communote.server.api.core.security.AuthorizationException,
-            NoBlogManagerLeftException,
-            com.communote.server.core.user.NoClientManagerLeftException,
+            NoBlogManagerLeftException, com.communote.server.core.user.NoClientManagerLeftException,
             UserDeletionDisabledException, InvalidUserStatusTransitionException {
         try {
-            assertUserDeletionPossible(
-                    userId,
+            assertUserDeletionPossible(userId,
                     getClientConfigurationProperties().getProperty(
                             ClientProperty.DELETE_USER_BY_DISABLE_ENABLED,
                             ClientProperty.DEFAULT_DELETE_USER_BY_DISABLE_ENABLED));
         } catch (UserDeletionDisabledException e) {
-            throw new UserDisablingDisabledException("Deleting a user by disabling is not enabled.");
+            throw new UserDisablingDisabledException(
+                    "Deleting a user by disabling is not enabled.");
         }
         internalPermanentlyDisableUser(userId, blogIds, becomeManager);
     }
@@ -938,8 +926,8 @@ public class UserManagementImpl extends UserManagementBase {
                 }
             } else if (user.hasStatus(UserStatus.REGISTERED)) {
                 // registered user exists, send the code again
-                code = userSecurityCodeDao
-                        .findByUser(user.getId(), SecurityCodeAction.CONFIRM_USER);
+                code = userSecurityCodeDao.findByUser(user.getId(),
+                        SecurityCodeAction.CONFIRM_USER);
             } else {
                 throw new EmailAlreadyExistsException("user with this email already exists");
             }
@@ -960,8 +948,8 @@ public class UserManagementImpl extends UserManagementBase {
     }
 
     @Override
-    protected User handleRemoveUserRole(Long userId, UserRole role) throws AuthorizationException,
-            InvalidOperationException, NoClientManagerLeftException {
+    protected User handleRemoveUserRole(Long userId, UserRole role)
+            throws AuthorizationException, InvalidOperationException, NoClientManagerLeftException {
         assertClientManager();
         User user = userDao.load(userId);
         if (user != null) {
@@ -983,7 +971,8 @@ public class UserManagementImpl extends UserManagementBase {
                     throw new InvalidOperationException("The user role cannot be removed");
                 }
                 // Make sure not to remove the last client manager.
-                if (role.equals(UserRole.ROLE_KENMEI_CLIENT_MANAGER) && onlyOneClientManagerLeft()) {
+                if (role.equals(UserRole.ROLE_KENMEI_CLIENT_MANAGER)
+                        && onlyOneClientManagerLeft()) {
                     throw new NoClientManagerLeftException(
                             "Removing client manager role of last client manager is not possible");
                 }
@@ -1017,30 +1006,6 @@ public class UserManagementImpl extends UserManagementBase {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    // TODO move to AuthenticationManagement (or SecurityManagement?)
-    @Override
-    protected void handleSendNewPWLink(User user)
-            throws ExternalUsersMayNotChangeTheirPasswordException {
-        String primaryExternalAuthentication = getClientConfigurationProperties()
-                .getPrimaryExternalAuthentication();
-        if (primaryExternalAuthentication != null) {
-            Set<ExternalUserAuthentication> externalExternalUserAuthentications = getExternalExternalUserAuthentications(user
-                    .getId());
-            for (ExternalUserAuthentication externalUserAuthentication : externalExternalUserAuthentications) {
-                if (externalUserAuthentication.getSystemId().equals(primaryExternalAuthentication)) {
-                    throw new ExternalUsersMayNotChangeTheirPasswordException(user.getAlias(),
-                            primaryExternalAuthentication);
-                }
-            }
-        }
-        ForgottenPasswordSecurityCode code = forgottenPasswordSecurityCodeDao.createCode(user);
-        ForgottenPWMailMessage message = new ForgottenPWMailMessage(user, code);
-        mailManagement.sendMail(message);
-    }
-
     // TODO move to AuthenticationManagement (or SecurityManagement?)
     @Override
     protected User handleUnlockUser(String securityCode) throws SecurityCodeNotFoundException {
@@ -1055,8 +1020,8 @@ public class UserManagementImpl extends UserManagementBase {
             unlockUserSecurityCodeDao.remove(code);
             return code.getUser();
         } else {
-            throw new SecurityCodeNotFoundException("The security code '" + securityCode
-                    + "' could not be found");
+            throw new SecurityCodeNotFoundException(
+                    "The security code '" + securityCode + "' could not be found");
         }
     }
 
@@ -1079,6 +1044,15 @@ public class UserManagementImpl extends UserManagementBase {
         if (user != null) {
             user.setLanguageCode(languageCode);
         }
+    }
+
+    @Override
+    public boolean hasExternalAuthentication(long userId, String externalSystemId) {
+        User user = userDao.load(userId);
+        if (user != null) {
+            return user.hasExternalAuthentication(externalSystemId);
+        }
+        return false;
     }
 
     @PostConstruct
@@ -1138,10 +1112,10 @@ public class UserManagementImpl extends UserManagementBase {
             // have a correct status message in the blog
             try {
                 ServiceLocator.findService(UserGroupMemberManagement.class)
-                .removeUserFromAllGroups(userId);
+                        .removeUserFromAllGroups(userId);
                 blogRightsManagement.removeUserFromAllBlogs(userId, new ArrayList<Long>(0));
                 ServiceLocator.instance().getService(NoteService.class)
-                .deleteNotesOfUser(user.getId());
+                        .deleteNotesOfUser(user.getId());
             } catch (AuthorizationException e) {
                 LOGGER.error("Deletion of memberships or notes failed because of missing"
                         + " authorization.", e);
@@ -1153,8 +1127,8 @@ public class UserManagementImpl extends UserManagementBase {
                         e);
             }
 
-            user.setEmail(user.getId().toString()
-                    + MailMessageHelper.ANONYMOUS_EMAIL_ADDRESS_SUFFIX);
+            user.setEmail(
+                    user.getId().toString() + MailMessageHelper.ANONYMOUS_EMAIL_ADDRESS_SUFFIX);
             user.setAlias(ANONYMIZE_USER_PREFIX + user.getId());
             user.setStatus(UserStatus.DELETED);
             userProfileManagement.anonymizeUserProfile(user.getProfile().getId());
@@ -1198,25 +1172,24 @@ public class UserManagementImpl extends UserManagementBase {
     // TODO do not allow Disabled or similar for last client manager?
     private void internalChangeUserStatus(User user, UserStatus newStatus,
             boolean isChangeByManager, boolean considerManagerConfirmation)
-                    throws UserActivationValidationException, InvalidUserStatusTransitionException {
+            throws UserActivationValidationException, InvalidUserStatusTransitionException {
         UserStatus oldStatus = user.getStatus();
         if (oldStatus.equals(newStatus)) {
             return;
         }
         // in case the manager confirmation is not necessary the status change can be treated as if
         // it was triggered by the manager
-        validateUserStatusChange(user, newStatus, isChangeByManager || !considerManagerConfirmation);
+        validateUserStatusChange(user, newStatus,
+                isChangeByManager || !considerManagerConfirmation);
 
         boolean confirmedInvitedOrRegistered = UserStatus.CONFIRMED.equals(oldStatus)
                 || UserStatus.REGISTERED.equals(oldStatus) || UserStatus.INVITED.equals(oldStatus);
         boolean isSystemUser = UserManagementHelper.isSystemUser(user);
         boolean activationRequested = newStatus.equals(UserStatus.ACTIVE);
 
-        if (!isSystemUser
-                && confirmedInvitedOrRegistered
-                && activationRequested
+        if (!isSystemUser && confirmedInvitedOrRegistered && activationRequested
                 && ClientProperty.TERMS_OF_USE_USERS_MUST_ACCEPT
-                .getValue(ClientProperty.DEFAULT_TERMS_OF_USE_USERS_MUST_ACCEPT)) {
+                        .getValue(ClientProperty.DEFAULT_TERMS_OF_USE_USERS_MUST_ACCEPT)) {
             // user has to accept the terms of use before he can be activated
             newStatus = UserStatus.TERMS_NOT_ACCEPTED;
         }
@@ -1253,8 +1226,9 @@ public class UserManagementImpl extends UserManagementBase {
                 // TODO isRegistrationUserNotificationDeactivated is not correct as it does not
                 // check whether the user is actually internal or external
                 if (isChangeByManager
-                        && (confirmedInvitedOrRegistered || UserStatus.TEMPORARILY_DISABLED
-                                .equals(oldStatus)) && !isRegistrationUserNotificationDeactivated()) {
+                        && (confirmedInvitedOrRegistered
+                                || UserStatus.TEMPORARILY_DISABLED.equals(oldStatus))
+                        && !isRegistrationUserNotificationDeactivated()) {
                     // if the manager activated the user for the first time or after he was
                     // temporarily disabled inform the user
                     mails.add(new ActivateUserMailMessage(user, confirmedInvitedOrRegistered));
@@ -1285,7 +1259,7 @@ public class UserManagementImpl extends UserManagementBase {
      *             if the alias already exists.
      */
     private User internalCreateExternalUser(ExternalUserVO userVO) throws EmailValidationException,
-    EmailAlreadyExistsException, AliasAlreadyExistsException {
+            EmailAlreadyExistsException, AliasAlreadyExistsException {
         // set some default values
         if (userVO.getRoles() == null) {
             userVO.setRoles(new UserRole[] { UserRole.ROLE_KENMEI_USER });
@@ -1297,8 +1271,15 @@ public class UserManagementImpl extends UserManagementBase {
         if (StringUtils.isBlank(userVO.getAlias())) {
             userVO.setAlias(generateUniqueAlias(userVO.getExternalUserName(), userVO.getEmail()));
         }
-        // no password validation required
-        User user = internalCreateUser(userVO, false, isManagerActivationRequired());
+        // external users have no password -> force it
+        userVO.setPassword(null);
+        User user;
+        try {
+            user = internalCreateUser(userVO, false, isManagerActivationRequired());
+        } catch (PasswordValidationException | ExternalUserPasswordChangeNotAllowedException e) {
+            // since password is cleared, this should not occur
+            throw new UserManagementException("Unexpected exception creating an external user", e);
+        }
         internalCreateOrUpdateExternalAuthentication(user, userVO);
         updateUserProperties(user, userVO);
         Map<String, String> taskProperties = new HashMap<String, String>();
@@ -1375,14 +1356,22 @@ public class UserManagementImpl extends UserManagementBase {
      *             in case the e-mail address already exists
      * @throws AliasAlreadyExistsException
      *             in case the alias already exists.
+     * @throws PasswordValidationException
+     *             in case a password is contained in the VO and the password didn't match the
+     *             minimal requirements
+     * @throws ExternalUserPasswordChangeNotAllowedException
      */
     // TODO this method duplicates logic with confirmUser, invite methods and
     // internalChangeUserStatus. Is there a way to merge it?
     private User internalCreateUser(UserVO userVo, boolean emailConfirmationRequired,
             boolean managerActivationRequired) throws EmailValidationException,
-            EmailAlreadyExistsException, AliasAlreadyExistsException {
+            EmailAlreadyExistsException, AliasAlreadyExistsException, PasswordValidationException,
+            ExternalUserPasswordChangeNotAllowedException {
         validateUserForCreation(userVo);
         User user = userDao.userVOToEntity(userVo);
+        if (userVo.getPassword() != null) {
+            userPasswordManagement.changePassword(user, userVo.getPassword());
+        }
         // create the entities
         userAuthorityDao.create(user.getUserAuthorities());
         UserProfile profile = user.getProfile();
@@ -1518,8 +1507,8 @@ public class UserManagementImpl extends UserManagementBase {
                     blogRightsManagement.assignManagementAccessToCurrentUser(blogId);
                 }
             } else {
-                blogManagement.deleteBlogs(blogIdsTitleMap.keySet().toArray(
-                        new Long[blogIdsToHandle.size()]));
+                blogManagement.deleteBlogs(
+                        blogIdsTitleMap.keySet().toArray(new Long[blogIdsToHandle.size()]));
             }
         } catch (AuthorizationException e) {
             // unexpected because current user is client when reaching this part
@@ -1558,9 +1547,9 @@ public class UserManagementImpl extends UserManagementBase {
      *             in case the provided email address is invalid
      */
     private <T extends SecurityCode> Pair<User, T> internalInviteUser(UserVO userVo,
-            T freshSecurityCode, InviteSecurityCodeDao<T> codeDao, List<MimeMessagePreparator> mails)
-            throws EmailAlreadyExistsException, AliasAlreadyExistsException,
-            PermanentIdMissmatchException, EmailValidationException {
+            T freshSecurityCode, InviteSecurityCodeDao<T> codeDao,
+            List<MimeMessagePreparator> mails) throws EmailAlreadyExistsException,
+            AliasAlreadyExistsException, PermanentIdMissmatchException, EmailValidationException {
         User user = validateUserVoForInvitation(userVo);
         UserStatus status;
         boolean externalAuth;
@@ -1601,7 +1590,7 @@ public class UserManagementImpl extends UserManagementBase {
                 invitationSecurityCode = codeDao.findByUser(user.getId());
                 if (invitationSecurityCode != null) {
                     // update existing user
-                    userDao.userVOToEntity(userVo, user, false);
+                    userDao.userVOToEntity(userVo, user);
                     // set invited time to current time
                     user.setStatusChanged(new Timestamp(new Date().getTime()));
                     userDao.update(user);
@@ -1617,7 +1606,7 @@ public class UserManagementImpl extends UserManagementBase {
                 // new invitation
                 if (user.hasStatus(UserStatus.REGISTERED)) {
                     userVo.setRoles(null);
-                    userDao.userVOToEntity(userVo, user, false);
+                    userDao.userVOToEntity(userVo, user);
                     user.setStatus(status);
                     user.setStatusChanged(new Timestamp(new Date().getTime()));
                     // is confirmed directly so no code needed
@@ -1674,8 +1663,8 @@ public class UserManagementImpl extends UserManagementBase {
         user.setEmail(user.getId().toString() + MailMessageHelper.ANONYMOUS_EMAIL_ADDRESS_SUFFIX);
         securityCodeManagement.deleteAllCodesByUser(userId, SecurityCode.class);
         try {
-            ServiceLocator.findService(UserGroupMemberManagement.class).removeUserFromAllGroups(
-                    userId);
+            ServiceLocator.findService(UserGroupMemberManagement.class)
+                    .removeUserFromAllGroups(userId);
             // the deletableBlogs will not be deleted (because user data must be kept) but become
             // manager-less
             blogRightsManagement.removeUserFromAllBlogs(userId, deletableBlogs);
@@ -1717,9 +1706,6 @@ public class UserManagementImpl extends UserManagementBase {
             throws AliasAlreadyExistsException, EmailValidationException,
             EmailAlreadyExistsException, InvalidUserStatusTransitionException,
             UserActivationValidationException {
-        if (!userVO.isUpdatePassword()) {
-            userVO.setPassword(null);
-        }
         if (!userVO.isUpdateFirstName()) {
             userVO.setFirstName(null);
         }
@@ -1740,21 +1726,21 @@ public class UserManagementImpl extends UserManagementBase {
         // user with status REGISTERED)
         if (existingUser.getAlias() == null) {
             if (StringUtils.isBlank(userVO.getAlias())) {
-                userVO.setAlias(generateUniqueAlias(userVO.getExternalUserName(), userVO.getEmail()));
+                userVO.setAlias(
+                        generateUniqueAlias(userVO.getExternalUserName(), userVO.getEmail()));
             } else {
                 validateAlias(userVO.getAlias(), existingUser);
             }
         }
-        userDao.userVOToEntity(userVO, existingUser, false);
-        if (userVO.isUpdatePassword()) {
+        userDao.userVOToEntity(userVO, existingUser);
+        if (userVO.isClearPassword()) {
             existingUser.setPassword(null);
         }
         // check for status change but avoid changing from TERMS_NOT_ACCEPTED to ACTIVE without user
         // interaction
-        if (userVO.getStatus() != null
-                && !existingUser.getStatus().equals(userVO.getStatus())
-                && !(UserStatus.ACTIVE.equals(userVO.getStatus()) && UserStatus.TERMS_NOT_ACCEPTED
-                        .equals(existingUser.getStatus()))) {
+        if (userVO.getStatus() != null && !existingUser.getStatus().equals(userVO.getStatus())
+                && !(UserStatus.ACTIVE.equals(userVO.getStatus())
+                        && UserStatus.TERMS_NOT_ACCEPTED.equals(existingUser.getStatus()))) {
             internalChangeUserStatus(existingUser, userVO.getStatus(), false, true);
         }
         internalCreateOrUpdateExternalAuthentication(existingUser, userVO);
@@ -1818,14 +1804,16 @@ public class UserManagementImpl extends UserManagementBase {
         long managers = 0;
         ClientConfigurationProperties props = getClientConfigurationProperties();
         String primaryExternalAuthentication = props.getPrimaryExternalAuthentication();
-        if (primaryExternalAuthentication != null) {
+        boolean allowDbAuth = props.getProperty(ClientPropertySecurity.ALLOW_DB_AUTH_ON_EXTERNAL,
+                ClientPropertySecurity.DEFAULT_ALLOW_DB_AUTH_ON_EXTERNAL);
+        if (primaryExternalAuthentication != null && !allowDbAuth) {
+            // only count managers from external system
             managers = getActiveUserCount(primaryExternalAuthentication,
                     UserRole.ROLE_KENMEI_CLIENT_MANAGER);
-        }
-        if (primaryExternalAuthentication == null
-                || props.getProperty(ClientPropertySecurity.ALLOW_DB_AUTH_ON_EXTERNAL,
-                        ClientPropertySecurity.DEFAULT_ALLOW_DB_AUTH_ON_EXTERNAL)) {
-            managers += getActiveUserCount(null, UserRole.ROLE_KENMEI_CLIENT_MANAGER);
+        } else {
+            // count all managers. Managers which don't have a password can request a new one if
+            // there are not from the primary external system.
+            managers = getActiveUserCount(null, UserRole.ROLE_KENMEI_CLIENT_MANAGER);
         }
         return managers <= 1;
     }
@@ -1889,8 +1877,8 @@ public class UserManagementImpl extends UserManagementBase {
         if (SecurityHelper.isClientManager() || SecurityHelper.isInternalSystem()) {
             userDao.resetTermsAccepted(currentUserId);
         } else {
-            throw new AuthorizationException("Current user " + currentUserId
-                    + " is not allowed to reset the terms of use");
+            throw new AuthorizationException(
+                    "Current user " + currentUserId + " is not allowed to reset the terms of use");
         }
     }
 
@@ -1917,8 +1905,8 @@ public class UserManagementImpl extends UserManagementBase {
             return;
         }
 
-        long remindTime = getClientConfigurationProperties().getProperty(
-                ClientProperty.REMIND_USER_TIME, DEFAULT_REMIND_USER_TIME);
+        long remindTime = getClientConfigurationProperties()
+                .getProperty(ClientProperty.REMIND_USER_TIME, DEFAULT_REMIND_USER_TIME);
         Date before = new Date(new Date().getTime() - remindTime);
 
         Collection<MimeMessagePreparator> mails = new ArrayList<MimeMessagePreparator>();
@@ -1932,8 +1920,8 @@ public class UserManagementImpl extends UserManagementBase {
             for (User user : userlist) {
 
                 if (UserStatus.REGISTERED.equals(user.getStatus())) {
-                    UserSecurityCode userSecurityCode = userSecurityCodeDao.findByUser(
-                            user.getId(), SecurityCodeAction.CONFIRM_USER);
+                    UserSecurityCode userSecurityCode = userSecurityCodeDao.findByUser(user.getId(),
+                            SecurityCodeAction.CONFIRM_USER);
                     mails.add(new RemindUserRegistrationMailMessage(user, userSecurityCode));
                     emailAdressList.add(user.getEmail());
                     user.setReminderMailSent(true);
@@ -1946,7 +1934,7 @@ public class UserManagementImpl extends UserManagementBase {
         // to be accepted
         userlist = userDao.findNotLoggedInActiveUser(before, false,
                 ClientProperty.TERMS_OF_USE_USERS_MUST_ACCEPT
-                .getValue(ClientProperty.DEFAULT_TERMS_OF_USE_USERS_MUST_ACCEPT));
+                        .getValue(ClientProperty.DEFAULT_TERMS_OF_USE_USERS_MUST_ACCEPT));
         if (CollectionUtils.isNotEmpty(userlist)) {
             for (User user : userlist) {
                 mails.add(new RemindUserLoginMailMessage(user));
@@ -1997,7 +1985,8 @@ public class UserManagementImpl extends UserManagementBase {
      *            (i.e. delete or add oneself as manager); can be null
      */
     private void testForDeletableBlogs(Long managerUserId, List<Long> blogsToDelete,
-            Map<Long, String> undeletableBlogs, List<Long> blogIdsToHandle, Long[] confirmedBlogIds) {
+            Map<Long, String> undeletableBlogs, List<Long> blogIdsToHandle,
+            Long[] confirmedBlogIds) {
         List<Blog> managedBlogs = ServiceLocator.findService(BlogDao.class)
                 .findDirectlyManagedBlogsOfUser(managerUserId);
         for (Blog managedBlog : managedBlogs) {
@@ -2048,8 +2037,8 @@ public class UserManagementImpl extends UserManagementBase {
             boolean compareLowerCase = ClientProperty.COMPARE_EXTERNAL_USER_ALIAS_LOWERCASE
                     .getValue(true);
             String externalUserName = userVO.getExternalUserName();
-            boolean equals = compareLowerCase ? alias.equalsIgnoreCase(externalUserName) : alias
-                    .equals(externalUserName);
+            boolean equals = compareLowerCase ? alias.equalsIgnoreCase(externalUserName)
+                    : alias.equals(externalUserName);
             if (!equals) {
                 throw new EmailAlreadyExistsException("External user '" + user.getAlias()
                         + "' cannot be merged with existing user '" + userVO.getExternalUserName()
@@ -2083,9 +2072,8 @@ public class UserManagementImpl extends UserManagementBase {
                 propertyManagement.setObjectProperties(PropertyType.UserProperty, user.getId(),
                         userVO.getProperties());
             } catch (AuthorizationException | NotFoundException e) {
-                LOGGER.error(
-                        "Unexpected exception while updating properties user with id "
-                                + user.getId(), e);
+                LOGGER.error("Unexpected exception while updating properties user with id "
+                        + user.getId(), e);
                 throw new UserManagementException("Unexpected exception.", e);
             }
         }
@@ -2162,11 +2150,10 @@ public class UserManagementImpl extends UserManagementBase {
                     "The alias of the user can not be null, empty or blank");
         }
         User foundUser = userDao.findByAlias(alias);
-        if (foundUser != null
-                && (user == null || !foundUser.getId().equals(user.getId())
-                        && foundUser.getAlias().equalsIgnoreCase(alias))) {
-            throw new AliasAlreadyExistsException("The user alias with alias '" + alias
-                    + "'already exists");
+        if (foundUser != null && (user == null || !foundUser.getId().equals(user.getId())
+                && foundUser.getAlias().equalsIgnoreCase(alias))) {
+            throw new AliasAlreadyExistsException(
+                    "The user alias with alias '" + alias + "'already exists");
         }
     }
 
@@ -2200,36 +2187,9 @@ public class UserManagementImpl extends UserManagementBase {
             // has another id as the given user
             if (foundUser != null
                     && (userForUpdate == null || !foundUser.getId().equals(userForUpdate.getId())
-                    && foundUser.getEmail().equalsIgnoreCase(email))) {
-                throw new EmailAlreadyExistsException("The email address '" + email
-                        + "' already exists");
-            }
-        }
-    }
-
-    /**
-     * Validates the password
-     *
-     * @param newPassword
-     *            the password
-     * @param userRoles
-     *            the roles of the user. If the roles indicate that the user is a system user the
-     *            password is not checked
-     * @throws PasswordLengthException
-     *             the password length exception
-     */
-    private void validatePassword(String newPassword, UserRole[] userRoles)
-            throws PasswordLengthException {
-        boolean isSystemUser = false;
-        for (UserRole role : userRoles) {
-            if (UserRole.ROLE_SYSTEM_USER.equals(role)) {
-                isSystemUser = true;
-                break;
-            }
-        }
-        if (!isSystemUser) {
-            if (StringUtils.isEmpty(newPassword) || newPassword.length() < 6) {
-                throw new PasswordLengthException("Password has less than 6 characters");
+                            && foundUser.getEmail().equalsIgnoreCase(email))) {
+                throw new EmailAlreadyExistsException(
+                        "The email address '" + email + "' already exists");
             }
         }
     }
@@ -2253,7 +2213,7 @@ public class UserManagementImpl extends UserManagementBase {
      *             if the alias already exists
      */
     private void validateUserForCreation(UserVO user) throws EmailValidationException,
-    EmailAlreadyExistsException, AliasAlreadyExistsException {
+            EmailAlreadyExistsException, AliasAlreadyExistsException {
         validateEmail(user.getEmail(), null, true);
         validateAlias(user.getAlias(), null);
         // authorities
@@ -2280,8 +2240,8 @@ public class UserManagementImpl extends UserManagementBase {
      * @throws InvalidUserStatusTransitionException
      *             in case the status change is not valid
      */
-    private void validateUserStatusChange(User user, UserStatus newStatus, boolean isChangeByManager)
-            throws InvalidUserStatusTransitionException {
+    private void validateUserStatusChange(User user, UserStatus newStatus,
+            boolean isChangeByManager) throws InvalidUserStatusTransitionException {
         UserStatus currentStatus = user.getStatus();
         // always invalid if changing from DELETED or PERMANENTLY_DISABLED
         boolean isValid = false;
@@ -2289,8 +2249,8 @@ public class UserManagementImpl extends UserManagementBase {
             isValid = UserStatus.CONFIRMED.equals(newStatus);
         } else if (UserStatus.INVITED.equals(currentStatus)) {
             isValid = UserStatus.CONFIRMED.equals(newStatus)
-                    || (isChangeByManager && (UserStatus.TERMS_NOT_ACCEPTED.equals(newStatus) || UserStatus.ACTIVE
-                            .equals(newStatus)));
+                    || (isChangeByManager && (UserStatus.TERMS_NOT_ACCEPTED.equals(newStatus)
+                            || UserStatus.ACTIVE.equals(newStatus)));
         } else if (UserStatus.TERMS_NOT_ACCEPTED.equals(currentStatus)) {
             isValid = UserStatus.ACTIVE.equals(newStatus);
         } else if (UserStatus.CONFIRMED.equals(currentStatus)) {

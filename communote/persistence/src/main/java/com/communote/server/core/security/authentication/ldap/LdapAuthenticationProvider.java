@@ -122,8 +122,8 @@ public class LdapAuthenticationProvider extends ExternalAuthenticationProvider {
             throw new BadCredentialsException("Empty username!");
         }
         username = username.trim();
-        String password = (authentication.getCredentials() == null) ? null : authentication
-                .getCredentials().toString();
+        String password = (authentication.getCredentials() == null) ? null
+                : authentication.getCredentials().toString();
 
         // authenticate by email or by alias
         LdapUserAttribute usernameAttribute = null;
@@ -137,8 +137,6 @@ public class LdapAuthenticationProvider extends ExternalAuthenticationProvider {
             ExternalUserVO userVO = authenticator.authenticate(username, password,
                     usernameAttribute);
             LdapUtils.setSynchronizationFields(userVO);
-            userVO.setUpdatePassword(false);
-            userVO.setPlainPassword(true);
             return userVO;
         } catch (RequiredAttributeNotContainedException e) {
             LOGGER.warn("Problem during context mapping: {}: {} for {}",

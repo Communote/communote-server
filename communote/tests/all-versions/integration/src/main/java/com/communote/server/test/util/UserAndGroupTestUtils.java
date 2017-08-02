@@ -92,7 +92,6 @@ public class UserAndGroupTestUtils {
         UserVO userVo = new UserVO();
         userVo.setRoles(new UserRole[] { UserRole.ROLE_KENMEI_USER });
         userVo.setPassword("123456");
-        userVo.setPlainPassword(true);
         userVo.setLanguage(Locale.ENGLISH);
         for (int i = 1; i <= count; i++) {
             userVo.setEmail(emailPattern.replace("%d", String.valueOf(i)));
@@ -116,8 +115,8 @@ public class UserAndGroupTestUtils {
         SecurityContext oldSecurityContext = AuthenticationHelper
                 .setInternalSystemToSecurityContext();
         String alias = "group" + TestUtils.createRandomUserAlias();
-        UserGroupManagement groupManagement = ServiceLocator.instance().getService(
-                UserGroupManagement.class);
+        UserGroupManagement groupManagement = ServiceLocator.instance()
+                .getService(UserGroupManagement.class);
         try {
             Group group;
             if (externalSystemId != null) {
@@ -131,8 +130,8 @@ public class UserAndGroupTestUtils {
                 groupVO.setName("name of " + alias);
                 group = groupManagement.createGroup(groupVO);
             }
-            UserGroupMemberManagement memberManagement = ServiceLocator.instance().getService(
-                    UserGroupMemberManagement.class);
+            UserGroupMemberManagement memberManagement = ServiceLocator.instance()
+                    .getService(UserGroupMemberManagement.class);
             for (User user : members) {
                 if (externalSystemId != null) {
                     memberManagement.addUserForExternal(group.getId(), user.getId(),
