@@ -38,10 +38,6 @@
         <version.restlet>2.0.15</version.restlet>
         <version.spring>3.2.5.RELEASE</version.spring>
         <version.spring.security>3.1.4.RELEASE</version.spring.security>
-        <version.postgresql.jdbc>9.3-1102-jdbc4</version.postgresql.jdbc>
-        <version.mysql.jdbc>5.1.27</version.mysql.jdbc>
-        <version.mssql.jdbc>1.3.1</version.mssql.jdbc>
-        <version.oracle.jdbc>11.2.0.2.0</version.oracle.jdbc>
         <selenium.version>2.29.1</selenium.version>
     </properties>
     <repositories>
@@ -579,21 +575,6 @@
                 <version>1.2.17</version>
             </dependency>
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${version.mysql.jdbc}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.jtds</groupId>
-                <artifactId>jtds</artifactId>
-                <version>${version.mssql.jdbc}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle</groupId>
-                <artifactId>ojdbc6</artifactId>
-                <version>${version.oracle.jdbc}</version>
-            </dependency>
-            <dependency>
                 <groupId>net.sf.ehcache</groupId>
                 <artifactId>ehcache-core</artifactId>
                 <version>1.7.2</version>
@@ -889,11 +870,6 @@
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>6.8.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${version.postgresql.jdbc}</version>
             </dependency>
             <dependency>
                 <groupId>rome</groupId>
