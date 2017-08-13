@@ -107,9 +107,9 @@ public class RightResourceHandler
         boolean publicAccess = (editRightParameter.getPublicAccess() == null) ? false
                 : editRightParameter.getPublicAccess();
         boolean allCanWrite = (editRightParameter.getAllCanWrite() == null) ? false
-                : editRightParameter.getPublicAccess();
+                : editRightParameter.getAllCanWrite();
         boolean allCanRead = (editRightParameter.getAllCanRead() == null) ? false
-                : editRightParameter.getPublicAccess();
+                : editRightParameter.getAllCanRead();
         getBlogRightsManagement().changePublicAccess(blog.getId(), publicAccess);
         getBlogRightsManagement().setAllCanReadAllCanWrite(blog.getId(), allCanRead, allCanWrite);
         return ResponseHelper.buildSuccessResponse(null, request,

@@ -343,18 +343,21 @@ public class Blog implements Serializable, Followable, Propertyable, Taggable {
     }
 
     /**
-     * <p>
-     * If true, all communote users are allowed to read the blog.
-     * </p>
+     * Return whether all Communote users are allowed to read the notes of this topic. If all users
+     * are allowed to write notes to this topic, they can also read the
+     * notes. That is, if {@link #isAllCanWrite()} returns true, this method returns true too.
+     * 
+     * @return true, if all Communote users are allowed to read the notes of this topic/blog.
      */
     public boolean isAllCanRead() {
+        if (allCanWrite) {
+            return true;
+        }
         return this.allCanRead;
     }
 
     /**
-     * <p>
-     * If true, all communote users are allowed to read and write notes to a blog.
-     * </p>
+     * @return true, if all Communote users are allowed to read the notes of and write notes to this topic/blog.
      */
     public boolean isAllCanWrite() {
         return this.allCanWrite;
