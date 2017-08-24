@@ -12,7 +12,9 @@ import com.communote.server.service.NoteService;
 
 
 /**
- * This comparator sorts the notes by last discussion creation date.
+ * A comparator for sorting notes by the creation date of the last note of a discussion. The
+ * <code>last note</code> is user specific, that is, it is the latest note the current user is
+ * allowed to read.
  * 
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */

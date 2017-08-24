@@ -629,16 +629,13 @@ public class ChronologicalPostListWidget extends AbstractPagedListWidget<NoteDat
                 if (result.get(result.size() - 1) instanceof DiscussionNoteData) {
                     DiscussionNoteData lastDiscussion = (DiscussionNoteData) result.get(result
                             .size() - 1);
-                    if (lastDiscussion.getComments() == null
-                            || lastDiscussion.getComments().size() == 0) {
-                        lastNoteDate = lastDiscussion.getLastDiscussionCreationDate();
-                        lastNoteId = lastDiscussion.getId();
-                    } else {
-                        NoteData lastNote = lastDiscussion.getComments().get(
-                                lastDiscussion.getComments().size() - 1);
-                        lastNoteDate = lastNote.getCreationDate();
-                        lastNoteId = lastNote.getDiscussionId();
-                    }
+                    // always use creation date of last note of discussion to get the next batch
+                    // because the result is ordered by this date. If we would use the date of the
+                    // last comment we could miss some discussions if the query contained a filter.
+                    // The SimpleNoteListItemToDiscussionNoteDataConverter takes care that the
+                    // lastDiscussionCreationDate takes DMs into account.
+                    lastNoteDate = lastDiscussion.getLastDiscussionCreationDate();
+                    lastNoteId = lastDiscussion.getDiscussionId();
                 } else {
                     lastNoteDate = result.get(result.size() - 1).getCreationDate();
                     lastNoteId = result.get(result.size() - 1).getId();
@@ -651,9 +648,10 @@ public class ChronologicalPostListWidget extends AbstractPagedListWidget<NoteDat
                 lastNoteDate = result.get(result.size() - 1).getCreationDate();
                 lastNoteId = result.get(result.size() - 1).getId();
             }
-            setResponseMetadata(RESPONSE_METADATA_LAST_NOTE_DATE, lastNoteDate.getTime());
             setResponseMetadata(RESPONSE_METADATA_FIRST_NOTE_CREATION_TIMESTAMP,
                     firstNoteCreationTimestamp);
+            // set metadata which is used for the retrieveOnlyNotesBefore* filter when loading the next result set
+            setResponseMetadata(RESPONSE_METADATA_LAST_NOTE_DATE, lastNoteDate.getTime());
             setResponseMetadata(RESPONSE_METADATA_LAST_NOTE_ID, lastNoteId);
         }
         getRequest().setAttribute("selectedViewType", selectedViewType);
