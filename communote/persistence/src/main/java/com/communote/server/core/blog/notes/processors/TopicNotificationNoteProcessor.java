@@ -84,7 +84,8 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
         SecurityContext securityContext = AuthenticationHelper.setInternalSystemToSecurityContext();
         try {
             while(collectAuthors(query, parameters, topicId, usersToNotify)) {
-                resultSpecification.setOffset(offset + authorFetchSize);
+                offset += authorFetchSize;
+                resultSpecification.setOffset(offset);
             }
         } finally {
             AuthenticationHelper.setSecurityContext(securityContext);

@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -98,7 +97,7 @@ public class TopicNotificationNoteProcessorTest extends CommunoteIntegrationTest
     @Test
     public void testAuthorMention() {
         // ensure that more authors than fetch-size exist
-        List<User> users = createUsers(TEST_AUTHOR_FETCH_SIZE + 2);
+        List<User> users = createUsers(TEST_AUTHOR_FETCH_SIZE * 2 + 2);
         Blog topic = TestUtils.createRandomBlog(false, false,
                 users.toArray(new User[users.size()]));
         User lastAuthor = users.remove(users.size() - 1);
