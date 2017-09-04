@@ -99,8 +99,12 @@ public class SmileysNoteRenderingPreProcessor implements NoteContentRenderingPre
             content = content.replace(wordToEscape, " " + wordToEscape + " ");
         }
         for (Pair<String, String> smiley : SMILEYS) {
-            content = content.replace(" " + smiley.getLeft() + " ", " <i class=\"smiley "
-                    + smiley.getRight() + "\" title=\"" + smiley.getLeft() + "\"></i> ");
+            String target = new StringBuilder(" ").append(smiley.getLeft()).append(" ").toString();
+            String replacement = new StringBuilder(" <i class=\"smiley ").append(smiley.getRight())
+                    .append("\" title=\"").append(smiley.getLeft()).append("\"></i> ").toString();
+            content = content.replace(target, replacement);
+            // replace again for a sequence of 2 emoticons of the same type like :) :) 
+            content = content.replace(target, replacement);
         }
         for (String wordToEscape : WORDS_TO_ESCAPE) {
             content = content.replace(" " + wordToEscape + " ", wordToEscape);

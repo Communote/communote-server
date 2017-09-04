@@ -8,9 +8,13 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+.classpath
 */.classpath
+.project
 */.project
+.settings/
 */.settings/
+/bin/
 */bin/
 */.checkstyle
 */.idea

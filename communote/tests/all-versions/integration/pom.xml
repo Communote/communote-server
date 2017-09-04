@@ -19,29 +19,18 @@
 		<url.version>2.1.0</url.version>
         <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
         <build.timestamp>${maven.build.timestamp}</build.timestamp>
+        <!-- little trick because extensions are not allowed in profiles -->
+        <jdbc.groupId>org.postgresql</jdbc.groupId>
+        <jdbc.artifactId>postgresql</jdbc.artifactId>
+        <jdbc.version>9.3-1102-jdbc4</jdbc.version>
 	</properties>
 	<build>
 		<outputDirectory>target/classes</outputDirectory>
 		<extensions>
 			<extension>
-				<groupId>org.postgresql</groupId>
-				<artifactId>postgresql</artifactId>
-				<version>${version.postgresql.jdbc}</version>
-			</extension>
-			<extension>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
-				<version>${version.mysql.jdbc}</version>
-			</extension>
-			<extension>
-				<groupId>net.sourceforge.jtds</groupId>
-				<artifactId>jtds</artifactId>
-				<version>${version.mssql.jdbc}</version>
-			</extension>
-			<extension>
-				<groupId>com.oracle</groupId>
-				<artifactId>ojdbc6</artifactId>
-				<version>${version.oracle.jdbc}</version>
+				<groupId>${jdbc.groupId}</groupId>
+				<artifactId>${jdbc.artifactId}</artifactId>
+				<version>${jdbc.version}</version>
 			</extension>
 		</extensions>
 		<resources>
@@ -244,20 +233,9 @@
 			<artifactId>smack-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc6</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.jtds</groupId>
-			<artifactId>jtds</artifactId>
+			<groupId>${jdbc.groupId}</groupId>
+			<artifactId>${jdbc.artifactId}</artifactId>
+			<version>${jdbc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
@@ -341,4 +319,30 @@
 			</plugin>
 		</plugins>
 	</reporting>
+    <profiles>
+        <profile>
+            <id>mysql</id>
+            <properties>
+                <jdbc.groupId>mysql</jdbc.groupId>
+                <jdbc.artifactId>mysql-connector-java</jdbc.artifactId>
+                <jdbc.version>5.1.27</jdbc.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>mssql</id>
+            <properties>
+                <jdbc.groupId>net.sourceforge.jtds</jdbc.groupId>
+                <jdbc.artifactId>jtds</jdbc.artifactId>
+                <jdbc.version>1.3.1</jdbc.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>oracle</id>
+            <properties>
+                <jdbc.groupId>com.oracle</jdbc.groupId>
+                <jdbc.artifactId>ojdbc6</jdbc.artifactId>
+                <jdbc.version>11.2.0.2.0</jdbc.version>
+            </properties>
+        </profile>
+	</profiles>
 </project>

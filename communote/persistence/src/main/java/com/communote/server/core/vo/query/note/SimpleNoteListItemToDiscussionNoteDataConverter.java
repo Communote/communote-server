@@ -167,11 +167,11 @@ public class SimpleNoteListItemToDiscussionNoteDataConverter extends
 
     @Override
     public boolean convert(SimpleNoteListItem source, DiscussionNoteData target) {
-        // ignore notes that are not root notes of a discussion
         if (!super.convert(source, target)) {
             return false;
         }
         if (!TimelineFilterViewType.CLASSIC.equals(timelineFilterViewType)) {
+            // ignore notes that are not root notes of a discussion
             if (target.getDiscussionDepth() != 0) {
                 return false;
             }
@@ -259,7 +259,7 @@ public class SimpleNoteListItemToDiscussionNoteDataConverter extends
 
     /**
      * This method tries to fill the list with missing discussions, as originally contained
-     * discussions might be removed through direct messages.
+     * discussions might have been removed by {@link #removeSuperfluousDiscussions(PageableList)}.
      * 
      * @param neededResultingSize
      *            The size originally returned.
@@ -340,8 +340,12 @@ public class SimpleNoteListItemToDiscussionNoteDataConverter extends
     }
 
     /**
-     * Method to remove all discussions from the given result set, which are not within the needed
-     * scope, because they have direct messages, which are too young.
+     * Method to remove all discussions from the given result set, which are not within the requested
+     * scope defined by the RetrieveOnlyNotesBeforeDate Filter. In this case only discussions with
+     * a lastDiscussionNoteCreationDate before this date are considered. But since the lastDiscussionNoteCreationDate
+     * is not updated for direct message replies, the result could contain discussions whose effective 
+     * lastDiscussionNoteCreationDate (when taking the direct messages the current user can read into account)
+     * is after the RetrieveOnlyNotesBeforeDate timestamp.
      * 
      * @param queryResult
      *            The list of results to filter.

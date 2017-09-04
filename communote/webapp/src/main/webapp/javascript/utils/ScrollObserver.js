@@ -1,4 +1,5 @@
-(function(namespace) {
+(function(namespace, window) {
+	var rootDoc = window.document;
     /**
      * Helper class to observe scroll events of a scrollable container like a DIV or the Document.
      * After observing such a container listeners can be added. These listeners are invoked when the
@@ -76,6 +77,17 @@
                     && observeDomResizeInterval < this.options.minDomResizeCheckInterval) {
                 observeDomResizeInterval = this.options.minDomResizeCheckInterval;
             }
+            // normalize document nodes because of some optimizations and special handling later on
+            if (container.nodeType === 1) {
+                if (container === container.ownerDocument.documentElement) {
+                    container = container.ownerDocument
+                } else if (container === container.ownerDocument.body) {
+                    // use document instead of body because size calculations on body usually ignores
+                    // elements with fixed positioning. W.r.t. scrolling there is no difference if
+                    // document or body is scrolled.
+                    container = container.ownerDocument
+                }
+            }
             for (observerId in observers) {
                 if (observers.hasOwnProperty(observerId)) {
                     if (observers[observerId].xAxis == xAxis
@@ -132,7 +144,7 @@
                     container.window.addEvent('resize', boundHandlers.resize);
                 }
                 if (observeDomResizeInterval > 0) {
-                    // firefox provides an event that pushes changes of the DOM size, but only for Document. 
+                    // firefox provides an event that pushes changes of the DOM size, but only for Document
                     if (isDocumentNode && window.ScrollAreaEvent) {
                         boundHandlers.mozDomResize = this.internalRunEventHandlerThrottled.bind(
                                 this, 'internalHandleMozScrolledAreaChangedEvent',
@@ -198,18 +210,46 @@
          *         </ul>
          */
         internalGetScrolledContainerDetails: function(container, xAxis) {
+            var size;
             var details = {};
             var scroll = container.getScroll();
             var scrollSize = container.getScrollSize();
-            var size = container.getSize();
             if (xAxis) {
                 details.viewportLower = scroll.x;
                 details.totalSize = scrollSize.x;
-                details.viewportUpper = details.viewportLower + size.x;
+                size = container.nodeType === 9 ? container.documentElement.clientWidth : container.clientWidth;
+                details.viewportUpper = details.viewportLower + size;
             } else {
                 details.viewportLower = scroll.y;
                 details.totalSize = scrollSize.y;
-                details.viewportUpper = details.viewportLower + size.y;
+                // special handling if the container is the top-level (i.e. not of an iframe) document:
+                // mobile browsers like Chrome on android always report a clientHeight value which is
+                // based on the smallest viewport height (the height when the URL bar is hidden).
+                // However, innerHeight of window holds the correct value.
+                if (container === rootDoc) {
+                    if (this.viewportHeightFromWindow == null) {
+                        size = container.documentElement.clientHeight;
+                        // innerHeight of window includes height of scrollbars if shown, clientHeight doesn't
+                        if (window.innerHeight > size) {
+                            // check if there are horizontal scrollbars
+                            // TODO also check overflow:scroll and related styles (which is kind of expensive)?
+                            if (scrollSize.x === container.documentElement.clientWidth) {
+                                this.viewportHeightFromWindow = true;
+                                size = window.innerHeight;
+                            } else {
+                                // likely not a mobile device because there is no space consuming scrollbar
+                                this.viewportHeightFromWindow = false;
+                            }
+                        }
+                    } else if (this.viewportHeightFromWindow) {
+                        size = window.innerHeight;
+                    } else {
+                        size = container.documentElement.clientHeight;
+                    }
+                } else {
+                    size = container.nodeType === 9 ? container.documentElement.clientHeight : container.clientHeight;
+                }
+                details.viewportUpper = details.viewportLower + size;
             }
             details.xAxis = xAxis;
             return details;
@@ -771,4 +811,4 @@
     } else {
         window.ScrollObserver = ScrollObserver;
     }
-})(window.runtimeNamespace);
+})(window.runtimeNamespace, window);

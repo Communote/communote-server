@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContext;
+
 import com.communote.common.converter.CollectionConverter;
 import com.communote.common.converter.IdentityConverter;
 import com.communote.common.util.PageableList;
@@ -15,7 +19,9 @@ import com.communote.server.api.core.note.processor.NoteStoringPostProcessorCont
 import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.api.core.user.UserData;
 import com.communote.server.core.blog.TooManyMentionedUsersNoteManagementException;
+import com.communote.server.core.filter.ResultSpecification;
 import com.communote.server.core.query.QueryManagement;
+import com.communote.server.core.security.AuthenticationHelper;
 import com.communote.server.core.user.UserManagement;
 import com.communote.server.core.vo.query.TaggingCoreItemUTPExtension;
 import com.communote.server.core.vo.query.blog.TopicAccessLevel;
@@ -36,14 +42,20 @@ import com.communote.server.model.user.UserStatus;
  */
 public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TopicNotificationNoteProcessor.class);
+
     private static final String PROPERTY_KEY_TOPIC_MENTIONS = PropertyManagement.KEY_GROUP
             + ".notification.topicMentionsToSkip";
     private static final String TOPIC_MENTION_READERS = "reader";
     private static final String TOPIC_MENTION_AUTHORS = "author";
     private static final String TOPIC_MENTION_MANAGERS = "manager";
+
+    private static final int DEFAULT_AUTHOR_FETCH_SIZE = 50;
+    
     private final BlogRightsManagement topicRightsManagement;
     private final UserManagement userManagement;
     private final QueryManagement queryManagement;
+    private int authorFetchSize = DEFAULT_AUTHOR_FETCH_SIZE;
 
     /**
      * Constructor.
@@ -155,6 +167,47 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
         return "topicMention";
     }
 
+    private void collectAuthors(Note note, Collection<User> usersToNotify) {
+        Long topicId = note.getBlog().getId();
+        UserTaggingCoreQuery query = new UserTaggingCoreQuery();
+        UserTaggingCoreQueryParameters parameters = new UserTaggingCoreQueryParameters(query);
+        parameters.setLimitResultSet(false);
+        int offset = 0;
+        ResultSpecification resultSpecification = new ResultSpecification(offset, authorFetchSize, 1);
+        parameters.setResultSpecification(resultSpecification);
+        parameters.setExcludeNoteStatus(new NoteStatus[] { NoteStatus.AUTOSAVED });
+        parameters.setTypeSpecificExtension(new TaggingCoreItemUTPExtension());
+        parameters.getTypeSpecificExtension().setBlogId(topicId);
+        parameters.getTypeSpecificExtension().setTopicAccessLevel(TopicAccessLevel.READ);
+        parameters.getTypeSpecificExtension().setUserId(note.getUser().getId());
+        parameters.setIncludeStatusFilter(new UserStatus[] { UserStatus.ACTIVE });
+        // use the internal system user to include all direct messages
+        SecurityContext securityContext = AuthenticationHelper.setInternalSystemToSecurityContext();
+        try {
+            while(collectAuthors(query, parameters, topicId, usersToNotify)) {
+                resultSpecification.setOffset(offset + authorFetchSize);
+            }
+        } finally {
+            AuthenticationHelper.setSecurityContext(securityContext);
+        }
+    }
+
+    private boolean collectAuthors(UserTaggingCoreQuery query, UserTaggingCoreQueryParameters parameters,
+            Long topicId, Collection<User> usersToNotify) {
+        PageableList<UserData> authors = queryManagement.query(query, parameters);
+        for (UserData author : authors) {
+            if (topicRightsManagement.userHasReadAccess(topicId,
+                    author.getId(), false)) {
+                User userToNotify = userManagement.getUserById(author.getId(),
+                        new IdentityConverter<User>());
+                if (userToNotify != null) {
+                    usersToNotify.add(userToNotify);
+                }
+            }
+        }
+        return authors.getMinNumberOfAdditionalElements() > 0;
+    }
+    
     /**
      * @return 0
      */
@@ -187,6 +240,14 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
         }
         Collection<User> usersToNotify = internalGetUsersToNotify(note, includeReaders,
                 includeAuthors, includeManagers);
+        if (LOGGER.isDebugEnabled()) {
+            StringBuilder message = new StringBuilder("Users to notify about note ");
+            message.append(note.getId()).append(":");
+            for (User user : usersToNotify) {
+                message.append(" ").append(user.getAlias());
+            }
+            LOGGER.debug(message.toString());
+        }
         return usersToNotify;
     }
 
@@ -223,27 +284,17 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
             usersToNotify.addAll(mappedUsers);
         }
         if (includeAuthors) {
-            UserTaggingCoreQuery query = new UserTaggingCoreQuery();
-            UserTaggingCoreQueryParameters parameters = new UserTaggingCoreQueryParameters(query);
-            parameters.setLimitResultSet(false);
-            parameters.setExcludeNoteStatus(new NoteStatus[] { NoteStatus.AUTOSAVED });
-            parameters.setTypeSpecificExtension(new TaggingCoreItemUTPExtension());
-            parameters.getTypeSpecificExtension().setBlogId(note.getBlog().getId());
-            parameters.getTypeSpecificExtension().setTopicAccessLevel(TopicAccessLevel.READ);
-            parameters.getTypeSpecificExtension().setUserId(note.getUser().getId());
-            parameters.setIncludeStatusFilter(new UserStatus[] { UserStatus.ACTIVE });
-            PageableList<UserData> authors = queryManagement.query(query, parameters);
-            for (UserData author : authors) {
-                if (topicRightsManagement.userHasReadAccess(note.getBlog().getId(), author.getId(),
-                        false)) {
-                    User userToNotify = userManagement.getUserById(author.getId(),
-                            new IdentityConverter<User>());
-                    if (userToNotify != null) {
-                        usersToNotify.add(userToNotify);
-                    }
-                }
-            }
+            collectAuthors(note, usersToNotify);
         }
         return usersToNotify;
+    }
+
+    
+    public void setAuthorFetchSize(int fetchSize) {
+        if (fetchSize <= 0 || fetchSize > 100) {
+            LOGGER.warn("Ignoring fetch size {}. Using default {}", fetchSize, DEFAULT_AUTHOR_FETCH_SIZE);
+            fetchSize = DEFAULT_AUTHOR_FETCH_SIZE;
+        }
+        authorFetchSize = fetchSize;
     }
 }

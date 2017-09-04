@@ -229,6 +229,10 @@ public class NotificationManagementImpl extends NotificationManagementBase {
         Map<String, String> definitionKeys = new HashMap<String, String>();
         definitionKeys.put("content", definition.getMessageKeyForMessage(NotificationTypes.PLAIN));
         definitionKeys.put("subject", definition.getMessageKeyForSubject(NotificationTypes.PLAIN));
+        List<String> notifiedUsers = null;
+        if (LOGGER.isDebugEnabled()) {
+            notifiedUsers = new ArrayList<>();
+        }
         // Because of salutation and localization we have to send a separate mail to each user.
         for (User user : usersToNotify) {
             if (user.getEmail().endsWith(MailMessageHelper.ANONYMOUS_EMAIL_ADDRESS_SUFFIX)) {
@@ -244,12 +248,16 @@ public class NotificationManagementImpl extends NotificationManagementBase {
                         note.getUser(), locale, note, note.getBlog(), definitionKeys, model);
                 try {
                     mailManagement.sendMail(message);
+                    if (LOGGER.isDebugEnabled()) {
+                        notifiedUsers.add(user.getAlias());
+                    }
                 } catch (MailingException e) {
                     LOGGER.error("Error sending note notification to user {}: {}", user.getId(),
                             e.getMessage());
                 }
             }
         }
+        LOGGER.debug("Sent notification mail for note {} to users: {}", note.getId(), notifiedUsers);
     }
 
     /**
@@ -472,6 +480,7 @@ public class NotificationManagementImpl extends NotificationManagementBase {
                 }
             }
         }
+        LOGGER.trace("Note mail notification of user {} enabled: {}", user.getAlias(), wantsMail);
         return wantsMail;
     }
 

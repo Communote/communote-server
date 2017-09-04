@@ -578,7 +578,7 @@ public class BlogRightsManagementImpl extends BlogRightsManagementBase {
     protected boolean handleHasAnotherReader(Long blogId, Long userId) {
         Blog b = blogDao.load(blogId);
         if (b != null) {
-            boolean hasReader = b.isAllCanRead() || b.isAllCanWrite();
+            boolean hasReader = b.isAllCanRead();
             if (!hasReader) {
                 Collection<UserToBlogRoleMapping> mappings = userToBlogRoleMappingDao.findMappings(
                         blogId, null, null, false, null);
@@ -699,6 +699,11 @@ public class BlogRightsManagementImpl extends BlogRightsManagementBase {
         Blog topic = assertBlogExists(blogId);
         assertPermission(topic, TopicPermissionManagement.PERMISSION_EDIT_ACCESS_CONTROL_LIST);
 
+        // write has precedence
+        if (allCanWrite) {
+            allCanRead = true;
+        }
+        
         if (topic == null
                 || (topic.isAllCanRead() == allCanRead && topic.isAllCanWrite() == allCanWrite)
                 || (!BlogManagementHelper.canSetAllCanReadWrite() && (allCanRead || allCanWrite))) {
@@ -1205,7 +1210,7 @@ public class BlogRightsManagementImpl extends BlogRightsManagementBase {
         if (blog != null) {
             canRead = isPublicAccessEnabled() && blog.isPublicAccess();
             if (!canRead) {
-                canRead = !ignoreAllCanFlags && (blog.isAllCanRead() || blog.isAllCanWrite());
+                canRead = !ignoreAllCanFlags && blog.isAllCanRead();
             }
             if (!canRead) {
                 canRead = this.roleRetriever.getAssignedRole(blog.getId(), userId) != null;

@@ -161,7 +161,12 @@ public class BlogRightsManagementTest extends LdapCommunoteIntegrationTest {
                 ClientProperty.ALLOW_ALL_CAN_READ_WRITE_FOR_ALL_USERS, Boolean.TRUE.toString());
         // Client Manager
         AuthenticationTestUtils.setSecurityContext(manager);
-        Blog blog = topicRightsManagement.setAllCanReadAllCanWrite(blogId, true, false);
+        // check read-access if writing is allowed
+        Blog blog = topicRightsManagement.setAllCanReadAllCanWrite(blogId, false, true);
+        Assert.assertTrue(blog.isAllCanRead());
+        Assert.assertTrue(blog.isAllCanWrite());
+        TestUtils.addAndCheckCrawlLastModificationDateForTopic(blogId, crawlTimeStamps);
+        blog = topicRightsManagement.setAllCanReadAllCanWrite(blogId, true, false);
         Assert.assertTrue(blog.isAllCanRead());
         Assert.assertFalse(blog.isAllCanWrite());
         TestUtils.addAndCheckCrawlLastModificationDateForTopic(blogId, crawlTimeStamps);
