@@ -45,7 +45,7 @@ public class FileSystemMimeMessageSender implements MimeMessageSender {
     /**
      * 
      * @param messageIdBasedFilename
-     *            whether to create file name from message ID or the the subject
+     *            whether to create file name from message ID or the subject
      */
     public FileSystemMimeMessageSender(boolean messageIdBasedFilename) {
         storageDir = initStorageDir();

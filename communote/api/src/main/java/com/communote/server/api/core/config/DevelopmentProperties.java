@@ -70,21 +70,6 @@ public class DevelopmentProperties {
             Properties props = PropertiesUtils.loadPropertiesFromFile(propsFile);
             developementMode = Boolean.parseBoolean(props.getProperty("development"));
             return props;
-            /*
-             * String mailingTestModeString = developmentProperties.getProperty(MAILING_TEST_MODE,
-             * StringUtils.EMPTY); mailingTestMode = Boolean.parseBoolean(mailingTestModeString); if
-             * (mailingTestMode) { String testAddress =
-             * developmentProperties.getProperty(MAILING_TEST_ADDRESS, StringUtils.EMPTY); if
-             * (EmailValidator.validateEmailAddressByRegex(testAddress)) { mailingTestAddress =
-             * testAddress; LOG.info("Mailing test mode is activated and uses email address " +
-             * mailingTestAddress); } else { LOG.error("Development property " +
-             * MAILING_TEST_ADDRESS + " does not provide a leagal email address. " +
-             * "The mailing test mode will be disabled."); mailingTestMode = false; } } else {
-             * LOG.info("Mailing test mode is deactivated"); }
-             * 
-             * debugRestApi = Boolean.parseBoolean(developmentProperties
-             * .getProperty("com.communote.debug.rest"));
-             */
         } catch (IOException e) {
             LOG.error("Reading properties file " + propsFile + " failed.", e);
             throw new ConfigurationInitializationException("Reading properties file " + propsFile
