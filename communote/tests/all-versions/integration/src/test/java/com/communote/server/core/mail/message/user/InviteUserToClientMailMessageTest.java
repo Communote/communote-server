@@ -1,6 +1,6 @@
 package com.communote.server.core.mail.message.user;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.InviteUserToClientMailMessage;
 import com.communote.server.model.security.SecurityCode;
 import com.communote.server.model.user.User;
@@ -16,13 +16,13 @@ public class InviteUserToClientMailMessageTest extends MailMessageCommunoteInteg
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
         SecurityCode code = InviteUserToClientSecurityCode.Factory.newInstance();
         code.generateNewCode();
-        for (User receiver : receivers) {
-            code.setUser(receiver);
-            mailManagement.sendMail(new InviteUserToClientMailMessage(receiver, receiver
-                    .getLanguageLocale(), receiver.getEmail(), code));
+        for (User recipient : recipients) {
+            code.setUser(recipient);
+            mailSender.send(new InviteUserToClientMailMessage(recipient, recipient
+                    .getLanguageLocale(), recipient.getEmail(), code));
         }
     }
 }

@@ -1,23 +1,15 @@
 package com.communote.server.core.mail.messages;
 
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 
 import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.application.CommunoteRuntime;
@@ -26,26 +18,21 @@ import com.communote.server.api.core.config.ClientConfigurationProperties;
 import com.communote.server.api.core.config.type.ApplicationPropertyMailing;
 import com.communote.server.api.core.config.type.ClientProperty;
 import com.communote.server.core.common.i18n.LocalizationManagement;
-import com.communote.server.core.mail.MailMessageHelper;
-import com.communote.server.core.user.helper.UserNameHelper;
 import com.communote.server.model.user.User;
 import com.communote.server.persistence.common.messages.ResourceBundleManager;
 import com.communote.server.persistence.user.client.ClientHelper;
 import com.communote.server.persistence.user.client.ClientUrlHelper;
 
 /**
- * An abstract base class for all mail messages
+ * An abstract base class for all mail messages. Subclasses can define templates for the content and
+ * subject of the mail and can provide data to be available when the templates are rendered.
  *
- * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
+ * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
  */
-public abstract class MailMessage implements MimeMessagePreparator {
+public abstract class MailMessage {
 
-    private static final String ENCODING = "UTF-8";
-
-    /** The Constant CONFIRMATION_LINK_PREFIX. */
+    /** Holds the relative path to the user management section of administration area */
     public final static String ACTIVATION_LINK_PREFIX = "/admin/client/usermanagementview";
-
-    private static final String HEADER_MESSAGE_ID = "Message-ID";
 
     /** The configuration to use for constants. */
     private final ClientConfigurationProperties clientConfiguration = CommunoteRuntime
@@ -54,59 +41,133 @@ public abstract class MailMessage implements MimeMessagePreparator {
     private final ApplicationConfigurationProperties applicationConfiguration = CommunoteRuntime
             .getInstance().getConfigurationManager().getApplicationConfigurationProperties();
 
-    /** the name of the template path to use. */
-
     private final Locale locale;
 
-    private final User[] receivers;
+    private String fromAddress;
+    private String fromAddressName;
+    
+    private final List<User> toRecipients;
+    private final List<String> toRecipientEmailAddresses;
+    private final Map<String, String> toRecipientPersonalNames;
+    private final List<User> ccRecipients;
+    private final List<User> bccRecipients;
 
-    private String subject;
+    // TODO why is this false by default??
+    private boolean insertRecipientPersonalName = false;
 
     private final String messageKey;
+    private final String subjectKey;
 
     private String messageTemplate;
     private String subjectTemplate;
 
-    private String[] receiversAsString;
-
     /**
-     * Construct a new message with the given message key and locale.
+     * Construct a new message. Content and subject templates will be retrieved from the
+     * {@link ResourceBundleManager}.
      *
      * @param messageKey
-     *            Key of the message template.
+     *            Key of the message to get from the {@link ResourceBundleManager} and use as
+     *            content template. The key will be returned by
+     *            {@link MailMessage#getContentTemplateId()}. The key of the message to use as the
+     *            subject template is derived from the messageKey by appending <code>.subject</code>
+     *            to it.
      * @param locale
-     *            the locale to use
-     * @param receivers
-     *            A list of receivers for this message.
+     *            the locale to use when getting the templates from the
+     *            {@link ResourceBundleManager}
+     * @param recipients
+     *            A list of recipients of this message. The email addresses will be added to the TO
+     *            header.
      */
-    public MailMessage(String messageKey, Locale locale, User... receivers) {
-        this(messageKey, null, locale, receivers);
+    public MailMessage(String messageKey, Locale locale, User... recipients) {
+        this(messageKey, null, locale, recipients);
     }
 
     /**
-     * Construct a new message with the given message key and locale.
+     * Construct a new message. Content and subject templates will be retrieved from the
+     * {@link ResourceBundleManager}.
      *
      * @param messageKey
-     *            Key of the message template.
+     *            Key of the message to get from the {@link ResourceBundleManager} and use as
+     *            content template. The key will be returned by
+     *            {@link MailMessage#getContentTemplateId()}. The key of the message to use as the
+     *            subject template is derived from the messageKey by appending <code>.subject</code>
+     *            to it.
+     * @param locale
+     *            the locale to use when getting the templates from the
+     *            {@link ResourceBundleManager}
+     * @param recipients
+     *            A list of recipients of this message. The email addresses will be added to the TO
+     *            header.
+     */
+    public MailMessage(String messageKey, Locale locale, Collection<User> recipients) {
+        this(messageKey, null, locale, recipients);
+    }
+
+    /**
+     * Construct a new message. Content and subject templates will be retrieved from the
+     * {@link ResourceBundleManager}.
+     *
+     * @param messageKey
+     *            Key of the message to get from the {@link ResourceBundleManager} and use as
+     *            content template. The key will be returned by
+     *            {@link MailMessage#getContentTemplateId()}. The key of the message to use as the
+     *            subject template is derived from the messageKey by appending <code>.subject</code>
+     *            to it.
      * @param templatePlaceholderMessageKeys
      *            A mapping of placeholders to message keys, which will be replaced within the
      *            template with the loaded message. Use it in the template @@placeholder@@.
      * @param locale
-     *            the locale to use
-     * @param receivers
-     *            A list of receivers for this message.
+     *            the locale to use when getting the templates from the
+     *            {@link ResourceBundleManager}
+     * @param recipients
+     *            A list of recipients of this message. The email addresses will be added to the TO
+     *            header.
      */
     public MailMessage(String messageKey, Map<String, String> templatePlaceholderMessageKeys,
-            Locale locale, User... receivers) {
+            Locale locale, User... recipients) {
+        this(messageKey, templatePlaceholderMessageKeys, locale,
+                recipients == null ? null : Arrays.asList(recipients));
+    }
+
+    /**
+     * Construct a new message. Content and subject templates will be retrieved from the
+     * {@link ResourceBundleManager}.
+     *
+     * @param messageKey
+     *            Key of the message to get from the {@link ResourceBundleManager} and use as
+     *            content template. The key will be returned by
+     *            {@link MailMessage#getContentTemplateId()}. The key of the message to use as the
+     *            subject template is derived from the messageKey by appending <code>.subject</code>
+     *            to it.
+     * @param templatePlaceholderMessageKeys
+     *            A mapping of placeholders to message keys, which will be replaced within the
+     *            template with the loaded message. Use it in the template @@placeholder@@.
+     * @param locale
+     *            the locale to use when getting the templates from the
+     *            {@link ResourceBundleManager}
+     * @param recipients
+     *            A list of recipients of this message. The email addresses will be added to the TO
+     *            header.
+     */
+    public MailMessage(String messageKey, Map<String, String> templatePlaceholderMessageKeys,
+            Locale locale, Collection<User> recipients) {
         this.messageKey = messageKey;
-        this.locale = locale;
-        this.receivers = receivers;
+        this.subjectKey = messageKey + ".subject";
         if (locale == null) {
             throw new IllegalArgumentException("Locale cannot be null!");
         }
+        this.locale = locale;
+        this.toRecipients = new ArrayList<>();
+        if (recipients != null) {
+            this.toRecipients.addAll(recipients);
+        }
+        this.toRecipientEmailAddresses = new ArrayList<>();
+        this.toRecipientPersonalNames = new HashMap<>();
+        this.ccRecipients = new ArrayList<>();
+        this.bccRecipients = new ArrayList<>();
         ResourceBundleManager resourceBundleManager = ResourceBundleManager.instance();
         this.messageTemplate = resourceBundleManager.getText(messageKey, locale);
-        this.subjectTemplate = resourceBundleManager.getText(messageKey + ".subject", locale);
+        this.subjectTemplate = resourceBundleManager.getText(subjectKey, locale);
         if (templatePlaceholderMessageKeys != null) {
             for (Entry<String, String> placeholderMessageKey : templatePlaceholderMessageKeys
                     .entrySet()) {
@@ -119,85 +180,130 @@ public abstract class MailMessage implements MimeMessagePreparator {
             }
         }
         if (StringUtils.isBlank(messageTemplate)) {
-            throw new ResourceNotFoundException(
+            throw new RuntimeException(
                     "Resource not found for either locale and/or fallback locale for key:  "
                             + messageKey);
         }
     }
 
     /**
-     * Add a receiver by setting also the personal saluation if availablke.
-     *
-     * @param message
-     *            the mime message
-     * @param email
-     *            the email of the receiver
-     * @param receiver
-     *            the receivers addtional information (hint: email is NOT used for sending)
-     * @throws MessagingException
-     *             in case of an error
-     * @throws UnsupportedEncodingException
-     *             in case of an error
+     * Add a recipient of the email. The email address of the user will be added to the BCC header.
+     * 
+     * @param user
+     *            the user to send the mail to
      */
-    protected void addReceiver(MimeMessageHelper message, String email, User receiver)
-            throws MessagingException, UnsupportedEncodingException {
-        String signature = UserNameHelper.getCompleteSignature(receiver);
-        if (signature == null) {
-            message.addTo(email);
-        } else {
-            message.addTo(email, signature);
+    public void addBcc(User user) {
+        this.bccRecipients.add(user);
+    }
+
+    /**
+     * Add a recipient of the email. The email address of the user will be added to the CC header.
+     * 
+     * @param user
+     *            the user to send the mail to
+     */
+    public void addCc(User user) {
+        this.ccRecipients.add(user);
+    }
+
+    /**
+     * Add a recipient of the email. The email address of the user will be added to the TO header.
+     * 
+     * @param user
+     *            the user to send the mail to
+     */
+    public void addTo(User user) {
+        this.toRecipients.add(user);
+    }
+
+    /**
+     * Add a recipient of the email. The email address will be added to the TO header.
+     * 
+     * @param emailAddress
+     *            the email address of the recipient
+     */
+    public void addTo(String emailAddress) {
+        this.toRecipientEmailAddresses.add(emailAddress);
+    }
+
+    /**
+     * Add a recipient of the email. The email address will be added to the TO header.
+     * 
+     * @param emailAddress
+     *            the email address of the recipient
+     * @param personalName
+     *            the personal name to add to the TO header.
+     * 
+     */
+    public void addTo(String emailAddress, String personalName) {
+        this.addTo(emailAddress);
+        if (personalName != null) {
+            this.toRecipientPersonalNames.put(emailAddress, personalName);
         }
     }
 
     /**
-     * Adapt all receiving addresses to the test address and put the original recipients into the
-     * mail text.
-     *
-     * @param message
-     *            The message with the addresses
-     * @param text
-     *            The text
-     * @throws MessagingException
-     *             In case of an error
+     * @return a possibly empty collection of all users whose email addresses should be added to the
+     *         BCC header
      */
-    private void checkTestMode(MimeMessageHelper message, String text) throws MessagingException {
-        if (!CommunoteRuntime.getInstance().getConfigurationManager().getDevelopmentProperties()
-                .isMailingTestMode()) {
-            return;
-        }
-        StringBuilder testOutput = new StringBuilder();
-        testOutput.append(text);
-        testOutput.append("\n\n--------------------------------------------------\n"
-                + "TEST OUTPUT\n\nOriginal addresses:\n\n");
-        MailMessageHelper.changeAddresses(testOutput, message, CommunoteRuntime.getInstance()
-                .getConfigurationManager().getDevelopmentProperties().getMailingTestAddress());
-        message.setText(testOutput.toString(), isHtmlMail());
+    public Collection<User> getBcc() {
+        return bccRecipients;
     }
 
     /**
-     * Gets the email address of the sender.<br>
-     * Default implementation returns a value defined within a configuration file.<br>
-     * One should be careful when overriding this method because the domain part of the address
-     * should normally not leave the domain of the outgoing email server.
+     * @return a possibly empty collection of all users whose email addresses should be added to the
+     *         CC header
+     */
+    public Collection<User> getCc() {
+        return ccRecipients;
+    }
+
+    /**
+     * @return the template for rendering the content of the mail message
+     */
+    public String getContentTemplate() {
+        return messageTemplate;
+    }
+
+    /**
+     * @return an ID of the content template
+     */
+    public String getContentTemplateId() {
+        return messageKey;
+    }
+
+    /**
+     * Get the email address of the sender.<br>
+     * If no address has been set the configured address of the Communote installation will be returned.<br>
      *
-     * @return the email address
+     * @return the email address to be used in the From header
      */
     public String getFromAddress() {
-        return applicationConfiguration.getAssertProperty(ApplicationPropertyMailing.FROM_ADDRESS);
+        if (fromAddress == null) {
+            return applicationConfiguration.getAssertProperty(ApplicationPropertyMailing.FROM_ADDRESS);
+        }
+        return fromAddress;
     }
 
     /**
-     * Gets the from sender name.
-     *
-     * @return the sender name
+     * Get the personal name of the sender. <br>
+     * If no name has been set the configured name of the Communote installation will be
+     * returned.<br>
+     * 
+     * @return the sender name to be used in the From header
      */
     public String getFromAddressName() {
-        return applicationConfiguration
-                .getAssertProperty(ApplicationPropertyMailing.FROM_ADDRESS_NAME);
+        if (fromAddressName == null) {
+            return applicationConfiguration
+                    .getAssertProperty(ApplicationPropertyMailing.FROM_ADDRESS_NAME);
+        }
+        return fromAddressName;
     }
 
     /**
-     * get data that should be accessible for every mail message
+     * Model of key-value pairs with common data useful for all mail messages. The model will be
+     * passed to {@link #prepareModel(Map)} where it can be extended with specific data before
+     * handing it over to the template rendering engine.
      *
      * @return the model
      */
@@ -241,16 +347,16 @@ public abstract class MailMessage implements MimeMessagePreparator {
      *
      * @return the message identifier or null if no specific Message-ID header should be set
      */
-    protected String getMessageIdentifier() {
+    public String getMessageIdentifier() {
         return null;
     }
 
     /**
      * Returns a string holding the email address to be used in the "reply-to" header. The default
      * implementation returns an address defined for the current client. If null is returned, the
-     * "reply-to" header will not be set.
+     * "reply-to" header should not be set.
      *
-     * @return the email address
+     * @return the email address to add to the reply-to header, can be null
      */
     public String getReplyToAddress() {
         return clientConfiguration.getProperty(ClientProperty.REPLY_TO_ADDRESS);
@@ -266,113 +372,110 @@ public abstract class MailMessage implements MimeMessagePreparator {
     }
 
     /**
-     * States if the underlying mail template is an html mail or not.
-     *
-     * @return True if the mail template is an html email
+     * @return the template for rendering the subject of the mail message
      */
-    protected boolean isHtmlMail() {
+    public String getSubjectTemplate() {
+        return subjectTemplate;
+    }
+
+    /**
+     * @return an ID of the subject template
+     */
+    public String getSubjectTemplateId() {
+        return subjectKey;
+    }
+
+    /**
+     * @return a possibly empty collection of all users whose email addresses should be added to the
+     *         TO header
+     */
+    public Collection<User> getTo() {
+        return toRecipients;
+    }
+
+    /**
+     * @return a possibly empty collection of email addresses which should be added to the TO
+     *         header. This doesn't include the email addresses of the users returned by
+     *         {@link #getTo()}, instead only the addresses added with {@link #addTo(String)} or
+     *         {@link #addTo(String, String)} are returned.
+     */
+    public Collection<String> getToAddresses() {
+        return toRecipientEmailAddresses;
+    }
+
+    /**
+     * Return a personal name which was added with an email address by invoking
+     * {@link #addTo(String, String)}.
+     * 
+     * @param emailAddress
+     *            the email address for which the personal name should be returned
+     * @return the personal name added with the email address or null if no personal name was added
+     *         or the email address wasn't added
+     */
+    public String getToAddressPersonalName(String emailAddress) {
+        return toRecipientPersonalNames.get(emailAddress);
+    }
+
+    /**
+     * States whether the underlying mail content template produces an HTML mail or not.
+     *
+     * @return True if the mail template produces HTML
+     */
+    public boolean isHtmlMail() {
         return false;
     }
 
     /**
-     * {@inheritDoc}
+     * @return whether to insert the personal name (first name, last name and salutation if
+     *         available) of a recipient to the TO, CC or BCC header. By default the personal name
+     *         is not added.
      */
-    @Override
-    public void prepare(MimeMessage mimeMessage) throws Exception {
-        MimeMessageHelper message = new MimeMessageHelper(mimeMessage, ENCODING);
-        // set some headers to avoid automatic OutOfOffice replies
-        mimeMessage.setHeader("Precedence", "list");
-        mimeMessage.setHeader("X-Auto-Response-Suppress", "OOF");
-        String identifier = getMessageIdentifier();
-        if (identifier != null) {
-            mimeMessage.setHeader(HEADER_MESSAGE_ID,
-                    MailMessageHelper.createMessageIdHeaderValue(identifier));
-        }
-        // set before as default, the velocity engine may overwrite this
-        message.setFrom(getFromAddress(), getFromAddressName());
-        message.setSentDate(new Date());
-
-        String replyTo = getReplyToAddress();
-        String replyToName = getReplyToAddressName();
-        if (!StringUtils.isBlank(replyTo)) {
-            message.setReplyTo(replyTo, replyToName);
-        }
-
-        // get global model
-        Map<String, Object> model = getGlobalModel();
-        prepareModel(model);
-        model.put(MailModelPlaceholderConstants.MESSAGE, message);
-
-        StringWriter messageWriter = new StringWriter();
-        StringWriter subjectWriter = new StringWriter();
-        try {
-            VelocityEngine velocityEngine = ServiceLocator.findService(VelocityEngine.class);
-            velocityEngine.evaluate(new VelocityContext(model), messageWriter, messageKey,
-                    messageTemplate);
-            velocityEngine.evaluate(new VelocityContext(model), subjectWriter, messageKey
-                    + ".subject", subjectTemplate);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        String text = messageWriter.toString().trim();
-        message.setText(text, isHtmlMail());
-        subject = subjectWriter.toString().trim();
-        message.setSubject(subject);
-        setReceivers(message);
-        MailMessageHelper.assertNonAnonymousRecipients(mimeMessage);
-        receiversAsString = MailMessageHelper.getRecipients(mimeMessage, Message.RecipientType.TO);
-        checkTestMode(message, text);
+    public boolean isInsertRecipientPersonalName() {
+        return insertRecipientPersonalName;
     }
 
     /**
-     * Use this to set the needed objects for applying the template. If restrict the map to a size
-     * add +1 for the message to be added.
+     * Prepare a model of key-value pairs which will be passed to the template engine when the
+     * content and subject templates should be rendered.
      *
      * @param model
-     *            The model to add elements to.
+     *            The model to prepare. It will be initialized with the settings returned by
+     *            {@link #getGlobalModel()}.
      */
-    protected abstract void prepareModel(Map<String, Object> model);
+    public abstract void prepareModel(Map<String, Object> model);
 
     /**
-     * Set the receivers for this message.
-     *
-     * @param message
-     *            The message to use
-     * @throws MessagingException
-     *             In case of an error
-     * @throws UnsupportedEncodingException
-     *             In case of an error
+     * Set the email address of sender.<br>
+     * 
+     * Note: be careful when setting an address because the domain part of the address should
+     * normally not leave the domain of the outgoing email server.
+     * 
+     * @param fromAddress
+     *            the email address to be used in From header
      */
-    public void setReceivers(MimeMessageHelper message) throws MessagingException,
-            UnsupportedEncodingException {
-        if (receivers == null) {
-            return;
-        }
-        for (User receiver : receivers) {
-            message.addTo(receiver.getEmail());
-        }
+    public void setFromAddress(String fromAddress) {
+        this.fromAddress = fromAddress;
+    }
+    
+    /**
+     * Set the personal name of the sender.
+     * 
+     * @param fromAddressName
+     *            the name of the sender to be used in the From header
+     */
+    public void setFromAddressName(String fromAddressName) {
+        this.fromAddressName = fromAddressName;
+    }
+    
+    /**
+     * Define whether the personal name (first name, last name and salutation if available) of a
+     * recipient should be added to the TO, CC or BCC headers.
+     * 
+     * @param insertRecipientPersonalName
+     *            true to insert the personal name, false otherwise
+     */
+    public void setInsertRecipientPersonalName(boolean insertRecipientPersonalName) {
+        this.insertRecipientPersonalName = insertRecipientPersonalName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        StringBuilder message = new StringBuilder();
-        message.append("Template: ");
-        message.append(messageKey);
-        message.append(";Locale: ");
-        message.append(getLocale().toString());
-        message.append(";From: ");
-        message.append(getFromAddress());
-        message.append(";To: ");
-        if (receiversAsString != null) {
-            message.append(StringUtils.join(receiversAsString, ","));
-        } else {
-            message.append("No Receivers");
-        }
-        message.append(";Subject: ");
-        message.append(subject);
-        return message.toString();
-    }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.fetching.BlogsNotFoundMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -18,17 +18,17 @@ public class BlogsNotFoundMailMessageTest extends MailMessageCommunoteIntegratio
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) {
+    public void sendMail(MailSender mailSender, User... recipients) {
         Collection<String> blogAlias = new ArrayList<String>();
         blogAlias.add(UUID.randomUUID().toString());
         Collection<String> blogAliases = new ArrayList<String>();
         blogAliases.add(UUID.randomUUID().toString());
         blogAliases.add(UUID.randomUUID().toString());
         blogAliases.add(UUID.randomUUID().toString());
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new BlogsNotFoundMailMessage(receiver, blogAliases, true));
-            mailManagement.sendMail(new BlogsNotFoundMailMessage(receiver, blogAliases, false));
-            mailManagement.sendMail(new BlogsNotFoundMailMessage(receiver, blogAlias, false));
+        for (User recipient : recipients) {
+            mailSender.send(new BlogsNotFoundMailMessage(recipient, blogAliases, true));
+            mailSender.send(new BlogsNotFoundMailMessage(recipient, blogAliases, false));
+            mailSender.send(new BlogsNotFoundMailMessage(recipient, blogAlias, false));
         }
     }
 }

@@ -2,7 +2,7 @@ package com.communote.server.core.mail.message.fetching;
 
 import java.util.UUID;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.fetching.DirectMessageMissingRecipientMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -17,9 +17,9 @@ public class DirectMessageMissingRecipientMailMessageTest extends
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) {
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new DirectMessageMissingRecipientMailMessage(receiver,
+    public void sendMail(MailSender mailSender, User... recipients) {
+        for (User recipient : recipients) {
+            mailSender.send(new DirectMessageMissingRecipientMailMessage(recipient,
                     new String[] { UUID.randomUUID().toString(), UUID.randomUUID().toString() },
                     new String[] { UUID.randomUUID().toString(), UUID.randomUUID().toString() }));
         }

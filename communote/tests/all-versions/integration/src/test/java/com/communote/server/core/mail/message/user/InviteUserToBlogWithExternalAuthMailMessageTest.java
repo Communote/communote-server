@@ -1,6 +1,6 @@
 package com.communote.server.core.mail.message.user;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.InviteUserToBlogWithExternalAuthMailMessage;
 import com.communote.server.model.blog.Blog;
 import com.communote.server.model.user.User;
@@ -17,11 +17,11 @@ public class InviteUserToBlogWithExternalAuthMailMessageTest extends
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
-        Blog blog = TestUtils.createRandomBlog(true, true, receivers);
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new InviteUserToBlogWithExternalAuthMailMessage(receiver,
-                    receiver,
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
+        Blog blog = TestUtils.createRandomBlog(true, true, recipients);
+        for (User recipient : recipients) {
+            mailSender.send(new InviteUserToBlogWithExternalAuthMailMessage(recipient,
+                    recipient,
                     blog));
         }
     }

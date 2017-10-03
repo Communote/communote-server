@@ -10,6 +10,8 @@ import com.communote.server.model.user.User;
 import com.communote.server.persistence.user.client.ClientUrlHelper;
 
 /**
+ * Mail which contains a link with a SecurityCode to confirm some action.
+ * 
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class SecurityCodeMailMessage extends MailMessage {
@@ -32,26 +34,27 @@ public class SecurityCodeMailMessage extends MailMessage {
      *            Key of the message template.
      * @param locale
      *            the locale to use
-     * @param receivers
-     *            List of receivers.
+     * @param recipients
+     *            recipients of the mail
      */
-    public SecurityCodeMailMessage(String messageKey, Locale locale, User... receivers) {
-        super(messageKey, locale, receivers);
+    public SecurityCodeMailMessage(String messageKey, Locale locale, User... recipients) {
+        super(messageKey, locale, recipients);
     }
 
     /**
-     * Gets the link param action.
+     * Get the name of the request parameter which should be set to the action of the SecurityCode.
      * 
-     * @return the link param action
+     * @return the parameter name
      */
     public String getLinkParamAction() {
         return CONFIRMATION_PARAM_ACTION;
     }
 
     /**
-     * Gets the link param code.
+     * Get the name of the request parameter which should be set to the actual code of the
+     * SecurityCode.
      * 
-     * @return the link param code
+     * @return the parameter name
      */
     public String getLinkParamCode() {
         return CONFIRMATION_PARAM_CODE;
@@ -109,7 +112,7 @@ public class SecurityCodeMailMessage extends MailMessage {
      * {@inheritDoc}
      */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         // Does nothing.
     }
 }

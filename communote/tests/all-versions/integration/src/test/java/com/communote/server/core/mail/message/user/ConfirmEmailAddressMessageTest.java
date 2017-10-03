@@ -1,7 +1,7 @@
 package com.communote.server.core.mail.message.user;
 
 import com.communote.server.api.ServiceLocator;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.ConfirmEmailAddressMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.model.user.security.EmailSecurityCode;
@@ -16,11 +16,11 @@ public class ConfirmEmailAddressMessageTest extends MailMessageCommunoteIntegrat
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
-        for (User receiver : receivers) {
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
+        for (User recipient : recipients) {
             EmailSecurityCode code = ServiceLocator.findService(EmailSecurityCodeDao.class)
-                    .createCode(receiver, receiver.getEmail());
-            mailManagement.sendMail(new ConfirmEmailAddressMessage(receiver, code));
+                    .createCode(recipient, recipient.getEmail());
+            mailSender.send(new ConfirmEmailAddressMessage(recipient, code));
         }
     }
 }

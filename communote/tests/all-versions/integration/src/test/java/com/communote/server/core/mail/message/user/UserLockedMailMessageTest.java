@@ -1,7 +1,7 @@
 package com.communote.server.core.mail.message.user;
 
 import com.communote.server.api.ServiceLocator;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.UserLockedMailMessage;
 import com.communote.server.model.security.ChannelType;
 import com.communote.server.model.user.User;
@@ -17,11 +17,11 @@ public class UserLockedMailMessageTest extends MailMessageCommunoteIntegrationTe
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
-        for (User receiver : receivers) {
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
+        for (User recipient : recipients) {
             UnlockUserSecurityCode securityCode = ServiceLocator.findService(
-                    UnlockUserSecurityCodeDao.class).createCode(receiver, ChannelType.WEB);
-            mailManagement.sendMail(new UserLockedMailMessage(receiver, ChannelType.WEB,
+                    UnlockUserSecurityCodeDao.class).createCode(recipient, ChannelType.WEB);
+            mailSender.send(new UserLockedMailMessage(recipient, ChannelType.WEB,
                     securityCode));
         }
     }

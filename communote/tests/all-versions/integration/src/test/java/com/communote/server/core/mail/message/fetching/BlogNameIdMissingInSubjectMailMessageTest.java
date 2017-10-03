@@ -1,6 +1,6 @@
 package com.communote.server.core.mail.message.fetching;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.fetching.BlogNameIdMissingInSubjectMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -15,9 +15,9 @@ public class BlogNameIdMissingInSubjectMailMessageTest extends MailMessageCommun
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) {
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new BlogNameIdMissingInSubjectMailMessage(receiver));
+    public void sendMail(MailSender mailSender, User... recipients) {
+        for (User recipient : recipients) {
+            mailSender.send(new BlogNameIdMissingInSubjectMailMessage(recipient));
         }
     }
 }

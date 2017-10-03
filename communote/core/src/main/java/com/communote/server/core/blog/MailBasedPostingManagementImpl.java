@@ -38,8 +38,8 @@ import com.communote.server.core.blog.notes.processors.exceptions.DirectMessageW
 import com.communote.server.core.blog.notes.processors.exceptions.NonMatchingParentTopicNotePreProcessorException;
 import com.communote.server.core.crc.ContentRepositoryManagementHelper;
 import com.communote.server.core.crc.ResourceSizeLimitReachedException;
-import com.communote.server.core.mail.MailManagement;
 import com.communote.server.core.mail.MailMessageHelper;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.fetching.MailFetcher;
 import com.communote.server.core.mail.messages.GenericMailMessage;
 import com.communote.server.core.mail.messages.MailMessage;
@@ -576,7 +576,7 @@ public class MailBasedPostingManagementImpl extends MailBasedPostingManagementBa
      *            the error mail message
      */
     private void sendErrorMailMessage(MailMessage message) {
-        ServiceLocator.instance().getService(MailManagement.class).sendMail(message);
+        ServiceLocator.instance().getService(MailSender.class).send(message);
     }
 
     /**

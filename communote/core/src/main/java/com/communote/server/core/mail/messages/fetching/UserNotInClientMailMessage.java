@@ -1,12 +1,7 @@
 package com.communote.server.core.mail.messages.fetching;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.mail.MessagingException;
-
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.communote.server.core.mail.messages.MailMessage;
 import com.communote.server.core.user.UserManagementHelper;
@@ -20,11 +15,10 @@ import com.communote.server.core.user.UserManagementHelper;
  */
 public class UserNotInClientMailMessage extends MailMessage {
 
-    private final String senderEmailAddress;
 
     /**
      * @param senderEmailAddress
-     *            sender of the email with unresolvable user
+     *            email address of the sender who is not a user of the client
      */
     public UserNotInClientMailMessage(String senderEmailAddress) {
         this(senderEmailAddress, UserManagementHelper.getFallbackLocale());
@@ -33,13 +27,13 @@ public class UserNotInClientMailMessage extends MailMessage {
     /**
      * 
      * @param senderEmailAddress
-     *            sender of the email with unresolvable user
+     *            email address of the sender who is not a user of the client
      * @param locale
      *            the locale to use
      */
     public UserNotInClientMailMessage(String senderEmailAddress, Locale locale) {
         super("mail.message.fetching.user-not-in-client", locale);
-        this.senderEmailAddress = senderEmailAddress;
+        this.addTo(senderEmailAddress);
     }
 
     /**
@@ -48,16 +42,6 @@ public class UserNotInClientMailMessage extends MailMessage {
      * {@inheritDoc}
      */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
-        // Do nothing.
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setReceivers(MimeMessageHelper message) throws MessagingException,
-            UnsupportedEncodingException {
-        message.addTo(senderEmailAddress);
+    public void prepareModel(Map<String, Object> model) {
     }
 }

@@ -10,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.communote.common.encryption.EncryptionException;
+import com.communote.common.encryption.EncryptionUtils;
 import com.communote.server.api.core.config.type.ApplicationProperty;
 import com.communote.server.api.core.config.type.ApplicationPropertyVirusScanning;
 import com.communote.server.model.config.ApplicationConfigurationSetting;
@@ -43,7 +45,8 @@ public class ApplicationConfigurationProperties extends
      * @param settings
      *            the application configuration settings
      */
-    public ApplicationConfigurationProperties(Collection<ApplicationConfigurationSetting> settings) {
+    public ApplicationConfigurationProperties(
+            Collection<ApplicationConfigurationSetting> settings) {
         // TODO init with localhost as default?
         String urlPrefixValue = "";
         String urlPrefixSecuredValue = "";
@@ -112,6 +115,25 @@ public class ApplicationConfigurationProperties extends
     @Override
     public String getProperty(ApplicationConfigurationPropertyConstant key) {
         return properties.get(key.getKeyString());
+    }
+
+    /**
+     * Get the decrypted value of an encrypted property.
+     * 
+     * @param key
+     *            the key of the property to return
+     * @return the decrypted value or null if the property was not set
+     * @throws EncryptionException
+     *             in case decryption failed
+     */
+    public String getPropertyDecrypted(ApplicationConfigurationPropertyConstant key)
+            throws EncryptionException {
+        String value = properties.get(key.getKeyString());
+        if (StringUtils.isNotEmpty(value)) {
+            return EncryptionUtils.decrypt(value,
+                    ApplicationProperty.INSTALLATION_UNIQUE_ID.getValue());
+        }
+        return value;
     }
 
     /**

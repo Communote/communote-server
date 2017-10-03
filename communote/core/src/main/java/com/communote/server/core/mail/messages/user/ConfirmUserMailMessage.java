@@ -17,27 +17,27 @@ import com.communote.server.model.user.User;
  */
 public class ConfirmUserMailMessage extends SecurityCodeMailMessage {
 
-    private final User receiver;
+    private final User userToConfirm;
     private final SecurityCode securityCode;
     private final RegistrationType type;
 
     /**
      * Construct a new mail message for user confirmation
      * 
-     * @param receiver
-     *            The one who gets confirmed
+     * @param userToConfirm
+     *            the user to confirm
      * @param securityCode
      *            The securityCode
      * @param type
      *            The type of the registration.
      */
-    public ConfirmUserMailMessage(User receiver, SecurityCode securityCode,
+    public ConfirmUserMailMessage(User userToConfirm, SecurityCode securityCode,
             RegistrationType type) {
         super(RegistrationType.SELF.equals(type)
                 ? "mail.message.user.registration-confirm"
                 : "mail.message.user.invite-user-to-client",
-                receiver.getLanguageLocale(), receiver);
-        this.receiver = receiver;
+                userToConfirm.getLanguageLocale(), userToConfirm);
+        this.userToConfirm = userToConfirm;
         this.securityCode = securityCode;
         this.type = type;
     }
@@ -52,14 +52,11 @@ public class ConfirmUserMailMessage extends SecurityCodeMailMessage {
         return "/user/confirm.do";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.USER,
                 RegistrationType.SELF.equals(type)
-                        ? receiver : SecurityHelper.assertCurrentKenmeiUser());
+                        ? userToConfirm : SecurityHelper.assertCurrentKenmeiUser());
         String confirmationLink = getSecurityCodeConfirmationLink(securityCode);
         model.put(MailModelPlaceholderConstants.CONFIRMATION_LINK, confirmationLink);
     }

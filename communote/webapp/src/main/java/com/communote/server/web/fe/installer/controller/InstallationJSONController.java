@@ -3,6 +3,8 @@ package com.communote.server.web.fe.installer.controller;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -23,10 +25,15 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.communote.common.util.MapUtils;
+import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.application.CommunoteRuntime;
 import com.communote.server.api.core.bootstrap.ApplicationInitializationException;
+import com.communote.server.api.core.config.type.ApplicationPropertyMailing;
 import com.communote.server.api.util.JsonHelper;
 import com.communote.server.core.common.session.SessionHandler;
+import com.communote.server.core.mail.MailSender;
+import com.communote.server.core.mail.messages.GenericMailMessage;
 import com.communote.server.web.commons.MessageHelper;
 import com.communote.server.web.fe.installer.helper.DatabaseStatusCallback;
 
@@ -149,48 +156,6 @@ public class InstallationJSONController extends MultiActionController {
         JsonHelper.writeJsonTree(response.getWriter(), jsonResponse);
     }
 
-    /**
-     * @param request
-     *            the HttpServletRequest
-     * @param jsonMessage
-     *            the JSON message
-     * @param smtpHost
-     *            the smtp host name
-     * @param e
-     *            the exception
-     */
-    private void handleMailSendException(HttpServletRequest request, StringBuilder jsonMessage,
-            String smtpHost, MailSendException e) {
-        Throwable cause = ExceptionUtils.getRootCause(e);
-        if (cause != null) {
-            try {
-                throw cause;
-            } catch (Throwable cEx) {
-                if (cEx instanceof UnknownHostException) {
-                    // unknown smtp host
-                    jsonMessage.append(MessageHelper.getText(request,
-                            "installer.step.mail.test.error.connection.host",
-                            new Object[] { smtpHost }));
-                } else if (cEx instanceof ConnectException) {
-                    // e.g. wrong port number
-                    jsonMessage.append(MessageHelper.getText(request,
-                            "installer.step.mail.test.error.connection.timeout"));
-                } else if (cEx instanceof SSLHandshakeException) {
-                    // port 25 instead of secure 587 or 465
-                    jsonMessage.append(MessageHelper.getText(request,
-                            "installer.step.mail.test.error.connection.ssl"));
-                } else {
-                    // unknown reason
-                    jsonMessage.append(MessageHelper.getText(request,
-                            "installer.step.mail.test.error.send.unknown"));
-                }
-            }
-        } else {
-            // unknown reason
-            jsonMessage.append(MessageHelper.getText(request,
-                    "installer.step.mail.test.error.send.unknown"));
-        }
-    }
 
     /**
      * Sends a test mail.
@@ -212,17 +177,19 @@ public class InstallationJSONController extends MultiActionController {
 
         ObjectNode jsonResponse = JsonHelper.getSharedObjectMapper().createObjectNode();
         StringBuilder jsonMessage = new StringBuilder();
-
-        String smtpHost = request.getParameter("smtpHost");
-        String smtpPort = request.getParameter("smtpPort");
-        String smtpStartTls = request.getParameter("startTls");
-        String smtpUser = request.getParameter("smtpUser");
-        String smtpPassword = request.getParameter("smtpPassword");
-        String senderName = request.getParameter("senderName");
         String senderAddress = request.getParameter("senderAddress");
+        String senderName = request.getParameter("senderName");
+        Map<ApplicationPropertyMailing, String> settings = new HashMap<>();
+        MapUtils.putNonNull(settings, ApplicationPropertyMailing.HOST, request.getParameter("smtpHost"));
+        MapUtils.putNonNull(settings, ApplicationPropertyMailing.PORT, request.getParameter("smtpPort"));
+        MapUtils.putNonNull(settings, ApplicationPropertyMailing.USE_STARTTLS, request.getParameter("startTls"));
+        MapUtils.putNonNull(settings, ApplicationPropertyMailing.LOGIN, request.getParameter("smtpUser"));
+        MapUtils.putNonNull(settings, ApplicationPropertyMailing.PASSWORD, request.getParameter("smtpPassword"));
+        MapUtils.putNonNull(settings, ApplicationPropertyMailing.FROM_ADDRESS, senderAddress);
+        MapUtils.putNonNull(settings, ApplicationPropertyMailing.FROM_ADDRESS_NAME, senderName);
 
-        if (StringUtils.isBlank(smtpHost) || StringUtils.isBlank(senderName)
-                || StringUtils.isBlank(senderAddress)) {
+        if (StringUtils.isBlank(settings.get(ApplicationPropertyMailing.HOST)) || StringUtils.isBlank(senderAddress)
+                || StringUtils.isBlank(senderName)) {
             jsonResponse.put(JSON_RESPONSE_FIELD_STATUS, JSON_RESPONSE_STATUS_TYPE_ERROR);
             jsonMessage.append(MessageHelper.getText(request,
                     "installer.step.mail.test.error.empty.fields"));
@@ -230,74 +197,20 @@ public class InstallationJSONController extends MultiActionController {
             LOGGER.info("Sending the test email failed, because required input fields are empty.");
         } else {
 
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setSubject(MessageHelper.getText(request, "installer.step.mail.test.subject"));
-            message.setText(MessageHelper.getText(request, "installer.step.mail.test.message"));
-
-            message.setTo(senderAddress);
-            message.setFrom(senderName + " <" + senderAddress + ">");
-
-            JavaMailSenderImpl mailor = new JavaMailSenderImpl();
-            mailor.setPort(NumberUtils.toInt(smtpPort, 25));
-            mailor.setHost(smtpHost);
-
-            Properties mailingProperties = new Properties();
-            mailingProperties.setProperty("mail.smtp.starttls.enable", smtpStartTls);
-            if (StringUtils.isNotBlank(smtpUser)) {
-                mailingProperties.setProperty("mail.smtp.auth", "true");
-                mailor.setUsername(smtpUser);
-                mailor.setPassword(smtpPassword);
-            }
-
-            mailor.setJavaMailProperties(mailingProperties);
-
-            try {
-                LOGGER.info("Try to send a test message.");
-                if (LOGGER.isDebugEnabled()) {
-                    mailor.getSession().setDebug(true);
-                }
-                mailor.send(message);
-                LOGGER.info("Connecting to the mail server and sending a test message succeeded");
-
+            GenericMailMessage testMessage = new GenericMailMessage("installer.step.mail.test.mail", 
+                    SessionHandler.instance().getCurrentLocale(request));
+            testMessage.addTo(senderAddress, senderName);
+            testMessage.setFromAddress(senderAddress);
+            testMessage.setFromAddressName(senderName);
+            
+            if (ServiceLocator.findService(MailSender.class).testSettings(settings, testMessage)) {
                 jsonResponse.put(JSON_RESPONSE_FIELD_STATUS, JSON_RESPONSE_STATUS_TYPE_OK);
                 jsonMessage.append(MessageHelper.getText(request,
                         "installer.step.mail.test.success", new Object[] { senderAddress }));
-            } catch (MailAuthenticationException e) {
-                // wrong authentication data
-                jsonMessage.append(MessageHelper.getText(request,
-                        "installer.step.mail.test.error.authentication.failed"));
-
-                jsonMessage.append("<pre>");
-                jsonMessage.append(e.getMessage());
-                jsonMessage.append("</pre>");
-
+            } else {
                 jsonResponse.put(JSON_RESPONSE_FIELD_STATUS, JSON_RESPONSE_STATUS_TYPE_ERROR);
-
-                LOGGER.info("FAILED to connect to the mail server and send a test message");
-                LOGGER.info(e.getMessage());
-            } catch (MailSendException e) {
-                handleMailSendException(request, jsonMessage, smtpHost, e);
-
-                jsonMessage.append("<pre>");
-                jsonMessage.append(e.getMessage());
-                jsonMessage.append("</pre>");
-
-                jsonResponse.put(JSON_RESPONSE_FIELD_STATUS, JSON_RESPONSE_STATUS_TYPE_ERROR);
-
-                LOGGER.info("FAILED to connect to the mail server and send a test message");
-                LOGGER.info(e.getMessage());
-            } catch (MailException e) {
-                // unknown reason
                 jsonMessage.append(MessageHelper.getText(request,
                         "installer.step.mail.test.error.send.unknown"));
-
-                jsonMessage.append("<pre>");
-                jsonMessage.append(e.getMessage());
-                jsonMessage.append("</pre>");
-
-                jsonResponse.put(JSON_RESPONSE_FIELD_STATUS, JSON_RESPONSE_STATUS_TYPE_ERROR);
-                LOGGER.info("FAILED to connect to the mail server and send a test message");
-                LOGGER.info(e.getMessage());
             }
         }
 

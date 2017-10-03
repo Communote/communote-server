@@ -61,7 +61,7 @@ import com.communote.server.core.blog.notes.processors.exceptions.MessageKeyNote
 import com.communote.server.core.common.LimitHelper;
 import com.communote.server.core.common.caching.CacheManager;
 import com.communote.server.core.filter.listitems.SimpleNoteListItem;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.NoteLimitReachedMailMessage;
 import com.communote.server.core.retrieval.helper.AttachmentHelper;
 import com.communote.server.core.security.AuthenticationHelper;
@@ -152,7 +152,7 @@ public class NoteManagementImpl extends NoteManagementBase {
     @Autowired
     private UserManagement userManagement;
     @Autowired
-    private MailManagement mailManagement;
+    private MailSender mailSender;
     @Autowired
     private NotePermissionManagement notePermissionManagement;
     @Autowired
@@ -1789,7 +1789,7 @@ public class NoteManagementImpl extends NoteManagementBase {
                     localizedUsers.get(locale), locale, ClientHelper.getCurrentClientId(),
                     LimitHelper.getCountPercentAsString(count, limit),
                     LimitHelper.getCountLimitAsString(limit));
-            mailManagement.sendMail(message);
+            mailSender.send(message);
         }
     }
 

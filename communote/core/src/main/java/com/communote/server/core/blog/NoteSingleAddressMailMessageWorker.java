@@ -24,8 +24,8 @@ import com.communote.server.api.core.config.ApplicationConfigurationProperties;
 import com.communote.server.api.core.config.type.ApplicationPropertyMailfetching;
 import com.communote.server.api.service.ClientRetrievalService;
 import com.communote.server.core.blog.helper.BlogManagementHelper;
-import com.communote.server.core.mail.MailManagement;
 import com.communote.server.core.mail.MailMessageHelper;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.fetching.MailFetcher;
 import com.communote.server.core.mail.messages.fetching.BlogNameIdMissingInSubjectMailMessage;
 import com.communote.server.core.user.UserManagement;
@@ -213,7 +213,7 @@ public class NoteSingleAddressMailMessageWorker extends NoteMailMessageWorkerBas
         User user = ServiceLocator.instance().getService(UserManagement.class)
                 .findUserByEmail(senderEmail);
         if (user != null && user.getStatus().equals(UserStatus.ACTIVE)) {
-            ServiceLocator.findService(MailManagement.class).sendMail(
+            ServiceLocator.findService(MailSender.class).send(
                     new BlogNameIdMissingInSubjectMailMessage(user));
         } else {
             if (LOG.isDebugEnabled()) {

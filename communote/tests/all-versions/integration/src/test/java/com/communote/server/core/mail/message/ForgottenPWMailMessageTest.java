@@ -1,7 +1,7 @@
 package com.communote.server.core.mail.message;
 
 import com.communote.server.api.ServiceLocator;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.ForgottenPWMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.model.user.security.ForgottenPasswordSecurityCode;
@@ -16,11 +16,11 @@ public class ForgottenPWMailMessageTest extends MailMessageCommunoteIntegrationT
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) {
-        for (User receiver : receivers) {
+    public void sendMail(MailSender mailSender, User... recipients) {
+        for (User recipient : recipients) {
             ForgottenPasswordSecurityCode securityCode = ServiceLocator.findService(
-                    ForgottenPasswordSecurityCodeDao.class).createCode(receiver);
-            mailManagement.sendMail(new ForgottenPWMailMessage(receiver, securityCode));
+                    ForgottenPasswordSecurityCodeDao.class).createCode(recipient);
+            mailSender.send(new ForgottenPWMailMessage(recipient, securityCode));
         }
     }
 }

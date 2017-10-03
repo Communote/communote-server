@@ -37,25 +37,20 @@ public class ActivateUserForManagerMailMessage extends MailMessage {
      * @param firstActivation
      *            whether it is the first activation (e.g. after confirmation) or a re-activation
      *            (e.g. after being temporarily disabled)
-     * @param receivers
-     *            List of receivers the receiver.
+     * @param recipients
+     *            List of recipients of the message
      */
     public ActivateUserForManagerMailMessage(User activatedUser, Locale locale,
-            boolean firstActivation, Collection<User> receivers) {
+            boolean firstActivation, Collection<User> recipients) {
         super(firstActivation ? ACTIVATION_EMAIL_TEMPLATE : REACTIVATION_EMAIL_TEMPLATE, locale,
-                receivers.toArray(new User[receivers.size()]));
-        Assert.notNull(activatedUser, "Receiver cannot be null");
+                recipients);
+        Assert.notNull(activatedUser, "Activated user cannot be null");
         this.activatedUser = activatedUser;
-        Assert.notEmpty(receivers, "at least one receiver must be defined");
+        Assert.notEmpty(recipients, "at least one receiver must be defined");
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see com.communote.server.service.mail.messages.AbstractKenmeiMailMessage#prepareModel()
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put("client", ClientHelper.getCurrentClient().getName());
         model.put(MailModelPlaceholderConstants.USER, activatedUser);
         model.put(MailModelPlaceholderConstants.Client.USER_PROFILE_LINK,

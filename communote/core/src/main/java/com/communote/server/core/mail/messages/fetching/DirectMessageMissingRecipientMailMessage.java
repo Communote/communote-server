@@ -22,19 +22,19 @@ public class DirectMessageMissingRecipientMailMessage extends MailMessage {
     /**
      * Creates a new error message email.
      * 
-     * @param receiver
-     *            the receiver of the email
+     * @param recipient
+     *            the recipient of the email
      * @param uninformableUsers
      *            the aliases of the uninformable users that caused this exception or null if there
-     *            were no uniformable users
+     *            were no uninformable users
      * @param unresolvableUsers
      *            the aliases of the unresolvable users that caused this exception or null if there
      *            were no unresolvable users
      */
-    public DirectMessageMissingRecipientMailMessage(User receiver,
+    public DirectMessageMissingRecipientMailMessage(User recipient,
             String[] uninformableUsers, String[] unresolvableUsers) {
-        super("mail.message.fetching.directmessage-missing-recipient-message", receiver
-                .getLanguageLocale(), receiver);
+        super("mail.message.fetching.directmessage-missing-recipient-message", recipient
+                .getLanguageLocale(), recipient);
         this.uninformableUsers = uninformableUsers;
         this.unresolvableUsers = unresolvableUsers;
     }
@@ -43,7 +43,7 @@ public class DirectMessageMissingRecipientMailMessage extends MailMessage {
      * {@inheritDoc}
      */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         if (this.uninformableUsers != null) {
             model.put("uninformableUsers", StringUtils.join(this.uninformableUsers, ", "));
         }

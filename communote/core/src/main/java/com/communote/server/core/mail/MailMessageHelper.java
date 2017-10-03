@@ -14,17 +14,14 @@ import java.util.regex.Pattern;
 
 import javax.mail.Address;
 import javax.mail.Message;
-import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.communote.common.string.StringEscapeHelper;
 import com.communote.common.util.HTMLHelper;
@@ -79,101 +76,25 @@ public final class MailMessageHelper {
      * @param message
      *            the message to check
      * @throws MessagingException
-     *             when retrieving all recipients failed
+     *             in case the message has no recipients or getting the recipients failed
+     * @throws InvalidRecipientMailAddressException
+     *             in case an anonymous recipient is encountered
      */
-    public static void assertNonAnonymousRecipients(Message message) throws MessagingException {
+    public static void assertNonAnonymousRecipients(Message message)
+            throws MessagingException, InvalidRecipientMailAddressException {
         Address[] addresses = message.getAllRecipients();
-        if (addresses != null) {
-            for (Address a : addresses) {
-                if (a instanceof InternetAddress) {
-                    String email = ((InternetAddress) a).getAddress();
-                    if (isAnonymousEmailAddress(email)) {
-                        throw new InvalidRecipientMailAddressException(
-                                "Recipient address ends with the anonymous email address suffix.",
-                                email);
-                    }
+        if (addresses == null || addresses.length == 0) {
+            throw new MessagingException("Message has no recipients");
+        }
+        for (Address a : addresses) {
+            if (a instanceof InternetAddress) {
+                String email = ((InternetAddress) a).getAddress();
+                if (isAnonymousEmailAddress(email)) {
+                    throw new InvalidRecipientMailAddressException(
+                            "Recipient address ends with the anonymous email address suffix.",
+                            email);
                 }
             }
-        }
-    }
-
-    /**
-     * Change the email of the address to the new address and print a debug output
-     *
-     * @param output
-     *            The output buffer
-     * @param address
-     *            The address to change
-     * @param newAddress
-     *            The new one
-     */
-    public static void changeAddress(StringBuilder output, Address address, String newAddress) {
-        if (address instanceof InternetAddress) {
-            InternetAddress ia = (InternetAddress) address;
-            output.append(ia.getAddress());
-            if (StringUtils.isNotBlank(ia.getPersonal())) {
-                output.append(" ");
-                output.append(ia.getPersonal());
-            }
-            output.append("\n");
-            ia.setAddress(newAddress);
-        }
-    }
-
-    /**
-     * Change the email of the addresses to the new address and print a debug output
-     *
-     * @param output
-     *            The output buffer
-     * @param addresses
-     *            The addresses to change, if null nothing will be done
-     * @param newAddress
-     *            The new one
-     */
-    public static void changeAddresses(StringBuilder output, Address[] addresses, String newAddress) {
-        if (addresses != null) {
-            for (Address address : addresses) {
-                changeAddress(output, address, newAddress);
-            }
-        }
-    }
-
-    /**
-     * Change the email addresses (TO, CC, BCC) of the mime message to the new address and print a
-     * debug output
-     *
-     * @param output
-     *            The output buffer
-     * @param message
-     *            The message to change
-     * @param newAddress
-     *            The new address
-     * @throws MessagingException
-     *             in case of an error
-     */
-    public static void changeAddresses(StringBuilder output, MimeMessageHelper message,
-            String newAddress) throws MessagingException {
-        MimeMessage mm = message.getMimeMessage();
-
-        InternetAddress[] to = (InternetAddress[]) mm.getRecipients(RecipientType.TO);
-        if (to != null) {
-            output.append("TO:\n");
-            changeAddresses(output, to, newAddress);
-            message.setTo(to);
-        }
-
-        InternetAddress[] cc = (InternetAddress[]) mm.getRecipients(RecipientType.CC);
-        if (cc != null) {
-            output.append("\nCC:\n");
-            changeAddresses(output, cc, newAddress);
-            message.setBcc(cc);
-        }
-
-        InternetAddress[] bcc = (InternetAddress[]) mm.getRecipients(RecipientType.BCC);
-        if (bcc != null) {
-            output.append("\nBCC:\n");
-            changeAddresses(output, bcc, newAddress);
-            message.setBcc(bcc);
         }
     }
 
@@ -716,8 +637,8 @@ public final class MailMessageHelper {
      *
      * @param receivers
      *            List of receivers.
-     * @param template
-     *            The template.
+     * @param messageKey
+     *            The message key of the template.
      * @param model
      *            The model.
      * @param replyToAddress
@@ -725,7 +646,7 @@ public final class MailMessageHelper {
      * @param replyToName
      *            Name for reply to (optional).
      */
-    public static void sendMessage(Collection<User> receivers, String template,
+    public static void sendMessage(Collection<User> receivers, String messageKey,
             Map<String, Object> model, final String replyToAddress, final String replyToName) {
 
         final Collection<User> realReceivers = filterAnonymousUsers(receivers);
@@ -736,7 +657,7 @@ public final class MailMessageHelper {
                     .getUserByLocale(realReceivers);
             for (Locale locale : localizedUsers.keySet()) {
                 Collection<User> localizedReceivers = localizedUsers.get(locale);
-                GenericMailMessage mailMessage = new GenericMailMessage(template, locale, model,
+                GenericMailMessage mailMessage = new GenericMailMessage(messageKey, locale, model,
                         localizedReceivers.toArray(new User[localizedReceivers.size()])) {
                     @Override
                     public String getReplyToAddress() {
@@ -749,11 +670,12 @@ public final class MailMessageHelper {
                     }
                 };
 
-                ServiceLocator.findService(MailManagement.class).sendMail(mailMessage);
+                ServiceLocator.findService(MailSender.class).send(mailMessage);
             }
         } else {
-            LOGGER.info("Email not sent since no receivers or only anonymous receivers in list. receivers="
-                    + receivers + " template=" + template);
+            LOGGER.info(
+                    "Email not sent since no receivers or only anonymous receivers in list. receivers="
+                            + receivers + " template=" + messageKey);
         }
     }
 

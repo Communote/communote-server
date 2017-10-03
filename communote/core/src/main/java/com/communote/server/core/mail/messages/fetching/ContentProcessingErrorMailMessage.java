@@ -48,23 +48,20 @@ public class ContentProcessingErrorMailMessage extends MailMessage {
     private final String blogTitle;
 
     /**
-     * @param receiver
-     *            the receiver of the mail
+     * @param recipient
+     *            the user to inform about the problem that occurred while processing the content
      * @param blogTitle
      *            the blog title
      * @param errorType
      *            the error type
      */
-    public ContentProcessingErrorMailMessage(User receiver, String blogTitle, Type errorType) {
-        super(errorType.templateMessageKey, receiver.getLanguageLocale(), receiver);
+    public ContentProcessingErrorMailMessage(User recipient, String blogTitle, Type errorType) {
+        super(errorType.templateMessageKey, recipient.getLanguageLocale(), recipient);
         this.blogTitle = blogTitle;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.BLOG_TITLE, blogTitle);
     }
 }

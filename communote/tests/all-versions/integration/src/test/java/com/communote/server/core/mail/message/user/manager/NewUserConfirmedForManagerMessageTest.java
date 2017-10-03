@@ -3,7 +3,7 @@ package com.communote.server.core.mail.message.user.manager;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.manager.NewUserConfirmedForManagerMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -17,12 +17,12 @@ public class NewUserConfirmedForManagerMessageTest extends MailMessageCommunoteI
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
-        for (User receiver : receivers) {
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
+        for (User recipient : recipients) {
             Collection<User> receiversAsCollection = new ArrayList<User>();
-            receiversAsCollection.add(receiver);
-            mailManagement.sendMail(new NewUserConfirmedForManagerMessage(receiver,
-                    receiversAsCollection, receiver.getLanguageLocale()));
+            receiversAsCollection.add(recipient);
+            mailSender.send(new NewUserConfirmedForManagerMessage(recipient,
+                    receiversAsCollection, recipient.getLanguageLocale()));
         }
     }
 }

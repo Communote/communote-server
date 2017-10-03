@@ -1,8 +1,6 @@
 package com.communote.server.core.mail.message.user;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -11,7 +9,7 @@ import com.communote.server.api.ServiceLocator;
 import com.communote.server.core.general.RunInTransaction;
 import com.communote.server.core.general.TransactionException;
 import com.communote.server.core.general.TransactionManagement;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.NotifyAboutNoteMailMessage;
 import com.communote.server.core.messaging.NotificationDefinition.NotificationTypes;
 import com.communote.server.core.messaging.definitions.MentionNotificationDefinition;
@@ -31,10 +29,9 @@ public class NotifyAboutNoteMailMessageTest extends MailMessageCommunoteIntegrat
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(final MailManagement mailManagement, final User... receivers)
+    public void sendMail(final MailSender mailSender, final User... recipients)
             throws Exception {
-        final Blog topic = TestUtils.createRandomBlog(true, true, receivers);
-        final Collection<User> receiversAsCollection = new ArrayList<User>();
+        final Blog topic = TestUtils.createRandomBlog(true, true, recipients);
         final Map<String, String> definitionKeys = new HashMap<String, String>();
         definitionKeys.put("content", MentionNotificationDefinition.INSTANCE
                 .getMessageKeyForMessage(NotificationTypes.PLAIN));
@@ -44,19 +41,17 @@ public class NotifyAboutNoteMailMessageTest extends MailMessageCommunoteIntegrat
                 .execute(new RunInTransaction() {
                     @Override
                     public void execute() throws TransactionException {
-                        for (User receiver : receivers) {
-                            receiversAsCollection.clear();
-                            receiversAsCollection.add(receiver);
+                        for (User recipient : recipients) {
                             Long noteId = TestUtils.createAndStoreCommonNote(topic,
-                                    receiver.getId(), UUID.randomUUID().toString());
+                                    recipient.getId(), UUID.randomUUID().toString());
                             Note note = ServiceLocator.findService(NoteDao.class).load(noteId);
-                            mailManagement.sendMail(new NotifyAboutNoteMailMessage(
-                                    receiversAsCollection, receiver, receiver.getLanguageLocale(),
+                            mailSender.send(new NotifyAboutNoteMailMessage(
+                                    recipient, recipient, recipient.getLanguageLocale(),
                                     note, topic, definitionKeys, null));
                             note.setLastModificationDate(new Timestamp(
                                     System.currentTimeMillis() + 1000));
-                            mailManagement.sendMail(new NotifyAboutNoteMailMessage(
-                                    receiversAsCollection, receiver, receiver.getLanguageLocale(),
+                            mailSender.send(new NotifyAboutNoteMailMessage(
+                                    recipient, recipient, recipient.getLanguageLocale(),
                                     note, topic, definitionKeys, null));
                         }
                     }

@@ -8,7 +8,8 @@ import com.communote.server.model.user.User;
 
 
 /**
- * A mail message displaying the error message shown when posting by frontend.
+ * A mail message containing the error message which describes the problem that occurred while
+ * creating a note from the email.
  * 
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
@@ -20,16 +21,16 @@ public class GenericErrorMailMessage extends MailMessage {
     /**
      * Creates a new error message email.
      * 
-     * @param receiver
-     *            the receiver of the email
+     * @param recipient
+     *            the recipient of the email
      * @param errorMessage
      *            the error message to include
      * @param blogTitle
      *            the title of the blog which was the target of the post creation resulting in the
      *            error
      */
-    public GenericErrorMailMessage(User receiver, String errorMessage, String blogTitle) {
-        super("mail.message.fetching.error-message", receiver.getLanguageLocale(), receiver);
+    public GenericErrorMailMessage(User recipient, String errorMessage, String blogTitle) {
+        super("mail.message.fetching.error-message", recipient.getLanguageLocale(), recipient);
         this.errorMessage = errorMessage;
         this.blogTitle = blogTitle;
     }
@@ -38,7 +39,7 @@ public class GenericErrorMailMessage extends MailMessage {
      * {@inheritDoc}
      */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.ERROR_MESSAGE, errorMessage);
         model.put(MailModelPlaceholderConstants.BLOG_TITLE, blogTitle);
     }

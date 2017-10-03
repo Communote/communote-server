@@ -14,34 +14,33 @@ import com.communote.server.model.user.User;
 
 
 /**
- * Invites an user to the tagging server
+ * Mail to invite a new user
  * 
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class InviteUserToClientMailMessage extends SecurityCodeMailMessage {
 
     private final User inviter;
-    private final String receiverEmail;
     private final SecurityCode securityCode;
 
     /**
      * Construct an invitation mail message.
      * 
      * @param inviter
-     *            the user who sends the invitation
-     * @param receiverEmail
-     *            the one to invite
+     *            the user sending the invitation
+     * @param recipientEmail
+     *            email address of the user to invite
      * @param locale
-     *            the locale the locale of the user
+     *            the locale of the user
      * @param code
      *            the code the security code
      */
-    public InviteUserToClientMailMessage(User inviter, Locale locale, String receiverEmail,
+    public InviteUserToClientMailMessage(User inviter, Locale locale, String recipientEmail,
             SecurityCode code) {
         super("mail.message.user.invite-user-to-client", locale);
         this.inviter = inviter;
-        this.receiverEmail = receiverEmail;
         this.securityCode = code;
+        this.addTo(recipientEmail);
     }
 
     /**
@@ -52,22 +51,10 @@ public class InviteUserToClientMailMessage extends SecurityCodeMailMessage {
         return "/user/confirm.do";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.USER, inviter);
         model.put(MailModelPlaceholderConstants.CONFIRMATION_LINK,
                 getSecurityCodeConfirmationLink(securityCode));
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setReceivers(MimeMessageHelper message) throws MessagingException {
-        message.addTo(receiverEmail);
-    }
-
 }

@@ -3,7 +3,7 @@ package com.communote.server.core.mail.message.user.manager;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.manager.ActivateUserForManagerMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -17,14 +17,14 @@ public class ActivateUserForManagerMailMessageTest extends MailMessageCommunoteI
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
-        for (User receiver : receivers) {
-            Collection<User> receiversAsCollection = new ArrayList<User>();
-            receiversAsCollection.add(receiver);
-            mailManagement.sendMail(new ActivateUserForManagerMailMessage(receiver, receiver
-                    .getLanguageLocale(), true, receiversAsCollection));
-            mailManagement.sendMail(new ActivateUserForManagerMailMessage(receiver, receiver
-                    .getLanguageLocale(), false, receiversAsCollection));
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
+        for (User recipient : recipients) {
+            Collection<User> recipientsAsCollection = new ArrayList<User>();
+            recipientsAsCollection.add(recipient);
+            mailSender.send(new ActivateUserForManagerMailMessage(recipient, recipient
+                    .getLanguageLocale(), true, recipientsAsCollection));
+            mailSender.send(new ActivateUserForManagerMailMessage(recipient, recipient
+                    .getLanguageLocale(), false, recipientsAsCollection));
         }
     }
 }

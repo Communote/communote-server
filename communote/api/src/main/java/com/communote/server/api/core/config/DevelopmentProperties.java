@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,9 @@ public class DevelopmentProperties {
 
     private final static Logger LOG = LoggerFactory.getLogger(DevelopmentProperties.class);
 
-    private static final String MAILING_TEST_MODE = "mailing.test.mode";
-    private static final String MAILING_TEST_ADDRESS = "mailing.test.address";
+    private final Properties developmentProperties;
 
-    private boolean isDevelopement = false;
+    private boolean developementMode = false;
     private boolean mailingTestMode = false;
     private boolean debugRestApi = false;
     private String mailingTestAddress;
@@ -39,7 +39,7 @@ public class DevelopmentProperties {
     public DevelopmentProperties(File configPath) {
         mailingTestAddress = StringUtils.EMPTY;
         mailingTestMode = false;
-        initPropertiesFromFile(configPath);
+        developmentProperties = initPropertiesFromFile(configPath);
     }
 
     /**
@@ -59,42 +59,121 @@ public class DevelopmentProperties {
      * @param configPath
      *            path to the configuration directory
      */
-    private void initPropertiesFromFile(File configPath) {
+    private Properties initPropertiesFromFile(File configPath) {
         File propsFile = new File(configPath, DEVEL_PROPERTIES_FILENAME);
         if (!propsFile.exists()) {
-            // return silently
-            return;
+            // ignore silently
+            return new Properties();
         }
         LOG.info("Using development properties " + propsFile.getAbsolutePath());
         try {
-            Properties developmentProperties = PropertiesUtils.loadPropertiesFromFile(propsFile);
-            String mailingTestModeString = developmentProperties.getProperty(MAILING_TEST_MODE,
-                    StringUtils.EMPTY);
-            mailingTestMode = Boolean.parseBoolean(mailingTestModeString);
-            if (mailingTestMode) {
-                String testAddress = developmentProperties.getProperty(MAILING_TEST_ADDRESS,
-                        StringUtils.EMPTY);
-                if (EmailValidator.validateEmailAddressByRegex(testAddress)) {
-                    mailingTestAddress = testAddress;
-                    LOG.info("Mailing test mode is activated and uses email address "
-                            + mailingTestAddress);
-                } else {
-                    LOG.error("Development property " + MAILING_TEST_ADDRESS
-                            + " does not provide a leagal email address. "
-                            + "The mailing test mode will be disabled.");
-                    mailingTestMode = false;
-                }
-            } else {
-                LOG.info("Mailing test mode is deactivated");
-            }
-            isDevelopement = Boolean.parseBoolean(developmentProperties.getProperty("development"));
-            debugRestApi = Boolean.parseBoolean(developmentProperties
-                    .getProperty("com.communote.debug.rest"));
+            Properties props = PropertiesUtils.loadPropertiesFromFile(propsFile);
+            developementMode = Boolean.parseBoolean(props.getProperty("development"));
+            return props;
+            /*
+             * String mailingTestModeString = developmentProperties.getProperty(MAILING_TEST_MODE,
+             * StringUtils.EMPTY); mailingTestMode = Boolean.parseBoolean(mailingTestModeString); if
+             * (mailingTestMode) { String testAddress =
+             * developmentProperties.getProperty(MAILING_TEST_ADDRESS, StringUtils.EMPTY); if
+             * (EmailValidator.validateEmailAddressByRegex(testAddress)) { mailingTestAddress =
+             * testAddress; LOG.info("Mailing test mode is activated and uses email address " +
+             * mailingTestAddress); } else { LOG.error("Development property " +
+             * MAILING_TEST_ADDRESS + " does not provide a leagal email address. " +
+             * "The mailing test mode will be disabled."); mailingTestMode = false; } } else {
+             * LOG.info("Mailing test mode is deactivated"); }
+             * 
+             * debugRestApi = Boolean.parseBoolean(developmentProperties
+             * .getProperty("com.communote.debug.rest"));
+             */
         } catch (IOException e) {
             LOG.error("Reading properties file " + propsFile + " failed.", e);
             throw new ConfigurationInitializationException("Reading properties file " + propsFile
                     + " failed");
         }
+    }
+
+    /**
+     * Returns the property value for the key as String.
+     * 
+     * @param key
+     *            the key
+     * @return the property value or null if there is no property for the key
+     */
+    public String getProperty(String key) {
+        return developmentProperties.getProperty(key);
+    }
+
+    /**
+     * Returns the property for the key as boolean. 'true', 'on' or 'yes' (case insensitive) will
+     * return true. 'false', 'off' or 'no' (case insensitive) will return false. If none of these
+     * values is set the fallback will be returned.
+     * 
+     * @param key
+     *            the key
+     * @param fallback
+     *            the fallback to return if there is no property for the key
+     * @return the property value or the fallback if there is no property for the key or it cannot
+     *         be converted into a boolean
+     */
+    public boolean getProperty(String key, boolean fallback) {
+        Boolean result = BooleanUtils.toBooleanObject(getProperty(key));
+        if (result == null) {
+            result = fallback;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the property for the key as integer.
+     * 
+     * @param key
+     *            the key
+     * @param fallback
+     *            the fallback to return if there is no property for the key
+     * @return the property value or the fallback if there is no property for the key or it cannot
+     *         be converted into an integer
+     */
+    public int getProperty(String key, int fallback) {
+        try {
+            return Integer.parseInt(getProperty(key));
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
+    /**
+     * Returns the property for the key as long.
+     * 
+     * @param key
+     *            the key
+     * @param fallback
+     *            the fallback to return if there is no property for the key
+     * @return the property value or the fallback if there is no property for the key or it cannot
+     *         be converted into a long
+     */
+    public long getProperty(String key, long fallback) {
+        try {
+            return Long.parseLong(getProperty(key));
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
+    /**
+     * Returns the property for the key as string.
+     * 
+     * @param key
+     *            the key
+     * @param fallback
+     *            the fallback to return if there is no property for the key
+     * @return the property value or the fallback if there is no property for the key
+     */
+    public String getProperty(String key, String fallback) {
+        String prop = getProperty(key);
+        if (prop == null) {
+            return fallback;
+        }
+        return prop;
     }
 
     /**
@@ -108,7 +187,7 @@ public class DevelopmentProperties {
      * @return the isDevelopemnt
      */
     public boolean isDevelopement() {
-        return isDevelopement;
+        return developementMode;
     }
 
     /**
