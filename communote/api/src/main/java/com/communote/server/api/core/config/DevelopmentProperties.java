@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.communote.common.properties.PropertiesUtils;
-import com.communote.common.validation.EmailValidator;
 
 /**
  * Object holding some special properties when running a development system.
@@ -20,7 +19,7 @@ import com.communote.common.validation.EmailValidator;
 public class DevelopmentProperties {
     private static final String DEVEL_PROPERTIES_FILENAME = "development.properties";
 
-    private final static Logger LOG = LoggerFactory.getLogger(DevelopmentProperties.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(DevelopmentProperties.class);
 
     private final Properties developmentProperties;
 
@@ -62,16 +61,17 @@ public class DevelopmentProperties {
     private Properties initPropertiesFromFile(File configPath) {
         File propsFile = new File(configPath, DEVEL_PROPERTIES_FILENAME);
         if (!propsFile.exists()) {
-            // ignore silently
+            // ignore
+            LOGGER.debug("No development properties defined");
             return new Properties();
         }
-        LOG.info("Using development properties " + propsFile.getAbsolutePath());
+        LOGGER.info("Using development properties {}", propsFile.getAbsolutePath());
         try {
             Properties props = PropertiesUtils.loadPropertiesFromFile(propsFile);
             developementMode = Boolean.parseBoolean(props.getProperty("development"));
             return props;
         } catch (IOException e) {
-            LOG.error("Reading properties file " + propsFile + " failed.", e);
+            LOGGER.error("Reading properties file {} failed.", propsFile, e);
             throw new ConfigurationInitializationException("Reading properties file " + propsFile
                     + " failed");
         }
@@ -119,11 +119,17 @@ public class DevelopmentProperties {
      *         be converted into an integer
      */
     public int getProperty(String key, int fallback) {
-        try {
-            return Integer.parseInt(getProperty(key));
-        } catch (NumberFormatException e) {
-            return fallback;
+        String value = getProperty(key);
+        if (value != null) {
+            try {
+                return Integer.parseInt(getProperty(key));
+            } catch (NumberFormatException e) {
+                LOGGER.debug(
+                        "Converting property value '{}' into an integer failed, using fallback {}",
+                        value, fallback);
+            }
         }
+        return fallback;
     }
 
     /**
@@ -137,11 +143,16 @@ public class DevelopmentProperties {
      *         be converted into a long
      */
     public long getProperty(String key, long fallback) {
-        try {
-            return Long.parseLong(getProperty(key));
-        } catch (NumberFormatException e) {
-            return fallback;
+        String value = getProperty(key);
+        if (value != null) {
+            try {
+                return Long.parseLong(value);
+            } catch (NumberFormatException e) {
+                LOGGER.debug("Converting property value '{}' into a long failed, using fallback {}",
+                        value, fallback);
+            }
         }
+        return fallback;
     }
 
     /**

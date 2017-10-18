@@ -15,6 +15,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
@@ -22,7 +23,6 @@ import com.communote.common.io.MaxLengthReachedException;
 import com.communote.common.util.HTMLHelper;
 import com.communote.common.virusscan.exception.InitializeException;
 import com.communote.common.virusscan.exception.VirusFoundException;
-import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.blog.BlogNotFoundException;
 import com.communote.server.api.core.config.type.ApplicationProperty;
 import com.communote.server.api.core.config.type.ClientProperty;
@@ -79,6 +79,20 @@ public class MailBasedPostingManagementImpl extends MailBasedPostingManagementBa
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MailBasedPostingManagementImpl.class);
 
+    private final UserManagement userManagement;
+    private final NoteService noteService;
+    private final ResourceStoringManagement attachmentManagement;
+    private final MailSender mailSender;
+
+    @Autowired
+    public MailBasedPostingManagementImpl(UserManagement userManagement, NoteService noteService,
+            ResourceStoringManagement attachmentManagement, MailSender mailSender) {
+        this.userManagement = userManagement;
+        this.noteService = noteService;
+        this.attachmentManagement = attachmentManagement;
+        this.mailSender = mailSender;
+    }
+    
     /**
      * @param message
      *            the message
@@ -242,8 +256,7 @@ public class MailBasedPostingManagementImpl extends MailBasedPostingManagementBa
             int i = 0;
             for (AttachmentTO attachment : attachments) {
                 attachment.setUploaderId(sender.getId());
-                Attachment storedAttachment = ServiceLocator.findService(
-                        ResourceStoringManagement.class).storeAttachment(attachment);
+                Attachment storedAttachment = attachmentManagement.storeAttachment(attachment);
                 attachmentIds[i] = storedAttachment.getId();
                 i++;
             }
@@ -270,7 +283,6 @@ public class MailBasedPostingManagementImpl extends MailBasedPostingManagementBa
     private boolean doCreateNoteOrReply(NoteStoringTO storingTO, Long parentNoteId,
             User sender, Set<String> additionalBlogs) throws NoteStoringPreProcessorException,
             NoteNotFoundException {
-        NoteService noteService = ServiceLocator.findService(NoteService.class);
         boolean creationCompleted = true;
 
         try {
@@ -336,8 +348,7 @@ public class MailBasedPostingManagementImpl extends MailBasedPostingManagementBa
      */
     private void evaluateNoteModificationResult(NoteModificationResult result, User sender,
             Long blogId, Long creatorId) {
-        String alias = ServiceLocator.instance().getService(UserManagement.class)
-                .findUserByUserId(creatorId).getAlias();
+        String alias = userManagement.findUserByUserId(creatorId).getAlias();
         result.getUserNotificationResult().getUnresolvableUsers().remove(alias);
         result.getUserNotificationResult().getUninformableUsers().remove(alias);
         if (result.getStatus().equals(NoteModificationStatus.SUCCESS)) {
@@ -576,7 +587,7 @@ public class MailBasedPostingManagementImpl extends MailBasedPostingManagementBa
      *            the error mail message
      */
     private void sendErrorMailMessage(MailMessage message) {
-        ServiceLocator.instance().getService(MailSender.class).send(message);
+        mailSender.send(message);
     }
 
     /**
