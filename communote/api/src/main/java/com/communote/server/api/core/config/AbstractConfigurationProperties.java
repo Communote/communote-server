@@ -40,12 +40,15 @@ public abstract class AbstractConfigurationProperties<T extends ConfigurationPro
     public abstract String getProperty(T key);
 
     /**
-     * Returns the property for the key as boolean.
+     * Returns the property for the key as boolean. 'true', 'on' or 'yes' (case insensitive) will
+     * return true. 'false', 'off' or 'no' (case insensitive) will return false. If none of these
+     * values is set the fallback will be returned.
      * 
      * @param key
      *            the key
      * @param fallback
-     *            the fallback to return if there is no property for the key
+     *            the fallback to return if there is no property for the key or the property cannot
+     *            be converted to boolean.
      * @return the property value or the fallback if there is no property for the key or it cannot
      *         be converted into a boolean
      */

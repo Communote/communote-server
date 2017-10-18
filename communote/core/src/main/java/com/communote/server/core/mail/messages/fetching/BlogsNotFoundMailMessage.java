@@ -27,8 +27,8 @@ public class BlogsNotFoundMailMessage extends MailMessage {
     /**
      * Creates a mail message describing that some blogs were not found.
      * 
-     * @param receiver
-     *            the receiver of the message
+     * @param recipient
+     *            the recipient of the message
      * @param blogNameIds
      *            collection of blog name identifiers that were not found
      * @param metaPostDataBlog
@@ -36,19 +36,16 @@ public class BlogsNotFoundMailMessage extends MailMessage {
      *            identifiers were found within the email-message encoded with the meta-post-data
      *            syntax ('&BlogName')
      */
-    public BlogsNotFoundMailMessage(User receiver, Collection<String> blogNameIds,
+    public BlogsNotFoundMailMessage(User recipient, Collection<String> blogNameIds,
             boolean metaPostDataBlog) {
         super(metaPostDataBlog ? TEMPLATE_KEY_META_POST_DATA_BLOG
                 : (blogNameIds.size() == 1 ? TEMPLATE_KEY_SINGLE : TEMPLATE_KEY_MULTIPLE),
-                receiver.getLanguageLocale(), receiver);
+                recipient.getLanguageLocale(), recipient);
         this.notFoundBlogNameIds = blogNameIds;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.BLOG_NAME_IDS, StringUtils.join(
                 notFoundBlogNameIds, ", "));
     }

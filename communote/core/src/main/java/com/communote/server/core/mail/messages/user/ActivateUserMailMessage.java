@@ -17,30 +17,25 @@ public class ActivateUserMailMessage extends MailMessage {
     /** The email template. */
     private final static String FIRST_ACTIVATION_EMAIL_TEMPLATE = "mail.message.user.user-activation";
     private final static String REACTIVATION_EMAIL_TEMPLATE = "mail.message.user.user-reactivation";
-    private final User receiver;
+    private final User recipient;
 
     /**
      * Instantiates a new activate user mail message.
      * 
-     * @param receiver
-     *            the receiver
+     * @param recipient
+     *            the user who was activated
      * @param firstActivation
      *            whether it is the first activation (e.g. after confirmation) or a re-activation
      *            (e.g. after being temporarily disabled)
      */
-    public ActivateUserMailMessage(User receiver, boolean firstActivation) {
+    public ActivateUserMailMessage(User recipient, boolean firstActivation) {
         super(firstActivation ? FIRST_ACTIVATION_EMAIL_TEMPLATE : REACTIVATION_EMAIL_TEMPLATE,
-                receiver.getLanguageLocale(), receiver);
-        this.receiver = receiver;
+                recipient.getLanguageLocale(), recipient);
+        this.recipient = recipient;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see com.communote.server.core.mail.messages.MailMessage#prepareModel()
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
-        model.put(MailModelPlaceholderConstants.USER, receiver);
+    public void prepareModel(Map<String, Object> model) {
+        model.put(MailModelPlaceholderConstants.USER, recipient);
     }
 }

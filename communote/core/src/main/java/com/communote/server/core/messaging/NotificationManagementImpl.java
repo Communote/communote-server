@@ -14,7 +14,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +29,9 @@ import com.communote.server.api.core.application.CommunoteRuntime;
 import com.communote.server.api.core.common.ClientAndChannelContextHolder;
 import com.communote.server.api.core.config.type.ApplicationPropertyXmpp;
 import com.communote.server.api.core.config.type.ClientProperty;
-import com.communote.server.api.core.property.PropertyManagement;
 import com.communote.server.core.blog.NoteManagement;
 import com.communote.server.core.blog.export.PermalinkGenerationManagement;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.MailMessageHelper;
 import com.communote.server.core.mail.MailingException;
 import com.communote.server.core.mail.messages.MailModelPlaceholderConstants;
@@ -65,31 +63,23 @@ import com.communote.server.persistence.user.client.ClientHelper;
 @Service("notificationManagement")
 public class NotificationManagementImpl extends NotificationManagementBase {
 
-    /** Logger. */
     private final static Logger LOGGER = LoggerFactory.getLogger(NotificationManagementImpl.class);
 
     /** Default priority for xmpp. */
     public static final int XMPP_PRIORITY = 2;
 
-    @Autowired
-    private VelocityEngine velocityEngine;
-
-    @Autowired
-    private MailManagement mailManagement;
-
-    @Autowired
-    private PermalinkGenerationManagement permalinkGenerationManagement;
-    @Autowired
-    private PropertyManagement propertyManagement;
-
-    @Autowired
-    private UserManagement userManagement;
-
-    @Autowired
-    private NoteManagement noteManagement;
-
+    private final MailSender mailSender;
+    private final UserManagement userManagement;
+    private final NoteManagement noteManagement;
     private final Map<String, MessagerConnector> connectors = new HashMap<String, MessagerConnector>();
 
+    @Autowired
+    public NotificationManagementImpl(UserManagement userManagement, NoteManagement noteManagement, MailSender mailSender) {
+        this.userManagement = userManagement;
+        this.noteManagement = noteManagement;
+        this.mailSender = mailSender;
+    }
+    
     /**
      * Get the connector for the id, throws an exception if it goes wrong
      *
@@ -242,18 +232,16 @@ public class NotificationManagementImpl extends NotificationManagementBase {
             }
             if ((userWantsMailMessage(user) || fallbackUsers.contains(user))) {
                 Locale locale = user.getLanguageLocale();
-                Collection<User> users = new HashSet<User>();
-                users.add(user);
-                NotifyAboutNoteMailMessage message = new NotifyAboutNoteMailMessage(users,
+                NotifyAboutNoteMailMessage message = new NotifyAboutNoteMailMessage(user,
                         note.getUser(), locale, note, note.getBlog(), definitionKeys, model);
                 try {
-                    mailManagement.sendMail(message);
+                    mailSender.send(message);
                     if (LOGGER.isDebugEnabled()) {
                         notifiedUsers.add(user.getAlias());
                     }
                 } catch (MailingException e) {
                     LOGGER.error("Error sending note notification to user {}: {}", user.getId(),
-                            e.getMessage());
+                            e.getMessage(), e);
                 }
             }
         }

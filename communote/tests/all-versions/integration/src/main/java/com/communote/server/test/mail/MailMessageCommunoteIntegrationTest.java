@@ -5,7 +5,7 @@ import java.util.Locale;
 import org.testng.annotations.Test;
 
 import com.communote.server.api.ServiceLocator;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.model.user.User;
 import com.communote.server.test.CommunoteIntegrationTest;
 import com.communote.server.test.util.TestUtils;
@@ -20,12 +20,12 @@ public abstract class MailMessageCommunoteIntegrationTest extends CommunoteInteg
      * 
      * @param mailManagement
      *            The management.
-     * @param receivers
-     *            List of receivers.
+     * @param recipients
+     *            list of recipients
      * @throws Exception
      *             Exception.
      */
-    public abstract void sendMail(MailManagement mailManagement, User... receivers)
+    public abstract void sendMail(MailSender mailSender, User... recipients)
             throws Exception;
 
     /**
@@ -40,7 +40,7 @@ public abstract class MailMessageCommunoteIntegrationTest extends CommunoteInteg
         User germanUser = TestUtils.createRandomUser(false);
         germanUser.setLanguageCode(Locale.GERMAN.getLanguage());
         germanUser.setLanguageLocale(Locale.GERMAN);
-        sendMail(ServiceLocator.instance().getService(MailManagement.class), englishUser,
+        sendMail(ServiceLocator.instance().getService(MailSender.class), englishUser,
                 germanUser);
     }
 }

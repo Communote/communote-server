@@ -117,7 +117,7 @@ public class InstallerTest {
      *
      * <p>
      * Note: whether the configuration refers to an working SMTP server or not doesn't matter
-     * because the MockMailManagement is used which won't send emails
+     * because the FileSystemMimeMessageSender is used which won't send emails
      * </p>
      *
      * @param mailOutHost
@@ -330,8 +330,7 @@ public class InstallerTest {
 
         // create development properties to avoid sending
         Properties developmentProperties = new Properties();
-        developmentProperties.setProperty("mailing.test.mode", "true");
-        developmentProperties.setProperty("mailing.test.address", mailingReceiverAddress);
+        developmentProperties.setProperty("mailout.mode", "filesystem");
         File configurationDirectory = new File(testBaseDir, "conf" + File.separator + "communote");
         configurationDirectory.mkdirs();
         FileOutputStream out = new FileOutputStream(configurationDirectory.getCanonicalPath()

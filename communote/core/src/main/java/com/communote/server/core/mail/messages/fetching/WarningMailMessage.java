@@ -32,8 +32,8 @@ public class WarningMailMessage extends MailMessage {
     /**
      * Creates a warning e-mail message.
      * 
-     * @param receiver
-     *            the user to receive the mail
+     * @param recipient
+     *            the user to send the email to
      * @param unresolvableUsers
      *            collection of user aliases that could not be resolved to existing users
      * @param uninformableUsers
@@ -49,10 +49,10 @@ public class WarningMailMessage extends MailMessage {
      * @param isDirect
      *            True, if this message is private message.
      */
-    public WarningMailMessage(User receiver, Collection<String> unresolvableUsers,
+    public WarningMailMessage(User recipient, Collection<String> unresolvableUsers,
             Collection<String> uninformableUsers, Collection<String> unresolvableBlogs,
             Collection<String> unwritableBlogs, String blogTitle, boolean isDirect) {
-        super("mail.message.fetching.warning", receiver.getLanguageLocale(), receiver);
+        super("mail.message.fetching.warning", recipient.getLanguageLocale(), recipient);
         this.unresolvableUsers = unresolvableUsers;
         this.uninformableUsers = uninformableUsers;
         this.unresolvableBlogs = unresolvableBlogs;
@@ -67,11 +67,8 @@ public class WarningMailMessage extends MailMessage {
         this.blogTitle = blogTitle;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put("user_notify_warning", userWarning);
         model.put("crosspost_warning", crosspostWarning);
         if (unresolvableUsers.size() > 0) {

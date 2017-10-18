@@ -2,7 +2,7 @@ package com.communote.server.core.mail.message;
 
 import java.util.UUID;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.TextMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -16,10 +16,10 @@ public class TextMailMessageTest extends MailMessageCommunoteIntegrationTest {
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) {
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new TextMailMessage("Random subject: " + UUID.randomUUID(),
-                    "Random content: " + UUID.randomUUID(), receiver.getEmail()));
+    public void sendMail(MailSender mailSender, User... recipients) {
+        for (User recipient : recipients) {
+            mailSender.send(new TextMailMessage("Random subject: " + UUID.randomUUID(),
+                    "Random content: " + UUID.randomUUID(), recipient.getEmail()));
         }
     }
 }

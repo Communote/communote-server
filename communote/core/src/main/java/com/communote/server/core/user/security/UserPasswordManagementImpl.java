@@ -20,7 +20,7 @@ import com.communote.server.api.core.security.SecurityCodeManagement;
 import com.communote.server.api.core.user.UserNotFoundException;
 import com.communote.server.core.common.exceptions.PasswordLengthException;
 import com.communote.server.core.common.exceptions.PasswordValidationException;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.ForgottenPWMailMessage;
 import com.communote.server.core.security.SecurityHelper;
 import com.communote.server.core.user.ExternalUserPasswordChangeNotAllowedException;
@@ -43,18 +43,18 @@ public class UserPasswordManagementImpl implements UserPasswordManagement {
     private final UserDao userDao;
     private final SecurityCodeManagement securityCodeManagement;
     private final ForgottenPasswordSecurityCodeDao forgottenPasswordSecurityCodeDao;
-    private final MailManagement mailManagement;
+    private final MailSender mailSender;
     private Map<String, PasswordHashFunction> hashFunctions = new LinkedHashMap<>();
     private final String defaultHashFunctionId;
 
     @Autowired
     public UserPasswordManagementImpl(UserDao userDao,
             ForgottenPasswordSecurityCodeDao forgottenPasswordSecurityCodeDao,
-            SecurityCodeManagement securityCodeManagement, MailManagement mailManagement) {
+            SecurityCodeManagement securityCodeManagement, MailSender mailSender) {
         this.userDao = userDao;
         this.forgottenPasswordSecurityCodeDao = forgottenPasswordSecurityCodeDao;
         this.securityCodeManagement = securityCodeManagement;
-        this.mailManagement = mailManagement;
+        this.mailSender = mailSender;
         PasswordHashFunction hashFunction = new BcryptPasswordHashFunction();
         this.defaultHashFunctionId = hashFunction.getIdentifier();
         hashFunctions.put(hashFunction.getIdentifier(), hashFunction);
@@ -265,7 +265,7 @@ public class UserPasswordManagementImpl implements UserPasswordManagement {
         assertLocalUser(user);
         ForgottenPasswordSecurityCode code = forgottenPasswordSecurityCodeDao.createCode(user);
         ForgottenPWMailMessage message = new ForgottenPWMailMessage(user, code);
-        mailManagement.sendMail(message);
+        mailSender.send(message);
     }
 
     @Override

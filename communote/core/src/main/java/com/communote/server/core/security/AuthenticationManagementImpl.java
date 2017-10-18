@@ -47,7 +47,7 @@ import com.communote.server.api.core.user.UserNotFoundException;
 import com.communote.server.core.general.RunInTransaction;
 import com.communote.server.core.general.TransactionException;
 import com.communote.server.core.general.TransactionManagement;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.ManagerSecurityWarnMailMessage;
 import com.communote.server.core.mail.messages.user.UserLockedMailMessage;
 import com.communote.server.core.security.authentication.AuthAgainstInternalDBWhileExternalUserAccountException;
@@ -93,7 +93,7 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
     @Autowired
     private UserDao userDao;
     @Autowired
-    private MailManagement mailManagement;
+    private MailSender mailSender;
     @Autowired
     private UserManagement userManagement;
     @Autowired
@@ -168,7 +168,7 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
             // send message
             UserLockedMailMessage message = new UserLockedMailMessage(user,
                     ClientAndChannelContextHolder.getChannel(), code);
-            mailManagement.sendMail(message);
+            mailSender.send(message);
             throw new AccountPermanentlyLockedException("The user account is permanently locked");
         }
         if (authFailedStatus.getLockedTimeout() != null && authFailedStatus.getLockedTimeout()
@@ -690,7 +690,7 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
             // generate and send message
             message = new ManagerSecurityWarnMailMessage(managers.get(i), riskLevel, warnReason,
                     user.getId());
-            mailManagement.sendMail(message);
+            mailSender.send(message);
         }
     }
 
@@ -722,7 +722,7 @@ public class AuthenticationManagementImpl extends AuthenticationManagementBase {
                     ManagerSecurityWarnMailMessage.RISK_LEVEL_HIGH, manager.getLanguageLocale());
             message = new ManagerSecurityWarnMailMessage(manager, riskLevel, warnReason,
                     user.getId());
-            mailManagement.sendMail(message);
+            mailSender.send(message);
         }
     }
 

@@ -15,7 +15,7 @@ import com.communote.server.model.user.User;
 import com.communote.server.persistence.user.client.ClientHelper;
 
 /**
- * A mail message to inform a user about a missing blog name identifier inside the subject.
+ * A mail message to inform a user about a missing topic name-identifier/alias inside the subject.
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  *
@@ -29,18 +29,15 @@ public class BlogNameIdMissingInSubjectMailMessage extends MailMessage {
     /**
      * Creates a new message.
      *
-     * @param receiver
-     *            the user to receive the email
+     * @param recipient
+     *            the user to notify about the missing topic alias
      */
-    public BlogNameIdMissingInSubjectMailMessage(User receiver) {
-        super("mail.message.fetching.blog-alias-missing", receiver.getLanguageLocale(), receiver);
+    public BlogNameIdMissingInSubjectMailMessage(User recipient) {
+        super("mail.message.fetching.blog-alias-missing", recipient.getLanguageLocale(), recipient);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         try {
             ClientTO client = ServiceLocator.findService(ClientRetrievalService.class).findClient(
                     ClientHelper.getGlobalClientId());

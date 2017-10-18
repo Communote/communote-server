@@ -160,8 +160,8 @@ public abstract class CommunoteIntegrationTest {
         PropertiesUtils.storePropertiesToFile(startupProperties, startupPropertiesFile);
 
         Properties developmentProperties = new Properties();
-        developmentProperties.setProperty("mailing.test.mode", "true");
-        developmentProperties.setProperty("mailing.test.address", instanceName + "@localhost");
+        // ensure no mails are sent
+        developmentProperties.setProperty("mailout.mode", "filesystem");
         File developmentPropertiesFile = new File(configDir, "development.properties");
         developmentPropertiesFile.createNewFile();
         PropertiesUtils.storePropertiesToFile(developmentProperties, developmentPropertiesFile);

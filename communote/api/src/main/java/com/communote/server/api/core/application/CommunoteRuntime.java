@@ -18,7 +18,7 @@ public class CommunoteRuntime {
     }
 
     /**
-     * Initialize the runtime with the given builder. A BootstrapException will be called if
+     * Initialize the runtime with the given builder. A BootstrapException will be thrown if
      * initialization fails.
      *
      * @param runtimeBuilder

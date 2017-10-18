@@ -17,10 +17,24 @@ public class ConfigurationUpdateException extends Exception {
      * @param message
      *            the detail message
      * @param messageKey
-     *            a message key referencing a localized message
+     *            optional message key for referencing a localized message
      */
     public ConfigurationUpdateException(String message, String messageKey) {
         super(message);
+        this.messageKey = messageKey;
+    }
+    
+    /**
+     * 
+     * @param message
+     *            the detail message
+     * @param messageKey
+     *            optional message key for referencing a localized message
+     * @param cause
+     *            the cause of the exception
+     */
+    public ConfigurationUpdateException(String message, String messageKey, Throwable cause) {
+        super(message, cause);
         this.messageKey = messageKey;
     }
 

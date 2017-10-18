@@ -2,7 +2,7 @@ package com.communote.server.core.mail.message.fetching;
 
 import java.util.UUID;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.fetching.ContentProcessingErrorMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -17,12 +17,12 @@ public class ContentProcessingErrorMailMessageTest extends MailMessageCommunoteI
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) {
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new ContentProcessingErrorMailMessage(receiver, UUID
+    public void sendMail(MailSender mailSender, User... recipients) {
+        for (User recipient : recipients) {
+            mailSender.send(new ContentProcessingErrorMailMessage(recipient, UUID
                     .randomUUID().toString(),
                     ContentProcessingErrorMailMessage.Type.CONTENT_UNPROCESSABLE));
-            mailManagement.sendMail(new ContentProcessingErrorMailMessage(receiver, UUID
+            mailSender.send(new ContentProcessingErrorMailMessage(recipient, UUID
                     .randomUUID().toString(),
                     ContentProcessingErrorMailMessage.Type.NO_CONTENT));
         }

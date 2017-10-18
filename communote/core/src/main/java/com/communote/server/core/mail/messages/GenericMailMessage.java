@@ -21,31 +21,31 @@ public class GenericMailMessage extends MailMessage {
      * Constructor.
      * 
      * @param messageKey
-     *            The message key.
-     * @param receivers
-     *            Receivers.
+     *            The message key of the template.
+     * @param recipients
+     *            users to send the message to
      * @param locale
      *            The locale.
      */
-    public GenericMailMessage(String messageKey, Locale locale, User... receivers) {
-        this(messageKey, locale, new HashMap<String, Object>(), receivers);
+    public GenericMailMessage(String messageKey, Locale locale, User... recipients) {
+        this(messageKey, locale, new HashMap<String, Object>(), recipients);
     }
 
     /**
      * Constructor.
      * 
      * @param messageKey
-     *            The template.
-     * @param receivers
-     *            Receivers.
+     *            The message key of the template.
+     * @param recipients
+     *            users to send the message to
      * @param locale
-     *            The locale.
+     *            The locale for sending the message
      * @param model
-     *            Model.
+     *            Model with key value pairs which should be available when rendering the template.
      */
     public GenericMailMessage(String messageKey, Locale locale,
-            Map<String, Object> model, User... receivers) {
-        super(messageKey, locale, receivers);
+            Map<String, Object> model, User... recipients) {
+        super(messageKey, locale, recipients);
         this.model.putAll(model);
     }
 
@@ -65,7 +65,7 @@ public class GenericMailMessage extends MailMessage {
      * {@inheritDoc}
      */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.putAll(this.model);
     }
 }

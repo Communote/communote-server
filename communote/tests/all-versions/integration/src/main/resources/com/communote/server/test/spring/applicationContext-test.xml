@@ -16,8 +16,6 @@
         <property name="startDelay" value="1" />
         <property name="repeatCount" value="0" />
     </bean>
-    <!-- override the mailManagement of the core to avoid sending emails -->
-    <bean id="mailManagement" class="com.communote.server.test.mail.MockMailManagement"  />
     
     <!-- override the eventDispatcher so that firing events can be deactivated -->
     <bean id="eventDispatcher" class="com.communote.server.test.event.DeactivatableEventDispatcher" />

@@ -40,11 +40,8 @@ public class RemindUserRegistrationMailMessage extends SecurityCodeMailMessage {
         return "/user/confirm.do";
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.USER, receiver);
         String confirmationLink = getSecurityCodeConfirmationLink(securityCode);
         model.put(MailModelPlaceholderConstants.CONFIRMATION_LINK, confirmationLink);

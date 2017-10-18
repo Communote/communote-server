@@ -8,7 +8,7 @@ import com.communote.server.model.user.User;
 
 
 /**
- * Remind user mail message that the user is activated but has not logged in yet.
+ * Mail message to remind a user that he was activated but hasn't logged in yet.
  * 
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
@@ -19,21 +19,16 @@ public class RemindUserLoginMailMessage extends MailMessage {
     /**
      * Instantiates a new remind user login mail message.
      * 
-     * @param receiver
-     *            the receiver
+     * @param recipient
+     *            the user to remind
      */
-    public RemindUserLoginMailMessage(User receiver) {
-        super("mail.message.user.remind-user-login", receiver.getLanguageLocale(), receiver);
-        this.receiver = receiver;
+    public RemindUserLoginMailMessage(User recipient) {
+        super("mail.message.user.remind-user-login", recipient.getLanguageLocale(), recipient);
+        this.receiver = recipient;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see com.communote.server.core.mail.messages.MailMessage#prepareModel()
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.USER, receiver);
     }
 }

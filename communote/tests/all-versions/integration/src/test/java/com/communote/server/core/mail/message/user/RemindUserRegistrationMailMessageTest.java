@@ -3,7 +3,7 @@ package com.communote.server.core.mail.message.user;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.RemindUserRegistrationMailMessage;
 import com.communote.server.model.security.SecurityCodeAction;
 import com.communote.server.model.user.User;
@@ -19,12 +19,12 @@ public class RemindUserRegistrationMailMessageTest extends MailMessageCommunoteI
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
-        for (User receiver : receivers) {
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
+        for (User recipient : recipients) {
             UserSecurityCode securityCode = UserSecurityCode.Factory.newInstance(UUID.randomUUID()
                     .toString(), SecurityCodeAction.CONFIRM_USER,
-                    new Timestamp(System.currentTimeMillis()), receiver);
-            mailManagement.sendMail(new RemindUserRegistrationMailMessage(receiver, securityCode));
+                    new Timestamp(System.currentTimeMillis()), recipient);
+            mailSender.send(new RemindUserRegistrationMailMessage(recipient, securityCode));
         }
     }
 

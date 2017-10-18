@@ -1,6 +1,6 @@
 package com.communote.server.core.mail.message.user;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.InviteUserToClientWithExternalAuthMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -15,10 +15,10 @@ public class InviteUserToClientWithExternalAuthMailMessageTest extends
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new InviteUserToClientWithExternalAuthMailMessage(receiver,
-                    receiver.getLanguageLocale(), receiver.getEmail()));
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
+        for (User recipient : recipients) {
+            mailSender.send(new InviteUserToClientWithExternalAuthMailMessage(recipient,
+                    recipient.getLanguageLocale(), recipient.getEmail()));
         }
     }
 }

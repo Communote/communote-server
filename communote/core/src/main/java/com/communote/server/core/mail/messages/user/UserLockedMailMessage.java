@@ -38,11 +38,8 @@ public class UserLockedMailMessage extends SecurityCodeMailMessage {
         this.securityCode = securityCode;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.USER, receiver);
         model.put(MailModelPlaceholderConstants.LOCKED_CHANNEL, channel.getValue());
         model.put(MailModelPlaceholderConstants.CONFIRMATION_LINK,

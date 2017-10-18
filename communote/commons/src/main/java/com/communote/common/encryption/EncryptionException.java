@@ -1,7 +1,7 @@
 package com.communote.common.encryption;
 
 /**
- * Throws if an password de/encryption error occurred
+ * Exception which is thrown when the de- or encryption failed
  * 
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
@@ -10,19 +10,22 @@ public class EncryptionException extends Exception {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor.
+     * Constructor
+     * 
+     * @param message
+     *            detail message
      */
-    public EncryptionException() {
-        super();
+    public EncryptionException(String message) {
+        super(message);
     }
 
     /**
-     * @param msg
-     *            Message.
-     * @param innerex
-     *            Inner Exception.
+     * @param message
+     *            detail message
+     * @param cause
+     *            cause of the exception
      */
-    public EncryptionException(String msg, Throwable innerex) {
-        super(msg, innerex);
+    public EncryptionException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

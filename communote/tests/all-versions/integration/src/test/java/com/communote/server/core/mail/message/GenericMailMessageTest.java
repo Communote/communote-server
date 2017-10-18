@@ -1,6 +1,6 @@
 package com.communote.server.core.mail.message;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.GenericMailMessage;
 import com.communote.server.core.mail.messages.MailMessage;
 import com.communote.server.model.user.User;
@@ -16,20 +16,20 @@ public class GenericMailMessageTest extends MailMessageCommunoteIntegrationTest 
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) {
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new GenericMailMessage(
-                    "mail.message.fetching.parent-note-not-found", receiver.getLanguageLocale(),
-                    receiver));
-            mailManagement.sendMail(new GenericMailMessage(
-                    "mail.message.fetching.post-limit-reached", receiver.getLanguageLocale(),
-                    receiver));
-            mailManagement.sendMail(new GenericMailMessage(
+    public void sendMail(MailSender mailSender, User... recipients) {
+        for (User recipient : recipients) {
+            mailSender.send(new GenericMailMessage(
+                    "mail.message.fetching.parent-note-not-found", recipient.getLanguageLocale(),
+                    recipient));
+            mailSender.send(new GenericMailMessage(
+                    "mail.message.fetching.post-limit-reached", recipient.getLanguageLocale(),
+                    recipient));
+            mailSender.send(new GenericMailMessage(
                     "mail.message.fetching.reply-is-no-directmessage",
-                    receiver.getLanguageLocale(), receiver));
-            mailManagement.sendMail(new GenericMailMessage(
+                    recipient.getLanguageLocale(), recipient));
+            mailSender.send(new GenericMailMessage(
                     "mail.message.fetching.user-temporarily-disabled",
-                    receiver.getLanguageLocale(), receiver));
+                    recipient.getLanguageLocale(), recipient));
         }
     }
 }

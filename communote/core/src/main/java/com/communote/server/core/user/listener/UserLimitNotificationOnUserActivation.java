@@ -13,7 +13,7 @@ import com.communote.server.api.core.config.ConfigurationManager;
 import com.communote.server.api.core.config.type.ClientProperty;
 import com.communote.server.api.core.event.EventListener;
 import com.communote.server.core.common.LimitHelper;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.NotifyUserCountLimitReachedMailMessage;
 import com.communote.server.core.user.UserManagement;
 import com.communote.server.core.user.UserManagementHelper;
@@ -32,7 +32,7 @@ import com.communote.server.persistence.user.client.ClientHelper;
 public class UserLimitNotificationOnUserActivation implements EventListener<UserStatusChangedEvent> {
 
     private UserManagement userMangement;
-    private MailManagement mailMangement;
+    private MailSender mailSender;
 
     /**
      * An active user was removed, resets the user limit flags
@@ -102,11 +102,11 @@ public class UserLimitNotificationOnUserActivation implements EventListener<User
         }
     }
 
-    private MailManagement getMailManagement() {
-        if (mailMangement == null) {
-            mailMangement = ServiceLocator.findService(MailManagement.class);
+    private MailSender getMailSender() {
+        if (mailSender == null) {
+            mailSender = ServiceLocator.findService(MailSender.class);
         }
-        return mailMangement;
+        return mailSender;
     }
 
     @Override
@@ -161,7 +161,7 @@ public class UserLimitNotificationOnUserActivation implements EventListener<User
                     localizedUsers.get(locale), locale, ClientHelper.getCurrentClient().getName(),
                     isAutomaticUserActivationChanged(), Math.round(LimitHelper.getCountPercent(
                             count, limit)), LimitHelper.getCountLimitAsString(limit));
-            getMailManagement().sendMail(message);
+            getMailSender().send(message);
         }
     }
 

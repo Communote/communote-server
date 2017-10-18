@@ -2,7 +2,7 @@ package com.communote.server.core.mail.message.fetching;
 
 import java.util.UUID;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.fetching.GenericErrorMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -16,9 +16,9 @@ public class GenericErrorMailMessageTest extends MailMessageCommunoteIntegration
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) {
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new GenericErrorMailMessage(receiver, UUID.randomUUID()
+    public void sendMail(MailSender mailSender, User... recipients) {
+        for (User recipient : recipients) {
+            mailSender.send(new GenericErrorMailMessage(recipient, UUID.randomUUID()
                     .toString(), UUID.randomUUID().toString()));
         }
     }

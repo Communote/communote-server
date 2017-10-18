@@ -1,17 +1,12 @@
 package com.communote.server.core.mail.messages.user;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang.StringUtils;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.communote.common.util.HTMLHelper;
 import com.communote.server.api.ServiceLocator;
@@ -29,41 +24,35 @@ import com.communote.server.model.tag.Tag;
 import com.communote.server.model.user.User;
 
 /**
- * Notification message for notifying about created/modified user tagged posts.
+ * Notification message for notifying about created/modified note.
  * 
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class NotifyAboutNoteMailMessage extends MailMessage {
 
-    private final Collection<User> receivers;
+    private final User recipient;
 
     private final Note note;
 
-    private int receiverCounter = 0;
-
     private final Blog topic;
-
-    private final String fromAddress;
 
     private final String content;
 
     private String additionalSubjectData;
-
-    private final String localizedTopicTitle;
 
     private final boolean modified;
 
     private final Map<String, Object> model;
 
     /**
-     * Creates a notification message for user tagged posts..
+     * Create a notification message for user a note.
      * 
-     * @param receivers
-     *            the receivers
+     * @param recipient
+     *            the user to notify about the note
      * @param note
      *            the user tagged post
      * @param blog
-     *            the associated blog
+     *            the associated topic/blog
      * @param sender
      *            the sender
      * @param locale
@@ -74,17 +63,18 @@ public class NotifyAboutNoteMailMessage extends MailMessage {
      * @param model
      *            Additional elements used for the velocity context.
      */
-    public NotifyAboutNoteMailMessage(Collection<User> receivers, User sender,
+    public NotifyAboutNoteMailMessage(User recipient, User sender,
             Locale locale, Note note, Blog blog,
             Map<String, String> templatePlaceholderMessageKeys, Map<String, Object> model) {
         super("mail.message.user.notify-about-note", templatePlaceholderMessageKeys, locale);
-        this.receivers = receivers;
+        this.recipient = recipient;
+        this.addBcc(recipient);
         this.note = note;
         this.topic = blog;
         this.model = model;
         this.modified = note.getCreationDate().before(note.getLastModificationDate());
-        this.localizedTopicTitle = this.topic.getTitle();
-        this.fromAddress = MailBasedPostingHelper.getBlogEmailAddress(blog.getNameIdentifier());
+        setFromAddressName(this.topic.getTitle());
+        setFromAddress(MailBasedPostingHelper.getBlogEmailAddress(blog.getNameIdentifier()));
         String htmlContent = note.getContent().getContent();
         this.content = HTMLHelper.htmlToPlaintextExt(htmlContent, true);
         if (MailBasedPostingHelper.isMailFetchingEnabled()
@@ -93,73 +83,31 @@ public class NotifyAboutNoteMailMessage extends MailMessage {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see com.communote.server.core.mail.messages.MailMessage#getFromAddress()
-     */
     @Override
-    public String getFromAddress() {
-        if (this.fromAddress == null) {
-            return super.getFromAddress();
-        }
-        return this.fromAddress;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see com.communote.server.core.mail.messages.MailMessage#getFromAddressName()
-     */
-    @Override
-    public String getFromAddressName() {
-        return this.localizedTopicTitle;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected String getMessageIdentifier() {
+    public String getMessageIdentifier() {
         return MailBasedPostingHelper.createMessageIdentifier(note);
     }
 
-    /**
-     * Returns the actual count of receivers.
-     * 
-     * @return receiver count.
-     */
-    public int getReceiverCount() {
-        return receiverCounter;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getReplyToAddress() {
-        if (this.fromAddress == null) {
+        // if mail fetching is enabled, the from address will be set to the topic's email address.
+        // Replies should be sent to this topic.
+        if (this.getFromAddress() == null) {
             return super.getReplyToAddress();
         }
-        return this.fromAddress;
+        return this.getFromAddress();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getReplyToAddressName() {
-        if (this.fromAddress == null) {
+        if (this.getFromAddress() == null) {
             return super.getReplyToAddressName();
         }
-        return this.localizedTopicTitle;
+        return this.topic.getTitle();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         if (this.model != null) {
             model.putAll(this.model);
         }
@@ -178,18 +126,14 @@ public class NotifyAboutNoteMailMessage extends MailMessage {
             model.put(MailModelPlaceholderConstants.ATTACHMENTS, attachments);
         }
 
-        for (User user : receivers) {
-            model.put(
-                    MailModelPlaceholderConstants.UTI_FORMATED_DATE_CREATE,
-                    UserManagementHelper.getDateFormat(user.getId(), user.getLanguageLocale())
-                            .format(note.getCreationDate()));
-            model.put(
-                    MailModelPlaceholderConstants.UTI_FORMATED_DATE_MODIFY,
-                    UserManagementHelper.getDateFormat(user.getId(), user.getLanguageLocale())
-                            .format(note.getLastModificationDate()));
-            // only one element should exists
-            break;
-        }
+        model.put(
+                MailModelPlaceholderConstants.UTI_FORMATED_DATE_CREATE,
+                UserManagementHelper.getDateFormat(recipient.getId(), recipient.getLanguageLocale())
+                        .format(note.getCreationDate()));
+        model.put(
+                MailModelPlaceholderConstants.UTI_FORMATED_DATE_MODIFY,
+                UserManagementHelper.getDateFormat(recipient.getId(), recipient.getLanguageLocale())
+                        .format(note.getLastModificationDate()));
 
         Set<Tag> tags = note.getTags();
         List<String> tagList = new ArrayList<String>();
@@ -199,7 +143,7 @@ public class NotifyAboutNoteMailMessage extends MailMessage {
             }
         }
         model.put(MailModelPlaceholderConstants.UTI_TAGS, StringUtils.join(tagList, ", "));
-        model.put(MailModelPlaceholderConstants.BLOG_TITLE, this.localizedTopicTitle);
+        model.put(MailModelPlaceholderConstants.BLOG_TITLE, this.topic.getTitle());
         boolean renderLink = ClientProperty.NOTIFICATION_RENDER_PERMALINKS.getValue(
                 ClientProperty.DEFAULT_NOTIFICATION_RENDER_PERMALINKS);
         model.put(MailModelPlaceholderConstants.RENDER_PERMA_LINK, renderLink);
@@ -211,19 +155,6 @@ public class NotifyAboutNoteMailMessage extends MailMessage {
         model.put(MailModelPlaceholderConstants.IS_MODIFIED, modified);
         if (this.additionalSubjectData != null) {
             model.put(MailModelPlaceholderConstants.SUBJECT_PREPEND, additionalSubjectData);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setReceivers(MimeMessageHelper message) throws MessagingException,
-            UnsupportedEncodingException {
-        for (User user : receivers) {
-            // hide email addresses of users
-            message.addBcc(user.getEmail());
-            receiverCounter++;
         }
     }
 }

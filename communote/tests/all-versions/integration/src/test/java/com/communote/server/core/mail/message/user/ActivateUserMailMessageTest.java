@@ -1,6 +1,6 @@
 package com.communote.server.core.mail.message.user;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.ActivateUserMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -14,10 +14,10 @@ public class ActivateUserMailMessageTest extends MailMessageCommunoteIntegration
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new ActivateUserMailMessage(receiver, true));
-            mailManagement.sendMail(new ActivateUserMailMessage(receiver, false));
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
+        for (User recipient : recipients) {
+            mailSender.send(new ActivateUserMailMessage(recipient, true));
+            mailSender.send(new ActivateUserMailMessage(recipient, false));
         }
     }
 }

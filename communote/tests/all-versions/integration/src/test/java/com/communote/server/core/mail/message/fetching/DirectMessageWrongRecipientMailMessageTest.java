@@ -1,6 +1,6 @@
 package com.communote.server.core.mail.message.fetching;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.GenericMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -15,11 +15,11 @@ public class DirectMessageWrongRecipientMailMessageTest extends
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) {
-        for (User receiver : receivers) {
-            mailManagement.sendMail(new GenericMailMessage(
-                    "mail.message.fetching.directmessage-wrong-recipient-message", receiver
-                            .getLanguageLocale(), receivers));
+    public void sendMail(MailSender mailSender, User... recipients) {
+        for (User recipient : recipients) {
+            mailSender.send(new GenericMailMessage(
+                    "mail.message.fetching.directmessage-wrong-recipient-message", recipient
+                            .getLanguageLocale(), recipients));
         }
     }
 }

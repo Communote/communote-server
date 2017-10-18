@@ -3,15 +3,12 @@ package com.communote.server.web.fe.installer.controller;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
@@ -21,14 +18,12 @@ import org.springframework.web.servlet.mvc.AbstractWizardFormController;
 
 import com.communote.common.encryption.EncryptionException;
 import com.communote.common.encryption.EncryptionUtils;
-import com.communote.common.util.Base64Utils;
 import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.application.CommunoteRuntime;
 import com.communote.server.api.core.client.ClientTO;
 import com.communote.server.api.core.client.InvalidClientIdException;
 import com.communote.server.api.core.common.EmailValidationException;
 import com.communote.server.api.core.config.ApplicationConfigurationProperties;
-import com.communote.server.api.core.config.ApplicationConfigurationPropertyConstant;
 import com.communote.server.api.core.config.ConfigurationInitializationException;
 import com.communote.server.api.core.config.ConfigurationManager;
 import com.communote.server.api.core.config.ConfigurationUpdateException;
@@ -43,7 +38,7 @@ import com.communote.server.api.core.installer.CommunoteInstallerException;
 import com.communote.server.api.core.user.UserVO;
 import com.communote.server.core.common.session.SessionHandler;
 import com.communote.server.core.helper.ValidationHelper;
-import com.communote.server.core.mail.KenmeiJavaMailSender;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.user.MasterDataManagement;
 import com.communote.server.model.user.User;
 import com.communote.server.persistence.user.client.ClientValidator;
@@ -55,8 +50,7 @@ import com.communote.server.web.fe.installer.validator.InstallerDatabaseValidato
 import com.communote.server.web.fe.installer.validator.InstallerMailValidator;
 
 /**
- * The Class <code>InstallationController</code> controls the workflow for a standalone
- * installation.
+ * Wizard for setting up a standalone installation.
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
@@ -75,31 +69,25 @@ public class InstallationController extends AbstractWizardFormController {
 
     private void checkForExistingApplication(HttpServletRequest request, InstallerForm form) {
         CommunoteInstaller installer = CommunoteRuntime.getInstance().getInstaller();
-        try {
-            if (loadExistingApplicationDetails(installer, form)) {
-                // client exists, set locale
-                initLanguageFromRequest(request, form);
-                form.setCurrentProgress(3);
-                loadExistingMailSettings(form);
-                testConnection(request, form);
+        if (loadExistingApplicationDetails(installer, form)) {
+            // client exists, set locale
+            initLanguageFromRequest(request, form);
+            form.setCurrentProgress(3);
+            if (loadExistingMailSettings(form) && testMailServerConnection(request, form)) {
                 form.setCurrentProgress(4);
                 LOG.info("Load initial administrator account.");
                 if (loadAdminAccount(installer, form)) {
                     LOG.info("Found initial administrator account.");
                     form.setCurrentProgress(5);
                 } else {
-                    LOG.info("There is still no initial administrator account.");
+                    LOG.info("Initial administrator account not yet configured.");
                 }
+            } else {
+                // a previous installation was probably canceled in step 3
+                // current mail settings are invalid
+                clearExistingMailSettings(form);
+                LOG.info("No valid SMTP configuration found.");
             }
-        } catch (MessagingException e) {
-            // a previous installation was probably canceled in step 3
-            // current mail settings are invalid
-            clearExistingMailSettings(form);
-            LOG.info("No valid SMTP configuration found.");
-            LOG.debug(e.getMessage());
-        } catch (Exception e) {
-            LOG.info("Unknown exception while checking for an existing installation.");
-            LOG.debug(e.getMessage(), e);
         }
     }
 
@@ -376,24 +364,22 @@ public class InstallationController extends AbstractWizardFormController {
 
         InstallerForm form = (InstallerForm) command;
         ConfigurationManager conf = CommunoteRuntime.getInstance().getConfigurationManager();
-        ApplicationConfigurationProperties applicationProps = conf
-                .getApplicationConfigurationProperties();
 
-        Map<ApplicationConfigurationPropertyConstant, String> settings = setMailSettings(form,
-                applicationProps);
-
-        if (settings.size() > 0) {
-            try {
-                // update configuration
-                conf.updateApplicationConfigurationProperties(settings);
-            } catch (ConfigurationUpdateException e) {
-                LOG.error("Storing the new mailing settings failed", e);
-                String errorCode = MessageHelper.getText(request, "installer.error.save.settings");
-                if (e.getMessageKey() != null) {
-                    errorCode = MessageHelper.getText(request, e.getMessageKey());
-                }
-                errors.reject(errorCode);
+        Map<ApplicationPropertyMailing, String> settings = getMailSettings(form);
+        MailSender mailSender = ServiceLocator.findService(MailSender.class);
+        
+        // always save so users don't have to retype everything if a restart in installation is required
+        try {
+            mailSender.updateSettings(settings);
+        } catch (ConfigurationUpdateException e) {
+            LOG.error("Storing the new settings of the outgoing mail server failed", e);
+            String errorMsg;
+            if (e.getMessageKey() != null) {
+                errorMsg = MessageHelper.getText(request, e.getMessageKey());
+            } else {
+                errorMsg = MessageHelper.getText(request, "installer.error.save.settings");
             }
+            errors.reject(errorMsg);
         }
         if (!errors.hasErrors()) {
             // support address
@@ -402,15 +388,10 @@ public class InstallationController extends AbstractWizardFormController {
                 conf.updateClientConfigurationProperty(ClientProperty.SUPPORT_EMAIL_ADDRESS,
                         form.getSupportAddress());
             }
-
-            try {
-                // always test configuration
-                testConnection(request, form);
-            } catch (MessagingException e) {
-                LOG.error("While trying to establish a connection an error occurred!", e);
-                String errorCode = MessageHelper.getText(request,
-                        "installer.step.mail.test.connection.error");
-                errors.reject(errorCode);
+            // always test configuration
+            if (!testMailServerConnection(mailSender, settings)) {
+                String errorMsg = MessageHelper.getText(request, "installer.step.mail.test.connection.error");
+                errors.reject(errorMsg);
             }
         }
     }
@@ -516,10 +497,8 @@ public class InstallationController extends AbstractWizardFormController {
     /**
      * @param form
      *            form object with request parameters bound onto it
-     * @throws EncryptionException
-     *             Exception.
      */
-    private void loadExistingMailSettings(InstallerForm form) throws EncryptionException {
+    private boolean loadExistingMailSettings(InstallerForm form) {
         LOG.info("Load SMTP configuration.");
         ConfigurationManager conf = CommunoteRuntime.getInstance().getConfigurationManager();
         ApplicationConfigurationProperties applicationProps = conf
@@ -531,10 +510,16 @@ public class InstallationController extends AbstractWizardFormController {
                 applicationProps.getProperty(ApplicationPropertyMailing.USE_STARTTLS, false));
 
         form.setSmtpUser(applicationProps.getProperty(ApplicationPropertyMailing.LOGIN));
-        String decryptedPassword = EncryptionUtils.decrypt(
-                applicationProps.getProperty(ApplicationPropertyMailing.PASSWORD),
-                ApplicationProperty.INSTALLATION_UNIQUE_ID.getValue());
-        form.setSmtpPassword(decryptedPassword);
+        String decryptedPassword;
+        try {
+            decryptedPassword = EncryptionUtils.decrypt(
+                    applicationProps.getProperty(ApplicationPropertyMailing.PASSWORD),
+                    ApplicationProperty.INSTALLATION_UNIQUE_ID.getValue());
+            form.setSmtpPassword(decryptedPassword);
+        } catch (EncryptionException e) {
+            LOG.error("Loading mail settings failed. Password decryption failed.", e);
+            return false;
+        }
 
         form.setSenderName(
                 applicationProps.getProperty(ApplicationPropertyMailing.FROM_ADDRESS_NAME));
@@ -542,6 +527,7 @@ public class InstallationController extends AbstractWizardFormController {
                 applicationProps.getProperty(ApplicationPropertyMailing.FROM_ADDRESS));
         form.setSupportAddress(conf.getClientConfigurationProperties()
                 .getProperty(ClientProperty.SUPPORT_EMAIL_ADDRESS, null));
+        return true;
     }
 
     @Override
@@ -663,70 +649,29 @@ public class InstallationController extends AbstractWizardFormController {
     }
 
     /**
-     * Sets changed mail settings for updating application properties.
+     * Get mail settings.
      *
      * @param form
      *            the installer form object
-     * @param applicationProps
-     *            the application properties
-     * @return map containing the changed mail properties
-     * @throws EncryptionException
-     *             Exception.
+     * @return map containing the mail settings
      */
-    private Map<ApplicationConfigurationPropertyConstant, String> setMailSettings(
-            InstallerForm form, ApplicationConfigurationProperties applicationProps)
-            throws EncryptionException {
-        Map<ApplicationConfigurationPropertyConstant, String> settings = null;
-        settings = new HashMap<ApplicationConfigurationPropertyConstant, String>();
+    private Map<ApplicationPropertyMailing, String> getMailSettings(InstallerForm form) {
+        Map<ApplicationPropertyMailing, String> settings = new HashMap<>();
 
-        if (!StringUtils.equals(applicationProps.getProperty(ApplicationPropertyMailing.HOST),
-                form.getSmtpHost())) {
-            settings.put(ApplicationPropertyMailing.HOST, form.getSmtpHost());
-        }
-        if (!StringUtils.equals(applicationProps.getProperty(ApplicationPropertyMailing.PORT),
-                form.getSmtpPort())) {
-            String port;
-            if (StringUtils.isBlank(form.getSmtpPort())) {
-                port = STANDARD_SMTP_PORT;
-            } else {
-                port = form.getSmtpPort();
-            }
-            settings.put(ApplicationPropertyMailing.PORT, port);
-        }
-        if (applicationProps.getProperty(ApplicationPropertyMailing.USE_STARTTLS, false) != form
-                .isSmtpStartTls()) {
-            settings.put(ApplicationPropertyMailing.USE_STARTTLS,
-                    Boolean.toString(form.isSmtpStartTls()));
-        }
-        if (!StringUtils.equals(applicationProps.getProperty(ApplicationPropertyMailing.LOGIN),
-                form.getSmtpUser())) {
-            settings.put(ApplicationPropertyMailing.LOGIN, form.getSmtpUser());
-        }
-
-        String newPassword = form.getSmtpPassword();
-        String oldPassword = applicationProps.getProperty(ApplicationPropertyMailing.PASSWORD);
-        String iid = ApplicationProperty.INSTALLATION_UNIQUE_ID.getValue();
-        if (StringUtils.isBlank(oldPassword)) {
-            newPassword = EncryptionUtils.encrypt(form.getSmtpPassword(), iid);
+        settings.put(ApplicationPropertyMailing.HOST, form.getSmtpHost());
+        String port;
+        if (StringUtils.isBlank(form.getSmtpPort())) {
+            port = STANDARD_SMTP_PORT;
         } else {
-            String salt = EncryptionUtils.getSalt(oldPassword);
-            newPassword = EncryptionUtils.encrypt(form.getSmtpPassword(), iid,
-                    Base64Utils.decode(salt));
+            port = form.getSmtpPort();
         }
-        if (!StringUtils.equals(oldPassword, newPassword)) {
-            settings.put(ApplicationPropertyMailing.PASSWORD, newPassword);
-        }
-
-        if (!StringUtils.equals(
-                applicationProps.getProperty(ApplicationPropertyMailing.FROM_ADDRESS_NAME),
-                form.getSenderName())) {
-            settings.put(ApplicationPropertyMailing.FROM_ADDRESS_NAME, form.getSenderName());
-        }
-        if (!StringUtils.equals(
-                applicationProps.getProperty(ApplicationPropertyMailing.FROM_ADDRESS),
-                form.getSenderAddress())) {
-            settings.put(ApplicationPropertyMailing.FROM_ADDRESS, form.getSenderAddress());
-        }
+        settings.put(ApplicationPropertyMailing.PORT, port);
+        settings.put(ApplicationPropertyMailing.USE_STARTTLS,
+                Boolean.toString(form.isSmtpStartTls()));
+        settings.put(ApplicationPropertyMailing.LOGIN, form.getSmtpUser());
+        settings.put(ApplicationPropertyMailing.PASSWORD, form.getSmtpPassword());
+        settings.put(ApplicationPropertyMailing.FROM_ADDRESS_NAME, form.getSenderName());
+        settings.put(ApplicationPropertyMailing.FROM_ADDRESS, form.getSenderAddress());
         return settings;
     }
 
@@ -779,39 +724,20 @@ public class InstallationController extends AbstractWizardFormController {
      *            the http request.
      * @param form
      *            the form.
-     * @throws MessagingException
-     *             in case there is a problem communicating with SMTP server
      */
-    // TODO refactor to use KenmeiJavaMailSender which should provide a test and a sendTestEmail
-    // method that should be used in all places where the mail connection is testet
-    // (InstallationJsonController, MailInController). Moreover setting of mail settings should also
-    // be done in that class, thus MailManagementImpl must be refactored too.
-    private void testConnection(HttpServletRequest request, InstallerForm form)
-            throws MessagingException {
-        LOG.info("Test connetion to the SMTP server.");
-        Properties mailingProperties = new Properties();
-        String host = form.getSmtpHost();
-        int port = NumberUtils.toInt(form.getSmtpPort(), 25);
-        String username = null;
-        String password = null;
-        if (StringUtils.isNotBlank(form.getSmtpUser())) {
-            mailingProperties.setProperty("mail.smtp.auth", "true");
-            username = form.getSmtpUser();
-            // the password can be an empty string but must be null if the user is not set because
-            // the mail api has some fall back mechanisms to determine a user name (e.g. system
-            // property user.name) which finally would result in trying an authentication if the
-            // password is not null
-            password = form.getSmtpPassword();
+    private boolean testMailServerConnection(HttpServletRequest request, InstallerForm form) {
+        Map<ApplicationPropertyMailing, String> settings = getMailSettings(form);
+        MailSender mailSender = ServiceLocator.findService(MailSender.class);
+        return testMailServerConnection(mailSender, settings);
+    }
+    
+    private boolean testMailServerConnection(MailSender mailSender, Map<ApplicationPropertyMailing, String> settings) {
+        LOG.info("Testing mail server connection");
+        if (mailSender.testSettings(settings)) {
+            LOG.info("Mail server connection test completed successfully");
+            return true;
         }
-        mailingProperties.setProperty("mail.smtp.starttls.enable",
-                Boolean.toString(form.isSmtpStartTls()));
-
-        KenmeiJavaMailSender mailSender = new KenmeiJavaMailSender(host, port, username, password,
-                mailingProperties);
-        if (!mailSender.canConnect()) {
-            throw new MessagingException("It was not possible to connect to the service.");
-        }
-        LOG.info("Can establish a connection to the SMTP server.");
+        return false;
     }
 
     /**

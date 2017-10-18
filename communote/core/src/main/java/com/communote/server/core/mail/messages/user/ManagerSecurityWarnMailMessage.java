@@ -51,7 +51,7 @@ public class ManagerSecurityWarnMailMessage extends MailMessage {
      * constructor
      * 
      * @param manager
-     *            receiver with manager role
+     *            the client manager to inform
      * @param riskLevel
      *            message key for risk level
      * @param warnReason
@@ -68,11 +68,8 @@ public class ManagerSecurityWarnMailMessage extends MailMessage {
         this.userId = userId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.RECEIVER, manager);
         model.put(MailModelPlaceholderConstants.RISK_LEVEL, riskLevel);
         model.put(MailModelPlaceholderConstants.WARN_REASON, warnReason);

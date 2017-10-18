@@ -83,13 +83,8 @@ public class InviteUserToBlogMailMessage extends SecurityCodeMailMessage {
         return "/user/confirm.do";
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see com.communote.server.core.mail.messages.MailMessage#prepareModel()
-     */
     @Override
-    protected void prepareModel(Map<String, Object> model) {
+    public void prepareModel(Map<String, Object> model) {
         model.put(MailModelPlaceholderConstants.BLOG_TITLE, this.localizedBlogTitle);
         model.put(MailModelPlaceholderConstants.USER, inviter);
         boolean renderLink = CommunoteRuntime

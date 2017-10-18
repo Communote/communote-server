@@ -21,7 +21,7 @@ import com.communote.server.core.common.LimitHelper;
 import com.communote.server.core.crc.vo.ContentId;
 import com.communote.server.core.crc.vo.ContentMetadata;
 import com.communote.server.core.crc.vo.ExtendedContentId;
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.NotifyAboutCRCSizeLimitReachedMailMessage;
 import com.communote.server.core.user.UserManagement;
 import com.communote.server.core.user.UserManagementHelper;
@@ -348,7 +348,7 @@ public class RepositoryConnectorDelegateImpl extends RepositoryConnectorDelegate
                     ContentRepositoryManagementHelper.getSizeAsString(size),
                     LimitHelper.getCountPercentAsString(size, limit),
                     ContentRepositoryManagementHelper.getSizeLimitAsString(limit));
-            ServiceLocator.findService(MailManagement.class).sendMail(message);
+            ServiceLocator.findService(MailSender.class).send(message);
         }
     }
 

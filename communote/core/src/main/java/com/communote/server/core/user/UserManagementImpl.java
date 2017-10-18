@@ -22,7 +22,6 @@ import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Service;
@@ -59,8 +58,8 @@ import com.communote.server.api.core.user.UserVO;
 import com.communote.server.core.common.exceptions.InvalidOperationException;
 import com.communote.server.core.common.exceptions.PasswordValidationException;
 import com.communote.server.core.config.ClientConfigurationHelper;
-import com.communote.server.core.mail.MailManagement;
 import com.communote.server.core.mail.MailMessageHelper;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.GenericMailMessage;
 import com.communote.server.core.mail.messages.MailMessage;
 import com.communote.server.core.mail.messages.MailModelPlaceholderConstants;
@@ -199,7 +198,7 @@ public class UserManagementImpl extends UserManagementBase {
     private BlogRightsManagement blogRightsManagement;
 
     @Autowired
-    private MailManagement mailManagement;
+    private MailSender mailSender;
     @Autowired
     private PropertyManagement propertyManagement;
 
@@ -284,7 +283,7 @@ public class UserManagementImpl extends UserManagementBase {
         message.addToModel("alias", newAlias);
         message.addToModel("firstName", user.getProfile().getFirstName());
         message.addToModel("lastName", user.getProfile().getLastName());
-        mailManagement.sendMail(message);
+        mailSender.send(message);
         return true;
     }
 
@@ -621,7 +620,7 @@ public class UserManagementImpl extends UserManagementBase {
             EmailSecurityCode code = emailSecurityCodeDao.createCode(user, newEmail);
             message = new ConfirmEmailAddressMessage(user, code);
         }
-        mailManagement.sendMail(message);
+        mailSender.send(message);
         return true;
     }
 
@@ -684,7 +683,7 @@ public class UserManagementImpl extends UserManagementBase {
         }
         SecurityCode code = securityCodeDao.findByCode(securitycode);
         User user = null;
-        List<MimeMessagePreparator> mails = new ArrayList<MimeMessagePreparator>();
+        List<MailMessage> mails = new ArrayList<>();
         if (code == null) {
             throw new SecurityCodeNotFoundException(
                     "The security code '" + securitycode + "' could not be found!");
@@ -806,7 +805,7 @@ public class UserManagementImpl extends UserManagementBase {
         if (inviter == null) {
             throw new AuthorizationException("There is no current user");
         }
-        List<MimeMessagePreparator> mails = new ArrayList<MimeMessagePreparator>();
+        List<MailMessage> mails = new ArrayList<>();
 
         InviteUserToBlogSecurityCode freshSecurityCode = InviteUserToBlogSecurityCode.Factory
                 .newInstance(inviter.getId());
@@ -845,7 +844,7 @@ public class UserManagementImpl extends UserManagementBase {
             throw new AuthorizationException("Current user " + SecurityHelper.getCurrentUserId()
                     + " is not allowed to execute this operation");
         }
-        List<MimeMessagePreparator> mails = new ArrayList<MimeMessagePreparator>();
+        List<MailMessage> mails = new ArrayList<>();
 
         InviteUserToClientSecurityCode freshSecurityCode = InviteUserToClientSecurityCode.Factory
                 .newInstance();
@@ -899,7 +898,7 @@ public class UserManagementImpl extends UserManagementBase {
 
         validateEmail(email, null, false);
 
-        MimeMessagePreparator mail = null;
+        MailMessage mail = null;
         User user = findUserByEmail(email);
         SecurityCode code = null;
         if (user == null) {
@@ -942,7 +941,7 @@ public class UserManagementImpl extends UserManagementBase {
             user.setStatusChanged(new Timestamp(new Date().getTime()));
         }
         mail = new ConfirmUserMailMessage(user, code, type);
-        mailManagement.sendMail(mail);
+        mailSender.send(mail);
 
         return user;
     }
@@ -1218,7 +1217,7 @@ public class UserManagementImpl extends UserManagementBase {
             if (isSystemUser) {
                 user.setReminderMailSent(true);
             } else {
-                Collection<MimeMessagePreparator> mails = new ArrayList<MimeMessagePreparator>();
+                Collection<MailMessage> mails = new ArrayList<>();
                 if (confirmedInvitedOrRegistered) {
                     // reset reminder mail flag to inform the user that he did not login
                     user.setReminderMailSent(false);
@@ -1435,7 +1434,7 @@ public class UserManagementImpl extends UserManagementBase {
 
         fireUserStatusChangedEvent(user.getId(), null, user.getStatus());
 
-        Collection<MimeMessagePreparator> mailBuffer = new ArrayList<MimeMessagePreparator>();
+        Collection<MailMessage> mailBuffer = new ArrayList<>();
         if (UserStatus.REGISTERED.equals(user.getStatus())) {
             UserSecurityCode code = userSecurityCodeDao.createCode(user);
             mailBuffer.add(new ConfirmUserMailMessage(user, code, RegistrationType.SELF));
@@ -1548,7 +1547,7 @@ public class UserManagementImpl extends UserManagementBase {
      */
     private <T extends SecurityCode> Pair<User, T> internalInviteUser(UserVO userVo,
             T freshSecurityCode, InviteSecurityCodeDao<T> codeDao,
-            List<MimeMessagePreparator> mails) throws EmailAlreadyExistsException,
+            List<MailMessage> mails) throws EmailAlreadyExistsException,
             AliasAlreadyExistsException, PermanentIdMissmatchException, EmailValidationException {
         User user = validateUserVoForInvitation(userVo);
         UserStatus status;
@@ -1888,10 +1887,10 @@ public class UserManagementImpl extends UserManagementBase {
      * @param mails
      *            the mails
      */
-    private void sendMail(Collection<MimeMessagePreparator> mails) {
+    private void sendMail(Collection<MailMessage> mails) {
         if (CollectionUtils.isNotEmpty(mails)) {
-            for (MimeMessagePreparator mail : mails) {
-                mailManagement.sendMail(mail);
+            for (MailMessage mail : mails) {
+                mailSender.send(mail);
             }
         }
     }
@@ -1909,7 +1908,7 @@ public class UserManagementImpl extends UserManagementBase {
                 .getProperty(ClientProperty.REMIND_USER_TIME, DEFAULT_REMIND_USER_TIME);
         Date before = new Date(new Date().getTime() - remindTime);
 
-        Collection<MimeMessagePreparator> mails = new ArrayList<MimeMessagePreparator>();
+        Collection<MailMessage> mails = new ArrayList<>();
         List<String> emailAdressList = new ArrayList<String>();
 
         // users, which are registered but have not confirmed their email in a given period of time
@@ -2104,7 +2103,7 @@ public class UserManagementImpl extends UserManagementBase {
      *            calling method
      */
     private void userConfirmed(User user, boolean considerManagerActivation,
-            Collection<MimeMessagePreparator> mailBuffer) {
+            Collection<MailMessage> mailBuffer) {
 
         if (user.hasStatus(UserStatus.CONFIRMED)) {
             if (considerManagerActivation && isManagerActivationRequired()) {

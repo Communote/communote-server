@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
-import com.communote.server.core.mail.MailManagement;
+import com.communote.server.core.mail.MailSender;
 import com.communote.server.core.mail.messages.user.NotifyUserCountLimitReachedMailMessage;
 import com.communote.server.model.user.User;
 import com.communote.server.test.mail.MailMessageCommunoteIntegrationTest;
@@ -17,22 +17,22 @@ public class NotifyUserCountLimitReachedMailMessageTest extends MailMessageCommu
      * {@inheritDoc}
      */
     @Override
-    public void sendMail(MailManagement mailManagement, User... receivers) throws Exception {
-        Collection<User> receiversAsCollection = new ArrayList<User>();
-        for (User receiver : receivers) {
-            receiversAsCollection.clear();
-            receiversAsCollection.add(receiver);
-            mailManagement.sendMail(new NotifyUserCountLimitReachedMailMessage(
-                    receiversAsCollection, receiver.getLanguageLocale(), UUID.randomUUID()
+    public void sendMail(MailSender mailSender, User... recipients) throws Exception {
+        Collection<User> recipientsAsCollection = new ArrayList<User>();
+        for (User recipient : recipients) {
+            recipientsAsCollection.clear();
+            recipientsAsCollection.add(recipient);
+            mailSender.send(new NotifyUserCountLimitReachedMailMessage(
+                    recipientsAsCollection, recipient.getLanguageLocale(), UUID.randomUUID()
                     .toString(), false, 42, "44"));
-            mailManagement.sendMail(new NotifyUserCountLimitReachedMailMessage(
-                    receiversAsCollection, receiver.getLanguageLocale(), UUID.randomUUID()
+            mailSender.send(new NotifyUserCountLimitReachedMailMessage(
+                    recipientsAsCollection, recipient.getLanguageLocale(), UUID.randomUUID()
                     .toString(), true, 42, "44"));
-            mailManagement.sendMail(new NotifyUserCountLimitReachedMailMessage(
-                    receiversAsCollection, receiver.getLanguageLocale(), UUID.randomUUID()
+            mailSender.send(new NotifyUserCountLimitReachedMailMessage(
+                    recipientsAsCollection, recipient.getLanguageLocale(), UUID.randomUUID()
                     .toString(), false, 42, "44"));
-            mailManagement.sendMail(new NotifyUserCountLimitReachedMailMessage(
-                    receiversAsCollection, receiver.getLanguageLocale(), UUID.randomUUID()
+            mailSender.send(new NotifyUserCountLimitReachedMailMessage(
+                    recipientsAsCollection, recipient.getLanguageLocale(), UUID.randomUUID()
                     .toString(), true, 42, "44"));
         }
     }
