@@ -144,6 +144,7 @@
                         <value>/javascript/blog/ChronologicalPostList_DefaultImpl.js</value>
                         <value>/javascript/widget/note/editor/TopicAccessEvaluator.js</value>
                         <value>/javascript/widget/note/editor/NoteTextEditors.js</value>
+                        <value>/javascript/widget/note/editor/NoteEditorAutosaveHandler.js</value>
                         <value>/javascript/blog/CreateNote</value>
                         <value>/javascript/blog/CreateNote_DefaultImpl</value>
                         <value>/javascript/blog/InviteUserToBlog.Widget</value>

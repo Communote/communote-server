@@ -219,7 +219,7 @@ CreateNoteDefaultWidget = new Class({
         // only happen if the topic isn't overridden by the current initial topic (override option
         // false or no topic set and default topic fallback would take effect)
         if (this.action == 'create'
-                && (!this.autosaveLoaded || this.initialTargetTopic
+                && (!this.hasAutosave() || this.initialTargetTopic
                         && !this.noTargetTopicChangeIfModifiedOrAutosaved)) {
             this.showOrHideUserInterfaceForTopic(this.getTargetTopicId());
         }
@@ -270,16 +270,9 @@ CreateNoteDefaultWidget = new Class({
         return this.domNode.getElement('.cn-write-note-editor');
     },
 
-    /**
-     * @override
-     */
-    getAutosaveMarkerElement: function() {
-        return this.domNode.getElement('.cn-write-note-status');
-    },
-
-    contentInitialized: function(fromOnlineAutosave, fromOfflineAutosave) {
+    contentInitialized: function(fromAutosave) {
         var dmWrapperElem;
-        this.parent(fromOnlineAutosave, fromOfflineAutosave);
+        this.parent(fromAutosave);
         if (this.action == 'edit' && !this.isDirectMessage) {
             dmWrapperElem = this.domNode.getElementById(this.widgetId + '-direct-message-wrapper');
             if (dmWrapperElem) {
@@ -396,51 +389,6 @@ CreateNoteDefaultWidget = new Class({
     attachmentUploadFailed: function(uploadId, message) {
         this.parent(uploadId, message);
         this.removeAttachmentOrUploadItem('-upload-' + uploadId);
-    },
-
-    /**
-     * @override
-     * @param {boolean} [ignoreUncommittedOptions] if false a popup will warn the user when he
-     *            publishes a note and there are uncommitted inputs in the blog and user input
-     *            fields. If true there will be no warning.
-     */
-    sendNote: function(publish, content, ignoreUncommittedOptions) {
-        var userInput, topicInput, uncommittedUser, uncommittedBlog, msgKey;
-        var cancelFunction, buttons;
-        if (publish && !ignoreUncommittedOptions) {
-            userInput = this.getUserSearchElement();
-            topicInput = this.getTopicSearchElement();
-            uncommittedUser = userInput && userInput.value.trim().length;
-            uncommittedBlog = topicInput && topicInput.value.trim().length;
-            if (uncommittedUser || uncommittedBlog) {
-                msgKey = 'blogpost.create.submit.confirm.unsaved.';
-                if (uncommittedUser) {
-                    msgKey += 'user';
-                }
-                if (uncommittedBlog) {
-                    msgKey += 'blog';
-                }
-                cancelFunction = function() {
-                    this.stopPublishNoteFeedback();
-                    this.startAutosaveJob();
-                }.bind(this);
-                buttons = [];
-                buttons.push({
-                    type: 'yes',
-                    action: this.sendNote.bind(this, publish, content, true)
-                });
-                buttons.push({
-                    type: 'no',
-                    action: cancelFunction
-                });
-                showDialog(this.getSendButtonElement().value, getJSMessage(msgKey), buttons, {
-                    onCloseCallback: cancelFunction,
-                    width: 300
-                });
-                return;
-            }
-        }
-        this.parent(publish, content);
     },
 
     showAccessory: function(name, focusInput) {

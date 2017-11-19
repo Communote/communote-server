@@ -13,21 +13,7 @@ var CreateNoteWidget = new Class({
      */
     allowedRenderStyleTransitions: null,
     attachments: null,
-    autosaveCookie: null,
-    // whether an autosave was created
-    autosaveCreated: false,
     autosaveDisabled: false,
-    // whether an autosave was loaded
-    autosaveLoaded: false,
-    autosaveJobActiveTypes: [],
-    autosaveJobId: null,
-    autosaveNoteId: null,
-    autosaveRenderDiscardLink: false,
-    /**
-     * Default timer interval for auto-saves.
-     */
-    autosaveTimerPeriod: 10000,
-    autosaveVersion: 0,
     // local reference to the blogUtils for defaultBlog handling
     blogUtils: null,
     // defines what should happen when cancel method is called. These defaults are intended
@@ -101,7 +87,6 @@ var CreateNoteWidget = new Class({
     // css classes to be applied to the create note container (getWriteContainerElement)
     // when the editor only supports richtext
     richTextEditorCssClass: null,
-    runningAutosaveRequest: false,
     // defines whether tags that were just typed into the tag input should be stored when sending
     storeUncommittedTags: true,
     /**
@@ -126,8 +111,6 @@ var CreateNoteWidget = new Class({
     predefinedNoteProperties: null,
 
     setup: function() {
-        this.discardAutosaveUrl = buildRequestUrl('/blog/deletePost.do')
-                + '?action=deleteAutosave&noteId=';
 
         // added items defined by an ordered array of ids (which might be aliases or sth) and the
         // items in the same order
@@ -148,10 +131,9 @@ var CreateNoteWidget = new Class({
     },
 
     init: function() {
-        var action, targetBlogId, targetBlogTitle, parentPostId, autosaveDisabled, timerPeriod;
+        var action, targetBlogId, targetBlogTitle, parentPostId, autosaveDisabled;
         var cancelBehavior, publishSuccessBehavior, tagAutocompleterCategories;
         this.parent();
-        this.autosaveRenderDiscardLink = !!this.getStaticParameter('autosaveRenderDiscardLink');
         this.noTargetTopicChangeIfModifiedOrAutosaved = !!this
                 .getStaticParameter('noTargetTopicChangeIfModifiedOrAutosaved');
         this.blogUtils = communote.utils.topicUtils;
@@ -209,10 +191,6 @@ var CreateNoteWidget = new Class({
             // parameter
             this.setFilterParameter('autosaveDisabled', true);
         }
-        timerPeriod = this.getStaticParameter('draftTimer');
-        if (timerPeriod != null) {
-            this.autosaveTimerPeriod = timerPeriod * 1000;
-        }
         tagAutocompleterCategories = this.getStaticParameter('tagAutocompleterCategories');
         if (tagAutocompleterCategories) {
             // TODO will be in serialized JSON format for create case -> should be changed when switching from comment based params
@@ -230,7 +208,7 @@ var CreateNoteWidget = new Class({
         }
         this.predefinedNoteProperties = this.getStaticParameter('predefinedNoteProperties');
 
-        this.initAutosaveCookie();
+        this.initAutosaveHandler();
     },
 
     /**
@@ -406,7 +384,7 @@ var CreateNoteWidget = new Class({
 
     attachmentUploadFailed: function(uploadId, errorMessage) {
         // enable send button
-        this.getSendButtonElement().removeProperty('disabled');
+        this.getSendButtonElement().disabled = false;
         if (errorMessage) {
             // hide notifications
             hideNotification();
@@ -419,89 +397,14 @@ var CreateNoteWidget = new Class({
 
     attachmentUploadStarted: function(uploadDescriptor) {
         // disable send button
-        this.getSendButtonElement().disabled = 'disabled';
+        this.getSendButtonElement().disabled = true;
     },
 
     attachmentUploadSucceeded: function(uploadId, attachmentData) {
         // enable send button
-        this.getSendButtonElement().removeProperty('disabled');
+        this.getSendButtonElement().disabled = false;
         attachmentData.uploadId = uploadId;
         this.addAttachments(attachmentData);
-    },
-
-    /**
-     * Is called periodically to do an autosave of the note if something changed.
-     */
-    autosaveJob: function() {
-        var content, skipOnlineSave;
-
-        if (this.dirty || this.editor.isDirty()) {
-            this.updateAutosaveMarker(getJSMessage('blogpost.autosave.saving'), false);
-            content = this.editor.getContent();
-            this.dirty = false;
-            // this.autosaveJobActiveTypes.empty();
-            // skip online autosaves if still running
-            skipOnlineSave = this.runningAutosaveRequest;
-            this.autosaveNoteOffline(content, skipOnlineSave);
-            if (!skipOnlineSave) {
-                this.autosaveNoteOnline(content);
-            }
-        }
-    },
-
-    autosaveNoteOffline: function(content, skipOnlineAutosave) {
-        this.autosaveJobActiveTypes.erase('offline');
-        if (this.autosaveCookie == null) {
-            return;
-        }
-        this.autosaveCookie.empty();
-        this.storeInAutosaveCookie(content);
-        // increase version if previous online autosave is still running and current online
-        // autosave is skipped -> offline autosave will be newer than previous online autosave
-        if (skipOnlineAutosave) {
-            this.autosaveCookie.set('autosaveVersion', this.autosaveVersion + 1);
-        } else {
-            this.autosaveCookie.set('autosaveVersion', this.autosaveVersion);
-        }
-        // fails if too large (>4kb)
-        if (this.autosaveCookie.save()) {
-            this.autosavingDone(false);
-        }
-    },
-
-    autosaveNoteOnline: function(content) {
-        this.autosaveJobActiveTypes.erase('online');
-        // won't succeed if empty or no topic is selected
-        if (content == null || (content.length == 0)
-                || (this.action == 'create' && this.getTargetTopicId() == null)) {
-            return;
-        }
-        this.sendNote(false, content);
-    },
-
-    autosaveNoteOnlineComplete: function(response) {
-        this.runningAutosaveRequest = false;
-        if (response && response.result) {
-            this.autosavingDone(true);
-            // TODO api returns only noteId and no details like version, can only blindly
-            // increment autosave version
-            // using REST API 3.0 whose result object is the ID of the autosave
-            this.autosaveNoteId = response.result;
-            this.autosaveVersion++;
-        }
-    },
-
-    /**
-     * Is called after an autosave has been created.
-     *
-     * @param {boolean} online true if it the autosave was created online, false if it was stored
-     *            offline in a cookie
-     */
-    autosavingDone: function(online) {
-        this.autosaveJobActiveTypes.include(online ? 'online' : 'offline');
-        this.updateAutosaveMarker(getJSMessage('blogpost.autosave.saved') + " "
-                + localizedDateFormatter.format(new Date()), this.autosaveRenderDiscardLink);
-        this.autosaveCreated = true;
     },
 
     /**
@@ -521,6 +424,7 @@ var CreateNoteWidget = new Class({
      */
     cancel: function(event) {
         var remove, changeRenderStyle, hasAutosave, modified, postRemoveOperation;
+        var resetOperation, removeAttachments;
         var behavior = this.cancelBehavior;
         if (behavior.action) {
             remove = behavior.action === 'remove';
@@ -534,7 +438,12 @@ var CreateNoteWidget = new Class({
         hasAutosave = this.hasAutosave();
         modified = this.isModified();
         if (behavior.discardAutosave && (hasAutosave || modified)) {
+            // if there is no online autosave remove the attachments, but in post-function (i.e. after confirm)
+            removeAttachments = !this.autosaveHandler || !this.autosaveHandler.hasOnlineAutosave();
             postRemoveOperation = function() {
+                if (removeAttachments) {
+                    this.deleteAttachments();
+                }
                 if (!remove) {
                     this.resetToNoAutosaveState();
                     if (changeRenderStyle) {
@@ -546,20 +455,24 @@ var CreateNoteWidget = new Class({
             }.bind(this);
             if (hasAutosave) {
                 if (behavior.confirmDiscard || behavior.confirmReset) {
-                    this.discardAutosaveWithConfirm(event, postRemoveOperation);
+                    this.autosaveHandler.discardWithConfirm(event, postRemoveOperation);
                 } else {
-                    this.discardAutosave(postRemoveOperation);
+                    this.autosaveHandler.discard(postRemoveOperation);
                 }
             } else {
-                // only modified, but can call the same operations
+                // only modified. Can call the same operations but have to stop the autosave job before
+                resetOperation = function() {
+                    this.stopAutosaveJob();
+                    postRemoveOperation();
+                }.bind(this);
                 if (behavior.confirmReset) {
                     showConfirmDialog(getJSMessage('create.note.dialog.discardChanges.title'),
                             getJSMessage('create.note.dialog.discardChanges.question'),
-                            this.discardAutosave.bind(this, postRemoveOperation), {
+                            resetOperation, {
                                 triggeringEvent: event
                             });
                 } else {
-                    this.discardAutosave(postRemoveOperation);
+                    resetOperation();
                 }
             }
         } else {
@@ -653,9 +566,6 @@ var CreateNoteWidget = new Class({
         this.removeAttachment(null);
         this.removeUser(null);
         this.editor.resetContent(null);
-        this.autosaveNoteId = null;
-        this.autosaveVersion = 0;
-        this.updateAutosaveMarker(null);
         this.changeDirectMessageMode(false);
         // empty inputs
         elem = this.getTagSearchElement();
@@ -672,61 +582,16 @@ var CreateNoteWidget = new Class({
         }
         this.dirty = false;
         this.modified = false;
-        this.autosaveLoaded = false;
-        this.autosaveCreated = false;
         this.noteProperties = null;
     },
 
     /**
      * Called after the content of the widget has been initialized after a refresh.
      *
-     * @param {boolean} fromOnlineAutosave If true, there was an autosave that was loaded from the
-     *            server
-     * @param {boolean} fromOfflineAutosave If true, there was an autosave that was loaded from the
-     *            cookie
+     * @param {boolean} fromAutosave If true, the widget was initialized with an autosave
      */
-    contentInitialized: function(fromOnlineAutosave, fromOfflineAutosave) {
-        if (fromOfflineAutosave || fromOnlineAutosave) {
-            this.autosaveLoaded = true;
-            this.updateAutosaveMarker(getJSMessage('blogpost.autosave.loaded'),
-                    this.autosaveRenderDiscardLink);
-        }
-    },
+    contentInitialized: function(fromAutosave) {
 
-    convertAutosaveCookieToJson: function() {
-        var blogs, tags, autosaveNoteId, i;
-        var note = {};
-        note.content = this.autosaveCookie.get('content');
-        note.attachments = this.autosaveCookie.get('attachs');
-        note.usersToNotify = this.autosaveCookie.get('users');
-        note.targetBlog = this.autosaveCookie.get('targetBlog');
-        note.properties = this.autosaveCookie.get('properties');
-        blogs = this.autosaveCookie.get('blogs');
-        if (blogs) {
-            // TODO remove this compatibility code in a future release (port 3.0)
-            // convert old nameId member to alias
-            for (i = 0; i < blogs.length; i++) {
-                if (blogs[i].nameId) {
-                    blogs[i].alias = blogs[i].nameId;
-                    delete blogs[i].nameId;
-                }
-            }
-            note.crosspostBlogs = blogs;
-        }
-        tags = this.autosaveCookie.get('tags');
-        // old tags where a string, ignore them
-        if (typeOf(tags) === 'array') {
-            note.tags = tags;
-        }
-        note.isAutosave = true;
-        // decrement version because init code increments it again and it should not grow when doing
-        // an offline autosave because online autosave should be treated as newer
-        note.autosaveVersion = this.autosaveCookie.get('autosaveVersion').toInt() - 1;
-        autosaveNoteId = this.autosaveCookie.get('autosaveNoteId');
-        if (autosaveNoteId) {
-            note.autosaveNoteId = autosaveNoteId.toInt();
-        }
-        return note;
     },
 
     /**
@@ -761,6 +626,7 @@ var CreateNoteWidget = new Class({
      * @param {String} content the content of the note
      * @return {Object} an object with all information for storing the note
      */
+    // TODO rename getNoteDataForPost
     createPostData: function(publish, content) {
         var i, name, properties;
         var data = {};
@@ -785,8 +651,10 @@ var CreateNoteWidget = new Class({
         data.crossPostTopicAliases = this.getCrosspostTopics(true);
         data.attachmentIds = this.attachments.ids;
         data.publish = publish === true ? true : false;
-        data.autosaveNoteId = this.autosaveNoteId;
-        data.noteVersion = this.autosaveVersion;
+        if (this.autosaveHandler) {
+            data.autosaveNoteId = this.autosaveHandler.getNoteId();
+            data.noteVersion = this.autosaveHandler.getVersion();
+        }
 
         if(this.action === 'edit') {
           if (this.noteProperties === null) {
@@ -795,7 +663,7 @@ var CreateNoteWidget = new Class({
           this.noteProperties.push(this.resendNotificationProperty);
         }
 
-        properties = this.createPropertiesPostData(publish);
+        properties = this.createPropertiesPostData();
         if (properties) {
             data.properties = properties;
         }
@@ -804,7 +672,7 @@ var CreateNoteWidget = new Class({
     /**
      * @return {Object[]} array with all note properties or null if no properties were set
      */
-    createPropertiesPostData: function(publish) {
+    createPropertiesPostData: function() {
         var properties;
         if (this.noteProperties) {
             properties = this.noteProperties.slice(0);
@@ -845,17 +713,6 @@ var CreateNoteWidget = new Class({
         return finalTags;
     },
 
-    /**
-     * Called to delete the offline autosave cookie, for instance if the user discarded the autosave
-     * or the note was published. Will even be called if there is no cookie. There won't be a cookie
-     * if autosave feature or the cookies are disabled.
-     */
-    deleteAutosaveCookie: function() {
-        if (this.autosaveCookie) {
-            Cookie.dispose(this.autosaveCookie.key);
-            this.autosaveCookie.empty();
-        }
-    },
 
     /**
      * Called by changeDirectMessageMode if the new mode could be set.
@@ -863,65 +720,43 @@ var CreateNoteWidget = new Class({
     directMessageModeChanged: function() {
     },
 
-    /**
-     * Discard the autosave if there is one.
-     *
-     * @param {Function} [postRemoveOperation] A function to run after successfully removing the
-     *            autosave. If null the editor will be reset. If no operation should be executed
-     *            pass false.
-     */
-    discardAutosave: function(postRemoveOperation) {
-        var url, request, i, utils;
-        // default post remove operation: reset editor
-        if (postRemoveOperation == null) {
-            postRemoveOperation = this.resetToNoAutosaveState.bind(this);
+    extractInitData: function(responseMetadata) {
+        var targetTopic, autosave, initObject, initialNote, autosaveLoaded, content;
+        if (responseMetadata) {
+            initObject = responseMetadata.initialNote;
         }
-        if (this.autosaveDisabled) {
-            if (postRemoveOperation) {
-                postRemoveOperation.call();
-            }
-            return;
-        }
-        // TODO block if there are running uploads?
-        this.stopAutosaveJob();
-        this.deleteAutosaveCookie();
-        if (this.autosaveNoteId != null) {
-            url = this.discardAutosaveUrl + this.autosaveNoteId;
-            request = new Request.JSON({
-                url: url,
-                method: 'get',
-                noCache: true
-            });
-            request.addEvent('complete', this.discardAutosaveOnlineComplete.bind(this,
-                    postRemoveOperation));
-            request.send();
+        if (initObject) {
+            targetTopic = initObject.targetBlog;
         } else {
-            utils = noteUtils;
-            for (i = 0; i < this.attachments.ids.length; i++) {
-                // not really interested in the server response as the job
-                // will clean-up the attachments that could not be deleted
-                utils.deleteAttachment(this.attachments.ids[i]);
-            }
-            if (postRemoveOperation) {
-                postRemoveOperation.call();
+            targetTopic = this.getTargetTopicForCreate();
+            initObject = {};
+        }
+        // use provided content
+        content = this.getStaticParameter('content');
+        if (content) {
+            content = content.replace(/<br\s*\/?>/ig, '\n');
+            initObject.content = unescapeXML(content);
+        }
+        // save initial note object as copy
+        initialNote = Object.clone(initObject);
+        // check for autosave and if available replace initObject with it to init with autosave
+        if (this.autosaveHandler) {
+            autosave = this.autosaveHandler.load(responseMetadata);
+            if (autosave) {
+                autosaveLoaded = true;
+                initObject = autosave.noteData;
             }
         }
-    },
-
-    discardAutosaveOnlineComplete: function(postRemoveOperation, jsonObj) {
-        if (jsonObj && jsonObj.status == 'ERROR') {
-            this.updateAutosaveMarker(jsonObj.message, false);
-        } else if (postRemoveOperation) {
-            postRemoveOperation.call();
+        // force the target topic of the parent or edited note, or in case of create of the autosave
+        if (this.action != 'create' || !autosaveLoaded
+                || (this.initialTargetTopic && !this.noTargetTopicChangeIfModifiedOrAutosaved)) {
+            initObject.targetBlog = targetTopic;
         }
-    },
-
-    discardAutosaveWithConfirm: function(event, postRemoveOperation) {
-        var title = getJSMessage('create.note.autosave.discard.title');
-        var message = getJSMessage('create.note.autosave.discard.question');
-        showConfirmDialog(title, message, this.discardAutosave.bind(this, postRemoveOperation), {
-            triggeringEvent: event
-        });
+        return {
+            initObject: initObject,
+            initialNote: initialNote,
+            isAutosave: autosaveLoaded
+        };
     },
 
     /**
@@ -949,12 +784,6 @@ var CreateNoteWidget = new Class({
 
     getAttachmentSearchElement: function() {
         return this.domNode.getElement('input[type=file]');
-    },
-
-    /**
-     * Returns the element to be updated with autosave status data.
-     */
-    getAutosaveMarkerElement: function() {
     },
 
     getCrosspostTopicsCount: function() {
@@ -1015,6 +844,39 @@ var CreateNoteWidget = new Class({
 
     getListeningEvents: function() {
         return [];
+    },
+    
+    getNoteData: function(resetDirtyFlag) {
+        var properties;
+        var data = {};
+        data.tags = this.createTagsPostData(false);
+        data.attachments = this.attachments.items;
+        data.crosspostTopics = this.getCrosspostTopics(false);
+        data.usersToNotify = this.usersToNotify.items;
+        data.content = this.editor.getContent();
+        data.isDirectMessage = this.isDirectMessage;
+        data.targetTopic = this.topics.items[0];
+        data.isHtml = this.editor.supportsHtml();
+        data.noteId = this.getFilterParameter('noteId');
+        if (this.action != 'edit') {
+            data.parentNoteId = this.parentPostId;
+        }
+
+        if(this.action === 'edit') {
+          if (this.noteProperties === null) {
+            this.noteProperties = [];
+          }
+          this.noteProperties.push(this.resendNotificationProperty);
+        }
+
+        properties = this.createPropertiesPostData();
+        if (properties) {
+            data.properties = properties;
+        }
+        if (resetDirtyFlag) {
+            this.dirty = false;
+        }
+        return data;
     },
 
     getSendButtonElement: function() {
@@ -1119,11 +981,14 @@ var CreateNoteWidget = new Class({
      *         on
      */
     hasAutosave: function() {
-        return this.autosaveLoaded || this.autosaveCreated;
+        if (this.autosaveHandler) {
+            return this.autosaveHandler.hasAutosave();
+        }
+        return false;
     },
 
-    initAutosaveCookie: function() {
-        var cookieName, action;
+    initAutosaveHandler: function() {
+        var action, noteId, options, autosaveTimeout;
         if (this.autosaveDisabled) {
             return;
         }
@@ -1131,83 +996,35 @@ var CreateNoteWidget = new Class({
         if (this.getFilterParameter('repostNoteId')) {
             action = 'repost';
         }
-        // make cookie user-unique
-        cookieName = 'autosave_' + action + '_u' + communote.currentUser.id;
         if (action == 'edit') {
-            cookieName = cookieName + '_' + this.getFilterParameter('noteId');
+            noteId = this.getFilterParameter('noteId');
         } else if (action == 'comment') {
-            cookieName = cookieName + '_' + this.parentPostId;
+            noteId = this.parentPostId;
         } else if (action == 'repost') {
-            cookieName = cookieName + '_' + this.getFilterParameter('repostNoteId');
+            noteId = this.getFilterParameter('repostNoteId');
         }
-        // cookie is set to be valid for 7 days
-        var cookie = new Hash.Cookie(cookieName, {
-            duration: 7,
-            autoSave: false
-        });
-        cookie.load();
-        this.autosaveCookie = cookie;
-    },
-
-    initContent: function(responseMetadata) {
-        var targetTopic, offlineAutosaveVersion, onlineAutosave, initObject, autosaveLoaded, content;
-        if (this.autosaveCookie) {
-            offlineAutosaveVersion = this.autosaveCookie.get('autosaveVersion');
+        options = this.getStaticParameter('autosaveOptions') || {};
+        if (!options.defaultDiscardCompleteCallback) {
+            options.defaultDiscardCompleteCallback = this.resetToNoAutosaveState.bind(this);
         }
-        if (responseMetadata) {
-            onlineAutosave = responseMetadata.autosave;
-            initObject = responseMetadata.initialNote;
-        }
-        if (initObject) {
-            targetTopic = initObject.targetBlog;
-        } else {
-            targetTopic = this.getTargetTopicForCreate();
-            initObject = {};
-        }
-        // use provided content
-        content = this.getStaticParameter('content');
-        if (content) {
-            content = content.replace(/<br\s*\/?>/ig, '\n');
-            initObject.content = unescapeXML(content);
-        }
-        // save initial note object as copy
-        this.initialNote = Object.clone(initObject);
-        // check for autosave and if available replace initObject with it to init with autosave
-        if (onlineAutosave) {
-            autosaveLoaded = true;
-            if (offlineAutosaveVersion > onlineAutosave.autosaveVersion) {
-                // offline autosave is newer
-                initObject = this.convertAutosaveCookieToJson();
-                onlineAutosave = false;
-            } else {
-                initObject = onlineAutosave
+        // prefer new option
+        if (!options.autosaveTimeout) {
+            // check old option (value is in seconds)
+            autosaveTimeout = this.getStaticParameter('draftTimer');
+            if (autosaveTimeout != null) {
+                options.autosaveTimeout = autosaveTimeout * 1000;
             }
-        } else if (offlineAutosaveVersion != null) {
-            initObject = this.convertAutosaveCookieToJson();
-            autosaveLoaded = true;
         }
-        // force the target topic of the parent or edited note, or in case of create of the autosave
-        if (this.action != 'create' || !autosaveLoaded
-                || (this.initialTargetTopic && !this.noTargetTopicChangeIfModifiedOrAutosaved)) {
-            initObject.targetBlog = targetTopic;
-        }
-
-        this.initContentFromJsonObject(initObject);
-        this.contentInitialized(autosaveLoaded && !!onlineAutosave, autosaveLoaded
-                && !onlineAutosave);
+        this.autosaveHandler = new communote.classes.NoteEditorAutosaveHandler(this, action, noteId,
+                options);
     },
 
-    initContentFromJsonObject: function(note) {
+    initContent: function(note) {
         var topics;
         this.editor.resetContent(note.content);
         this.addAttachments(note.attachments);
         this.addUsers(note.usersToNotify);
         this.addTags(note.tags);
-        if (note.isAutosave) {
-            this.autosaveNoteId = note.autosaveNoteId;
-            // increment autosave version so that new autosaves are newer
-            this.autosaveVersion = note.autosaveVersion + 1;
-        }
         // no crosspost topics when targetBlog is not set or replying
         if (note.targetBlog) {
             topics = [ note.targetBlog ];
@@ -1239,6 +1056,10 @@ var CreateNoteWidget = new Class({
         return false;
     },
 
+    isDirty: function() {
+        return this.dirty || this.editor.isDirty();
+    },
+    
     isModified: function() {
         if (!this.modified) {
             if (this.editor.isDirty()) {
@@ -1314,7 +1135,10 @@ var CreateNoteWidget = new Class({
                 }
                 E('onNotesChanged', noteChangedDescr);
             }
-            this.deleteAutosaveCookie();
+            // TODO fire internal event?
+            if (this.autosaveHandler) {
+                this.autosaveHandler.notePublished();
+            }
             // no need to clean up if removing it anyway
             if (this.publishSuccessBehavior.action != 'remove') {
                 this.clearAll();
@@ -1379,12 +1203,13 @@ var CreateNoteWidget = new Class({
 
     publishNoteWhenAutosaveDone: function() {
         var content;
-        if (this.runningAutosaveRequest) {
+        // TODO maybe have a more generic solution like letting the autosaveHandler disable publishing temporarily?
+        if (this.autosaveHandler && this.autosaveHandler.isAutosaveInProgress()) {
             // wait for end of autosave
             this.publishNoteWhenAutosaveDone.delay(1000, this);
         } else {
             content = this.editor.getContent();
-            this.sendNote(true, content);
+            this.sendNote(content);
         }
     },
 
@@ -1410,11 +1235,12 @@ var CreateNoteWidget = new Class({
     },
 
     refreshComplete: function(responseMetadata) {
-        var isAutosave, resendNotification;
-        isAutosave = (this.autosaveCookie && this.autosaveCookie.get('autosaveVersion') != null)
-                || (responseMetadata && responseMetadata.autosave);
+        var resendNotification;
+        var initData = this.extractInitData(responseMetadata);
+        this.initialNote = initData.initialNote;
+
         // TODO better name
-        this.refreshView(isAutosave);
+        this.refreshView(initData.isAutosave);
         this.refreshEditor();
 
         // attach autocompleters
@@ -1440,9 +1266,14 @@ var CreateNoteWidget = new Class({
           }
           this.changeResendNotificationMode(resendNotification);
         }
-
-        this.initContent(responseMetadata);
-        this.startAutosaveJob();
+        
+        this.initContent(initData.initObject);
+        this.contentInitialized(initData.isAutosave);
+        // TODO maybe let autosaveHandler.editorInitialized start job 
+        if (this.autosaveHandler) {
+            this.autosaveHandler.editorInitialized();
+            this.startAutosaveJob();
+        }
         init_tips(this.domNode);
     },
 
@@ -1533,10 +1364,24 @@ var CreateNoteWidget = new Class({
         this.placeholders = communote.utils.attachPlaceholders(null, this.domNode);
     },
 
+    deleteAttachments: function() {
+        var i;
+        for (i = 0; i < this.attachments.ids.length; i++) {
+            // not really interested in the server response as the job
+            // will clean-up the attachments that could not be deleted
+            noteUtils.deleteAttachment(this.attachments.ids[i]);
+        }
+    },
+    
     remove: function(deleteAutosave) {
         if (deleteAutosave) {
             if (this.action != 'create') {
-                this.discardAutosave(true);
+                if (!this.autosaveHandler || !this.autosaveHandler.hasOnlineAutosave()) {
+                    this.deleteAttachments();
+                }
+                if (this.autosaveHandler) {
+                    this.autosaveHandler.discard(false);
+                }
             }
         }
         this.widgetController.removeWidget(this);
@@ -1696,7 +1541,7 @@ var CreateNoteWidget = new Class({
         this.clearAll();
         if (this.initialNote && Object.getLength(this.initialNote)) {
             // restore original note
-            this.initContentFromJsonObject(this.initialNote);
+            this.initContent(this.initialNote);
         }
         this.startAutosaveJob();
     },
@@ -1708,24 +1553,57 @@ var CreateNoteWidget = new Class({
     selectedTopicTitleChanged: function(topicItem) {
     },
 
-    sendNote: function(publish, content) {
-        var successCallback, errorCallback;
-        var data = this.createPostData(publish, content);
-        var options = {};
-
-        if (publish) {
-            options.defaultErrorMessage = getJSMessage('error.blogpost.create.failed');
-            // can use note published callback for success and error since state is evaluated there
-            successCallback = this.notePublished.bind(this, data.topicId);
-            errorCallback = successCallback;
-        } else {
-            this.runningAutosaveRequest = true;
-            successCallback = this.autosaveNoteOnlineComplete.bind(this);
-            errorCallback = function(resultObj) {
-                this.runningAutosaveRequest = false;
-                // TODO anything to be done?
-            }.bind(this);
+    /**
+     * Send the note.
+     * @param {String} content The text/HTML content of the note
+     * @param {boolean} [ignoreUncommittedOptions] if false a popup will warn the user when he
+     *            publishes a note and there are uncommitted inputs in the blog and user input
+     *            fields. If true there will be no warning.
+     */
+    sendNote: function(content, ignoreUncommittedOptions) {
+        var userInput, topicInput, uncommittedUser, uncommittedBlog, msgKey;
+        var cancelFunction, buttons, successCallback, errorCallback, data, options;
+        if (!ignoreUncommittedOptions) {
+            userInput = this.getUserSearchElement();
+            topicInput = this.getTopicSearchElement();
+            uncommittedUser = userInput && userInput.value.trim().length;
+            uncommittedBlog = topicInput && topicInput.value.trim().length;
+            if (uncommittedUser || uncommittedBlog) {
+                msgKey = 'blogpost.create.submit.confirm.unsaved.';
+                if (uncommittedUser) {
+                    msgKey += 'user';
+                }
+                if (uncommittedBlog) {
+                    msgKey += 'blog';
+                }
+                cancelFunction = function() {
+                    this.stopPublishNoteFeedback();
+                    this.startAutosaveJob();
+                }.bind(this);
+                buttons = [];
+                buttons.push({
+                    type: 'yes',
+                    action: this.sendNote.bind(this, content, true)
+                });
+                buttons.push({
+                    type: 'no',
+                    action: cancelFunction
+                });
+                showDialog(this.getSendButtonElement().value, getJSMessage(msgKey), buttons, {
+                    onCloseCallback: cancelFunction,
+                    width: 300
+                });
+                return;
+            }
         }
+        
+        data = this.createPostData(true, content);
+        options = {};
+
+        options.defaultErrorMessage = getJSMessage('error.blogpost.create.failed');
+        // can use note published callback for success and error since state is evaluated there
+        successCallback = this.notePublished.bind(this, data.topicId);
+        errorCallback = successCallback;
         if (this.action == 'edit') {
             noteUtils.updateNote(data.noteId, data, successCallback, errorCallback, options);
         } else {
@@ -1816,15 +1694,11 @@ var CreateNoteWidget = new Class({
      * Starts the autosave draft job.
      */
     startAutosaveJob: function() {
-        if (this.autosaveDisabled || this.autosaveJobId != null) {
-            return;
+        if (this.autosaveHandler) {
+            // TODO necessary to set dirty flag here?
+            this.dirty = false;
+            this.autosaveHandler.startAutomaticSave();
         }
-        // disable autosave functionality if interval is to small
-        if (this.autosaveTimerPeriod < 1000) {
-            return;
-        }
-        this.dirty = false;
-        this.autosaveJobId = this.autosaveJob.periodical(this.autosaveTimerPeriod, this);
     },
 
     /**
@@ -1832,7 +1706,7 @@ var CreateNoteWidget = new Class({
      */
     startPublishNoteFeedback: function() {
         // disable send button
-        this.getSendButtonElement().disabled = 'disabled';
+        this.getSendButtonElement().disabled = true;
         this.ajaxLoadingOverlay.setStyle('display', '');
     },
 
@@ -1840,14 +1714,10 @@ var CreateNoteWidget = new Class({
      * Stops the autosave job.
      */
     stopAutosaveJob: function() {
+        // TODO necessary to set dirty flag here?
         this.dirty = false;
-        if (this.autosaveDisabled) {
-            return;
-        }
-        this.autosaveJobActiveTypes.empty();
-        if (this.autosaveJobId != null) {
-            clearInterval(this.autosaveJobId);
-            this.autosaveJobId = null;
+        if (this.autosaveHandler) {
+            this.autosaveHandler.stopAutomaticSave();
         }
     },
 
@@ -1856,38 +1726,7 @@ var CreateNoteWidget = new Class({
      */
     stopPublishNoteFeedback: function() {
         this.ajaxLoadingOverlay.setStyle('display', 'none');
-        this.getSendButtonElement().removeProperty('disabled');
-    },
-
-    storeInAutosaveCookie: function(content) {
-        var targetBlog, defaultBlog, tags, crosspostTopics, properties;
-        tags = this.createTagsPostData(false);
-        if (tags.length > 0) {
-            this.autosaveCookie.set('tags', tags);
-        }
-        if (this.attachments.items.length > 0) {
-            this.autosaveCookie.set('attachs', this.attachments.items);
-        }
-        crosspostTopics = this.getCrosspostTopics(false);
-        if (crosspostTopics.length > 0) {
-            this.autosaveCookie.set('blogs', crosspostTopics);
-        }
-        if (this.usersToNotify.items.length > 0) {
-            this.autosaveCookie.set('users', this.usersToNotify.items);
-        }
-        properties = this.createPropertiesPostData(false);
-        if (properties) {
-            this.autosaveCookie.set('properties', properties);
-        }
-        this.autosaveCookie.set('content', content);
-        this.autosaveCookie.set('isDirectMessage', this.isDirectMessage);
-        if (this.autosaveNoteId != null) {
-            this.autosaveCookie.set('autosaveNoteId', this.autosaveNoteId);
-        }
-        // save targetBlog when in create mode to allow restoring it, even if unset
-        if (this.action == 'create') {
-            this.autosaveCookie.set('targetBlog', this.topics.items[0]);
-        }
+        this.getSendButtonElement().disabled = false;
     },
 
     /**
@@ -1935,28 +1774,6 @@ var CreateNoteWidget = new Class({
      *            all topics were removed.
      */
     topicRemoved: function(topicData) {
-    },
-
-    updateAutosaveMarker: function(message, renderLink) {
-        var htmlData;
-        var autosaveMarker = this.getAutosaveMarkerElement();
-        if (!autosaveMarker)
-            return;
-        if (message != null) {
-            htmlData = '<span class="cn-note-autosave-message">' + message + '</span>';
-            if (renderLink) {
-                htmlData += '<a class="cn-icon cn-cancel" href="javascript:;" onclick="widgetController.getWidget(\'';
-                htmlData += this.widgetId;
-                htmlData += '\').discardAutosaveWithConfirm(event)" title="'
-                        + getJSMessage('blogpost.autosave.discard') + '"></a>';
-            }
-            htmlData += '<span class="cn-clear"><!-- --></span>';
-
-            autosaveMarker.set('html', htmlData);
-        } else {
-            autosaveMarker.set('html', '');
-        }
-        return autosaveMarker;
     },
 
     useAttachmentSelection: function() {

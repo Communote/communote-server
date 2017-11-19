@@ -91,6 +91,7 @@
                 "/javascript/blog/ChronologicalPostList_DefaultImpl.js",
                 "/javascript/widget/note/editor/TopicAccessEvaluator.js",
                 "/javascript/widget/note/editor/NoteTextEditors.js",
+                "/javascript/widget/note/editor/NoteEditorAutosaveHandler.js",
                 "/javascript/blog/CreateNote.js",
                 "/javascript/blog/CreateNote_DefaultImpl.js",
                 "/javascript/widget/search/SearchBox.Widget",
