@@ -12,7 +12,6 @@ var CreateNoteWidget = new Class({
      * styles). If null all transitions are allowed.
      */
     allowedRenderStyleTransitions: null,
-    attachments: null,
     autosaveDisabled: false,
     // local reference to the blogUtils for defaultBlog handling
     blogUtils: null,
@@ -36,11 +35,14 @@ var CreateNoteWidget = new Class({
         // can hold additional details to run the action. The allowed values depend on the action
         actionOptions: undefined
     },
+    // ComponentManager with all components for the current working mode/action
+    components: null,
     defaultTagStoreAlias: 'DefaultNoteTagStore',
     // whether the editor is currently dirty. Will be reset after a successful autosave.
     dirty: false,
     // the NoteTextEditor instance
     editor: null,
+    eventEmitter: null,
     /**
      * JSON object holding initial note data which will be restored when resetting the note. This
      * data is provided with the response metadata when refreshing the widget. In the edit case this
@@ -118,10 +120,6 @@ var CreateNoteWidget = new Class({
             ids: [],
             items: []
         };
-        this.attachments = {
-            ids: [],
-            items: []
-        };
         // need to remember the order of the added topics to easily get the first crosspost topic
         this.topics = {
             ids: [],
@@ -134,6 +132,7 @@ var CreateNoteWidget = new Class({
         var action, targetBlogId, targetBlogTitle, parentPostId, autosaveDisabled;
         var cancelBehavior, publishSuccessBehavior, tagAutocompleterCategories;
         this.parent();
+        this.eventEmitter = new communote.classes.EventEmitter();
         this.noTargetTopicChangeIfModifiedOrAutosaved = !!this
                 .getStaticParameter('noTargetTopicChangeIfModifiedOrAutosaved');
         this.blogUtils = communote.utils.topicUtils;
@@ -172,6 +171,7 @@ var CreateNoteWidget = new Class({
         if (!this.editor.supportsHtml()) {
             this.setFilterParameter('plaintextOnly', true);
         }
+        
         this.copyStaticParameter('repostNoteId');
         this.copyStaticParameter('noteId');
         parentPostId = this.getStaticParameter('parentPostId');
@@ -209,18 +209,14 @@ var CreateNoteWidget = new Class({
         this.predefinedNoteProperties = this.getStaticParameter('predefinedNoteProperties');
 
         this.initAutosaveHandler();
+        this.components = new communote.classes.NoteEditorComponentManager(this, action,
+                this.renderStyle, this.getAllStaticParameters());
     },
-
-    /**
-     * Adds one or more attachments described by attachment data object.
-     *
-     * @param {Object|Object[]} attachmentData A description of the attachment including the member
-     *            'id', 'fileName', 'mime'.
-     */
-    addAttachments: function(attachmentData) {
-        this.addNewItems(this.attachments, attachmentData, 'id', this.attachmentAdded);
+    
+    addEventListener: function(eventName, fn, context) {
+        this.eventEmitter.on(eventName, fn, context);
     },
-
+    
     /**
      * Add the items from items that are not yet in the dataHolder. Will set the dirty flag if
      * something changed.
@@ -355,59 +351,6 @@ var CreateNoteWidget = new Class({
     },
 
     /**
-     * Called after an attachment was added. Subclasses can use this hook to update the view.
-     *
-     * @param {Object} attachmentData JSON object describing the attached attachment
-     * @param {boolean} moreToCome true if the attachment was added as part of batch update and the
-     *            current item is not the last. Can be used to optimize view updates.
-     */
-    attachmentAdded: function(attachmentData, moreToCome) {
-    },
-
-    /**
-     * Called after an attachment was removed. Subclasses can use this hook to update the view.
-     *
-     * @param {String} id identifier of the attached attachment. This parameter is null if all
-     *            attachments were removed.
-     */
-    attachmentRemoved: function(id) {
-    },
-
-    attachmentUploadDone: function(uploadId, jsonResponse) {
-        // check for error message
-        if (jsonResponse.status == 'ERROR') {
-            this.attachmentUploadFailed(uploadId, jsonResponse.message);
-        } else {
-            this.attachmentUploadSucceeded(uploadId, jsonResponse.result);
-        }
-    },
-
-    attachmentUploadFailed: function(uploadId, errorMessage) {
-        // enable send button
-        this.getSendButtonElement().disabled = false;
-        if (errorMessage) {
-            // hide notifications
-            hideNotification();
-            // show error occurred
-            showNotification(NOTIFICATION_BOX_TYPES.error, '', errorMessage, {
-                duration: ''
-            });
-        }
-    },
-
-    attachmentUploadStarted: function(uploadDescriptor) {
-        // disable send button
-        this.getSendButtonElement().disabled = true;
-    },
-
-    attachmentUploadSucceeded: function(uploadId, attachmentData) {
-        // enable send button
-        this.getSendButtonElement().disabled = false;
-        attachmentData.uploadId = uploadId;
-        this.addAttachments(attachmentData);
-    },
-
-    /**
      * @override
      */
     beforeRemove: function() {
@@ -424,7 +367,7 @@ var CreateNoteWidget = new Class({
      */
     cancel: function(event) {
         var remove, changeRenderStyle, hasAutosave, modified, postRemoveOperation;
-        var resetOperation, removeAttachments;
+        var resetOperation, hasOnlineAutosave;
         var behavior = this.cancelBehavior;
         if (behavior.action) {
             remove = behavior.action === 'remove';
@@ -438,12 +381,9 @@ var CreateNoteWidget = new Class({
         hasAutosave = this.hasAutosave();
         modified = this.isModified();
         if (behavior.discardAutosave && (hasAutosave || modified)) {
-            // if there is no online autosave remove the attachments, but in post-function (i.e. after confirm)
-            removeAttachments = !this.autosaveHandler || !this.autosaveHandler.hasOnlineAutosave();
+            hasOnlineAutosave = this.autosaveHandler && this.autosaveHandler.hasOnlineAutosave();
             postRemoveOperation = function() {
-                if (removeAttachments) {
-                    this.deleteAttachments();
-                }
+                this.eventEmitter.emit('noteDiscarded', hasOnlineAutosave);
                 if (!remove) {
                     this.resetToNoAutosaveState();
                     if (changeRenderStyle) {
@@ -563,7 +503,6 @@ var CreateNoteWidget = new Class({
             this.removeTopic(null);
         }
         this.removeTag(null);
-        this.removeAttachment(null);
         this.removeUser(null);
         this.editor.resetContent(null);
         this.changeDirectMessageMode(false);
@@ -649,7 +588,7 @@ var CreateNoteWidget = new Class({
         data.tags = this.createTagsPostData(publish);
         data.usersToNotify = this.usersToNotify.ids;
         data.crossPostTopicAliases = this.getCrosspostTopics(true);
-        data.attachmentIds = this.attachments.ids;
+        this.components.appendNoteDataForRestRequest(data, publish, false);
         data.publish = publish === true ? true : false;
         if (this.autosaveHandler) {
             data.autosaveNoteId = this.autosaveHandler.getNoteId();
@@ -782,10 +721,6 @@ var CreateNoteWidget = new Class({
         return tags;
     },
 
-    getAttachmentSearchElement: function() {
-        return this.domNode.getElement('input[type=file]');
-    },
-
     getCrosspostTopicsCount: function() {
         var count = this.topics.ids.length;
         if (count > 0) {
@@ -850,7 +785,6 @@ var CreateNoteWidget = new Class({
         var properties;
         var data = {};
         data.tags = this.createTagsPostData(false);
-        data.attachments = this.attachments.items;
         data.crosspostTopics = this.getCrosspostTopics(false);
         data.usersToNotify = this.usersToNotify.items;
         data.content = this.editor.getContent();
@@ -873,6 +807,7 @@ var CreateNoteWidget = new Class({
         if (properties) {
             data.properties = properties;
         }
+        this.components.appendNoteData(data, resetDirtyFlag);
         if (resetDirtyFlag) {
             this.dirty = false;
         }
@@ -1021,8 +956,12 @@ var CreateNoteWidget = new Class({
 
     initContent: function(note) {
         var topics;
+        this.components.initContent(note);
+        // TODO hack while migrating to components
+        if (!note) {
+            return;
+        }
         this.editor.resetContent(note.content);
-        this.addAttachments(note.attachments);
         this.addUsers(note.usersToNotify);
         this.addTags(note.tags);
         // no crosspost topics when targetBlog is not set or replying
@@ -1057,7 +996,7 @@ var CreateNoteWidget = new Class({
     },
 
     isDirty: function() {
-        return this.dirty || this.editor.isDirty();
+        return this.dirty || this.editor.isDirty() || this.components.isDirty();
     },
     
     isModified: function() {
@@ -1066,7 +1005,7 @@ var CreateNoteWidget = new Class({
                 this.modified = true;
             }
         }
-        return this.modified;
+        return this.modified || this.components.isModified();
     },
 
     /**
@@ -1142,6 +1081,8 @@ var CreateNoteWidget = new Class({
             // no need to clean up if removing it anyway
             if (this.publishSuccessBehavior.action != 'remove') {
                 this.clearAll();
+                // TODO clearAll shouldn't be necessary when correctly implementing initContent
+                this.initContent(null);
                 this.startAutosaveJob();
                 if (this.publishSuccessBehavior.action == 'renderStyle') {
                     this.setRenderStyle(this.publishSuccessBehavior.actionOptions);
@@ -1191,7 +1132,7 @@ var CreateNoteWidget = new Class({
     publishNote: function() {
         // do nothing if there are still running uploads
         if (this.getSendButtonElement().disabled
-                || (this.attachmentUploader && this.attachmentUploader.hasRunningUploads())) {
+                || !this.components.canPublishNote()) {
             // TODO show an error message?
             return false;
         }
@@ -1218,22 +1159,6 @@ var CreateNoteWidget = new Class({
         this.parent();
     },
 
-    refreshAttachmentSelection: function() {
-        var field = this.getAttachmentSearchElement();
-        if (field) {
-            this.attachmentUploader = new AjaxFileUpload(field, {
-                uploadOnChange: true
-            });
-            this.attachmentUploader.addEvent('uploadStarting', this.attachmentUploadStarted
-                    .bind(this));
-            this.attachmentUploader.addEvent('uploadFileNotFound', this.attachmentUploadFailed
-                    .bind(this));
-            this.attachmentUploader
-                    .addEvent('uploadFailed', this.attachmentUploadFailed.bind(this));
-            this.attachmentUploader.addEvent('uploadDone', this.attachmentUploadDone.bind(this));
-        }
-    },
-
     refreshComplete: function(responseMetadata) {
         var resendNotification;
         var initData = this.extractInitData(responseMetadata);
@@ -1242,6 +1167,7 @@ var CreateNoteWidget = new Class({
         // TODO better name
         this.refreshView(initData.isAutosave);
         this.refreshEditor();
+        this.eventEmitter.emit('widgetRefreshed');
 
         // attach autocompleters
         if (this.useTopicSelection()) {
@@ -1254,10 +1180,6 @@ var CreateNoteWidget = new Class({
             this.refreshUserSelection(this.getUserSearchElement());
         }
 
-        if (this.useAttachmentSelection()) {
-            this.refreshAttachmentSelection();
-        }
-
         if (this.action === 'edit') {
           // Load the latest setting for the resend notification option via Local Storage
           resendNotification = communoteLocalStorage.getItem('com.communote.editNote.resendNotification');
@@ -1268,6 +1190,7 @@ var CreateNoteWidget = new Class({
         }
         
         this.initContent(initData.initObject);
+        // TODO rename to contentInitializedAfterRefresh to make clear it is not called with every initContent call?
         this.contentInitialized(initData.isAutosave);
         // TODO maybe let autosaveHandler.editorInitialized start job 
         if (this.autosaveHandler) {
@@ -1363,22 +1286,13 @@ var CreateNoteWidget = new Class({
                 false);
         this.placeholders = communote.utils.attachPlaceholders(null, this.domNode);
     },
-
-    deleteAttachments: function() {
-        var i;
-        for (i = 0; i < this.attachments.ids.length; i++) {
-            // not really interested in the server response as the job
-            // will clean-up the attachments that could not be deleted
-            noteUtils.deleteAttachment(this.attachments.ids[i]);
-        }
-    },
     
     remove: function(deleteAutosave) {
+        var hasOnlineAutosave;
         if (deleteAutosave) {
             if (this.action != 'create') {
-                if (!this.autosaveHandler || !this.autosaveHandler.hasOnlineAutosave()) {
-                    this.deleteAttachments();
-                }
+                hasOnlineAutosave = this.autosaveHandler && this.autosaveHandler.hasOnlineAutosave();
+                this.eventEmitter.emit('noteDiscarded', hasOnlineAutosave);
                 if (this.autosaveHandler) {
                     this.autosaveHandler.discard(false);
                 }
@@ -1386,11 +1300,9 @@ var CreateNoteWidget = new Class({
         }
         this.widgetController.removeWidget(this);
     },
-
-    removeAttachment: function(id) {
-        if (this.removeItemFromDataHolder(this.attachments, id)) {
-            this.attachmentRemoved(id);
-        }
+    
+    removeEventListener: function(eventName, fn, context) {
+        this.eventEmitter.off(eventName, fn, context);
     },
 
     /**
@@ -1539,10 +1451,10 @@ var CreateNoteWidget = new Class({
      */
     resetToNoAutosaveState: function() {
         this.clearAll();
-        if (this.initialNote && Object.getLength(this.initialNote)) {
+//        if (this.initialNote && Object.getLength(this.initialNote)) {
             // restore original note
             this.initContent(this.initialNote);
-        }
+//        }
         this.startAutosaveJob();
     },
 
@@ -1774,10 +1686,6 @@ var CreateNoteWidget = new Class({
      *            all topics were removed.
      */
     topicRemoved: function(topicData) {
-    },
-
-    useAttachmentSelection: function() {
-        return true;
     },
 
     /**

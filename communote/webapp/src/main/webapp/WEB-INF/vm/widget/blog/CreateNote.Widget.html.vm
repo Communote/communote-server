@@ -38,8 +38,8 @@
                     title="$fmtTool.message('blogpost.create.tab.user.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.user.title')</span></a>
                 <a id="${widget.WidgetId}-accessory-tag" class="accessory-tag cn-link" href="javascript:;" onclick="${widgetInstance}.showAccessory('tag', true)"
                     title="$fmtTool.message('blogpost.create.tab.tag.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.tag.title')</span></a>
-                <a id="${widget.WidgetId}-accessory-attachment" class="accessory-attachment cn-link" href="javascript:;" onclick="${widgetInstance}.showAccessory('attachment', false)"
-                    title="$fmtTool.message('blogpost.create.tab.attachment.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.attachment.title')</span></a>
+                <a id="${widget.WidgetId}-accessory-attachment" class="accessory-attachment cn-link" href="javascript:;" title="$fmtTool.message('blogpost.create.tab.attachment.hover')">
+                    <span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.attachment.title')</span></a>
                 <span class="cn-clear"><!-- --></span>
             </div>
             <span class="cn-clear"><!-- --></span>

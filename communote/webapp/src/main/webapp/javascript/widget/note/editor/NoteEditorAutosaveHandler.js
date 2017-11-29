@@ -141,7 +141,7 @@
      * 
      * @class
      */
-    var AutosaveHandler = function(noteEditorWidget, action, noteId, options) {
+    function AutosaveHandler(noteEditorWidget, action, noteId, options) {
         options = options || {};
         this.widget = noteEditorWidget;
         this.action = action;

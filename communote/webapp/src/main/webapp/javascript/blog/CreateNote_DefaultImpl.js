@@ -9,7 +9,6 @@ CreateNoteDefaultWidget = new Class({
 
     plainTextEditorCssClass: 'cn-write-note-plaintext',
     contentUsersContainer: null,
-    contentAttachmentsContainer: null,
     // no multiple tag autocompletion since the TextboxList is taking care of this
     tagAutocompleterMultipleMode: false,
     userInterfaceHidden: false,
@@ -255,8 +254,6 @@ CreateNoteDefaultWidget = new Class({
             this.setRenderStyle('full');
         }
         this.contentUsersContainer = this.domNode.getElement('.cn-write-note-accessory-user');
-        this.contentAttachmentsContainer = this.domNode
-                .getElement('.cn-write-note-accessory-attachment');
         if (this.useTopicSelection()) {
             this.contentTopicsContainer = this.domNode.getElement('.cn-write-note-accessory-topic');
         }
@@ -375,22 +372,6 @@ CreateNoteDefaultWidget = new Class({
         this.tagAutocompleter.resetQuery(true);
     },
 
-    attachmentUploadStarted: function(uploadDescriptor) {
-        this.parent(uploadDescriptor);
-        this.appendAttachmentUploadItem(uploadDescriptor.uploadId, uploadDescriptor.fileName);
-    },
-
-    attachmentUploadSucceeded: function(uploadId, attachmentData) {
-        this.parent(uploadId, attachmentData);
-        // empty input field (setting value of input to '' won't work in IE)
-        this.contentAttachmentsContainer.getElement('form').reset();
-    },
-
-    attachmentUploadFailed: function(uploadId, message) {
-        this.parent(uploadId, message);
-        this.removeAttachmentOrUploadItem('-upload-' + uploadId);
-    },
-
     showAccessory: function(name, focusInput) {
         var textboxList, placeholder, inputElem;
         var toggleElem = this.domNode.getElementById(this.widgetId + '-accessory-' + name);
@@ -440,11 +421,6 @@ CreateNoteDefaultWidget = new Class({
         } else {
             this.hideAccessory('tag');
         }
-        if (this.attachments.ids.length) {
-            this.showAccessory('attachment', false);
-        } else {
-            this.hideAccessory('attachment');
-        }
     },
 
     showOrHideUserInterfaceForTopic: function(topicId) {
@@ -489,6 +465,10 @@ CreateNoteDefaultWidget = new Class({
      */
     renderStyleChanged: function(oldStyle, newStyle) {
         var oldEditor, content;
+        this.eventEmitter.emit('renderStyleChanged', {
+            oldStyle: oldStyle,
+            newStyle: newStyle
+        });
         // ignore any style changes before the editor is set (e.g. during init)
         if (newStyle === 'full' && this.editor) {
             if (!instanceOf(this.editor, NoteTextEditorFactory.getSupportedEditorType())) {
@@ -515,20 +495,6 @@ CreateNoteDefaultWidget = new Class({
         } else if (newStyle === 'simulate' && this.editor) {
             this.editor.unFocus();
         }
-    },
-
-    /**
-     * @override
-     */
-    attachmentAdded: function(attachmentData, moreToCome) {
-        this.appendAttachmentItem(attachmentData);
-    },
-
-    /**
-     * @override
-     */
-    attachmentRemoved: function(id) {
-        this.removeAttachmentOrUploadItem(id ? '-attachment-' + id : null);
     },
 
     /**
@@ -633,84 +599,6 @@ CreateNoteDefaultWidget = new Class({
         }
         this.enableDisableDmCheckbox();
         this.refreshPlaceholder(this.getUserSearchElement(), false);
-    },
-
-    appendAttachmentUploadItem: function(uploadId, fileName) {
-        var newUploadItem, html, elem;
-        var wrapper = this.contentAttachmentsContainer.getElementById(this.widgetId
-                + '-summary-attachments');
-        if (wrapper.hasClass('cn-hidden')) {
-            wrapper.removeClass('cn-hidden');
-        }
-        newUploadItem = new Element('div', {
-            'id': this.widgetId + '-upload-' + uploadId,
-            'class' : 'cn-upload-process'
-        });
-        html = '<span class="cn-attachment-filename"></span>';
-        newUploadItem.set('html', html);
-        elem = newUploadItem.getElement('.cn-attachment-filename');
-        elem.set('text', getJSMessage('blogpost.create.attachments.uploading', [ fileName ]));
-        elem.setProperty('title', fileName);
-        wrapper.grab(newUploadItem);
-    },
-
-    appendAttachmentItem: function(attachmentData) {
-        var elem, newAttachmentElem, html, uploadElem;
-        var wrapper = this.contentAttachmentsContainer.getElementById(this.widgetId
-                + '-summary-attachments');
-        if (wrapper.hasClass('cn-hidden')) {
-            wrapper.removeClass('cn-hidden');
-        }
-        if (attachmentData.uploadId) {
-            uploadElem = wrapper.getElementById(this.widgetId + '-upload-'
-                    + attachmentData.uploadId);
-        }
-        newAttachmentElem = new Element('div', {
-            'id': this.widgetId + '-attachment-' + attachmentData.id
-        });
-        html = '<span class="cn-attachment-filename"><span></span><a href="" target="_blank"></a></span>'
-                + '<span class="cn-attachment-filesize"></span>'
-                + '<span class="cn-attachment-remove"><a href="javascript:;" class="cn-icon" title="'
-                + getJSMessage('blogpost.create.attachments.remove.tooltip')
-                + '">&nbsp;</a></span>';
-        newAttachmentElem.set('html', html);
-        elem = newAttachmentElem.getElement('.cn-attachment-filename span');
-        elem.set('text', attachmentData.fileName);
-        elem.setProperty('title', attachmentData.fileName);
-        elem = newAttachmentElem.getElement('a');
-        elem.set('text', attachmentData.fileName);
-        elem.setProperty('title', attachmentData.fileName);
-        elem.setProperty('href', buildRequestUrl('/portal/files/' + attachmentData.id + '/'
-                + attachmentData.fileName));
-        elem = newAttachmentElem.getElement('.cn-attachment-filesize');
-        elem.set('text', attachmentData.size);
-        elem = newAttachmentElem.getElement('.cn-attachment-remove a');
-        elem.addEvent('click', this.removeAttachment.bind(this, attachmentData.id));
-        if (uploadElem) {
-            newAttachmentElem.replaces(uploadElem);
-        } else {
-            wrapper.grab(newAttachmentElem);
-        }
-    },
-
-    removeAttachmentOrUploadItem: function(elemIdSuffix) {
-        var elem, checkHide;
-        var wrapper = this.contentAttachmentsContainer.getElementById(this.widgetId
-                + '-summary-attachments');
-        if (elemIdSuffix) {
-            elem = wrapper.getElementById(this.widgetId + elemIdSuffix);
-            if (elem) {
-                elem.destroy();
-                checkHide = true;
-            }
-        } else {
-            // destroy all
-            wrapper.getChildren().destroy();
-            checkHide = true;
-        }
-        if (checkHide && wrapper.getChildren().length == 0) {
-            wrapper.addClass('cn-hidden');
-        }
     },
 
     extractTopicName: function(topicData) {
