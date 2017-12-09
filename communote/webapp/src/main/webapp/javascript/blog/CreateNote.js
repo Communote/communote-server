@@ -5,7 +5,6 @@ var CreateNoteWidget = new Class({
 
     // the current working mode of the widget (edit, comment or create)
     action: null,
-    addedTags: null,
     ajaxLoadingOverlay: null,
     /**
      * Object that maps the source render style to the allowed target render styles (array of
@@ -37,7 +36,6 @@ var CreateNoteWidget = new Class({
     },
     // ComponentManager with all components for the current working mode/action
     components: null,
-    defaultTagStoreAlias: 'DefaultNoteTagStore',
     // whether the editor is currently dirty. Will be reset after a successful autosave.
     dirty: false,
     // the NoteTextEditor instance
@@ -89,22 +87,11 @@ var CreateNoteWidget = new Class({
     // css classes to be applied to the create note container (getWriteContainerElement)
     // when the editor only supports richtext
     richTextEditorCssClass: null,
-    // defines whether tags that were just typed into the tag input should be stored when sending
-    storeUncommittedTags: true,
     /**
      * Supported render styles of the widget. The first is the default.
      */
     supportedRenderStyles: [ 'full', 'minimal', 'simulate' ],
-    tagAutocompleter: null,
-    /**
-     * @type {Object[]} categories of the tag autocompleter, can provided with a static parameter of
-     *       same name. If not defined a default category definition will be used
-     */
-    tagAutocompleterCategories: null,
-    // whether the autocompleter should work in multiple mode
-    tagAutocompleterMultipleMode: true,
-    // RegEx to split the tags in the tag input field
-    tagStringSplitRegEx: /\s*,\s*/,
+
     topicAutocompleter: null,
     topics: null,
     userAutocompleter: null,
@@ -125,12 +112,11 @@ var CreateNoteWidget = new Class({
             ids: [],
             items: []
         };
-        this.addedTags = [];
     },
 
     init: function() {
         var action, targetBlogId, targetBlogTitle, parentPostId, autosaveDisabled;
-        var cancelBehavior, publishSuccessBehavior, tagAutocompleterCategories;
+        var cancelBehavior, publishSuccessBehavior;
         this.parent();
         this.eventEmitter = new communote.classes.EventEmitter();
         this.noTargetTopicChangeIfModifiedOrAutosaved = !!this
@@ -191,21 +177,6 @@ var CreateNoteWidget = new Class({
             // parameter
             this.setFilterParameter('autosaveDisabled', true);
         }
-        tagAutocompleterCategories = this.getStaticParameter('tagAutocompleterCategories');
-        if (tagAutocompleterCategories) {
-            // TODO will be in serialized JSON format for create case -> should be changed when switching from comment based params
-            if (typeOf(tagAutocompleterCategories) === 'string') {
-                tagAutocompleterCategories = JSON.decode(tagAutocompleterCategories);
-            }
-            this.tagAutocompleterCategories = tagAutocompleterCategories;
-        } else {
-            // create default category definition which uses the default note tagstore
-            this.tagAutocompleterCategories = [ {
-                'id': this.defaultTagStoreAlias,
-                'provider': this.defaultTagStoreAlias,
-                'title': ''
-            } ];
-        }
         this.predefinedNoteProperties = this.getStaticParameter('predefinedNoteProperties');
 
         this.initAutosaveHandler();
@@ -265,54 +236,6 @@ var CreateNoteWidget = new Class({
         return idsToAdd;
     },
 
-    /**
-     * Adds a tag to the addedTags array if it is not yet contained. In case the tag was added
-     * tagAdded will be called and the dirty flag will be set.
-     *
-     * @param {String|Object} tag The tag to add, can be a simple string tag or a structured tag
-     *            object
-     */
-    addTag: function(tag) {
-        // if the tag is a string build the minimal tag object
-        tag = this.convertToTagObject(tag);
-        if (this.internalAddTag(tag, this.addedTags)) {
-            this.dirty = true;
-            this.modified = true;
-            this.tagAdded(tag, false);
-        }
-    },
-    /**
-     * Adds a bunch of tags to the addedTags array. Only tags that are not yet contained will be
-     * added. For each added tag the tagAdded will be called. If any tag was added the dirty flag
-     * will be set.
-     *
-     * @param {String[]|Object[]} tags The tags to add, the array can contain simple string tags or
-     *            structured tag objects
-     */
-    addTags: function(tags) {
-        var i, addedTags, tag, lastIndex;
-        if (!tags) {
-            return;
-        }
-        addedTags = [];
-        for (i = 0; i < tags.length; i++) {
-            // if the tag is a string build the minimal tag object
-            tag = this.convertToTagObject(tags[i]);
-            if (this.internalAddTag(tag, this.addedTags)) {
-                addedTags.push(tag);
-            }
-        }
-        // inform FE that tags were added
-        lastIndex = addedTags.length - 1;
-        if (lastIndex > -1) {
-            for (i = 0; i <= lastIndex; i++) {
-                this.tagAdded(addedTags[i], i < lastIndex);
-            }
-            this.dirty = true;
-            this.modified = true;
-        }
-    },
-
     addTopics: function(topics) {
         var targetTopicId, ids, newTargetTopic, i;
         if (!topics) {
@@ -357,6 +280,7 @@ var CreateNoteWidget = new Class({
         this.stopAutosaveJob();
         // TODO do autosave?
         this.cleanup();
+        this.eventEmitter.emit('widgetRemoving');
     },
 
     /**
@@ -487,9 +411,6 @@ var CreateNoteWidget = new Class({
         if (this.topicAutocompleter) {
             this.topicAutocompleter.destroy();
         }
-        if (this.tagAutocompleter) {
-            this.tagAutocompleter.destroy();
-        }
         if (this.placeholders) {
             this.placeholders.destroy();
         }
@@ -502,15 +423,10 @@ var CreateNoteWidget = new Class({
         } else {
             this.removeTopic(null);
         }
-        this.removeTag(null);
         this.removeUser(null);
         this.editor.resetContent(null);
         this.changeDirectMessageMode(false);
         // empty inputs
-        elem = this.getTagSearchElement();
-        if (elem) {
-            elem.value = '';
-        }
         elem = this.getTopicSearchElement();
         if (elem) {
             elem.value = '';
@@ -531,21 +447,6 @@ var CreateNoteWidget = new Class({
      */
     contentInitialized: function(fromAutosave) {
 
-    },
-
-    /**
-     * Convert a tag string to a valid tag object containing the minimum required members if it is
-     * not already one.
-     *
-     * @param {String|Object} tag The tag to process
-     */
-    convertToTagObject: function(tag) {
-        if (typeof (tag) === 'string') {
-            tag = {
-                defaultName: tag
-            };
-        }
-        return tag;
     },
 
     /**
@@ -585,7 +486,6 @@ var CreateNoteWidget = new Class({
             data.parentNoteId = this.parentPostId;
             data.isDirectMessage = this.isDirectMessage;
         }
-        data.tags = this.createTagsPostData(publish);
         data.usersToNotify = this.usersToNotify.ids;
         data.crossPostTopicAliases = this.getCrosspostTopics(true);
         this.components.appendNoteDataForRestRequest(data, publish, false);
@@ -634,26 +534,6 @@ var CreateNoteWidget = new Class({
     },
 
     /**
-     * @returns {Array} an array of objects representing the tags to attach when saving the note
-     */
-    createTagsPostData: function(publish) {
-        var finalTags, uncommittedTags, i;
-        finalTags = this.addedTags.clone();
-        // do not save tags from input when doing an autosave and the user is still
-        // typing in the tag field, because we would add incomplete tags to the DB
-        if (this.storeUncommittedTags
-                && (publish || (this.tagAutocompleter && !this.tagAutocompleter
-                        .isInputElementFocused()))) {
-            uncommittedTags = this.extractTagsFromInput();
-            for (i = 0; i < uncommittedTags.length; i++) {
-                this.internalAddTag(uncommittedTags[i], finalTags);
-            }
-        }
-        return finalTags;
-    },
-
-
-    /**
      * Called by changeDirectMessageMode if the new mode could be set.
      */
     directMessageModeChanged: function() {
@@ -698,29 +578,6 @@ var CreateNoteWidget = new Class({
         };
     },
 
-    /**
-     * @returns {String[]} an array of tag strings the user typed into the tag input field. The
-     *          array is empty there is no tag input or no tags were added
-     */
-    extractTagsFromInput: function() {
-        var tagString, splitted, i;
-        var tags = [];
-        var field = this.getTagSearchElement();
-        if (field) {
-            tagString = field.value.trim();
-            if (tagString.length > 0) {
-                splitted = tagString.split(this.tagStringSplitRegEx);
-                // remove blank
-                for (i = 0; i < splitted.length; i++) {
-                    if (splitted[i].length > 0) {
-                        tags.push(this.convertToTagObject(splitted[i]));
-                    }
-                }
-            }
-        }
-        return tags;
-    },
-
     getCrosspostTopicsCount: function() {
         var count = this.topics.ids.length;
         if (count > 0) {
@@ -744,39 +601,6 @@ var CreateNoteWidget = new Class({
         return result;
     },
 
-    /**
-     * Returns the index of a tag within the tagStore array.
-     *
-     * @param {Object} tag The tag to find, can be a simple unpersisted tag which just has the
-     *            defaultName set or a persisted tag with tagId
-     * @param {Object[]} tagStore Array that holds tags which can be persisted tags with tagId or
-     *            tags that are not yet persisted
-     * @returns {Number} the index of the tag or -1 if not contained
-     */
-    getIndexOfTag: function(tag, tagStore) {
-        var i, index, simpleTag, addedTag;
-        index = -1;
-        // check if tag is just a string or a structured tag with tagId
-        simpleTag = tag.tagId == undefined;
-        for (i = 0; i < tagStore.length; i++) {
-            addedTag = tagStore[i];
-            if (simpleTag) {
-                // compare by value: equal if default name matches the input and tagstore is not
-                // set or the defaultTagStore
-                if (!addedTag.tagStoreAlias || addedTag.tagStoreAlias === tag.tagStoreAlias) {
-                    if (addedTag.defaultName === tag.defaultName) {
-                        index = i;
-                        break;
-                    }
-                }
-            } else if (addedTag.tagId === tag.tagId) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    },
-
     getListeningEvents: function() {
         return [];
     },
@@ -784,7 +608,6 @@ var CreateNoteWidget = new Class({
     getNoteData: function(resetDirtyFlag) {
         var properties;
         var data = {};
-        data.tags = this.createTagsPostData(false);
         data.crosspostTopics = this.getCrosspostTopics(false);
         data.usersToNotify = this.usersToNotify.items;
         data.content = this.editor.getContent();
@@ -816,23 +639,6 @@ var CreateNoteWidget = new Class({
 
     getSendButtonElement: function() {
         return this.domNode.getElementById(this.widgetId + '-send-button');
-    },
-
-    /**
-     * Returns the element to be used as positionSource element for the tag autocompleter.
-     *
-     * @return {Element} the element or null if not required
-     */
-    getTagAutocompleterPositionSource: function() {
-        return null;
-    },
-    /**
-     * Returns the tag search element.
-     *
-     * @return {Element} the element if it exists
-     */
-    getTagSearchElement: function() {
-        return this.domNode.getElementById(this.widgetId + '-tag-search');
     },
 
     getTargetTopicForCreate: function() {
@@ -963,7 +769,6 @@ var CreateNoteWidget = new Class({
         }
         this.editor.resetContent(note.content);
         this.addUsers(note.usersToNotify);
-        this.addTags(note.tags);
         // no crosspost topics when targetBlog is not set or replying
         if (note.targetBlog) {
             topics = [ note.targetBlog ];
@@ -977,22 +782,6 @@ var CreateNoteWidget = new Class({
         }
         this.changeDirectMessageMode(note.isDirectMessage);
         this.modified = false;
-    },
-
-    /**
-     * Helper that adds a tag to the tagStore array if it is not yet contained.
-     *
-     * @param {Object} tag The tag to add
-     * @param {Object[]} tagStore Array that holds tags which can be persisted tags with tagId or
-     *            tags that are not yet persisted
-     * @returns {Boolean} True if the tag was added, false if it was already contained
-     */
-    internalAddTag: function(tag, tagStore) {
-        if (this.getIndexOfTag(tag, tagStore) === -1) {
-            tagStore.push(tag);
-            return true;
-        }
-        return false;
     },
 
     isDirty: function() {
@@ -1156,6 +945,7 @@ var CreateNoteWidget = new Class({
 
     refresh: function() {
         this.cleanup();
+        this.eventEmitter.emit('widgetRefreshing');
         this.parent();
     },
 
@@ -1172,9 +962,6 @@ var CreateNoteWidget = new Class({
         // attach autocompleters
         if (this.useTopicSelection()) {
             this.refreshTopicSelection(this.getTopicSearchElement());
-        }
-        if (this.useTagSelection()) {
-            this.refreshTagSelection(this.getTagSearchElement());
         }
         if (this.useUserSelection()) {
             this.refreshUserSelection(this.getUserSearchElement());
@@ -1220,26 +1007,6 @@ var CreateNoteWidget = new Class({
         }
 
         this.editor.refresh(writeContainerElem);
-    },
-
-    /**
-     * Attaches a tag autocompleter if a tag search element exists.
-     *
-     * @param {Element} searchElement The input element to attach the autocompleter to
-     */
-    refreshTagSelection: function(searchElement) {
-        var acOptions;
-        if (searchElement) {
-            acOptions = this.prepareAutocompleterOptions('getTagAutocompleterPositionSource', true,
-                    false, this.setCurrentTopicBeforeRequestCallback.bind(this));
-            if (!acOptions.suggestionsOptions) {
-                acOptions.suggestionsOptions = {};
-            }
-            acOptions.suggestionsOptions['categories'] = this.tagAutocompleterCategories;
-            this.tagAutocompleter = autocompleterFactory.createTagAutocompleter(searchElement,
-                    acOptions, null, 'NOTE', false, this.tagAutocompleterMultipleMode);
-            this.tagAutocompleter.addEvent('onChoiceSelected', this.tagChoiceSelected.bind(this));
-        }
     },
 
     /**
@@ -1335,35 +1102,6 @@ var CreateNoteWidget = new Class({
             this.modified = true;
         }
         return changed;
-    },
-
-    /**
-     * Remove one or all tags from the addedTags array. If the array was changed tagRemoved will be
-     * called.
-     *
-     * @param {Object|String} tag The tag to remove or null to remove all tags
-     */
-    removeTag: function(tag) {
-        var modified = false, index;
-        if (tag == null) {
-            if (this.addedTags.length > 0) {
-                this.addedTags.empty();
-                modified = true;
-            }
-        } else {
-            tag = this.convertToTagObject(tag);
-            index = this.getIndexOfTag(tag, this.addedTags);
-            if (index > -1) {
-                modified = true;
-                this.addedTags.splice(index, 1);
-            }
-        }
-        if (modified) {
-            this.dirty = true;
-            this.modified = true;
-            this.tagRemoved(tag);
-        }
-        return false;
     },
 
     removeTopic: function(topicData) {
@@ -1642,24 +1380,6 @@ var CreateNoteWidget = new Class({
     },
 
     /**
-     * Called when a tag was added for instance by selecting it from the autocompleter or submitting
-     * the tag input field. Subclasses can use this class to update a summary. This class does
-     * nothing.
-     *
-     * @param {Object|String} tag The tag that was added
-     * @param {Boolean} moreToCome Whether more tags will be added. This can be used to optimize
-     *            summary creation.
-     */
-    tagAdded: function(tag, moreToCome) {
-    },
-
-    tagChoiceSelected: function(inputElem, choiceElem, token, value) {
-        this.addTag(token);
-    },
-
-    tagRemoved: function(tag) {
-    },
-    /**
      * Method that is invoked when the target topic was added, removed or replaced. This method is
      * called after topicAdded and topicRemoved.
      */
@@ -1709,10 +1429,6 @@ var CreateNoteWidget = new Class({
      *            parameter is null if all users were removed.
      */
     userRemoved: function(userData) {
-    },
-
-    useTagSelection: function() {
-        return true;
     },
 
     useTopicSelection: function() {

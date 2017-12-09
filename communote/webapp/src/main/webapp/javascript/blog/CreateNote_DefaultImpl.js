@@ -9,8 +9,6 @@ CreateNoteDefaultWidget = new Class({
 
     plainTextEditorCssClass: 'cn-write-note-plaintext',
     contentUsersContainer: null,
-    // no multiple tag autocompletion since the TextboxList is taking care of this
-    tagAutocompleterMultipleMode: false,
     userInterfaceHidden: false,
 
     init: function() {
@@ -109,12 +107,11 @@ CreateNoteDefaultWidget = new Class({
         if (!this.initializingAfterRefresh) {
             this.showOrHideUserInterfaceForTopic(newId);
         }
+        this.eventEmitter.emit('targetTopicChanged', {newId: newId});
         // invalidate caches of autocompeters to let them restart a query for the same term
         // after topic (request parameter) changed
-        this.resetAutocompleterCache(this.tagAutocompleter);
         this.resetAutocompleterCache(this.userAutocompleter);
         this.resetAutocompleterCache(this.editor.getUserAutocompleter());
-        this.resetAutocompleterCache(this.editor.getTagAutocompleter());
     },
 
     /**
@@ -196,9 +193,6 @@ CreateNoteDefaultWidget = new Class({
      */
     cleanup: function() {
         this.parent();
-        if (this.tagTextboxList) {
-            this.tagTextboxList.destroy();
-        }
         if (this.topicTextboxList) {
             this.topicTextboxList.destroy();
         }
@@ -335,43 +329,6 @@ CreateNoteDefaultWidget = new Class({
         return this.contentUsersContainer.getElementById(this.widgetId + '-user-search');
     },
 
-    /**
-     * @override
-     */
-    refreshTagSelection: function(searchElement) {
-        var constructor = communote.getConstructor('TextboxList');
-        this.tagTextboxList = new constructor(searchElement, {
-            addItemOnChar: ',',
-            // kind of hacky but is easiest way to avoid duplicates and showing the tag twice in the list
-            autoAddItemCallback: this.addTag.bind(this),
-            autoRemoveItemCallback: this.removeTag.bind(this),
-            listCssClass: 'cn-border',
-            itemRemoveCssClass: 'textboxlist-item-remove cn-icon',
-            itemRemoveTitle: getJSMessage('blogpost.create.tags.remove.tooltip'),
-            parseItemCallback: this.extractTagName
-        });
-        this.parent(searchElement);
-        if (this.tagAutocompleter) {
-            this.tagAutocompleter.addEvent('enterPressed', this.submitTags.bind(this));
-        }
-    },
-
-    /**
-     * @override
-     */
-    getTagAutocompleterPositionSource: function() {
-        return this.domNode.getElement('.cn-write-note-accessory-tag .cn-border');
-    },
-
-    submitTags: function() {
-        // triggered by onsubmit of a surrounding form, bit ugly but only possibility because we cannot
-        // block event handlers, thus another key event handler would also be triggered when a choice in
-        // the tag suggestion is selected  
-        var tags = this.extractTagsFromInput();
-        this.addTags(tags);
-        this.tagAutocompleter.resetQuery(true);
-    },
-
     showAccessory: function(name, focusInput) {
         var textboxList, placeholder, inputElem;
         var toggleElem = this.domNode.getElementById(this.widgetId + '-accessory-' + name);
@@ -415,11 +372,6 @@ CreateNoteDefaultWidget = new Class({
             this.showAccessory('user', false);
         } else {
             this.hideAccessory('user');
-        }
-        if (this.addedTags.length) {
-            this.showAccessory('tag', false);
-        } else {
-            this.hideAccessory('tag');
         }
     },
 
@@ -509,26 +461,6 @@ CreateNoteDefaultWidget = new Class({
     /**
      * @override
      */
-    tagAdded: function(tag) {
-        this.parent();
-        this.tagTextboxList.addItem(tag);
-    },
-    /**
-     * @override
-     */
-    tagRemoved: function(tag) {
-        this.parent();
-        if (tag == null) {
-            this.tagTextboxList.clearItems();
-        } else {
-            this.tagTextboxList.removeItem(tag);
-        }
-        this.refreshPlaceholder(this.getTagSearchElement(), false);
-    },
-
-    /**
-     * @override
-     */
     topicAdded: function(topicData, moreToCome) {
         if (this.topicTextboxList) {
             this.topicTextboxList.addItem(topicData);
@@ -607,9 +539,7 @@ CreateNoteDefaultWidget = new Class({
     extractUserName: function(userData) {
         return userData.longName;
     },
-    extractTagName: function(tag) {
-        return tagName = (tag.name == undefined) ? tag.defaultName : tag.name;
-    },
+
     enableDisableDmCheckbox: function() {
         var checkBox, checkBoxLabel;
         checkBox = document.id(this.widgetId + '-direct-message');
