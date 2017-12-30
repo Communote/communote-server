@@ -167,6 +167,10 @@
     AttachmentHandler.prototype.getToggleElement = function() {
         return this.widget.domNode.querySelector('#' + this.widgetId + '-accessory-attachment');
     };
+    
+    AttachmentHandler.prototype.getUnconfirmedInputWarning = function() {
+    	return null;
+    };
 
     AttachmentHandler.prototype.hideAttachmentSelection = function() {
         var toggleElem;

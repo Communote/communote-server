@@ -60,6 +60,31 @@
             }
             return false;
         },
+        /**
+         * Merge a property or an array of properties into an array of properties. Convenience
+         * method which delegates to #mergeProperties or #mergeProperty if propertiesToMerge is an
+         * array or a single property.
+         * 
+         * @param {Property[]} properties The array of properties to merge into
+         * @param {(Property[]|Property)} propertiesToMerge The property or array of properties to merge
+         * @return {Property[]} the updated array of properties
+         */
+        merge: function(properties, propertiesToMerge) {
+        	if (Array.isArray(propertiesToMerge)) {
+        		return window.communote.utils.propertyUtils.mergeProperties(properties, propertiesToMerge);
+        	} else {
+        		return window.communote.utils.propertyUtils.mergeProperty(properties, propertiesToMerge);
+        	}
+        },
+        /**
+         * Merge all properties of an array into another array of properties. If the latter already
+         * contains a property from the former (w.r.t. group and key) the value will be replaced. All
+         * properties which are not yet contained will be added.
+         * 
+         * @param {Property[]} properties The array of properties to merge into
+         * @param {Property[]} propertiesToMerge The array of properties to merge
+         * @return {Property[]} the updated array of properties
+         */
         mergeProperties: function(properties, propertiesToMerge) {
             var i, l;
             var utils = window.communote.utils.propertyUtils;
@@ -68,16 +93,29 @@
             }
             return properties;
         },
-        mergeProperty: function(properties, propertyToInject) {
-            var i, l, property;
+        /**
+         * Merge a property into an array of properties. If the property with the key group and key
+         * already exists in the array its value will be overwritten with that of the property to
+         * merge. If the property is not yet contained it will be (cloned and) appended.
+         * 
+         * @param {Property[]} properties The array of properties to merge into
+         * @param {Property} propertyToMerge The property to merge
+         * @return {Property[]} the updated array of properties
+         */
+        mergeProperty: function(properties, propertyToMerge) {
+            var i, l, property, clonedProperty;
             for (i = 0, l = properties.length; i < l; i++) {
                 property = properties[i];
-                if (property.keyGroup === propertyToInject.keyGroup && property.key === propertyToInject.key) {
-                    property.value = propertyToInject.value;
+                if (property.keyGroup === propertyToMerge.keyGroup && property.key === propertyToMerge.key) {
+                    property.value = propertyToMerge.value;
                     return properties;
                 }
             }
-            properties.push(propertyToInject);
+            clonedProperty = {};
+            clonedProperty.keyGroup = propertyToMerge.keyGroup;
+            clonedProperty.key = propertyToMerge.key;
+            clonedProperty.value = propertyToMerge.value;
+            properties.push(clonedProperty);
             return properties;
         }
     };

@@ -1,5 +1,5 @@
 (function() {
-
+	const i18n = communote.i18n;
     // TODO use jsdoc to define the NoteEditorComponent interface
 
     /**
@@ -52,6 +52,30 @@
         for (i = 0, l = this.components.length; i < l; i++) {
             this.components[i].destroy();
         }
+    };
+    
+    ComponentManager.prototype.getUnconfirmedInputWarning = function() {
+    	var i, l, warning;
+    	var warnings = [];
+    	var inputNames = [];
+    	for (i = 0, l = this.components.length; i < l; i++) {
+            warning = this.components[i].getUnconfirmedInputWarning();
+            if (warning) {
+            	warnings.push(warning);
+            	if (warning.inputName) {
+            		inputNames.push(warning.inputName);
+            	}
+            }
+        }
+    	if (warnings.length === 0) {
+    		return null;
+    	}
+    	if (warnings.length === 1) {
+    		if (warnings[0].message) {
+    			return warnings[0].message;
+    		}
+    	}
+    	return i18n.getMessage('widget.createNote.unconfirmed.input.warning', inputNames.join(', '));
     };
 
     ComponentManager.prototype.initContent = function(noteData) {

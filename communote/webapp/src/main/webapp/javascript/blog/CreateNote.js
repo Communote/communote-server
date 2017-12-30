@@ -82,8 +82,6 @@ var CreateNoteWidget = new Class({
     renderStyle: null,
     renderStyleCssClassPrefix: 'cn-write-note-render-style-',
 
-    resendNotificationProperty: {},
-
     // css classes to be applied to the create note container (getWriteContainerElement)
     // when the editor only supports richtext
     richTextEditorCssClass: null,
@@ -94,19 +92,10 @@ var CreateNoteWidget = new Class({
 
     topicAutocompleter: null,
     topics: null,
-    userAutocompleter: null,
-    usersToNotify: null,
     // note properties to pass along with every note. Can be set with the same-named static parameter.
     predefinedNoteProperties: null,
 
     setup: function() {
-
-        // added items defined by an ordered array of ids (which might be aliases or sth) and the
-        // items in the same order
-        this.usersToNotify = {
-            ids: [],
-            items: []
-        };
         // need to remember the order of the added topics to easily get the first crosspost topic
         this.topics = {
             ids: [],
@@ -182,6 +171,7 @@ var CreateNoteWidget = new Class({
         this.initAutosaveHandler();
         this.components = new communote.classes.NoteEditorComponentManager(this, action,
                 this.renderStyle, this.getAllStaticParameters());
+        this.addEventListener('directMessageModeChanged', this.onDirectMessageModeChanged, this);
     },
     
     addEventListener: function(eventName, fn, context) {
@@ -263,17 +253,6 @@ var CreateNoteWidget = new Class({
     },
 
     /**
-     * Adds users for notification.
-     *
-     * @param {Object|Object[]) users An object containing user data or an array of such objects.
-     * @return whether something was added
-     */
-    addUsers: function(users) {
-        var aliases = this.addNewItems(this.usersToNotify, users, 'alias', this.userAdded);
-        return (aliases.length > 0);
-    },
-
-    /**
      * @override
      */
     beforeRemove: function() {
@@ -349,37 +328,6 @@ var CreateNoteWidget = new Class({
         }
     },
 
-    changeDirectMessageMode: function(activate) {
-        if (this.isDirectMessage === activate) {
-            return;
-        }
-        if (activate) {
-            // activate only possible if crosspost blogs are empty and at least one user was
-            // added
-            // TODO show an error if not activatable?
-            if (this.getCrosspostTopicsCount() == 0 && this.usersToNotify.ids.length > 0) {
-                this.isDirectMessage = true;
-            }
-        } else {
-            this.isDirectMessage = false;
-        }
-        if (this.isDirectMessage === activate) {
-            this.directMessageModeChanged();
-        }
-    },
-
-    /**
-     * Define if already notified user should receive notifications again
-     */
-    changeResendNotificationMode: function(activate) {
-      this.resendNotificationProperty = {
-        'key': 'editNote.resendNotification',
-        'keyGroup': 'com.communote',
-        'value': activate
-      };
-      communoteLocalStorage.setItem('com.communote.editNote.resendNotification', activate);
-    },
-
     /**
      * Implementation of the 'approveMatchCallback' callback of the AutocompleterStaticDataSource
      * that excludes the
@@ -405,9 +353,6 @@ var CreateNoteWidget = new Class({
     cleanup: function() {
         this.editor.cleanup();
         // remove attached autocompleter
-        if (this.userAutocompleter) {
-            this.userAutocompleter.destroy();
-        }
         if (this.topicAutocompleter) {
             this.topicAutocompleter.destroy();
         }
@@ -423,15 +368,9 @@ var CreateNoteWidget = new Class({
         } else {
             this.removeTopic(null);
         }
-        this.removeUser(null);
         this.editor.resetContent(null);
-        this.changeDirectMessageMode(false);
         // empty inputs
         elem = this.getTopicSearchElement();
-        if (elem) {
-            elem.value = '';
-        }
-        elem = this.getUserSearchElement();
         if (elem) {
             elem.value = '';
         }
@@ -468,9 +407,8 @@ var CreateNoteWidget = new Class({
      */
     // TODO rename getNoteDataForPost
     createPostData: function(publish, content) {
-        var i, name, properties;
+        var i, name;
         var data = {};
-        data.text = content;
         var writeContainerElem = this.getWriteContainerElement();
         var hiddenInputs = writeContainerElem.getElements('input[type=hidden]');
         for (i = 0; i < hiddenInputs.length; i++) {
@@ -479,14 +417,18 @@ var CreateNoteWidget = new Class({
                 data[name] = hiddenInputs[i].value;
             }
         }
+        data.properties = [];
+        // add properties extracted from init object. Components can overwrite them.
+        if (this.noteProperties) {
+        	communote.utils.propertyUtils.mergeProperties(data.properties, this.noteProperties);
+        }
+        data.text = content;
         data.isHtml = this.editor.supportsHtml();
         data.topicId = this.getTargetTopicId();
         data.noteId = this.getFilterParameter('noteId');
         if (this.action != 'edit') {
             data.parentNoteId = this.parentPostId;
-            data.isDirectMessage = this.isDirectMessage;
         }
-        data.usersToNotify = this.usersToNotify.ids;
         data.crossPostTopicAliases = this.getCrosspostTopics(true);
         this.components.appendNoteDataForRestRequest(data, publish, false);
         data.publish = publish === true ? true : false;
@@ -494,51 +436,26 @@ var CreateNoteWidget = new Class({
             data.autosaveNoteId = this.autosaveHandler.getNoteId();
             data.noteVersion = this.autosaveHandler.getVersion();
         }
-
-        if(this.action === 'edit') {
-          if (this.noteProperties === null) {
-            this.noteProperties = [];
-          }
-          this.noteProperties.push(this.resendNotificationProperty);
+        // add predefined properties and let them overwrite properties added by components
+        if (this.predefinedNoteProperties) {
+        	communote.utils.propertyUtils.merge(data.properties, this.predefinedNoteProperties); 
         }
-
-        properties = this.createPropertiesPostData();
-        if (properties) {
-            data.properties = properties;
+        if (data.properties.length === 0) {
+            delete data.properties;
         }
         return data;
     },
-    /**
-     * @return {Object[]} array with all note properties or null if no properties were set
-     */
-    createPropertiesPostData: function() {
-        var properties;
-        if (this.noteProperties) {
-            properties = this.noteProperties.slice(0);
-        } else {
-            properties = [];
-        }
-        if (this.predefinedNoteProperties) {
-            if (typeOf(this.predefinedNoteProperties) === 'array') {
-                communote.utils.propertyUtils.mergeProperties(properties,
-                        this.predefinedNoteProperties);
-            } else {
-                communote.utils.propertyUtils.mergeProperty(properties,
-                        this.predefinedNoteProperties);
-            }
-        }
-        if (properties.length == 0) {
-            properties = null;
-        }
-        return properties;
-    },
 
     /**
-     * Called by changeDirectMessageMode if the new mode could be set.
+     * Emit an event and notify all NoteEditorComponents or any other listener which registered for the
+     * event with addEventListener.
+     * 
+     * @param {String} eventName The name of the event to emit.
+     * @param {*} [eventData] Any data to pass to the listener.
      */
-    directMessageModeChanged: function() {
+    emitEvent: function(eventName, eventData) {
+    	this.eventEmitter.emit(eventName, eventData);
     },
-
     extractInitData: function(responseMetadata) {
         var targetTopic, autosave, initObject, initialNote, autosaveLoaded, content;
         if (responseMetadata) {
@@ -606,12 +523,9 @@ var CreateNoteWidget = new Class({
     },
     
     getNoteData: function(resetDirtyFlag) {
-        var properties;
         var data = {};
         data.crosspostTopics = this.getCrosspostTopics(false);
-        data.usersToNotify = this.usersToNotify.items;
         data.content = this.editor.getContent();
-        data.isDirectMessage = this.isDirectMessage;
         data.targetTopic = this.topics.items[0];
         data.isHtml = this.editor.supportsHtml();
         data.noteId = this.getFilterParameter('noteId');
@@ -619,18 +533,20 @@ var CreateNoteWidget = new Class({
             data.parentNoteId = this.parentPostId;
         }
 
-        if(this.action === 'edit') {
-          if (this.noteProperties === null) {
-            this.noteProperties = [];
-          }
-          this.noteProperties.push(this.resendNotificationProperty);
-        }
-
-        properties = this.createPropertiesPostData();
-        if (properties) {
-            data.properties = properties;
+        data.properties = [];
+        // add properties extracted from init object. Components can overwrite them.
+        if (this.noteProperties) {
+        	communote.utils.propertyUtils.mergeProperties(data.properties, this.noteProperties);
         }
         this.components.appendNoteData(data, resetDirtyFlag);
+
+        // add predefined properties and let them overwrite properties added by components
+        if (this.predefinedNoteProperties) {
+        	communote.utils.propertyUtils.merge(data.properties, this.predefinedNoteProperties); 
+        }
+        if (data.properties.length === 0) {
+            delete data.properties;
+        }
         if (resetDirtyFlag) {
             this.dirty = false;
         }
@@ -677,23 +593,6 @@ var CreateNoteWidget = new Class({
      */
     getTopicSearchElement: function() {
         return this.domNode.getElementById(this.widgetId + '-topic-search');
-    },
-
-    /**
-     * Returns the element to be used as positionSource element for the user autocompleter.
-     *
-     * @return {Element} the element or null if not required
-     */
-    getUserAutocompleterPositionSource: function() {
-        return null;
-    },
-    /**
-     * Returns the user search element.
-     *
-     * @return {Element} the element if it exists
-     */
-    getUserSearchElement: function() {
-        return this.domNode.getElementById(this.widgetId + '-user-search');
     },
 
     /**
@@ -768,7 +667,6 @@ var CreateNoteWidget = new Class({
             return;
         }
         this.editor.resetContent(note.content);
-        this.addUsers(note.usersToNotify);
         // no crosspost topics when targetBlog is not set or replying
         if (note.targetBlog) {
             topics = [ note.targetBlog ];
@@ -780,7 +678,6 @@ var CreateNoteWidget = new Class({
         if (note.properties) {
             this.noteProperties = note.properties;
         }
-        this.changeDirectMessageMode(note.isDirectMessage);
         this.modified = false;
     },
 
@@ -950,7 +847,6 @@ var CreateNoteWidget = new Class({
     },
 
     refreshComplete: function(responseMetadata) {
-        var resendNotification;
         var initData = this.extractInitData(responseMetadata);
         this.initialNote = initData.initialNote;
 
@@ -962,18 +858,6 @@ var CreateNoteWidget = new Class({
         // attach autocompleters
         if (this.useTopicSelection()) {
             this.refreshTopicSelection(this.getTopicSearchElement());
-        }
-        if (this.useUserSelection()) {
-            this.refreshUserSelection(this.getUserSearchElement());
-        }
-
-        if (this.action === 'edit') {
-          // Load the latest setting for the resend notification option via Local Storage
-          resendNotification = communoteLocalStorage.getItem('com.communote.editNote.resendNotification');
-          if(resendNotification === 'true') {
-            $(this.widgetId + '-resend-notification').set('checked', true);
-          }
-          this.changeResendNotificationMode(resendNotification);
         }
         
         this.initContent(initData.initObject);
@@ -1024,27 +908,6 @@ var CreateNoteWidget = new Class({
                     acOptions, null, false, 'write');
             this.topicAutocompleter.addEvent('onChoiceSelected', this.topicChoiceSelected
                     .bind(this));
-        }
-    },
-
-    /**
-     * Called after refresh if useUserSelection returned true. Default implementation attaches a
-     * user autocompleter to it.
-     *
-     * @param {Element} searchElement The input element to attach the autocompleter to
-     */
-    refreshUserSelection: function(searchElement) {
-        var acOptions;
-        if (searchElement) {
-            // do not remove focus when selecting because the user will usually add more than one user
-            acOptions = this.prepareAutocompleterOptions('getUserAutocompleterPositionSource',
-                    true, false, this.setCurrentTopicBeforeRequestCallback.bind(this));
-            acOptions.staticDataSourceOptions = {};
-            acOptions.staticDataSourceOptions.approveMatchCallback = this.checkDiscussionContextApproveMatchCallback
-                    .bind(this);
-            this.userAutocompleter = autocompleterFactory.createMentionAutocompleter(searchElement,
-                    acOptions, null, true);
-            this.userAutocompleter.addEvent('onChoiceSelected', this.userChoiceSelected.bind(this));
         }
     },
 
@@ -1137,26 +1000,6 @@ var CreateNoteWidget = new Class({
         }
     },
 
-    /**
-     * Removes an previously added user from the users to notify.
-     *
-     * @param {Object} [userData] the object holding the details of the user to remove, if not
-     *            specified all users are removed
-     */
-    removeUser: function(userData) {
-        var alias = userData && userData.alias;
-        if (alias && this.isDirectMessage && this.usersToNotify.ids.contains(alias)
-                && this.usersToNotify.ids.length == 1) {
-            // do not allow removing the last user if we are in DM mode
-            showNotification(NOTIFICATION_BOX_TYPES.failure, '',
-                    getJSMessage('error.blogpost.edit.remove-direct-user'), null);
-            return;
-        }
-        if (this.removeItemFromDataHolder(this.usersToNotify, alias)) {
-            this.userRemoved(userData);
-        }
-    },
-
     renderStyleChanged: function(oldStyle, newStyle) {
     },
 
@@ -1211,21 +1054,18 @@ var CreateNoteWidget = new Class({
      *            fields. If true there will be no warning.
      */
     sendNote: function(content, ignoreUncommittedOptions) {
-        var userInput, topicInput, uncommittedUser, uncommittedBlog, msgKey;
+        var warningMsg, topicInput, uncommittedBlog;
         var cancelFunction, buttons, successCallback, errorCallback, data, options;
         if (!ignoreUncommittedOptions) {
-            userInput = this.getUserSearchElement();
-            topicInput = this.getTopicSearchElement();
-            uncommittedUser = userInput && userInput.value.trim().length;
-            uncommittedBlog = topicInput && topicInput.value.trim().length;
-            if (uncommittedUser || uncommittedBlog) {
-                msgKey = 'blogpost.create.submit.confirm.unsaved.';
-                if (uncommittedUser) {
-                    msgKey += 'user';
-                }
+            warningMsg = this.components.getUnconfirmedInputWarning();
+            if (!warningMsg) {
+                topicInput = this.getTopicSearchElement();
+                uncommittedBlog = topicInput && topicInput.value.trim().length;
                 if (uncommittedBlog) {
-                    msgKey += 'blog';
+                    warningMsg = getJSMessage('blogpost.create.submit.confirm.unsaved.blog');
                 }
+            }
+            if (warningMsg) {
                 cancelFunction = function() {
                     this.stopPublishNoteFeedback();
                     this.startAutosaveJob();
@@ -1239,7 +1079,7 @@ var CreateNoteWidget = new Class({
                     type: 'no',
                     action: cancelFunction
                 });
-                showDialog(this.getSendButtonElement().value, getJSMessage(msgKey), buttons, {
+                showDialog(this.getSendButtonElement().value, warningMsg, buttons, {
                     onCloseCallback: cancelFunction,
                     width: 300
                 });
@@ -1408,80 +1248,8 @@ var CreateNoteWidget = new Class({
     topicRemoved: function(topicData) {
     },
 
-    /**
-     * Called after a user was added. Subclasses can use this hook to update the view.
-     *
-     * @param {Object} userData JSON object describing the added user
-     * @param {boolean} moreToCome true if the user was added as part of batch update and the
-     *            current item is not the last. Can be used to optimize view updates.
-     */
-    userAdded: function(userData, moreToCome) {
-    },
-
-    userChoiceSelected: function(inputElem, choiceElem, token, value) {
-        this.addUsers(token);
-    },
-
-    /**
-     * Called after a user was removed. Subclasses can use this hook to update the view.
-     *
-     * @param {Object} [userData] the object holding the details of the user that was removed. This
-     *            parameter is null if all users were removed.
-     */
-    userRemoved: function(userData) {
-    },
-
     useTopicSelection: function() {
         // topics can only be selected when creating notes
         return this.action == 'create';
-    },
-
-    useUserSelection: function() {
-        return true;
-    },
-
-    /**
-     * Can be called to invoke a direct message on the actual CreateNote Widget.
-     *
-     * @param {Object} userAlias The user alias the direct message should be send to.
-     */
-    writeDirectMessage: function(userAlias) {
-        var content = this.editor.getContent();
-        if (content.length > 0 || this.usersToNotify.ids.length > 0
-                || this.getCrosspostTopicsCount() == 0) {
-            // TODO use showDialog utility function!
-            var divContent = '<p style="padding: 5px; text-align: center;">'
-                    + getJSMessage('blog.post.dm.overwrite.existing')
-                    + '</p><div class="actionbar"><div class="button-gray button-left">'
-                    + '<input type="button" name="button" onclick="widgetController.getWidget(\''
-                    + this.widgetId
-                    + '\').writeDirectMessage_Submit(\''
-                    + userAlias
-                    + '\');closeDialog();return false;" value="'
-                    + getJSMessage('javascript.dialog.button.label.yes')
-                    + '"></div><div class="button-gray button-right">'
-                    + '<input type="button" name="b2" onclick="closeDialog();return false;" value="'
-                    + getJSMessage('javascript.dialog.button.label.no')
-                    + '"></div><span class="clear"><!-- ie --></span></div>';
-
-            var questionContainer = new Element('div', {
-                'html': divContent,
-                'class': 'popupConfirmation form_wrapper'
-            });
-
-            TB_show2(getJSMessage('blog.post.dm.overwrite.existing.title'),
-                    "TB_inline?width=300&height=200", document, questionContainer);
-        } else {
-            this.writeDirectMessage_Submit(userAlias);
-        }
-    },
-    /**
-     * This method is invoked, when the user want's to overwrite the existing message.
-     */
-    writeDirectMessage_Submit: function(userAlias) {
-        this.clearAll();
-        this.editor.setContent('d @' + userAlias + ' ');
-        this.updateDirectMessage(true);
-        window.scrollTo(0, 0);
     }
 });

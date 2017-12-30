@@ -34,8 +34,8 @@
     <div class="cn-write-note-accessories-full">
         <div class="cn-write-note-accessory-toggles">
             <div class="cn-bar">
-                <a id="${widget.WidgetId}-accessory-user" class="accessory-user cn-link" href="javascript:;" onclick="${widgetInstance}.showAccessory('user', true)"
-                    title="$fmtTool.message('blogpost.create.tab.user.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.user.title')</span></a>
+                <a id="${widget.WidgetId}-accessory-user" class="accessory-user cn-link" href="javascript:;" title="$fmtTool.message('blogpost.create.tab.user.hover')">
+                    <span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.user.title')</span></a>
                 <a id="${widget.WidgetId}-accessory-tag" class="accessory-tag cn-link" href="javascript:;" title="$fmtTool.message('blogpost.create.tab.tag.hover')"> 
                     <span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.tag.title')</span></a>
                 <a id="${widget.WidgetId}-accessory-attachment" class="accessory-attachment cn-link" href="javascript:;" title="$fmtTool.message('blogpost.create.tab.attachment.hover')">
@@ -60,14 +60,12 @@
                     <input id="${widget.WidgetId}-user-search" type="text" placeholder="$fmtTool.message('blogpost.create.users.hint')" />
                     <span class="cn-clear"><!-- Empty --></span>
                     <div id="${widget.WidgetId}-direct-message-wrapper" class="cn-note-option">
-                        <input type="checkbox" class="cn-check" id="${widget.WidgetId}-direct-message" disabled="disabled"
-                            onclick="${widgetInstance}.changeDirectMessageMode(this.checked)"/>
+                        <input type="checkbox" class="cn-check" id="${widget.WidgetId}-direct-message" disabled="disabled"/>
                         <label id="${widget.WidgetId}-direct-message-label" for="${widget.WidgetId}-direct-message">$fmtTool.message('blogpost.create.direct') #cnTooltip('blogpost.create.direct.hint')</label>
                     </div>
                     #if($widget.EditAction)
                       <div id="${widget.WidgetId}-resend-notification-wrapper" class="cn-note-option">
-                          <input type="checkbox" class="cn-check" id="${widget.WidgetId}-resend-notification"
-                          onclick="${widgetInstance}.changeResendNotificationMode(this.checked)"/>
+                          <input type="checkbox" class="cn-check" id="${widget.WidgetId}-resend-notification"/>
                           <label id="${widget.WidgetId}-resend-notification-label" for="${widget.WidgetId}-resend-notification">$fmtTool.message('widget.createNote.resend.notification.label') #cnTooltip('widget.createNote.resend.notification.hint')</label>
                       </div>
                     #end

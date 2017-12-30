@@ -294,6 +294,10 @@
     TagHandler.prototype.getToggleElement = function() {
         return this.widget.domNode.querySelector('#' + this.widgetId + '-accessory-tag');
     };
+    
+    TagHandler.prototype.getUnconfirmedInputWarning = function() {
+    	return null;
+    };
 
     TagHandler.prototype.hideTagSelection = function() {
         var toggleElem, contentElem;

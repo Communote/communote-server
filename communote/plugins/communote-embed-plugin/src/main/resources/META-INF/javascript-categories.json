@@ -93,6 +93,7 @@
                 "/javascript/widget/note/editor/NoteEditorComponentFactory.js",
                 "/javascript/widget/note/editor/NoteEditorComponentManager.js",
                 "/javascript/widget/note/editor/NoteEditorTags.js",
+                "/javascript/widget/note/editor/NoteEditorMentions.js",
                 "/javascript/widget/note/editor/NoteEditorAttachments.js",
                 "/javascript/widget/note/editor/NoteTextEditors.js",
                 "/javascript/widget/note/editor/NoteEditorAutosaveHandler.js",

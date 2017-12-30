@@ -147,6 +147,7 @@
                         <value>/javascript/widget/note/editor/NoteEditorComponentFactory.js</value>
                         <value>/javascript/widget/note/editor/NoteEditorComponentManager.js</value>
                         <value>/javascript/widget/note/editor/NoteEditorTags.js</value>
+                        <value>/javascript/widget/note/editor/NoteEditorMentions.js</value>
                         <value>/javascript/widget/note/editor/NoteEditorAttachments.js</value>
                         <value>/javascript/widget/note/editor/NoteTextEditors.js</value>
                         <value>/javascript/widget/note/editor/NoteEditorAutosaveHandler.js</value>

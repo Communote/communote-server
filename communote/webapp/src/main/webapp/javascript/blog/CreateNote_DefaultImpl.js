@@ -8,7 +8,6 @@ CreateNoteDefaultWidget = new Class({
     filterParameterStore: null,
 
     plainTextEditorCssClass: 'cn-write-note-plaintext',
-    contentUsersContainer: null,
     userInterfaceHidden: false,
 
     init: function() {
@@ -48,17 +47,6 @@ CreateNoteDefaultWidget = new Class({
         this.setRenderStyle('full');
         if (this.action == 'create') {
             this.editor.focus();
-        }
-    },
-
-    getListeningEvents: function() {
-        return this.parent().combine([ 'onUserLogoChanged' ]);
-    },
-
-    onUserLogoChanged: function(imagePath) {
-        // clear autocompleter cache
-        if (this.userAutocompleter) {
-            this.userAutocompleter.resetQuery(false);
         }
     },
 
@@ -110,7 +98,6 @@ CreateNoteDefaultWidget = new Class({
         this.eventEmitter.emit('targetTopicChanged', {newId: newId});
         // invalidate caches of autocompeters to let them restart a query for the same term
         // after topic (request parameter) changed
-        this.resetAutocompleterCache(this.userAutocompleter);
         this.resetAutocompleterCache(this.editor.getUserAutocompleter());
     },
 
@@ -196,9 +183,6 @@ CreateNoteDefaultWidget = new Class({
         if (this.topicTextboxList) {
             this.topicTextboxList.destroy();
         }
-        if (this.userTextboxList) {
-            this.userTextboxList.destroy();
-        }
     },
 
     /**
@@ -216,7 +200,6 @@ CreateNoteDefaultWidget = new Class({
                         && !this.noTargetTopicChangeIfModifiedOrAutosaved)) {
             this.showOrHideUserInterfaceForTopic(this.getTargetTopicId());
         }
-        this.showHideAccessories();
         this.initializingAfterRefresh = false;
     },
 
@@ -234,11 +217,6 @@ CreateNoteDefaultWidget = new Class({
         this.parent();
     },
 
-    clearAll: function() {
-        this.parent();
-        this.showHideAccessories();
-    },
-
     /**
      * @override
      */
@@ -247,7 +225,6 @@ CreateNoteDefaultWidget = new Class({
         if (autosaveLoaded && this.renderStyle !== 'full') {
             this.setRenderStyle('full');
         }
-        this.contentUsersContainer = this.domNode.getElement('.cn-write-note-accessory-user');
         if (this.useTopicSelection()) {
             this.contentTopicsContainer = this.domNode.getElement('.cn-write-note-accessory-topic');
         }
@@ -259,19 +236,6 @@ CreateNoteDefaultWidget = new Class({
      */
     getWriteContainerElement: function() {
         return this.domNode.getElement('.cn-write-note-editor');
-    },
-
-    contentInitialized: function(fromAutosave) {
-        var dmWrapperElem;
-        this.parent(fromAutosave);
-        if (this.action == 'edit' && !this.isDirectMessage) {
-            dmWrapperElem = this.domNode.getElementById(this.widgetId + '-direct-message-wrapper');
-            if (dmWrapperElem) {
-                dmWrapperElem.setStyle('display', 'none');
-            }
-        } else {
-            this.enableDisableDmCheckbox();
-        }
     },
 
     /**
@@ -298,81 +262,6 @@ CreateNoteDefaultWidget = new Class({
      */
     getTopicAutocompleterPositionSource: function() {
         return this.contentTopicsContainer.getElement('.cn-border');
-    },
-
-    /**
-     * @override
-     */
-    refreshUserSelection: function(searchElement) {
-        var constructor = communote.getConstructor('TextboxList');
-        this.userTextboxList = new constructor(searchElement, {
-            autoRemoveItemCallback: this.removeUser.bind(this),
-            listCssClass: 'cn-border',
-            itemRemoveCssClass: 'textboxlist-item-remove cn-icon',
-            itemRemoveTitle: getJSMessage('blogpost.create.users.remove.tooltip'),
-            parseItemCallback: this.extractUserName
-        });
-        this.parent(searchElement);
-    },
-
-    /**
-     * @override
-     */
-    getUserAutocompleterPositionSource: function() {
-        return this.contentUsersContainer.getElement('.cn-border');
-    },
-
-    /**
-     * @override
-     */
-    getUserSearchElement: function() {
-        return this.contentUsersContainer.getElementById(this.widgetId + '-user-search');
-    },
-
-    showAccessory: function(name, focusInput) {
-        var textboxList, placeholder, inputElem;
-        var toggleElem = this.domNode.getElementById(this.widgetId + '-accessory-' + name);
-        var contentElem = this.domNode.getElement('.cn-write-note-accessory-' + name);
-        if (contentElem && toggleElem) {
-            toggleElem.setStyle('display', 'none');
-            contentElem.setStyle('display', '');
-            textboxList = this[name + 'TextboxList'];
-            if (textboxList) {
-                // resize since it was not visible before and therefore the size is not correct
-                textboxList.resizeInputToFillAvailableSpace();
-                if (focusInput) {
-                    textboxList.focusInput();
-                }
-            }
-            // reposition the placeholder
-            inputElem = contentElem.getElement('input[type=text]');
-            if (inputElem) {
-                placeholder = this.placeholders.getPlaceholder(inputElem);
-                if (placeholder) {
-                    placeholder.refresh();
-                }
-            }
-        }
-    },
-
-    hideAccessory: function(name) {
-        var toggleElem = this.domNode.getElementById(this.widgetId + '-accessory-' + name);
-        var contentElem = this.domNode.getElement('.cn-write-note-accessory-' + name);
-        if (contentElem && toggleElem) {
-            toggleElem.setStyle('display', '');
-            contentElem.setStyle('display', 'none');
-        }
-    },
-
-    /**
-     * Shows the accessories if they have content otherwise hide them.
-     */
-    showHideAccessories: function() {
-        if (this.usersToNotify.ids.length) {
-            this.showAccessory('user', false);
-        } else {
-            this.hideAccessory('user');
-        }
     },
 
     showOrHideUserInterfaceForTopic: function(topicId) {
@@ -443,7 +332,6 @@ CreateNoteDefaultWidget = new Class({
                 this.topicTextboxList.resizeInputToFillAvailableSpace();
                 this.refreshPlaceholder(this.topicTextboxList.getInputElement(), false);
             }
-            this.showHideAccessories();
         } else if (newStyle === 'simulate' && this.editor) {
             this.editor.unFocus();
         }
@@ -465,15 +353,13 @@ CreateNoteDefaultWidget = new Class({
         if (this.topicTextboxList) {
             this.topicTextboxList.addItem(topicData);
         }
-        if (!moreToCome) {
-            this.enableDisableDmCheckbox();
-        }
         if (this.getCrosspostTopicsCount() == 0) {
             this.refreshPlaceholder(this.getTopicSearchElement(),
                     'blogpost.create.topics.crosspost.hint');
         } else if (!moreToCome) {
             this.refreshPlaceholder(this.getTopicSearchElement(), false);
         }
+        this.emitEvent('topicAdded', topicData);
     },
 
     /**
@@ -485,12 +371,12 @@ CreateNoteDefaultWidget = new Class({
         } else {
             this.topicTextboxList.removeItem(topicData);
         }
-        this.enableDisableDmCheckbox();
         if (!this.getTargetTopicId()) {
             this.refreshPlaceholder(this.getTopicSearchElement(), 'blogpost.create.topics.hint');
         } else {
             this.refreshPlaceholder(this.getTopicSearchElement(), false);
         }
+        this.emitEvent('topicRemoved', topicData);
     },
 
     /**
@@ -510,60 +396,14 @@ CreateNoteDefaultWidget = new Class({
         }
     },
 
-    /**
-     * @override
-     */
-    userAdded: function(userData, moreToCome) {
-        this.userTextboxList.addItem(userData);
-        if (!moreToCome) {
-            this.enableDisableDmCheckbox();
-        }
-    },
-
-    /**
-     * @override
-     */
-    userRemoved: function(userData) {
-        if (!userData) {
-            this.userTextboxList.clearItems();
-        } else {
-            this.userTextboxList.removeItem(userData);
-        }
-        this.enableDisableDmCheckbox();
-        this.refreshPlaceholder(this.getUserSearchElement(), false);
-    },
-
     extractTopicName: function(topicData) {
         return topicData.title;
     },
-    extractUserName: function(userData) {
-        return userData.longName;
-    },
 
-    enableDisableDmCheckbox: function() {
-        var checkBox, checkBoxLabel;
-        checkBox = document.id(this.widgetId + '-direct-message');
-        if (checkBox) {
-            checkBoxLabel = document.id(this.widgetId + '-direct-message-label');
-            // disable the checkbox if more than one blog was selected or no user was added
-            if (this.getCrosspostTopicsCount() > 0 || this.usersToNotify.ids.length == 0 || this.isDirectMessage && this.action == 'edit') {
-                checkBox.disabled = true;
-                checkBoxLabel.addClass('font-gray');
-            } else {
-                checkBox.disabled = false;
-                checkBoxLabel.removeClass('font-gray');
-            }
-        }
-    },
-
-    directMessageModeChanged: function() {
-        var wrapperElem;
-        var checkBox = this.domNode.getElementById(this.widgetId + '-direct-message');
+    onDirectMessageModeChanged: function(active) {
+        this.isDirectMessage = active;
         if (this.topicTextboxList) {
             this.topicTextboxList.setLimit(this.isDirectMessage ? 1 : -1);
-        }
-        if (checkBox) {
-            checkBox.checked = this.isDirectMessage;
         }
     }
 });
