@@ -187,7 +187,7 @@ var CreateNoteWidget = new Class({
      */
     cancel: function(event) {
         var remove, changeRenderStyle, hasAutosave, modified, postRemoveOperation;
-        var resetOperation, hasOnlineAutosave;
+        var hasOnlineAutosave;
         var behavior = this.cancelBehavior;
         if (behavior.action) {
             remove = behavior.action === 'remove';
@@ -221,18 +221,16 @@ var CreateNoteWidget = new Class({
                 }
             } else {
                 // only modified. Can call the same operations but have to stop the autosave job before
-                resetOperation = function() {
-                    this.stopAutosaveJob();
-                    postRemoveOperation();
-                }.bind(this);
+                this.stopAutosaveJob();
                 if (behavior.confirmReset) {
                     showConfirmDialog(getJSMessage('create.note.dialog.discardChanges.title'),
                             getJSMessage('create.note.dialog.discardChanges.question'),
-                            resetOperation, {
-                                triggeringEvent: event
+                            postRemoveOperation, {
+                                triggeringEvent: event,
+                                onCloseCallback: this.startAutosaveJob.bind(this)
                             });
                 } else {
-                    resetOperation();
+                    postRemoveOperation();
                 }
             }
         } else {

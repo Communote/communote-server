@@ -209,8 +209,10 @@
     AutosaveHandler.prototype.discardWithConfirm = function(event, discardCompleteCallback) {
         var title = i18n.getMessage('create.note.autosave.discard.title');
         var message = i18n.getMessage('create.note.autosave.discard.question');
+        this.stopAutomaticSave();
         showConfirmDialog(title, message, this.discard.bind(this, discardCompleteCallback), {
-            triggeringEvent: event
+            triggeringEvent: event,
+            onCloseCallback: this.startAutomaticSave.bind(this)
         });
     };
 
