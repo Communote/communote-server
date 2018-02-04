@@ -62,7 +62,6 @@ var CreateNoteWidget = new Class({
     // an array of note property objects to be included when sending the note
     noteProperties: null,
     parentPostId: null,
-    placeholders: null,
     // css classes to be applied to the create note container (getWriteContainerElement)
     // when the editor only supports plain text
     plainTextEditorCssClass: null,
@@ -270,10 +269,6 @@ var CreateNoteWidget = new Class({
      */
     cleanup: function() {
         this.editor.cleanup();
-        // TODO obsolete?
-        if (this.placeholders) {
-            this.placeholders.destroy();
-        }
     },
 
     /**
@@ -745,7 +740,6 @@ var CreateNoteWidget = new Class({
     refreshView: function(autosaveLoaded) {
         this.ajaxLoadingOverlay = this.widgetController.createAjaxLoadingOverlay(this.domNode,
                 false);
-        this.placeholders = communote.utils.attachPlaceholders(null, this.domNode);
     },
     
     remove: function(deleteAutosave) {
