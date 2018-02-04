@@ -75,7 +75,7 @@
     			return warnings[0].message;
     		}
     	}
-    	return i18n.getMessage('widget.createNote.unconfirmed.input.warning', inputNames.join(', '));
+    	return i18n.getMessage('widget.createNote.unconfirmed.input.warning', [inputNames.join(', ')]);
     };
 
     ComponentManager.prototype.initContent = function(noteData) {

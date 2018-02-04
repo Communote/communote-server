@@ -21,7 +21,7 @@ CreateNoteDefaultWidget = new Class({
             this.setFilterParameter('plaintextOnly', !this.createEditor().supportsHtml());
             this.renderStyle = renderStyle;
         }
-        if (this.action == 'create') {
+        if (this.action === 'create') {
             // only observe targetBlogId changes when in create mode
             filterGroupId = this.staticParams.filterWidgetGroupId;
             filterGroup = filterGroupId && communote.filterGroupRepo[filterGroupId];
@@ -45,7 +45,7 @@ CreateNoteDefaultWidget = new Class({
     
     activateFullEditor: function() {
         this.setRenderStyle('full');
-        if (this.action == 'create') {
+        if (this.action === 'create') {
             this.editor.focus();
         }
     },
@@ -95,10 +95,11 @@ CreateNoteDefaultWidget = new Class({
         if (!this.initializingAfterRefresh) {
             this.showOrHideUserInterfaceForTopic(newId);
         }
-        this.eventEmitter.emit('targetTopicChanged', {newId: newId});
+        this.eventEmitter.emit('targetTopicChanged', this.targetTopic);
         // invalidate caches of autocompeters to let them restart a query for the same term
         // after topic (request parameter) changed
         this.resetAutocompleterCache(this.editor.getUserAutocompleter());
+        this.resetAutocompleterCache(this.editor.getTagAutocompleter());
     },
 
     /**
@@ -178,16 +179,6 @@ CreateNoteDefaultWidget = new Class({
     /**
      * @override
      */
-    cleanup: function() {
-        this.parent();
-        if (this.topicTextboxList) {
-            this.topicTextboxList.destroy();
-        }
-    },
-
-    /**
-     * @override
-     */
     refreshComplete: function(responseMetadata) {
         // set a marker flag to be able to react depending on the current working context (pre & post init)  
         this.initializingAfterRefresh = true;
@@ -225,10 +216,6 @@ CreateNoteDefaultWidget = new Class({
         if (autosaveLoaded && this.renderStyle !== 'full') {
             this.setRenderStyle('full');
         }
-        if (this.useTopicSelection()) {
-            this.contentTopicsContainer = this.domNode.getElement('.cn-write-note-accessory-topic');
-        }
-        this.contentInfoContainer = this.domNode.getElement('.cn-container-note');
     },
 
     /**
@@ -238,31 +225,6 @@ CreateNoteDefaultWidget = new Class({
         return this.domNode.getElement('.cn-write-note-editor');
     },
 
-    /**
-     * @override
-     */
-    refreshTopicSelection: function(searchElement) {
-        var constructor = communote.getConstructor('TextboxList');
-        this.topicTextboxList = new constructor(searchElement, {
-            autoRemoveItemCallback: this.removeTopic.bind(this),
-            allowDuplicates: false,
-            listCssClass: 'cn-border',
-            itemRemoveCssClass: 'textboxlist-item-remove cn-icon',
-            itemLimitReachedAction: 'disable',
-            itemRemoveTitle: getJSMessage('blogpost.create.blogs.remove.tooltip'),
-            parseItemCallback: this.extractTopicName
-        });
-        this.parent(searchElement);
-        // refresh the placeholder since the textboxlist modifies the style of the input
-        this.refreshPlaceholder(searchElement, false);
-    },
-
-    /**
-     * @override
-     */
-    getTopicAutocompleterPositionSource: function() {
-        return this.contentTopicsContainer.getElement('.cn-border');
-    },
 
     showOrHideUserInterfaceForTopic: function(topicId) {
         var result = this.topicWriteAccessEvaluator.checkWriteAccess(topicId, this.initialTargetTopic);
@@ -272,7 +234,7 @@ CreateNoteDefaultWidget = new Class({
         } else {
             // if the user has write access to one of the subtopics show the interface but remove the topic
             if (result.subtopicWriteAccess === true) {
-                this.removeTopic(this.topics.items[0]);
+                this.setTargetTopic(null);
                 this.showUserInterface();
             } else {
                 this.hideUserInterface(result.message || communote.i18n.getMessage('blogpost.create.no.writable.blog.selected'));
@@ -287,6 +249,7 @@ CreateNoteDefaultWidget = new Class({
             this.domNode.getElement('.cn-write-note').addClass('cn-hidden');
             this.domNode.getElement('.cn-write-note-no-editor').removeClass('cn-hidden');
             this.userInterfaceHidden = true;
+            this.eventEmitter.emit('userInterfaceHidden');
         }
     },
     showUserInterface: function() {
@@ -294,10 +257,7 @@ CreateNoteDefaultWidget = new Class({
             this.domNode.getElement('.cn-write-note-no-editor').addClass('cn-hidden');
             this.domNode.getElement('.cn-write-note').removeClass('cn-hidden');
             this.userInterfaceHidden = false;
-            if (this.topicTextboxList) {
-                // might have changed while invisible which leads to wrong positioning, so reposition it now
-                this.topicTextboxList.resizeInputToFillAvailableSpace();
-            }
+            this.eventEmitter.emit('userInterfaceShown');
         }
     },
 
@@ -327,83 +287,8 @@ CreateNoteDefaultWidget = new Class({
                 }
                 oldEditor.cleanup();
             }
-            if (oldStyle === 'simulate' && this.topicTextboxList) {
-                // might have been resized while it was hidden which leads to wrong positioning
-                this.topicTextboxList.resizeInputToFillAvailableSpace();
-                this.refreshPlaceholder(this.topicTextboxList.getInputElement(), false);
-            }
         } else if (newStyle === 'simulate' && this.editor) {
             this.editor.unFocus();
-        }
-    },
-
-    /**
-     * @override
-     */
-    selectedTopicTitleChanged: function(topicItem) {
-        if (this.topicTextboxList) {
-            this.topicTextboxList.refreshContentOfItem(topicItem);
-        }
-    },
-
-    /**
-     * @override
-     */
-    topicAdded: function(topicData, moreToCome) {
-        if (this.topicTextboxList) {
-            this.topicTextboxList.addItem(topicData);
-        }
-        if (this.getCrosspostTopicsCount() == 0) {
-            this.refreshPlaceholder(this.getTopicSearchElement(),
-                    'blogpost.create.topics.crosspost.hint');
-        } else if (!moreToCome) {
-            this.refreshPlaceholder(this.getTopicSearchElement(), false);
-        }
-        this.emitEvent('topicAdded', topicData);
-    },
-
-    /**
-     * @override
-     */
-    topicRemoved: function(topicData) {
-        if (!topicData) {
-            this.topicTextboxList.clearItems();
-        } else {
-            this.topicTextboxList.removeItem(topicData);
-        }
-        if (!this.getTargetTopicId()) {
-            this.refreshPlaceholder(this.getTopicSearchElement(), 'blogpost.create.topics.hint');
-        } else {
-            this.refreshPlaceholder(this.getTopicSearchElement(), false);
-        }
-        this.emitEvent('topicRemoved', topicData);
-    },
-
-    /**
-     * Refresh a placeholder by repositioning it in case it is not a native one and optionally
-     * updating the placeholder text.
-     * 
-     * @param {Element} inputElem The input element whose placeholder should be refreshed
-     * @param {String} [msgKey] Message key of the new text
-     */
-    refreshPlaceholder: function(inputElem, msgKey) {
-        var placeholder = this.placeholders.getPlaceholder(inputElem);
-        if (placeholder) {
-            if (msgKey) {
-                placeholder.setText(getJSMessage(msgKey));
-            }
-            placeholder.refresh();
-        }
-    },
-
-    extractTopicName: function(topicData) {
-        return topicData.title;
-    },
-
-    onDirectMessageModeChanged: function(active) {
-        this.isDirectMessage = active;
-        if (this.topicTextboxList) {
-            this.topicTextboxList.setLimit(this.isDirectMessage ? 1 : -1);
         }
     }
 });

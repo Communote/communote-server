@@ -47,9 +47,9 @@
 
     function enableDisableDmCheckbox(handler) {
         var disable, checkboxElem;
-        // disable the checkbox if more than one blog or no user is selected; Disable if editing a
+        // disable the checkbox if crosspost topics were added or no user is selected; Disable if editing a
         // DM because converting to non DM is not allowed.
-        if (handler.topicCount > 1 || handler.userAliases.length === 0
+        if (handler.topicCount > 0 || handler.userAliases.length === 0
                 || handler.isDirectMessage && handler.action === 'edit') {
             disable = true;
         } else {
@@ -206,10 +206,10 @@
             return;
         }
         if (activate) {
-            // activate only possible if crosspost blogs are empty (first topic is target topic)
+            // activate only possible if crosspost blogs are empty
             // and at least one user was added
             // TODO show an error if not activatable?
-            if (this.topicCount <= 1 && this.userAliases.length > 0) {
+            if (this.topicCount < 1 && this.userAliases.length > 0) {
                 this.isDirectMessage = true;
             }
         } else {
@@ -362,8 +362,8 @@
         this.showHideMentionSelection();
     };
     
-    MentionHandler.prototype.onTargetTopicChanged = function(changeDescr) {
-        this.targetTopicId = changeDescr.newId;
+    MentionHandler.prototype.onTargetTopicChanged = function(newTargetTopic) {
+        this.targetTopicId = newTargetTopic && newTargetTopic.id;
         // invalidate cache of autocompeter so it restarts a query for the same term
         // after topic (request parameter) changed
         if (this.userAutocompleter) {
@@ -379,7 +379,7 @@
     	if (topicData) {
     		this.topicCount--;
     	} else {
-    		// all were removed
+    		// all removed
     		this.topicCount = 0;
     	}
     	enableDisableDmCheckbox(this);

@@ -354,8 +354,8 @@
         this.showHideTagSelection();
     };
     
-    TagHandler.prototype.onTargetTopicChanged = function(changeDescr) {
-        this.targetTopicId = changeDescr.newId;
+    TagHandler.prototype.onTargetTopicChanged = function(newTargetTopic) {
+        this.targetTopicId = newTargetTopic && newTargetTopic.id;
         // invalidate cache of autocompeter so it restarts a query for the same term
         // after topic (request parameter) changed
         if (this.tagAutocompleter) {

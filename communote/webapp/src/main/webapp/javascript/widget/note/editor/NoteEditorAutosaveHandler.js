@@ -113,7 +113,7 @@
         if (noteData.attachments.length > 0) {
             cookie.set('attachs', noteData.attachments);
         }
-        if (noteData.crosspostTopics.length > 0) {
+        if (noteData.crosspostTopics && noteData.crosspostTopics.length > 0) {
             cookie.set('blogs', noteData.crosspostTopics);
         }
         if (noteData.usersToNotify.length > 0) {
@@ -325,7 +325,7 @@
             // won't succeed if empty or no topic is selected
             if (noteData.content == null
                     || (noteData.content.length === 0)
-                    || ((this.action == 'create' || this.action == 'repost') && noteData.targetTopic == null)) {
+                    || ((this.action === 'create' || this.action === 'repost') && noteData.targetTopic == null)) {
                 return;
             }
             // only necessary for online autosaves because they are async
@@ -364,7 +364,7 @@
             // already running
             return;
         }
-        // disable autosave functionality if interval is to small
+        // disable autosave functionality if interval is too small
         if (this.autosaveTimeout < 1000) {
             return;
         }

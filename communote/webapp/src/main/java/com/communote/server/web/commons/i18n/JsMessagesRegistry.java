@@ -483,6 +483,7 @@ public class JsMessagesRegistry implements EventListener<ResourceBundleChangedEv
         messageKeys.add("blogpost.create.submit.confirm.unsaved.blog");
         messageKeys.add("blogpost.create.submit.confirm.unsaved.user");
         messageKeys.add("widget.createNote.unconfirmed.input.warning");
+        messageKeys.add("widget.createNote.topics.unconfirmed.input.inputName");
         messageKeys.add("widget.createNote.mentions.unconfirmed.input.inputName");
         messageKeys.add("blogpost.delete.confirmation");
         messageKeys.add("blogpost.delete.popup.title");

@@ -92,6 +92,7 @@
                 "/javascript/widget/note/editor/TopicAccessEvaluator.js",
                 "/javascript/widget/note/editor/NoteEditorComponentFactory.js",
                 "/javascript/widget/note/editor/NoteEditorComponentManager.js",
+                "/javascript/widget/note/editor/NoteEditorTopics.js",
                 "/javascript/widget/note/editor/NoteEditorTags.js",
                 "/javascript/widget/note/editor/NoteEditorMentions.js",
                 "/javascript/widget/note/editor/NoteEditorAttachments.js",

@@ -3,7 +3,7 @@ var CreateNoteWidget = new Class({
 
     widgetGroup: "blog",
 
-    // the current working mode of the widget (edit, comment or create)
+    // the current working mode of the widget (edit, comment, repost or create)
     action: null,
     ajaxLoadingOverlay: null,
     /**
@@ -36,17 +36,18 @@ var CreateNoteWidget = new Class({
     },
     // ComponentManager with all components for the current working mode/action
     components: null,
-    // whether the editor is currently dirty. Will be reset after a successful autosave.
+    // whether the editor is currently dirty. Will be reset after a successful autosave or submit.
     dirty: false,
     // the NoteTextEditor instance
     editor: null,
+    // emitter for local events, mainly for notifying the components
     eventEmitter: null,
     /**
      * JSON object holding initial note data which will be restored when resetting the note. This
      * data is provided with the response metadata when refreshing the widget. In the edit case this
      * will be the note to edit. Additionally the content can be provided with a static parameter to
-     * overwrite the content of the initialNote. In case there is an autosave it will override the
-     * initial note when rendering the content.
+     * overwrite the content of the initialNote. In case there is an autosave, the autosave has
+     * precedence over the initial note when initializing the widget content after a refresh.
      */
     initialNote: null,
     /**
@@ -54,11 +55,8 @@ var CreateNoteWidget = new Class({
      * create mode and is used when resetting the editor.
      */
     initialTargetTopic: null,
-    /**
-     * whether a direct message should be created
-     */
-    isDirectMessage: false,
-    // if the note was modified in some way. Will be reset with clearAll after publishing or reverting
+    targetTopic: null,
+    // if the note was modified in some way. Will be reset with initContent after publishing or reverting
     modified: false,
     noTargetTopicChangeIfModifiedOrAutosaved: false,
     // an array of note property objects to be included when sending the note
@@ -90,18 +88,9 @@ var CreateNoteWidget = new Class({
      */
     supportedRenderStyles: [ 'full', 'minimal', 'simulate' ],
 
-    topicAutocompleter: null,
-    topics: null,
     // note properties to pass along with every note. Can be set with the same-named static parameter.
     predefinedNoteProperties: null,
 
-    setup: function() {
-        // need to remember the order of the added topics to easily get the first crosspost topic
-        this.topics = {
-            ids: [],
-            items: []
-        };
-    },
 
     init: function() {
         var action, targetBlogId, targetBlogTitle, parentPostId, autosaveDisabled;
@@ -148,6 +137,10 @@ var CreateNoteWidget = new Class({
         }
         
         this.copyStaticParameter('repostNoteId');
+        if (this.getFilterParameter('repostNoteId')) {
+            // change action to repost (pure client-side feature)
+            this.action = 'repost';
+        }
         this.copyStaticParameter('noteId');
         parentPostId = this.getStaticParameter('parentPostId');
         if (parentPostId) {
@@ -171,85 +164,10 @@ var CreateNoteWidget = new Class({
         this.initAutosaveHandler();
         this.components = new communote.classes.NoteEditorComponentManager(this, action,
                 this.renderStyle, this.getAllStaticParameters());
-        this.addEventListener('directMessageModeChanged', this.onDirectMessageModeChanged, this);
     },
     
     addEventListener: function(eventName, fn, context) {
         this.eventEmitter.on(eventName, fn, context);
-    },
-    
-    /**
-     * Add the items from items that are not yet in the dataHolder. Will set the dirty flag if
-     * something changed.
-     *
-     * @param {Object} dataHolder the dataHolder to be extended
-     * @param {Array|Object} items an array of JSON objects or single JSON object to evaluate
-     * @param {String} idString the name of the attribute of the item object of which the value is
-     *            used as key in the dataHolder
-     * @param {Function} itemAddedCallback The function to call for each added item
-     * @return array with IDs of the items that were added. Can be empty.
-     */
-    addNewItems: function(dataHolder, items, idString, itemAddedCallback) {
-        var itemsToAdd, idsToAdd, length, i, id;
-        if (!items) {
-            return [];
-        }
-        itemsToAdd = [];
-        idsToAdd = [];
-        // first collect new items to be able to add them one by one and inform whether there are more to come
-        if (typeOf(items) == 'array') {
-            length = items.length;
-            for (i = 0; i < length; i++) {
-                id = items[i][idString];
-                if (!dataHolder.ids.contains(id)) {
-                    itemsToAdd.push(items[i]);
-                    idsToAdd.push(id);
-                }
-            }
-        } else {
-            id = items[idString];
-            if (!dataHolder.ids.contains(id)) {
-                itemsToAdd.push(items);
-                idsToAdd.push(id);
-            }
-        }
-        length = itemsToAdd.length;
-        for (i = 0; i < length; i++) {
-            dataHolder.ids.push(idsToAdd[i]);
-            dataHolder.items.push(itemsToAdd[i]);
-            itemAddedCallback.call(this, itemsToAdd[i], i < length - 1);
-        }
-        if (length > 0) {
-            this.dirty = true;
-            this.modified = true;
-        }
-        return idsToAdd;
-    },
-
-    addTopics: function(topics) {
-        var targetTopicId, ids, newTargetTopic, i;
-        if (!topics) {
-            return;
-        }
-        targetTopicId = this.getTargetTopicId();
-        topics = Array.from(topics);
-        if (targetTopicId == undefined) {
-            newTargetTopic = topics.shift();
-            this.addNewItems(this.topics, newTargetTopic, 'id', this.topicAdded);
-            this.targetTopicChanged();
-        }
-        if (this.isDirectMessage) {
-            // TODO show an error message that adding crosspost blogs is not allowed in DM mode
-            return false;
-        }
-        // assert that all topics have an alias since it is required for crossposting
-        for (i = 0; i < topics.length; i++) {
-            if (!topics[i].alias) {
-                throw 'Alias of crosspost topic is missing';
-            }
-        }
-        ids = this.addNewItems(this.topics, topics, 'id', this.topicAdded);
-        return (ids.length > 0);
     },
 
     /**
@@ -340,7 +258,7 @@ var CreateNoteWidget = new Class({
         }
         // @@discussion should only be matched when in a discussion context: create note or edit
         // a note that is not part of a discussion with more than one note
-        if (this.action == 'create'
+        if (this.action === 'create' || this.action === 'repost'
                 || (this.action == 'edit' && this.initialNote.numberOfDiscussionNotes == 1)) {
             return false;
         }
@@ -352,31 +270,10 @@ var CreateNoteWidget = new Class({
      */
     cleanup: function() {
         this.editor.cleanup();
-        // remove attached autocompleter
-        if (this.topicAutocompleter) {
-            this.topicAutocompleter.destroy();
-        }
+        // TODO obsolete?
         if (this.placeholders) {
             this.placeholders.destroy();
         }
-    },
-
-    clearAll: function() {
-        var elem;
-        if (this.action == 'create') {
-            this.resetTargetTopic();
-        } else {
-            this.removeTopic(null);
-        }
-        this.editor.resetContent(null);
-        // empty inputs
-        elem = this.getTopicSearchElement();
-        if (elem) {
-            elem.value = '';
-        }
-        this.dirty = false;
-        this.modified = false;
-        this.noteProperties = null;
     },
 
     /**
@@ -429,7 +326,6 @@ var CreateNoteWidget = new Class({
         if (this.action != 'edit') {
             data.parentNoteId = this.parentPostId;
         }
-        data.crossPostTopicAliases = this.getCrosspostTopics(true);
         this.components.appendNoteDataForRestRequest(data, publish, false);
         data.publish = publish === true ? true : false;
         if (this.autosaveHandler) {
@@ -475,6 +371,11 @@ var CreateNoteWidget = new Class({
         }
         // save initial note object as copy
         initialNote = Object.clone(initObject);
+        // force invocation of resetTargetTopic when initializing with initialNote and no topic is
+        // set in 'create' mode 
+        if (!initialNote.targetBlog && this.action === 'create') {
+            initialNote.forceResetTargetTopic = true;
+        }
         // check for autosave and if available replace initObject with it to init with autosave
         if (this.autosaveHandler) {
             autosave = this.autosaveHandler.load(responseMetadata);
@@ -484,7 +385,7 @@ var CreateNoteWidget = new Class({
             }
         }
         // force the target topic of the parent or edited note, or in case of create of the autosave
-        if (this.action != 'create' || !autosaveLoaded
+        if (this.action !== 'create' || !autosaveLoaded
                 || (this.initialTargetTopic && !this.noTargetTopicChangeIfModifiedOrAutosaved)) {
             initObject.targetBlog = targetTopic;
         }
@@ -495,38 +396,14 @@ var CreateNoteWidget = new Class({
         };
     },
 
-    getCrosspostTopicsCount: function() {
-        var count = this.topics.ids.length;
-        if (count > 0) {
-            // first topic is the target topic
-            count--;
-        }
-        return count;
-    },
-
-    getCrosspostTopics: function(aliases) {
-        var i, topics, result;
-        // first topic is the target topic
-        if (!aliases) {
-            return this.topics.items.slice(1);
-        }
-        topics = this.topics.items;
-        result = [];
-        for (i = 1; i < topics.length; i++) {
-            result.push(topics[i].alias);
-        }
-        return result;
-    },
-
     getListeningEvents: function() {
         return [];
     },
     
     getNoteData: function(resetDirtyFlag) {
         var data = {};
-        data.crosspostTopics = this.getCrosspostTopics(false);
         data.content = this.editor.getContent();
-        data.targetTopic = this.topics.items[0];
+        data.targetTopic = this.targetTopic;
         data.isHtml = this.editor.supportsHtml();
         data.noteId = this.getFilterParameter('noteId');
         if (this.action != 'edit') {
@@ -575,24 +452,7 @@ var CreateNoteWidget = new Class({
     },
 
     getTargetTopicId: function() {
-        return this.topics.ids[0];
-    },
-
-    /**
-     * Returns the element to be used as positionSource element for the topic autocompleter.
-     *
-     * @return {Element} the element or null if not required
-     */
-    getTopicAutocompleterPositionSource: function() {
-        return null;
-    },
-    /**
-     * Returns the topic search element.
-     *
-     * @return {Element} the element if it exists
-     */
-    getTopicSearchElement: function() {
-        return this.domNode.getElementById(this.widgetId + '-topic-search');
+        return this.targetTopic && this.targetTopic.id;
     },
 
     /**
@@ -633,14 +493,11 @@ var CreateNoteWidget = new Class({
             return;
         }
         action = this.action;
-        if (this.getFilterParameter('repostNoteId')) {
-            action = 'repost';
-        }
-        if (action == 'edit') {
+        if (action === 'edit') {
             noteId = this.getFilterParameter('noteId');
-        } else if (action == 'comment') {
+        } else if (action === 'comment') {
             noteId = this.parentPostId;
-        } else if (action == 'repost') {
+        } else if (action === 'repost') {
             noteId = this.getFilterParameter('repostNoteId');
         }
         options = this.getStaticParameter('autosaveOptions') || {};
@@ -660,24 +517,23 @@ var CreateNoteWidget = new Class({
     },
 
     initContent: function(note) {
-        var topics;
-        this.components.initContent(note);
-        // TODO hack while migrating to components
         if (!note) {
-            return;
-        }
-        this.editor.resetContent(note.content);
-        // no crosspost topics when targetBlog is not set or replying
-        if (note.targetBlog) {
-            topics = [ note.targetBlog ];
-            if (this.action != 'comment' && note.crosspostBlogs) {
-                topics.append(note.crosspostBlogs);
+            // clearAll
+            this.resetTargetTopic();
+            this.components.initContent(null);
+            this.editor.resetContent(null);
+            this.noteProperties = null;
+        } else {
+            if (note.forceResetTargetTopic) {
+                this.resetTargetTopic();
+            } else {
+                this.setTargetTopic(note.targetBlog);
             }
-            this.addTopics(topics);
-        }
-        if (note.properties) {
+            this.components.initContent(note);
+            this.editor.resetContent(note.content);
             this.noteProperties = note.properties;
         }
+        this.dirty = false;
         this.modified = false;
     },
 
@@ -723,9 +579,9 @@ var CreateNoteWidget = new Class({
             if (this.initialTargetTopic.loadingTitleAsync) {
                 delete this.initialTargetTopic.loadingTitleAsync;
                 delete this.initialTargetTopic.loadingTitle;
-                // if the topic is currently selected notify subclasses
-                if (this.topics.ids.length > 0 && this.topics.items[0] == this.initialTargetTopic) {
-                    this.selectedTopicTitleChanged(this.initialTargetTopic);
+                // if the topic is current targetTopic notify subclasses
+                if (this.targetTopic == this.initialTargetTopic) {
+                    this.targetTopicTitleChanged(this.initialTargetTopic);
                 }
             }
         }
@@ -747,10 +603,10 @@ var CreateNoteWidget = new Class({
                 // show success message
                 showNotification(NOTIFICATION_BOX_TYPES.success, '', resultObj.message);
             }
-            // inform widgets and also provide the action
+            // inform widgets and also provide the action, but treat repost like create
             if (noteId) {
                 noteChangedDescr = {
-                    action: this.action,
+                    action: this.action === 'repost' ? 'create' : this.action,
                     noteId: noteId,
                     topicId: topicId
                 };
@@ -766,8 +622,6 @@ var CreateNoteWidget = new Class({
             }
             // no need to clean up if removing it anyway
             if (this.publishSuccessBehavior.action != 'remove') {
-                this.clearAll();
-                // TODO clearAll shouldn't be necessary when correctly implementing initContent
                 this.initContent(null);
                 this.startAutosaveJob();
                 if (this.publishSuccessBehavior.action == 'renderStyle') {
@@ -854,11 +708,6 @@ var CreateNoteWidget = new Class({
         this.refreshView(initData.isAutosave);
         this.refreshEditor();
         this.eventEmitter.emit('widgetRefreshed');
-
-        // attach autocompleters
-        if (this.useTopicSelection()) {
-            this.refreshTopicSelection(this.getTopicSearchElement());
-        }
         
         this.initContent(initData.initObject);
         // TODO rename to contentInitializedAfterRefresh to make clear it is not called with every initContent call?
@@ -893,24 +742,6 @@ var CreateNoteWidget = new Class({
         this.editor.refresh(writeContainerElem);
     },
 
-    /**
-     * Called after refresh if useTopicSelection returned true. Default implementation attaches a
-     * topic autocompleter to the input field.
-     *
-     * @param {Element} searchElement The input element to attach the autocompleter to
-     */
-    refreshTopicSelection: function(searchElement) {
-        var acOptions;
-        if (searchElement) {
-            acOptions = this.prepareAutocompleterOptions('getTopicAutocompleterPositionSource',
-                    true, false);
-            this.topicAutocompleter = autocompleterFactory.createTopicAutocompleter(searchElement,
-                    acOptions, null, false, 'write');
-            this.topicAutocompleter.addEvent('onChoiceSelected', this.topicChoiceSelected
-                    .bind(this));
-        }
-    },
-
     refreshView: function(autosaveLoaded) {
         this.ajaxLoadingOverlay = this.widgetController.createAjaxLoadingOverlay(this.domNode,
                 false);
@@ -935,93 +766,17 @@ var CreateNoteWidget = new Class({
         this.eventEmitter.off(eventName, fn, context);
     },
 
-    /**
-     * Removes the item from the data holder
-     *
-     * @param {Object} dataHolder The data holder to update
-     * @param {String} id identifier of the item to remove, if null remove all items
-     * @return {boolean} whether the dataHolder was changed
-     */
-    removeItemFromDataHolder: function(dataHolder, id) {
-        var idx;
-        var changed = false;
-        if (id != null) {
-            idx = dataHolder.ids.indexOf(id);
-            if (idx > -1) {
-                dataHolder.ids.splice(idx, 1);
-                dataHolder.items.splice(idx, 1);
-                changed = true;
-            }
-        } else {
-            // clear if it is not empty yet
-            if (dataHolder.ids.length) {
-                dataHolder.ids = [];
-                dataHolder.items = [];
-                changed = true;
-            }
-        }
-        if (changed) {
-            this.dirty = true;
-            this.modified = true;
-        }
-        return changed;
-    },
-
-    removeTopic: function(topicData) {
-        var crosspostTopics, i, oldTargetTopicId, oldDirty;
-        var id = topicData && topicData.id;
-        var createAction = (this.action == 'create');
-        if (id != undefined) {
-            // assert the first topic (target topic) is not removed when not in create mode
-            if (!createAction && this.getTargetTopicId() == id) {
-                return;
-            }
-        } else if (!createAction) {
-            // when not in create mode only remove the crosspost topics
-            crosspostTopics = this.getCrosspostTopics(false);
-            for (i = 0; i < crosspostTopics.length; i++) {
-                topicData = crosspostTopics[i];
-                this.removeItemFromDataHolder(this.topics, topicData.id);
-                this.topicRemoved(topicData);
-            }
-            return;
-        }
-        oldTargetTopicId = this.getTargetTopicId();
-        oldDirty = this.dirty;
-        if (this.removeItemFromDataHolder(this.topics, id)) {
-            // do not create an autosave if no topic is selected
-            if (createAction && this.topics.items.length == 0) {
-                this.dirty = oldDirty;
-            }
-            this.topicRemoved(topicData);
-            if (oldTargetTopicId != this.getTargetTopicId()) {
-                this.targetTopicChanged();
-            }
-        }
-    },
-
     renderStyleChanged: function(oldStyle, newStyle) {
     },
 
     /**
      * Helper which replaces the target topic in 'create' mode with the topic returned by
-     * getTargetTopicForCreate. In contrast to calling removeTopic(null) and addTopics(newTopic)
-     * this method will invoke targetTopicChanged only once, which is more suitable and performant
-     * when the targetTopicChanged needs to update the view. Also the dirty and modified flags won't
-     * change.
+     * getTargetTopicForCreate.
      */
     resetTargetTopic: function() {
-        var oldDirty, oldModified;
-        if (this.action == 'create') {
-            // remember old flags and restore them
-            oldDirty = this.dirty;
-            oldModified = this.modified;
-            // remove all
-            this.removeItemFromDataHolder(this.topics, null);
-            this.topicRemoved(null);
-            this.addNewItems(this.topics, this.getTargetTopicForCreate(), 'id', this.topicAdded);
-            this.dirty = oldDirty;
-            this.modified = oldModified;
+        if (this.action === 'create') {
+            this.targetTopic = this.getTargetTopicForCreate();
+            this.eventEmitter.emit('targetTopicReset', this.targetTopic);
             this.targetTopicChanged();
         }
     },
@@ -1031,19 +786,9 @@ var CreateNoteWidget = new Class({
      * autosave was removed.
      */
     resetToNoAutosaveState: function() {
-        this.clearAll();
-//        if (this.initialNote && Object.getLength(this.initialNote)) {
-            // restore original note
-            this.initContent(this.initialNote);
-//        }
+        // restore original note
+        this.initContent(this.initialNote);
         this.startAutosaveJob();
-    },
-
-    /**
-     * Called when the title of a topic in the topics member is changed. Default implementation does
-     * nothing.
-     */
-    selectedTopicTitleChanged: function(topicItem) {
     },
 
     /**
@@ -1054,17 +799,10 @@ var CreateNoteWidget = new Class({
      *            fields. If true there will be no warning.
      */
     sendNote: function(content, ignoreUncommittedOptions) {
-        var warningMsg, topicInput, uncommittedBlog;
-        var cancelFunction, buttons, successCallback, errorCallback, data, options;
+        var warningMsg, cancelFunction, buttons;
+        var successCallback, errorCallback, data, options;
         if (!ignoreUncommittedOptions) {
             warningMsg = this.components.getUnconfirmedInputWarning();
-            if (!warningMsg) {
-                topicInput = this.getTopicSearchElement();
-                uncommittedBlog = topicInput && topicInput.value.trim().length;
-                if (uncommittedBlog) {
-                    warningMsg = getJSMessage('blogpost.create.submit.confirm.unsaved.blog');
-                }
-            }
             if (warningMsg) {
                 cancelFunction = function() {
                     this.stopPublishNoteFeedback();
@@ -1107,14 +845,6 @@ var CreateNoteWidget = new Class({
      */
     setCurrentTopicBeforeRequestCallback: function(request, postData, queryParam) {
         postData['blogId'] = this.getTargetTopicId();
-    },
-
-    /**
-     * AutocompleterRequestDataSource callback implementation that sets the current topic to be
-     * ignored before sending the request.
-     */
-    setIgnoreCurrentTopicBeforeRequestCallback: function(request, postData, queryParam) {
-        postData['blogIdsToExclude'] = this.getTargetTopicId();
     },
 
     setInitialTargetTopic: function(id, title) {
@@ -1164,6 +894,20 @@ var CreateNoteWidget = new Class({
             elem.addClass(this.renderStyleCssClassPrefix + newRenderStyle);
         }
         this.renderStyleChanged(oldStyle, newRenderStyle);
+    },
+    
+    setTargetTopic: function(newTargetTopic) {
+        // only allow changing of target topic when in a mode where notes are created
+        if (!this.targetTopic || this.action === 'create' || this.action === 'repost') {
+            // ignore if nothing changed
+            if ((!newTargetTopic && this.targetTopic) || 
+                    (newTargetTopic && newTargetTopic.id != this.getTargetTopicId())) {
+                this.targetTopic = newTargetTopic;
+                this.targetTopicChanged();
+                this.dirty = true;
+                this.modified = true;
+            }
+        }
     },
 
     showErrorMessage: function(errObj) {
@@ -1220,36 +964,15 @@ var CreateNoteWidget = new Class({
     },
 
     /**
-     * Method that is invoked when the target topic was added, removed or replaced. This method is
-     * called after topicAdded and topicRemoved.
+     * Method that is invoked when the target topic was added, removed or replaced.
      */
     targetTopicChanged: function() {
     },
 
     /**
-     * Method that is invoked when a topic was added.
-     *
-     * @param {Object} topicData The object describing the topic that was added.
-     * @param {boolean} moreToCome Whether this add is only the first of a sequence of adds.
+     * Called when the title of the target topic changed.
      */
-    topicAdded: function(topicData, moreToCome) {
-    },
-
-    topicChoiceSelected: function(inputElem, choiceElem, token, value) {
-        this.addTopics(token);
-    },
-
-    /**
-     * Method that is invoked when one or more topics were removed.
-     *
-     * @param {Object} topicData The object describing the topic that was removed. Will be null if
-     *            all topics were removed.
-     */
-    topicRemoved: function(topicData) {
-    },
-
-    useTopicSelection: function() {
-        // topics can only be selected when creating notes
-        return this.action == 'create';
+    targetTopicTitleChanged: function(topicData) {
+        this.eventEmitter.emit('targetTopicTitleChanged', topicData.title);
     }
 });
