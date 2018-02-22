@@ -1,3 +1,4 @@
+// TODO rename to NoteEditorWidget and move to widget/note/editor
 var CreateNoteWidget = new Class({
     Extends: C_Widget,
 
@@ -64,7 +65,9 @@ var CreateNoteWidget = new Class({
     parentPostId: null,
     // css classes to be applied to the create note container (getWriteContainerElement)
     // when the editor only supports plain text
-    plainTextEditorCssClass: null,
+    plainTextEditorCssClass: 'cn-write-note-plaintext',
+    // note properties to pass along with every note. Can be set with the same-named static parameter.
+    predefinedNoteProperties: null,
     // defines what should happen after a note was published successfully and the editor was
     // cleared. If the editor is in comment or edit mode the action will default to 'remove'.
     publishSuccessBehavior: {
@@ -86,14 +89,14 @@ var CreateNoteWidget = new Class({
      * Supported render styles of the widget. The first is the default.
      */
     supportedRenderStyles: [ 'full', 'minimal', 'simulate' ],
-
-    // note properties to pass along with every note. Can be set with the same-named static parameter.
-    predefinedNoteProperties: null,
+    targetBlogIdChangeTracker: null,
+    topicWriteAccessEvaluator: null,
+    userInterfaceHidden: false,
 
 
     init: function() {
         var action, targetBlogId, targetBlogTitle, parentPostId, autosaveDisabled;
-        var cancelBehavior, publishSuccessBehavior;
+        var filterGroupId, cancelBehavior, publishSuccessBehavior, renderStyle;
         this.parent();
         this.eventEmitter = new communote.classes.EventEmitter();
         this.noTargetTopicChangeIfModifiedOrAutosaved = !!this
@@ -103,10 +106,22 @@ var CreateNoteWidget = new Class({
         this.setFilterParameter('action', action);
         this.action = action;
 
-        if (action == 'create') {
+        if (action === 'create') {
             targetBlogId = this.getStaticParameter('targetBlogId');
             targetBlogTitle = this.getStaticParameter('targetBlogTitle');
             this.setInitialTargetTopic(targetBlogId, targetBlogTitle);
+            // observe targetBlogId changes when in create mode and a repo is configured
+            filterGroupId = this.staticParams.filterWidgetGroupId;
+            if (filterGroupId && communote.filterGroupRepo[filterGroupId]) {
+                this.targetBlogIdChangeTracker = new communote.classes.FilterParameterChangedHandler(
+                        filterGroupId, 'targetBlogId', this.onTargetBlogIdChanged.bind(this));
+                // check for targetBlogId which can be part of the widget settings (see above) or
+                // set in the filter store as initial parameter, but give setting preference
+                if (!this.initialTargetTopic) {
+                    this.setInitialTargetTopic(this.targetBlogIdChangeTracker
+                            .getCurrentValue(), null);
+                }
+            }
         } else {
             // set some other defaults for the cancelBehavior, mainly for backwards compatibility
             this.cancelBehavior.confirmDiscard = false;
@@ -128,11 +143,20 @@ var CreateNoteWidget = new Class({
             }
             Object.merge(this.publishSuccessBehavior, publishSuccessBehavior);
         }
+        
         this.setRenderStyle(this.getStaticParameter('renderStyle'));
-
         this.editor = this.createEditor();
         if (!this.editor.supportsHtml()) {
-            this.setFilterParameter('plaintextOnly', true);
+            if (this.renderStyle !== 'full') {
+                // check whether the editor in full render style would support HTML because the
+                // editor will switch to full if there is an autosave.
+                renderStyle = this.renderStyle;
+                this.renderStyle = 'full';
+                this.setFilterParameter('plaintextOnly', !this.createEditor().supportsHtml());
+                this.renderStyle = renderStyle;
+            } else {
+                this.setFilterParameter('plaintextOnly', true);
+            }
         }
         
         this.copyStaticParameter('repostNoteId');
@@ -163,6 +187,17 @@ var CreateNoteWidget = new Class({
         this.initAutosaveHandler();
         this.components = new communote.classes.NoteEditorComponentManager(this, action,
                 this.renderStyle, this.getAllStaticParameters());
+        if (Browser.name === 'ie') {
+            this.setFilterParameter('customUpload', true);
+        }
+        this.topicWriteAccessEvaluator = new communote.classes.TopicWriteAccessEvaluator(this.blogUtils);
+    },
+    
+    activateFullEditor: function() {
+        this.setRenderStyle('full');
+        if (this.action === 'create') {
+            this.editor.focus();
+        }
     },
     
     addEventListener: function(eventName, fn, context) {
@@ -175,6 +210,9 @@ var CreateNoteWidget = new Class({
     beforeRemove: function() {
         this.stopAutosaveJob();
         // TODO do autosave?
+        if (this.targetBlogIdChangeTracker) {
+            this.targetBlogIdChangeTracker.destroy();
+        }
         this.cleanup();
         this.eventEmitter.emit('widgetRemoving');
     },
@@ -284,8 +322,36 @@ var CreateNoteWidget = new Class({
      * @return {NoteTextEditor} the editor
      */
     createEditor: function() {
-        // create the dummy editor
-        return new NoteTextEditor();
+        var minimal, options;
+        minimal = this.renderStyle === 'minimal';
+        options = {
+            autoresizeMinHeight: Math.floor(46200 / this.domNode.clientWidth),
+            useExpander: true,
+            focusOnRefresh: this.action === 'comment',
+            expanderOptions: {
+                additionalLines: 0,
+                minLines: minimal ? 1 : 0
+            },
+            keyboardShortcuts: {
+                ctrlKey: true,
+                keyCode: 13,
+                callback: this.publishNote.bind(this),
+                cancelEvent: true
+            },
+            storeEditorSize: this.action === 'create'
+        };
+        if (minimal) {
+            return NoteTextEditorFactory.createPlainTextEditor(null, options);
+        } else {
+            options.tagAutocompleterOptions = this.prepareAutocompleterOptions(
+                    this.setCurrentTopicBeforeRequestCallback.bind(this));
+            options.userAutocompleterOptions = this.prepareAutocompleterOptions(
+                    this.setCurrentTopicBeforeRequestCallback.bind(this));
+            options.userAutocompleterOptions.staticDataSourceOptions = {};
+            options.userAutocompleterOptions.staticDataSourceOptions.approveMatchCallback = this.checkDiscussionContextApproveMatchCallback
+                    .bind(this);
+            return NoteTextEditorFactory.createSupportedEditor(null, options);
+        }
     },
 
     /**
@@ -463,10 +529,9 @@ var CreateNoteWidget = new Class({
     /**
      * Return the element that contains the input element for the post data and some (optional)
      * additional hidden inputs that provide data to be sent to the server when sending the note.
-     * This method looks for a FORM element by default.
      */
     getWriteContainerElement: function() {
-        return this.domNode.getElement('form');
+        return this.domNode.getElement('.cn-write-note-editor');
     },
 
     /**
@@ -478,6 +543,17 @@ var CreateNoteWidget = new Class({
             return this.autosaveHandler.hasAutosave();
         }
         return false;
+    },
+    
+    hideUserInterface: function(errorMsg) {
+        var errorContainer = this.domNode.getElement('.cn-write-note-no-editor-content');
+        errorContainer.set('text', errorMsg);
+        if (!this.userInterfaceHidden) {
+            this.domNode.getElement('.cn-write-note').addClass('cn-hidden');
+            this.domNode.getElement('.cn-write-note-no-editor').removeClass('cn-hidden');
+            this.userInterfaceHidden = true;
+            this.eventEmitter.emit('userInterfaceHidden');
+        }
     },
 
     initAutosaveHandler: function() {
@@ -554,6 +630,13 @@ var CreateNoteWidget = new Class({
             delete this.initialTargetTopic.loadingTitle;
             if (response.httpStatusCode == 404) {
                 this.initialTargetTopic.notFound = true;
+                // don't know which request (refresh, topic-info GET or topic-rights) is faster -> 
+                // don't hide the interface while still loading, the topic-rights check callback will do it
+                if (this.firstDOMLoadDone) {
+                    this.hideUserInterface(response.message);
+                } else {
+                    this.initialTargetTopic.notFoundErrorMessage = response.message;
+                }
             } else if (response.httpStatusCode == 403) {
                 this.initialTargetTopic.noReadAccess = true;
             } else {
@@ -625,40 +708,49 @@ var CreateNoteWidget = new Class({
             }
         }
     },
+    
+    /**
+     * Callback of the targetBlogIdChangeTracker which observes the filter parameter store for
+     * changes of the parameter targetBlogId.
+     */
+    onTargetBlogIdChanged: function(oldTopicId, newTopicId) {
+        // update the initialTargetTopic so it will be set the next time an autosave is discarded or note was sent
+        this.setInitialTargetTopic(newTopicId, null);
+        // update the target topic, but not if modified or there is an autosave, also do nothing
+        // if not yet refreshed since the responseMetadata might contain autosave data
+        // TODO also check whether content is empty?
+        if (this.firstDOMLoadDone) {
+            if (!this.noTargetTopicChangeIfModifiedOrAutosaved) {
+                // CNT pre 3 behavior: change topic even if modified but not if the default topic
+                // fallback would be set
+                if (this.initialTargetTopic || !this.hasAutosave()) {
+                    this.resetTargetTopic();
+                } else {
+                    // if there is an autosave and user switched to a context where there is no
+                    // topic force an access check as if there would be no autosave by passing null
+                    // and not the topic of the autosave. This will ensure the editor is shown
+                    // and we have same behavior as when the widget is refreshed under same conditions.
+                    this.showOrHideUserInterfaceForTopic(null);
+                }
+            } else if (!this.isModified() && !this.hasAutosave()) {
+                this.resetTargetTopic();
+            }
+        }
+    },
 
     /**
      * Prepares the options for an autocompleter.
      *
-     * @param {String} positionSourceGetter Name of a local getter function that returns the
-     *            position source element for the autocompleter
-     * @param {Boolean} emptyOnSelection True if the autocompleter should clear the input when a
-     *            suggestion was selected
-     * @param {Boolean} unfocusOnSelection True if the autocompleter should remove the focus from
-     *            the input when a suggestion was selected
-     * @param {Function} beforeRequestCallback A callback function to be passed to the DataSource
+     * @param {Function} [beforeRequestCallback] A callback function to be passed to the DataSource
      * @returns {Object} the prepared options object
      */
-    prepareAutocompleterOptions: function(positionSourceGetter, emptyOnSelection,
-            unfocusOnSelection, beforeRequestCallback) {
-        var positionSource;
+    prepareAutocompleterOptions: function(beforeRequestCallback) {
         var preparedOptions = {};
         preparedOptions.autocompleterOptions = {};
-        if (positionSourceGetter) {
-            positionSource = this[positionSourceGetter]();
-            if (positionSource) {
-                preparedOptions.inputFieldOptions = {
-                    positionSource: positionSource
-                };
-            }
-        }
-        if (emptyOnSelection) {
-            preparedOptions.autocompleterOptions.clearInputOnSelection = true;
-        }
         if (beforeRequestCallback) {
             preparedOptions.dataSourceOptions = {};
             preparedOptions.dataSourceOptions.beforeRequestCallback = beforeRequestCallback;
         }
-        preparedOptions.autocompleterOptions.unfocusInputOnSelection = unfocusOnSelection;
         return preparedOptions;
     },
 
@@ -694,7 +786,10 @@ var CreateNoteWidget = new Class({
     },
 
     refreshComplete: function(responseMetadata) {
-        var initData = this.extractInitData(responseMetadata);
+        var initData;
+        // set a marker flag to be able to react depending on the current working context (pre & post init)  
+        this.initializingAfterRefresh = true;
+        initData = this.extractInitData(responseMetadata);
         this.initialNote = initData.initialNote;
 
         // TODO better name
@@ -711,6 +806,15 @@ var CreateNoteWidget = new Class({
             this.startAutosaveJob();
         }
         init_tips(this.domNode);
+        // check access rights but not if an autosave is loaded as we might get stuck. The latter can
+        // only happen if the topic isn't overridden by the current initial topic (override option
+        // false or no topic set and default topic fallback would take effect)
+        if (this.action == 'create'
+                && (!this.hasAutosave() || this.initialTargetTopic
+                        && !this.noTargetTopicChangeIfModifiedOrAutosaved)) {
+            this.showOrHideUserInterfaceForTopic(this.getTargetTopicId());
+        }
+        this.initializingAfterRefresh = false;
     },
 
     refreshEditor: function() {
@@ -721,9 +825,13 @@ var CreateNoteWidget = new Class({
         if (this.editor.supportsHtml()) {
             classToAdd = this.richTextEditorCssClass;
             classToRemove = this.plainTextEditorCssClass;
+            this.domNode.getElement('.cn-write-note-editor-fields').removeClass('cn-border');
         } else {
             classToAdd = this.plainTextEditorCssClass;
             classToRemove = this.richTextEditorCssClass;
+            // if using plain text editor add 'cn-border' class to textarea wrapper to
+            // get correct look
+            this.domNode.getElement('.cn-write-note-editor-fields').addClass('cn-border');
         }
         if (classToAdd) {
             writeContainerElem.addClass(classToAdd);
@@ -738,6 +846,9 @@ var CreateNoteWidget = new Class({
     refreshView: function(autosaveLoaded) {
         this.ajaxLoadingOverlay = this.widgetController.createAjaxLoadingOverlay(this.domNode,
                 false);
+        if (autosaveLoaded && this.renderStyle !== 'full') {
+            this.setRenderStyle('full');
+        }
     },
     
     remove: function(deleteAutosave) {
@@ -759,6 +870,43 @@ var CreateNoteWidget = new Class({
     },
 
     renderStyleChanged: function(oldStyle, newStyle) {
+        var oldEditor, content;
+        this.eventEmitter.emit('renderStyleChanged', {
+            oldStyle: oldStyle,
+            newStyle: newStyle
+        });
+        // ignore any style changes before the editor is set (e.g. during init)
+        if (newStyle === 'full' && this.editor) {
+            if (!instanceOf(this.editor, NoteTextEditorFactory.getSupportedEditorType())) {
+                oldEditor = this.editor;
+                this.editor = this.createEditor();
+                if (this.firstDOMLoadDone) {
+                    content = oldEditor.getContent();
+                    oldEditor.resetContent(null);
+                    this.refreshEditor();
+                    if (!oldEditor.supportsHtml()) {
+                        this.editor.resetContentFromPlaintext(content);
+                    } else {
+                        this.editor.resetContent(content);
+                    }
+                }
+                oldEditor.cleanup();
+            }
+        } else if (newStyle === 'simulate' && this.editor) {
+            this.editor.unFocus();
+        }
+    },
+    
+    /**
+     * Reset the cache of an autocompleter.
+     * 
+     * @param {Autocompleter} autocompleter The autocompleter whose cache should be reset. If null
+     *            nothing will happen.
+     */
+    resetAutocompleterCache: function(autocompleter) {
+        if (autocompleter) {
+            autocompleter.resetQuery(false);
+        }
     },
 
     /**
@@ -916,6 +1064,31 @@ var CreateNoteWidget = new Class({
         });
     },
 
+    showOrHideUserInterfaceForTopic: function(topicId) {
+        var result = this.topicWriteAccessEvaluator.checkWriteAccess(topicId, this.initialTargetTopic);
+        if (result.writeAccess === true) {
+            // make sure the editor is shown, especially if it was hidden before
+            this.showUserInterface();
+        } else {
+            // if the user has write access to one of the subtopics show the interface but remove the topic
+            if (result.subtopicWriteAccess === true) {
+                this.setTargetTopic(null);
+                this.showUserInterface();
+            } else {
+                this.hideUserInterface(result.message || communote.i18n.getMessage('blogpost.create.no.writable.blog.selected'));
+            }
+        }
+    },
+
+    showUserInterface: function() {
+        if (this.userInterfaceHidden) {
+            this.domNode.getElement('.cn-write-note-no-editor').addClass('cn-hidden');
+            this.domNode.getElement('.cn-write-note').removeClass('cn-hidden');
+            this.userInterfaceHidden = false;
+            this.eventEmitter.emit('userInterfaceShown');
+        }
+    },
+    
     /**
      * Starts the autosave draft job.
      */
@@ -959,6 +1132,17 @@ var CreateNoteWidget = new Class({
      * Method that is invoked when the target topic was added, removed or replaced.
      */
     targetTopicChanged: function() {
+        var newId = this.getTargetTopicId();
+        // don't check for write access here while still initializing because not all information
+        // might be available yet and it is done after init anyway
+        if (!this.initializingAfterRefresh) {
+            this.showOrHideUserInterfaceForTopic(newId);
+        }
+        this.eventEmitter.emit('targetTopicChanged', this.targetTopic);
+        // invalidate caches of autocompeters to let them restart a query for the same term
+        // after topic (request parameter) changed
+        this.resetAutocompleterCache(this.editor.getUserAutocompleter());
+        this.resetAutocompleterCache(this.editor.getTagAutocompleter());
     },
 
     /**

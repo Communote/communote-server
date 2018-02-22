@@ -161,7 +161,7 @@
             }
         },
         CreateNote: {
-            widgetType: 'CreateNoteDefaultWidget',
+            widgetType: 'CreateNoteWidget',
             containerSelector: '#cn-create-note',
             settings: {
                 action: '$fieldTool.get('com.communote.server.web.commons.FormAction.CREATE')',
@@ -170,7 +170,6 @@
                 filterWidgetGroupId: 'mainPageContextManagement',
                 publishSuccessBehavior: {action:'renderStyle', actionOptions: 'simulate'},
                 renderStyle: 'simulate',
-                renderWidgetType: 'CreateNoteWidget',
                 tagAutocompleterCategories: ${createNoteTagAutocompleterCategories}
             }
         }

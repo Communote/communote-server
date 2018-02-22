@@ -1086,8 +1086,8 @@ NoteTextEditorFactory = {
                     supported = false;
                 } else if (this.iDeviceUaRegEx.test(ua)) {
                     // iOS-5 and newer claim to support contentEditable but it is awfully buggy. 
-                    // The most anoying issue is that the soft keyboard is not closed when tapping 
-                    // somewhere in DOM and the caret apears at this position. Moreover the focus
+                    // The most annoying issue is that the soft keyboard is not closed when tapping 
+                    // somewhere in DOM and the caret appears at this position. Moreover the focus
                     // is sometimes partially lost when scrolling (the caret is still in iframe
                     // but typing will not enter any characters).
                     // Thus, disabled for now.
