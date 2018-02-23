@@ -284,8 +284,8 @@
 
     AttachmentHandler.prototype.onNoteDiscarded = function(onlineAutosave) {
         var i, l, noteUtils;
-        // if there was no online autosave we have to delete the attachments from server
-        // TODO what about edit? Does this delete the attachments of the note we are editing?
+        // if there was no online autosave we have to delete the attachments from server.
+        // Even when editing because we are working with a copy of the note.
         if (!onlineAutosave) {
             noteUtils = communote.utils.noteUtils;
             for (i = 0, l = this.attachmentIds.length; i < l; i++) {

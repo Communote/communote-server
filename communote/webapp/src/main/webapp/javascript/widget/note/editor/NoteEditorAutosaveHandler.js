@@ -332,7 +332,7 @@
             }
             // only necessary for online autosaves because they are async
             this.runningAutosaveRequest = true;
-            noteData = this.widget.createPostData(false, noteData.content);
+            noteData = this.widget.getNoteDataForRestRequest(false, noteData.content);
             if (this.action === 'edit') {
                 utils.noteUtils.updateNote(noteData.noteId, noteData,
                         this.boundOnlineAutosaveSuccessCallback,

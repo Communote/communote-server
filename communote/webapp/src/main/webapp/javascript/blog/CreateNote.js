@@ -312,8 +312,7 @@ var CreateNoteWidget = new Class({
      *
      * @param {boolean} fromAutosave If true, the widget was initialized with an autosave
      */
-    contentInitialized: function(fromAutosave) {
-
+    contentInitializedAfterRefresh: function(fromAutosave) {
     },
 
     /**
@@ -352,53 +351,6 @@ var CreateNoteWidget = new Class({
                     .bind(this);
             return NoteTextEditorFactory.createSupportedEditor(null, options);
         }
-    },
-
-    /**
-     * Creates an object that holds all the information to be submitted when sending the note.
-     *
-     * @param {boolean} publish whether the note will be published or stored as an autosave
-     * @param {String} content the content of the note
-     * @return {Object} an object with all information for storing the note
-     */
-    // TODO rename getNoteDataForPost
-    createPostData: function(publish, content) {
-        var i, name;
-        var data = {};
-        var writeContainerElem = this.getWriteContainerElement();
-        var hiddenInputs = writeContainerElem.getElements('input[type=hidden]');
-        for (i = 0; i < hiddenInputs.length; i++) {
-            name = hiddenInputs[i].getProperty('name');
-            if (name != 'topicId') {
-                data[name] = hiddenInputs[i].value;
-            }
-        }
-        data.properties = [];
-        // add properties extracted from init object. Components can overwrite them.
-        if (this.noteProperties) {
-        	communote.utils.propertyUtils.mergeProperties(data.properties, this.noteProperties);
-        }
-        data.text = content;
-        data.isHtml = this.editor.supportsHtml();
-        data.topicId = this.getTargetTopicId();
-        data.noteId = this.getFilterParameter('noteId');
-        if (this.action != 'edit') {
-            data.parentNoteId = this.parentPostId;
-        }
-        this.components.appendNoteDataForRestRequest(data, publish, false);
-        data.publish = publish === true ? true : false;
-        if (this.autosaveHandler) {
-            data.autosaveNoteId = this.autosaveHandler.getNoteId();
-            data.noteVersion = this.autosaveHandler.getVersion();
-        }
-        // add predefined properties and let them overwrite properties added by components
-        if (this.predefinedNoteProperties) {
-        	communote.utils.propertyUtils.merge(data.properties, this.predefinedNoteProperties); 
-        }
-        if (data.properties.length === 0) {
-            delete data.properties;
-        }
-        return data;
     },
 
     /**
@@ -485,6 +437,52 @@ var CreateNoteWidget = new Class({
         }
         if (resetDirtyFlag) {
             this.dirty = false;
+        }
+        return data;
+    },
+    /**
+     * Creates an object that holds all the information to be submitted when sending the note via
+     * REST API.
+     *
+     * @param {boolean} publish whether the note will be published or stored as an autosave
+     * @param {String} content the content of the note
+     * @return {Object} an object with all information for storing the note
+     */
+    getNoteDataForRestRequest: function(publish, content) {
+        var i, name;
+        var data = {};
+        var writeContainerElem = this.getWriteContainerElement();
+        var hiddenInputs = writeContainerElem.getElements('input[type=hidden]');
+        for (i = 0; i < hiddenInputs.length; i++) {
+            name = hiddenInputs[i].getProperty('name');
+            if (name != 'topicId') {
+                data[name] = hiddenInputs[i].value;
+            }
+        }
+        data.properties = [];
+        // add properties extracted from init object. Components can overwrite them.
+        if (this.noteProperties) {
+            communote.utils.propertyUtils.mergeProperties(data.properties, this.noteProperties);
+        }
+        data.text = content;
+        data.isHtml = this.editor.supportsHtml();
+        data.topicId = this.getTargetTopicId();
+        data.noteId = this.getFilterParameter('noteId');
+        if (this.action != 'edit') {
+            data.parentNoteId = this.parentPostId;
+        }
+        this.components.appendNoteDataForRestRequest(data, publish, false);
+        data.publish = publish === true ? true : false;
+        if (this.autosaveHandler) {
+            data.autosaveNoteId = this.autosaveHandler.getNoteId();
+            data.noteVersion = this.autosaveHandler.getVersion();
+        }
+        // add predefined properties and let them overwrite properties added by components
+        if (this.predefinedNoteProperties) {
+            communote.utils.propertyUtils.merge(data.properties, this.predefinedNoteProperties); 
+        }
+        if (data.properties.length === 0) {
+            delete data.properties;
         }
         return data;
     },
@@ -798,8 +796,7 @@ var CreateNoteWidget = new Class({
         this.eventEmitter.emit('widgetRefreshed');
         
         this.initContent(initData.initObject);
-        // TODO rename to contentInitializedAfterRefresh to make clear it is not called with every initContent call?
-        this.contentInitialized(initData.isAutosave);
+        this.contentInitializedAfterRefresh(initData.isAutosave);
         // TODO maybe let autosaveHandler.editorInitialized start job 
         if (this.autosaveHandler) {
             this.autosaveHandler.editorInitialized();
@@ -965,7 +962,7 @@ var CreateNoteWidget = new Class({
             }
         }
         
-        data = this.createPostData(true, content);
+        data = this.getNoteDataForRestRequest(true, content);
         options = {};
 
         options.defaultErrorMessage = getJSMessage('error.blogpost.create.failed');
