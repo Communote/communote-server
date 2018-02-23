@@ -309,7 +309,8 @@
         field = this.widget.domNode.querySelector('input[type=file]');
         if (field) {
             this.attachmentUploader = new AjaxFileUpload(field, {
-                uploadOnChange: true
+                uploadOnChange: true,
+                multiple: true
             });
             this.attachmentUploader.addEvent('uploadStarting', this.onAttachmentUploadStarted
                     .bind(this));

@@ -119,6 +119,11 @@
             if (fileInput.multiple == 'true') {
                 fileInput.multiple = 'false';
             }
+            // disable upload of multiple files
+            if (!uploadOptions) {
+                uploadOptions = {};
+            }
+            uploadOptions.multiple = false;
             this.parent(fileInput, uploadOptions);
             if (this.options.targetSize) {
                 this.targetSize.width = this.options.targetSize.width;
