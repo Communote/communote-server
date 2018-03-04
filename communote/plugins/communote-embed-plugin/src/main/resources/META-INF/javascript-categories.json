@@ -70,6 +70,7 @@
                 "/javascript/utils/NoteTagUtils.js",
                 "/javascript/utils/LazyTips.js",
                 "/javascript/utils/AutoRefresher.js",
+                "/javascript/utils/BinaryDataPasteListener.js",
                 "/javascript/linkhandler/LinkHandler.js",
                 "/javascript/linkhandler/ApplicationLinkHandler.js",
                 "/javascript/linkhandler/ActivateContextLinkHandler.js",

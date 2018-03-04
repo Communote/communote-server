@@ -206,14 +206,23 @@ NoteTextEditor = new Class({
      * 
      * @param {Element} formElem The form element the editor is attached to. The element might have
      *            changed after construction or last invocation of this method.
+     * @param {Function} [refreshCompleteCallback] Function to call as soon as the refresh is
+     *            complete and the editor usable. This editor instance is passed to the callback.
      */
-    refresh: function(formElem) {
+    refresh: function(formElem, refreshCompleteCallback) {
     },
 
     /**
      * Called before the hosting widget is refreshed or removed to allow freeing resources
      */
     cleanup: function() {
+    },
+    
+    /**
+     * @return {Element} the element the note text is typed into
+     */
+    getInputElement: function() {
+        return null;
     },
 
     /**
@@ -314,6 +323,7 @@ NoteTextEditor = new Class({
         // whether remove was called while still in creation
         removeCalled: false,
         formElem: null,
+        refreshCompleteCallback: null,
         storeEditorSize: true,
         keydownListenerAttached: false,
         fullscreenActivated: false,
@@ -482,12 +492,17 @@ NoteTextEditor = new Class({
             return this.tagSuggestions;
         },
 
-        refresh: function(formElem) {
+        /**
+         * @override
+         */
+        refresh: function(formElem, refreshCompleteCallback) {
+            var tinyMCEInstance;
             this.formElem = formElem;
+            this.refreshCompleteCallback = refreshCompleteCallback;
             if (!this.tinyMCEInstanceId) {
                 this.tinyMCEInstanceId = formElem.getElement('textarea').id;
             }
-            var tinyMCEInstance = this.showOrCreateTinyMCE();
+            tinyMCEInstance = this.showOrCreateTinyMCE();
             // force non-dirty tinyMCE
             tinyMCEInstance.isNotDirty = true;
             // IE 11 focuses automatically, so explicitly unfocus
@@ -495,13 +510,40 @@ NoteTextEditor = new Class({
                 this.unFocus();
             }
         },
+        
+        refreshComplete: function() {
+            if (this.refreshCompleteCallback) {
+                this.refreshCompleteCallback(this);
+                this.refreshCompleteCallback = null;
+            }
+        },
 
+        /**
+         * @override
+         */
         cleanup: function() {
             this.parent();
             this.removeTinyMCE();
             this.formElem = null;
         },
+        
+        /**
+         * @override
+         */
+        getInputElement: function() {
+            var tinyMCEInstance = this.getTinyMCEInstance();
+            if (tinyMCEInstance) {
+                if (!this.tinyMCEInCreation) {
+                    // body is the content editable and therefore the input element
+                    return tinyMCEInstance.getBody();
+                }
+            }
+            return null;
+        },
 
+        /**
+         * @override
+         */
         getContent: function() {
             var editorElem;
             var content = '';
@@ -520,7 +562,9 @@ NoteTextEditor = new Class({
             }
             return content;
         },
-
+        /**
+         * @override
+         */
         setContent: function(newContent) {
             this.internalSetContent(newContent, false);
         },
@@ -762,6 +806,7 @@ NoteTextEditor = new Class({
                 }
             } else {
                 this.showTinyMCE(tinyMCEInstance);
+                this.refreshComplete();
             }
             return tinyMCEInstance;
         },
@@ -800,6 +845,7 @@ NoteTextEditor = new Class({
                         this.focus();
                         this.focusCalled = false;
                     }
+                    this.refreshComplete();
                 }
             }
             return true;
@@ -814,6 +860,7 @@ NoteTextEditor = new Class({
                 this.removeCalled = true;
                 return;
             }
+            this.refreshCompleteCallback = null;
             tinyMCEInstance = tinyMCE.get(this.tinyMCEInstanceId);
             if (tinyMCEInstance) {
                 // TODO maybe it is enough to just unfocus the editor?
@@ -967,7 +1014,7 @@ NoteTextTextareaEditor = new Class({
     /**
      * @override
      */
-    refresh: function(formElem) {
+    refresh: function(formElem, refreshCompleteCallback) {
         this.textarea = formElem.getElement('textarea');
         // just in case in case the textarea is hidden
         if (this.textarea.getStyle('visibility') == 'hidden') {
@@ -981,6 +1028,9 @@ NoteTextTextareaEditor = new Class({
         }
         if (this.focusOnRefresh) {
             this.textarea.focus();
+        }
+        if (refreshCompleteCallback) {
+            refreshCompleteCallback(this);
         }
     },
 
@@ -1003,6 +1053,13 @@ NoteTextTextareaEditor = new Class({
             this.textarea.focus();
         }
     },
+    /**
+     * @override
+     */
+    getInputElement: function() {
+        return this.textarea;
+    },
+    
     /**
      * @override
      */

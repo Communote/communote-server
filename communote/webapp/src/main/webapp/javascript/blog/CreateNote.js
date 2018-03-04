@@ -322,6 +322,9 @@ var CreateNoteWidget = new Class({
      */
     createEditor: function() {
         var minimal, options;
+        if (!this.editorRefreshCompleteCallback) {
+            this.editorRefreshCompleteCallback = this.emitEvent.bind(this, 'editorRefreshed');
+        }
         minimal = this.renderStyle === 'minimal';
         options = {
             autoresizeMinHeight: Math.floor(46200 / this.domNode.clientWidth),
@@ -837,7 +840,7 @@ var CreateNoteWidget = new Class({
             writeContainerElem.removeClass(classToRemove);
         }
 
-        this.editor.refresh(writeContainerElem);
+        this.editor.refresh(writeContainerElem, this.editorRefreshCompleteCallback);
     },
 
     refreshView: function(autosaveLoaded) {

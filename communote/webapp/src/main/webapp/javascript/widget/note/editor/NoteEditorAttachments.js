@@ -11,6 +11,12 @@
         }
     }
 
+    function pasteHandlerCallback(blobDescriptors) {
+        if (this.attachmentUploader) {
+            this.attachmentUploader.uploadBlobs(blobDescriptors);
+        }
+    };
+
     /**
      * Create a NoteEditorComponent which handles attachment uploads.
      * 
@@ -38,6 +44,7 @@
         noteEditorWidget.addEventListener('widgetRefreshed', this.onWidgetRefreshed, this);
         noteEditorWidget.addEventListener('noteDiscarded', this.onNoteDiscarded, this);
         noteEditorWidget.addEventListener('renderStyleChanged', this.onRenderStyleChanged, this);
+        noteEditorWidget.addEventListener('editorRefreshed', this.onEditorRefreshed, this);
     }
 
     /**
@@ -265,10 +272,18 @@
      * @protected
      */
     AttachmentHandler.prototype.onAttachmentUploadStarted = function(uploadDescriptor) {
-        var feedbackElem, elem;
+        var feedbackElem, elem, fileName, wrapper;
+        if (!this.canShowAttachmentSelection) {
+            // force 'full' render style on widget, if this is successful the attachment selection can be shown
+            this.widget.setRenderStyle('full');
+        }
+        // show attachment area if still hidden
+        if (this.canShowAttachmentSelection) {
+            this.showAttachmentSelection();
+        }
         // add an element which shows that the upload is in progress
-        var fileName = uploadDescriptor.fileName;
-        var wrapper = this.attachmentsContainerElem.querySelector('#' + this.widgetId
+        fileName = uploadDescriptor.fileName;
+        wrapper = this.attachmentsContainerElem.querySelector('#' + this.widgetId
                 + '-summary-attachments');
         wrapper.classList.remove('cn-hidden');
 
@@ -280,6 +295,14 @@
         elem.textContent = i18n.getMessage('blogpost.create.attachments.uploading', [ fileName ]);
         elem.title = fileName;
         wrapper.appendChild(feedbackElem);
+    };
+
+    AttachmentHandler.prototype.onEditorRefreshed = function(editor) {
+        new communote.classes.BinaryDataPasteListener(editor.getInputElement(),
+                pasteHandlerCallback.bind(this), {
+            fileNamePrefix: 'image-',
+            typeRegex: /image\//
+        });
     };
 
     AttachmentHandler.prototype.onNoteDiscarded = function(onlineAutosave) {
@@ -294,7 +317,7 @@
                 noteUtils.deleteAttachment(this.attachmentIds[i]);
             }
         }
-        // note: resetting the local store as we expect to receive an initContent call if the widget is not removed
+        // note: not resetting the local store as we expect to receive an initContent call if the widget is not removed
     };
 
     AttachmentHandler.prototype.onRenderStyleChanged = function(changeDescriptor) {

@@ -221,6 +221,11 @@ var AjaxFileUpload = new Class({
         return this.uploadForm.getElement('input[type=file]');
     },
 
+    /**
+     * Upload the given files. If multiple option is false, only the first file is uploaded.
+     * 
+     * @param {(File[]|FileList)} fileList - the files to upload
+     */
     uploadFiles: function(fileList) {
         var formData, i, l;
         var additionalData = this.collectDataOfForm();
@@ -240,6 +245,27 @@ var AjaxFileUpload = new Class({
         var formData = this.buildFormData(null, this.collectDataOfForm());
         formData.append(this.fileInputName, blob, fileName);
         this.postFormData(formData, fileName);
+    },
+    
+
+    /**
+     * Upload some blobs. The multiple option is ignored.
+     * 
+     * @param {Object[]} descriptors - an array of objects where each entry needs to have a blob
+     *            and a fileName member which hold the Blob instance and the name respectively
+     */
+    uploadBlobs: function(descriptors) {
+        var formData, additionalData, i, descriptor;
+        var l = descriptors.length;
+        if (l > 0) {
+            additionalData = this.collectDataOfForm();
+            for (i = 0; i < l; i++) {
+                descriptor = descriptors[i];
+                formData = this.buildFormData(null, this.collectDataOfForm());
+                formData.append(this.fileInputName, descriptor.blob, descriptor.fileName);
+                this.postFormData(formData, descriptor.fileName);
+            } 
+        }
     },
 
     postFormData: function(formData, fileName) {

@@ -50,6 +50,7 @@
                         <value>/javascript/frameworks/mootools/mootabs-1.3</value>
                         <value>/javascript/frameworks/smoothbox/smoothbox</value>
                         <value>/javascript/frameworks/roar/roar</value>
+                        <value>/javascript/polyfill/object.assign-polyfill.js</value>
                         <value>/javascript/autocompleter/Autocompleter</value>
                         <value>/javascript/autocompleter/Suggestions</value>
                         <value>/javascript/autocompleter/InputField</value>
@@ -113,6 +114,7 @@
                         <value>/javascript/utils/AutoRefresher</value>
                         <value>/javascript/utils/image/Cropper</value>
                         <value>/javascript/utils/image/CropImageAjaxFileUpload</value>
+                        <value>/javascript/utils/BinaryDataPasteListener.js</value>
                         <value>/javascript/linkhandler/LinkHandler</value>
                         <value>/javascript/linkhandler/ApplicationLinkHandler</value>
                         <value>/javascript/linkhandler/ActivateContextLinkHandler</value>
