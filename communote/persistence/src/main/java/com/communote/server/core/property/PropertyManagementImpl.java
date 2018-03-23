@@ -121,6 +121,22 @@ public class PropertyManagementImpl implements PropertyManagement {
 
     @Override
     @Transactional(readOnly = true)
+    public String getUserNotePropertyValue(Long noteId, String keyGroup, String key)
+            throws NotFoundException, AuthorizationException {
+        return ((UserNotePropertyAccessor) propertyAccessors.get(PropertyType.UserNoteProperty))
+                .getPropertyValue(noteId, keyGroup, key);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getUserNotePropertyValue(Long userId, Long noteId, String keyGroup, String key)
+            throws NotFoundException, AuthorizationException {
+        return ((UserNotePropertyAccessor) propertyAccessors.get(PropertyType.UserNoteProperty))
+                .getPropertyValue(userId, noteId, keyGroup, key);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
     public boolean hasBinaryProperty(String keyGroup, String key) {
         return binaryPropertyAccessor.hasProperty(BinaryPropertyAccessor.DUMMY_OBJECT, keyGroup,
                 key);

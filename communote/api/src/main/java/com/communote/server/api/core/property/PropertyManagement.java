@@ -138,6 +138,44 @@ public interface PropertyManagement {
             String keyGroup, String key) throws NotFoundException, AuthorizationException;
 
     /**
+     * Get the value of a user note property.
+     *
+     * @param userId
+     *            ID of the user who is the owner of the user note property
+     * @param noteId
+     *            the ID of the note for which the property value should be returned
+     * @param keyGroup
+     *            the key group of the property
+     * @param key
+     *            the key of the property
+     * @return the value of the property or null if the property does not exist or the value is null
+     * @throws NotFoundException
+     *             in case the note does not exist
+     * @throws AuthorizationException
+     *             in case the current user has no access to the note
+     */
+    String getUserNotePropertyValue(Long userId, Long noteId, String keyGroup, String key)
+            throws NotFoundException, AuthorizationException;
+
+    /**
+     * Get the value the current user has set for a user note property.
+     *
+     * @param noteId
+     *            the ID of the note for which the property should be returned
+     * @param keyGroup
+     *            the key group of the property
+     * @param key
+     *            the key of the property
+     * @return the value of the property or null if the property does not exist or the value is null
+     * @throws NotFoundException
+     *             in case the note does not exist
+     * @throws AuthorizationException
+     *             in case the current user has no access to the note
+     */
+    String getUserNotePropertyValue(Long noteId, String keyGroup, String key)
+            throws NotFoundException, AuthorizationException;
+
+    /**
      * Return the users that have a specific note property set for a note. The found users are
      * converted into the target type of the provided converter. Deleted users won't be included.
      *
@@ -297,5 +335,4 @@ public interface PropertyManagement {
     // anyway?
     StringProperty setObjectProperty(PropertyType propertyType, Long objectId, String keyGroup,
             String key, String value) throws NotFoundException, AuthorizationException;
-
 }

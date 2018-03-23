@@ -241,6 +241,22 @@ public interface NoteManagement {
     public int getNumberOfReplies(Long noteId) throws NoteNotFoundException;
 
     /**
+     * Test whether the provided user is an author of any note of the discussion the given note is
+     * part of. This will check all notes of the discussion even direct messages the current user
+     * might not be allowed to see. It is assumed the current user is allowed to access the
+     * discussion.
+     * 
+     * @param userId
+     *            the ID of the user to check for being an author
+     * @param noteId
+     *            the ID of the note for which the discussion should be checked
+     * @return true if the user is an author of a note of the discussion
+     * @throws NoteNotFoundException
+     *             in case the there is no note with the given ID
+     */
+    boolean isAuthorOfDiscussion(Long userId, Long noteId) throws NoteNotFoundException;
+
+    /**
      * Method to move a given discussion to another topic.
      *
      * @param discussionId
@@ -305,8 +321,8 @@ public interface NoteManagement {
      *             in case one of the pre processors failed
      */
     public NoteModificationResult updateNote(NoteStoringTO noteStoringTO, Long noteId,
-            java.util.Set<String> additionalBlogNameIds) throws BlogNotFoundException,
-            NoteNotFoundException, NoteManagementAuthorizationException,
-            NoteStoringPreProcessorException;
+            java.util.Set<String> additionalBlogNameIds)
+            throws BlogNotFoundException, NoteNotFoundException,
+            NoteManagementAuthorizationException, NoteStoringPreProcessorException;
 
 }

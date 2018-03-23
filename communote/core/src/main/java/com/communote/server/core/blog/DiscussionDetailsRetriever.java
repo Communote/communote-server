@@ -1,10 +1,11 @@
 package com.communote.server.core.blog;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
-import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.event.EventListener;
+import com.communote.server.core.common.caching.Cache;
 import com.communote.server.core.common.caching.CacheElementProvider;
 import com.communote.server.core.common.caching.CacheManager;
 import com.communote.server.core.common.caching.IdBasedCacheKey;
@@ -18,8 +19,52 @@ import com.communote.server.persistence.blog.NoteDao;
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class DiscussionDetailsRetriever implements EventListener<DiscussionChangedEvent> {
-    private class DiscussionNotesCacheElementProvider implements
-    CacheElementProvider<IdBasedCacheKey, ArrayList<Long>> {
+    private class DiscussionAuthorsCacheElementProvider
+            implements CacheElementProvider<IdBasedCacheKey, HashSet<Long>> {
+
+        private Long getAuthor(Long noteId) {
+            Note note = noteDao.load(noteId);
+            if (note != null) {
+                if (note.getUser() != null) {
+                    return note.getUser().getId();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public String getContentType() {
+            return "discussionAuthors";
+        }
+
+        @Override
+        public int getTimeToLive() {
+            return 3600;
+        }
+
+        @Override
+        public HashSet<Long> load(IdBasedCacheKey key) {
+            HashSet<Long> authorIds = new HashSet<>();
+            // start with root note
+            Long authorId = getAuthor(key.getId());
+            if (authorId != null) {
+                authorIds.add(authorId);
+                // reuse cache of discussion notes
+                List<Long> noteIds = getAllNotesOfDiscussion(key.getId());
+                for (Long noteId : noteIds) {
+                    authorId = getAuthor(noteId);
+                    if (authorId != null) {
+                        authorIds.add(authorId);
+                    }
+                }
+            }
+            return authorIds;
+        }
+
+    }
+
+    private class DiscussionNotesCacheElementProvider
+            implements CacheElementProvider<IdBasedCacheKey, ArrayList<Long>> {
 
         /**
          * {@inheritDoc}
@@ -52,8 +97,10 @@ public class DiscussionDetailsRetriever implements EventListener<DiscussionChang
     }
 
     private final NoteDao noteDao;
+    private final CacheManager cacheManager;
 
-    private final DiscussionNotesCacheElementProvider elementProvider;
+    private final DiscussionNotesCacheElementProvider discussionNotesElementProvider;
+    private final DiscussionAuthorsCacheElementProvider discussionAuthorsElementProvider;
 
     /**
      * Creates a new instance of the retriever
@@ -61,9 +108,11 @@ public class DiscussionDetailsRetriever implements EventListener<DiscussionChang
      * @param noteDao
      *            the note DAO
      */
-    public DiscussionDetailsRetriever(NoteDao noteDao) {
+    public DiscussionDetailsRetriever(NoteDao noteDao, CacheManager cacheManager) {
         this.noteDao = noteDao;
-        this.elementProvider = new DiscussionNotesCacheElementProvider();
+        this.cacheManager = cacheManager;
+        this.discussionNotesElementProvider = new DiscussionNotesCacheElementProvider();
+        this.discussionAuthorsElementProvider = new DiscussionAuthorsCacheElementProvider();
     }
 
     /**
@@ -75,8 +124,7 @@ public class DiscussionDetailsRetriever implements EventListener<DiscussionChang
      */
     private List<Long> getAllNotesOfDiscussion(Long discussionId) {
         IdBasedCacheKey key = new IdBasedCacheKey(discussionId);
-        return ServiceLocator.findService(CacheManager.class).getCache()
-                .get(key, this.elementProvider);
+        return cacheManager.getCache().get(key, this.discussionNotesElementProvider);
     }
 
     /**
@@ -176,8 +224,8 @@ public class DiscussionDetailsRetriever implements EventListener<DiscussionChang
                 Note discussionNote = noteDao.load(noteId);
                 // discussionNote can be null in case the note was deleted and the cache was not yet
                 // invalidated (e.g. in cluster), just ignore nulls
-                if (discussionNote != null
-                        && discussionNote.getDiscussionPath().startsWith(note.getDiscussionPath())) {
+                if (discussionNote != null && discussionNote.getDiscussionPath()
+                        .startsWith(note.getDiscussionPath())) {
                     replyCount++;
                 }
             }
@@ -190,9 +238,27 @@ public class DiscussionDetailsRetriever implements EventListener<DiscussionChang
      */
     @Override
     public void handle(DiscussionChangedEvent event) {
+        Cache cache = cacheManager.getCache();
         IdBasedCacheKey key = new IdBasedCacheKey(event.getDiscussionId());
-        ServiceLocator.findService(CacheManager.class).getCache()
-        .invalidate(key, this.elementProvider);
+        cache.invalidate(key, this.discussionNotesElementProvider);
+        cache.invalidate(key, this.discussionAuthorsElementProvider);
+    }
+
+    /**
+     * Test whether a user is an author of a note in the discussion. This will also consider the
+     * authors of direct messages the current user might not be allowed to see. It is assumed the
+     * current user has read access to the discussion.
+     * 
+     * @param userId
+     *            the ID of the user who should be tested for being an author of the discussion
+     * @param discussionId
+     *            the ID of the discussion
+     * @return true if the user an author of the discussion
+     */
+    public boolean isAuthorOfDiscussion(Long userId, Long discussionId) {
+        HashSet<Long> authorIds = cacheManager.getCache().get(new IdBasedCacheKey(discussionId),
+                this.discussionAuthorsElementProvider);
+        return authorIds.contains(userId);
     }
 
 }

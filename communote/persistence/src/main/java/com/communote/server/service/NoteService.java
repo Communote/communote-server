@@ -320,6 +320,24 @@ public class NoteService {
     }
 
     /**
+     * Test whether the provided user is an author of any note of the discussion the given note is
+     * part of. This will check all notes of the discussion even direct messages the current user
+     * might not be allowed to see. It is assumed the current user is allowed to access the
+     * discussion.
+     *
+     * @param userId
+     *            the ID of the user to check for being an author
+     * @param noteId
+     *            the ID of the note for which the discussion should be checked
+     * @return true if the user is an author of a note of the discussion
+     * @throws NoteNotFoundException
+     *             in case the there is no note with the given ID
+     */
+    public boolean isAuthorOfDiscussion(Long userId, Long noteId) throws NoteNotFoundException {
+        return noteManagement.isAuthorOfDiscussion(userId, noteId);
+    }
+
+    /**
      * Move whole discussion if there are notes which do not have the correct topic.
      *
      * @param discussionId

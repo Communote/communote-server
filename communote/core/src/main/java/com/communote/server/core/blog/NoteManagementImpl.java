@@ -182,13 +182,17 @@ public class NoteManagementImpl extends NoteManagementBase {
 
     }
 
-/**
+    /**
      * Asserts some preconditions for {@link #createNote(NoteStoringTO, Set, StringPropertyFilter[])
      *
-     * @param noteStoringTO The note.
-     * @param topic The topic.
-     * @throws BlogNotFoundException Exception.
-     * @throws NoteStoringPreProcessorException Exception.
+     * @param noteStoringTO
+     *            The note.
+     * @param topic
+     *            The topic.
+     * @throws BlogNotFoundException
+     *             Exception.
+     * @throws NoteStoringPreProcessorException
+     *             Exception.
      */
     private void assertCreateNotePrecondition(NoteStoringTO noteStoringTO, Blog topic)
             throws BlogNotFoundException, NoteStoringPreProcessorException {
@@ -1100,7 +1104,7 @@ public class NoteManagementImpl extends NoteManagementBase {
      */
     @PostConstruct
     private void init() {
-        discussionDetailsRetriever = new DiscussionDetailsRetriever(this.noteDao);
+        discussionDetailsRetriever = new DiscussionDetailsRetriever(this.noteDao, cacheManager);
         eventDispatcher.register(discussionDetailsRetriever);
     }
 
@@ -1643,6 +1647,19 @@ public class NoteManagementImpl extends NoteManagementBase {
             TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
         }
         return modificationResult;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isAuthorOfDiscussion(Long userId, Long noteId) throws NoteNotFoundException {
+        Note note = noteDao.load(noteId);
+        if (note == null) {
+            throw new NoteNotFoundException("The note was not found. noteId=" + noteId);
+        }
+        if (userId == null || note.getDiscussionId() == null) {
+            return false;
+        }
+        return discussionDetailsRetriever.isAuthorOfDiscussion(userId, note.getDiscussionId());
     }
 
     /**

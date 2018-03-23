@@ -2,7 +2,7 @@ package com.communote.server.core.property;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import com.communote.common.converter.Converter;
@@ -18,8 +18,8 @@ import com.communote.server.core.common.caching.CacheManager;
 import com.communote.server.core.security.SecurityHelper;
 import com.communote.server.model.note.Note;
 import com.communote.server.model.user.User;
-import com.communote.server.model.user.UserStatus;
 import com.communote.server.model.user.UserNoteProperty;
+import com.communote.server.model.user.UserStatus;
 import com.communote.server.persistence.blog.NoteDao;
 import com.communote.server.persistence.property.PropertyDao;
 import com.communote.server.persistence.user.UserDao;
@@ -53,16 +53,13 @@ public class UserNotePropertyAccessor extends StringPropertyAccessor<Note, UserN
      */
     @Override
     protected void assertReadAccess(Note note) throws AuthorizationException {
-        // TODO should check DM access
+        // TODO should check DM access - better use permissionmanagement
         if (SecurityHelper.isInternalSystem()) {
             return;
         }
-        if (!ServiceLocator
-                .instance()
-                .getService(BlogRightsManagement.class)
+        if (!ServiceLocator.instance().getService(BlogRightsManagement.class)
                 .currentUserHasReadAccess(note.getBlog().getId(), false)) {
-            throw new AuthorizationException(
-                    "The user has no access to this note.");
+            throw new AuthorizationException("The user has no access to this note.");
         }
     }
 
@@ -105,6 +102,60 @@ public class UserNotePropertyAccessor extends StringPropertyAccessor<Note, UserN
     }
 
     /**
+     * Get the value of a user note property.
+     *
+     * @param userId
+     *            the ID of the user who is the owner of the property
+     * @param noteId
+     *            the ID of the note for which the property value should be returned
+     * @param keyGroup
+     *            the key of the property group
+     * @param key
+     *            the key of the property
+     * @return the value of the property or null if the property is not set or has a null value
+     * @throws NotFoundException
+     *             in case the note does not exist
+     * @throws AuthorizationException
+     *             in case the current user has no access to the note
+     */
+    public String getPropertyValue(Long userId, Long noteId, String keyGroup, String key)
+            throws NotFoundException, AuthorizationException {
+        if (userCanHaveValue(userId, keyGroup, key)) {
+            Map<String, Set<Long>> valueToUsers = getUsersOfValues(noteId, keyGroup, key);
+            if (valueToUsers != null) {
+                for (Map.Entry<String, Set<Long>> entry : valueToUsers.entrySet()) {
+                    if (entry.getValue().contains(userId)) {
+                        return entry.getKey();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the value the current user has set for a user note property.
+     *
+     * @param noteIdthe
+     *            ID of the user who is the owner of the user note property
+     * @param noteId
+     *            the ID of the note for which the property value should be returned
+     * @param keyGroup
+     *            the key of the property group
+     * @param key
+     *            the key of the property
+     * @return the value of the property or null if the property is not set or has a null value
+     * @throws NotFoundException
+     *             in case the note does not exist
+     * @throws AuthorizationException
+     *             in case the current user has no access to the note
+     */
+    public String getPropertyValue(Long noteId, String keyGroup, String key)
+            throws NotFoundException, AuthorizationException {
+        return getPropertyValue(SecurityHelper.getCurrentUserId(), noteId, keyGroup, key);
+    }
+
+    /**
      * Return the users that a given property for a note. The found users are converted into the
      * target type of the provided converter. Deleted users won't be included.
      *
@@ -127,12 +178,9 @@ public class UserNotePropertyAccessor extends StringPropertyAccessor<Note, UserN
      *             in case the current user is not allowed to read the property
      */
     public <T> Collection<T> getUsersOfProperty(Long noteId, String keyGroup, String key,
-            String value, Converter<User, T> converter) throws NotFoundException,
-            AuthorizationException {
-        assertLoadObject(noteId, false);
-        UserNotePropertyCacheKey cacheKey = new UserNotePropertyCacheKey(noteId, keyGroup, key);
-        HashMap<String, Set<Long>> valueToUsers = getCacheManager().getCache().get(cacheKey,
-                elementProvider);
+            String value, Converter<User, T> converter)
+            throws NotFoundException, AuthorizationException {
+        Map<String, Set<Long>> valueToUsers = getUsersOfValues(noteId, keyGroup, key);
         ArrayList<T> result = new ArrayList<T>();
         if (valueToUsers != null) {
             Set<Long> userIds = valueToUsers.get(value);
@@ -147,6 +195,15 @@ public class UserNotePropertyAccessor extends StringPropertyAccessor<Note, UserN
             }
         }
         return result;
+    }
+
+    private Map<String, Set<Long>> getUsersOfValues(Long noteId, String keyGroup, String key)
+            throws NotFoundException, AuthorizationException {
+        assertLoadObject(noteId, false);
+        UserNotePropertyCacheKey cacheKey = new UserNotePropertyCacheKey(noteId, keyGroup, key);
+        Map<String, Set<Long>> valueToUsers = getCacheManager().getCache().get(cacheKey,
+                elementProvider);
+        return valueToUsers;
     }
 
     /**
@@ -173,8 +230,8 @@ public class UserNotePropertyAccessor extends StringPropertyAccessor<Note, UserN
     @Override
     protected UserNoteProperty handleGetObjectPropertyUnfiltered(Note note, String keyGroup,
             String propertyKey) throws AuthorizationException {
-        return ServiceLocator.findService(UserNotePropertyDao.class)
-                .findProperty(note.getId(), keyGroup, propertyKey);
+        return ServiceLocator.findService(UserNotePropertyDao.class).findProperty(note.getId(),
+                keyGroup, propertyKey);
     }
 
     @Override
@@ -186,8 +243,8 @@ public class UserNotePropertyAccessor extends StringPropertyAccessor<Note, UserN
             property.setNote(null);
             property.setUser(null);
             propertyDao.remove(property);
-            UserNotePropertyCacheKey cacheKey = new UserNotePropertyCacheKey(note.getId(),
-                    keyGroup, key);
+            UserNotePropertyCacheKey cacheKey = new UserNotePropertyCacheKey(note.getId(), keyGroup,
+                    key);
             getCacheManager().getCache().invalidate(cacheKey, elementProvider);
         }
     }
@@ -211,19 +268,15 @@ public class UserNotePropertyAccessor extends StringPropertyAccessor<Note, UserN
      */
     public boolean hasProperty(Long noteId, String keyGroup, String key, String value)
             throws NotFoundException, AuthorizationException {
-        if (!getFilterDefintion().isPropertyAllowedToGet(keyGroup, key)
-                || SecurityHelper.isInternalSystem() || SecurityHelper.isPublicUser()) {
+        Long currentUserId = SecurityHelper.getCurrentUserId();
+        if (!userCanHaveValue(currentUserId, keyGroup, key)) {
             return false;
         }
-        assertLoadObject(noteId, false);
-        UserNotePropertyCacheKey cacheKey = new UserNotePropertyCacheKey(noteId,
-                keyGroup, key);
-        HashMap<String, Set<Long>> valueToUsers = getCacheManager().getCache().get(cacheKey,
-                elementProvider);
+        Map<String, Set<Long>> valueToUsers = getUsersOfValues(noteId, keyGroup, key);
         if (valueToUsers != null) {
             Set<Long> userIds = valueToUsers.get(value);
             if (userIds != null) {
-                return userIds.contains(SecurityHelper.getCurrentUserId());
+                return userIds.contains(currentUserId);
             }
         }
 
@@ -244,9 +297,16 @@ public class UserNotePropertyAccessor extends StringPropertyAccessor<Note, UserN
     @Override
     protected void setPropertyValue(UserNoteProperty property, String value) {
         super.setPropertyValue(property, value);
-        UserNotePropertyCacheKey cacheKey = new UserNotePropertyCacheKey(
-                property.getNote().getId(),
+        UserNotePropertyCacheKey cacheKey = new UserNotePropertyCacheKey(property.getNote().getId(),
                 property.getKeyGroup(), property.getPropertyKey());
         getCacheManager().getCache().invalidate(cacheKey, elementProvider);
+    }
+
+    private boolean userCanHaveValue(Long userId, String keyGroup, String key) {
+        if (!getFilterDefintion().isPropertyAllowedToGet(keyGroup, key) || userId == null
+                || SecurityHelper.isInternalSystem() || SecurityHelper.isPublicUser()) {
+            return false;
+        }
+        return true;
     }
 }
