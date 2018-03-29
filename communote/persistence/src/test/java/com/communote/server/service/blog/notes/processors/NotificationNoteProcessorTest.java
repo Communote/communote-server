@@ -46,7 +46,7 @@ public class NotificationNoteProcessorTest {
 
         @Override
         protected NotificationService getNotificationService() {
-            return new NotificationService() {
+            return new NotificationService(null, null, null, null, null) {
                 @Override
                 public void sendMessage(Note note, Collection<User> usersToNotify,
                         NotificationDefinition notificationDefinition) {
@@ -148,8 +148,8 @@ public class NotificationNoteProcessorTest {
             properties.put(PropertyManagement.KEY_GROUP + ".notification.idsToSkip",
                     userIdToSkip.toString());
             notifiedUsers.clear();
-            notificationNoteProcessor.processAsynchronously(i, new NoteStoringPostProcessorContext(
-                    properties));
+            notificationNoteProcessor.processAsynchronously(i,
+                    new NoteStoringPostProcessorContext(properties));
             HashSet<Long> usersToNotify = new HashSet<>(activeUsers);
             usersToNotify.remove(userIdToSkip);
             usersToNotify.remove(registeredUser.getId());

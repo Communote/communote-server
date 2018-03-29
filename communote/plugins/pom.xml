@@ -28,5 +28,6 @@
         <module>communote-message-queue</module>
         <module>communote-smileys-plugin</module>
         <module>communote-webservice-core-plugin</module>
+        <module>communote-discussion-notification-plugin</module>
     </modules>
 </project>

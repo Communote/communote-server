@@ -181,7 +181,9 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
         parameters.getTypeSpecificExtension().setTopicAccessLevel(TopicAccessLevel.READ);
         parameters.getTypeSpecificExtension().setUserId(note.getUser().getId());
         parameters.setIncludeStatusFilter(new UserStatus[] { UserStatus.ACTIVE });
-        // use the internal system user to include all direct messages
+        // use the internal system user to include all direct messages. Need to do it here although
+        // it is already done in processAsynchronously because this method is also called by
+        // synchronous code (from isSendNotification)
         SecurityContext securityContext = AuthenticationHelper.setInternalSystemToSecurityContext();
         try {
             while(collectAuthors(query, parameters, topicId, usersToNotify)) {

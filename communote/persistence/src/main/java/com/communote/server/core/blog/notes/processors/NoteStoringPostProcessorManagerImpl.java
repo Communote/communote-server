@@ -164,10 +164,8 @@ public class NoteStoringPostProcessorManagerImpl implements NoteStoringPostProce
         // TODO optimize to sort only once on startup
         addProcessor(new UserNotificationNoteProcessor());
         boolean parentTreeOnly = Boolean
-                .getBoolean("com.communote.mention.discussion.parent-tree-only");
+                .getBoolean(DiscussionNotificationNoteProcessor.PROPERTY_PARENT_TREE_ONLY);
         addProcessor(new DiscussionNotificationNoteProcessor(parentTreeOnly, topicRightsManagement));
-        addProcessor(new DiscussionParticipationNotificationNoteProcessor(parentTreeOnly,
-                topicRightsManagement, notificationDefinitionService));
         addProcessor(new TopicNotificationNoteProcessor(topicRightsManagement, userManagement,
                 queryManagement));
     }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.security.core.context.SecurityContext;
 
 import com.communote.common.string.StringHelper;
 import com.communote.server.api.ServiceLocator;
@@ -20,6 +21,7 @@ import com.communote.server.core.messaging.NotificationDefinition;
 import com.communote.server.core.messaging.NotificationScheduleTypes;
 import com.communote.server.core.messaging.NotificationService;
 import com.communote.server.core.messaging.definitions.MentionNotificationDefinition;
+import com.communote.server.core.security.AuthenticationHelper;
 import com.communote.server.model.note.Note;
 import com.communote.server.model.user.User;
 import com.communote.server.model.user.UserStatus;
@@ -41,27 +43,6 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
     private static final String ATTRIBUTE_KEY_USER_IDS_TO_SKIP = PROPERTY_KEY_USER_IDS_TO_SKIP;
     private NoteDao noteDao;
     private NotificationService notificationService;
-
-    /**
-     * Whether this notification processor wants to send notifications. This method is called by
-     * {@link #process(Note, NoteStoringTO, Map)} in the synchronous processing phase.
-     * Implementations of this check should be fast.
-     *
-     * @param note
-     *            the note which was created or updated
-     * @param orginalNoteStoringTO
-     *            the TO which was used to create or update the note
-     * @param properties
-     *            Properties that can be used to pass some data to the asynchronous post-processing.
-     *            They will be available in the NoteStoringPostProcessorContext.
-     * @param resendDetails
-     *            if the note was updated and the author does not which to resend notifications this
-     *            object will contain details about notifications send for the note before the
-     *            update. Will be null in all other cases.
-     * @return true if this processor wants to send notifications, false otherwise
-     */
-    protected abstract boolean isSendNotifications(Note note, NoteStoringTO orginalNoteStoringTO,
-            Map<String, String> properties, NoteNotificationDetails resendDetails);
 
     /**
      * Extracts the IDs of the users to not notify from the context properties and adds them to the
@@ -114,11 +95,16 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
     }
 
     /**
-     * Retrieves the users to be notified. Implementors need not to be concerned about filtering the
-     * user not to notify because this is done in the
-     * {@link #processAsynchronously(Long, NoteStoringPostProcessorContext)} method. Whether users
-     * should be ignored if they do not have read access to the blog mainly depends on the type of
-     * the notification processor and is thus implementation specific.
+     * <p>
+     * Retrieves the users to be notified. This method is invoked by
+     * {@link NotificationNoteProcessor#processAsynchronously(Long, NoteStoringPostProcessorContext)}.
+     * In this situation the internal system user will be set in the security context.
+     * </p>
+     * Implementors don't have to worry about filtering the user not to notify (because of disabled
+     * schedule or not being active) because this is already done in
+     * {@link #processAsynchronously(Long, NoteStoringPostProcessorContext)}. Whether users should
+     * be ignored if they do not have read access to the topic mainly depends on the type of the
+     * notification processor and is thus implementation specific.
      *
      * @param note
      *            the note to notify about
@@ -132,6 +118,27 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
             NoteStoringPostProcessorContext context, Set<Long> userIdsToSkip);
 
     /**
+     * Whether this notification processor wants to send notifications. This method is called by
+     * {@link #process(Note, NoteStoringTO, Map)} in the synchronous processing phase.
+     * Implementations of this check should be fast.
+     *
+     * @param note
+     *            the note which was created or updated
+     * @param orginalNoteStoringTO
+     *            the TO which was used to create or update the note
+     * @param properties
+     *            Properties that can be used to pass some data to the asynchronous post-processing.
+     *            They will be available in the NoteStoringPostProcessorContext.
+     * @param resendDetails
+     *            if the note was updated and the author does not which to resend notifications this
+     *            object will contain details about notifications send for the note before the
+     *            update. Will be null in all other cases.
+     * @return true if this processor wants to send notifications, false otherwise
+     */
+    protected abstract boolean isSendNotifications(Note note, NoteStoringTO orginalNoteStoringTO,
+            Map<String, String> properties, NoteNotificationDetails resendDetails);
+
+    /**
      * @return True, if the notes author should also be notified, else false. Default is false.
      */
     public boolean notifyAuthor() {
@@ -142,8 +149,8 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
     public boolean process(Note note, NoteStoringTO orginalNoteStoringTO,
             Map<String, String> properties) {
         NoteNotificationDetails resendDetails = null;
-        Object resendDetailsProperty = orginalNoteStoringTO
-                .getTransientProperty(EditNotificationNoteStoringPreProcessor.TRANSIENT_PROPERTY_KEY_RESEND_NOTIFICATION);
+        Object resendDetailsProperty = orginalNoteStoringTO.getTransientProperty(
+                EditNotificationNoteStoringPreProcessor.TRANSIENT_PROPERTY_KEY_RESEND_NOTIFICATION);
         if (resendDetailsProperty instanceof NoteNotificationDetails) {
             resendDetails = (NoteNotificationDetails) resendDetailsProperty;
             if (resendDetails.getMentionedUserIds().size() > 0) {
@@ -162,16 +169,24 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
             return;
         }
         Set<Long> userIdsToSkip = extractUserIdsToSkip(context);
-        Collection<User> usersToNotify = getUsersToNotify(note, context, userIdsToSkip);
+        Collection<User> usersToNotify;
+        // invoke user extraction with internal system user so we have access to all information
+        // (DMs in discussion etc.)
+        SecurityContext securityContext = AuthenticationHelper.setInternalSystemToSecurityContext();
+        try {
+            usersToNotify = getUsersToNotify(note, context, userIdsToSkip);
+        } finally {
+            AuthenticationHelper.setSecurityContext(securityContext);
+        }
         Collection<User> usersToSendMessage = new HashSet<User>();
         if (usersToNotify != null) {
             for (User user : usersToNotify) {
-                if (!userIdsToSkip.contains(user.getId())
-                        && (user.hasStatus(UserStatus.ACTIVE))
+                if (!userIdsToSkip.contains(user.getId()) && (user.hasStatus(UserStatus.ACTIVE))
                         && getNotificationService().userHasSchedule(user.getId(),
                                 getNotificationDefinition(), NotificationScheduleTypes.IMMEDIATE)
                         && (!note.getUser().getId().equals(user.getId()) || notifyAuthor())) {
                     usersToSendMessage.add(user);
+                    // skip by following processors to avoid notifying multiple times
                     userIdsToSkip.add(user.getId());
                 }
             }

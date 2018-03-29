@@ -1,32 +1,60 @@
-package com.communote.server.core.blog.notes.processors;
+package com.communote.plugins.discussionnotification.processor;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.communote.common.converter.Converter;
+import com.communote.plugins.discussionnotification.DiscussionNotificationActivator;
+import com.communote.plugins.discussionnotification.definition.DiscussionParticipationNotificationDefinition;
 import com.communote.server.api.core.blog.BlogRightsManagement;
+import com.communote.server.api.core.common.NotFoundException;
 import com.communote.server.api.core.note.NoteStoringTO;
 import com.communote.server.api.core.note.processor.NoteStoringPostProcessorContext;
+import com.communote.server.api.core.property.PropertyManagement;
+import com.communote.server.api.core.security.AuthorizationException;
+import com.communote.server.core.blog.notes.processors.NoteNotificationDetails;
+import com.communote.server.core.blog.notes.processors.NotificationNoteProcessor;
 import com.communote.server.core.messaging.NotificationDefinition;
-import com.communote.server.core.messaging.NotificationScheduleTypes;
-import com.communote.server.core.messaging.NotificationService;
-import com.communote.server.core.messaging.definitions.DiscussionNotificationDefinition;
 import com.communote.server.model.note.Note;
 import com.communote.server.model.note.NoteStatus;
 import com.communote.server.model.user.User;
 
 /**
- * Processor, which collects users, which want's to be notified about discussions they participated
- * explicitly without being explicitly notified.
+ * Processor which collects users who want to be notified about notes of discussions they
+ * participated in without being explicitly notified.
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
  */
 public class DiscussionParticipationNotificationNoteProcessor extends NotificationNoteProcessor {
 
+    private class IdExtractingConverter implements Converter<User, User> {
+        private final Set<Long> collector;
+
+        public IdExtractingConverter(Set<Long> collector) {
+            this.collector = collector;
+        }
+
+        @Override
+        public User convert(User source) {
+            collector.add(source.getId());
+            return source;
+        }
+    }
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DiscussionParticipationNotificationNoteProcessor.class);
+
+    public static final int ORDER = 50;
+
     private final BlogRightsManagement topicRightsManagement;
-    private final NotificationService notificationDefinitionService;
     private final boolean parentTreeOnly;
+    private final DiscussionParticipationNotificationDefinition notificationDefinition;
+    private final PropertyManagement propertyManagement;
 
     /**
      * Constructor which creates a new notification note processor
@@ -36,15 +64,17 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
      *            considered. If false all notes of the discussion will be considered.
      * @param topicRightsManagement
      *            Right management for topics.
-     * @param notificationDefinitionService
-     *            Service to check if users want to be notified.
+     * @param definition
+     *            the notification definition for which this processor extracts the user to be
+     *            notified
      */
     public DiscussionParticipationNotificationNoteProcessor(boolean parentTreeOnly,
-            BlogRightsManagement topicRightsManagement,
-            NotificationService notificationDefinitionService) {
+            BlogRightsManagement topicRightsManagement, PropertyManagement propertyManagement,
+            DiscussionParticipationNotificationDefinition definition) {
         this.parentTreeOnly = parentTreeOnly;
         this.topicRightsManagement = topicRightsManagement;
-        this.notificationDefinitionService = notificationDefinitionService;
+        this.propertyManagement = propertyManagement;
+        this.notificationDefinition = definition;
     }
 
     /**
@@ -78,8 +108,8 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
         Set<Note> comments = rootNote.getChildren();
         if (comments != null) {
             for (Note comment : comments) {
-                extractAuthorsFromDiscussionSubTree(comment, blogId, currentAuthorId,
-                        usersToNotify, usersNoReadAccess, userIdsToSkip);
+                extractAuthorsFromDiscussionSubTree(comment, blogId, currentAuthorId, usersToNotify,
+                        usersNoReadAccess, userIdsToSkip);
             }
         }
     }
@@ -107,15 +137,26 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
 
     @Override
     public NotificationDefinition getNotificationDefinition() {
-        return DiscussionNotificationDefinition.INSTANCE;
+        return notificationDefinition;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getOrder() {
-        return 50;
+        return ORDER;
+    }
+
+    private Set<Long> getUsersNotWatchingDiscussion(Long discussionId) {
+        HashSet<Long> userIds = new HashSet<>();
+        try {
+            propertyManagement.getUsersOfProperty(discussionId,
+                    DiscussionNotificationActivator.KEY_GROUP,
+                    DiscussionNotificationActivator.PROPERTY_KEY_WATCHED_DISCUSSION,
+                    Boolean.FALSE.toString(), new IdExtractingConverter(userIds));
+        } catch (NotFoundException | AuthorizationException e) {
+            LOGGER.warn("Getting users who disabled notification for discussion {} failed: {}",
+                    discussionId, e.getMessage());
+        }
+        return userIds;
     }
 
     /**
@@ -125,9 +166,14 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
     protected Collection<User> getUsersToNotify(Note note, NoteStoringPostProcessorContext context,
             Set<Long> userIdsToSkip) {
         Set<User> usersToNotify = new HashSet<User>();
+        // skip direct messages because we assume that the only authors can be informed if they have
+        // read access to the DM, which is only the case if they are mentioned. In that case they
+        // are probably already notified (if not disabled).
         if (note.getParent() == null || note.isDirect()) {
             return usersToNotify;
         }
+        Set<Long> allUserIdsToSkip = getUsersNotWatchingDiscussion(note.getDiscussionId());
+        allUserIdsToSkip.addAll(userIdsToSkip);
         Set<Long> usersNoReadAccess = new HashSet<Long>();
         // To get all users participating in the discussion we have to walk the discussion tree
         // upwards to the root note and than collect all children recursively and return the
@@ -138,17 +184,25 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
             while ((parent = note.getParent()) != null) {
                 User author = parent.getUser();
                 processAuthor(author, note.getBlog().getId(), currentAuthorId, usersToNotify,
-                        usersNoReadAccess, userIdsToSkip);
+                        usersNoReadAccess, allUserIdsToSkip);
                 note = parent;
             }
         } else {
             Note discussionRoot = getDiscussionRootNote(note);
             if (discussionRoot != null) {
                 extractAuthorsFromDiscussionSubTree(discussionRoot, note.getBlog().getId(),
-                        currentAuthorId, usersToNotify, usersNoReadAccess, userIdsToSkip);
+                        currentAuthorId, usersToNotify, usersNoReadAccess, allUserIdsToSkip);
             }
         }
         return usersToNotify;
+    }
+
+    @Override
+    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
+            Map<String, String> properties, NoteNotificationDetails resendDetails) {
+        // TODO do not notify participating authors if resendDetails is not null (and thus editing
+        // with disabled resend flag)?
+        return note.getParent() != null && !note.isDirect();
     }
 
     /**
@@ -179,20 +233,10 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
             return;
         }
         boolean readAccess = topicRightsManagement.userHasReadAccess(topicId, authorId, false);
-        if (readAccess
-                && notificationDefinitionService.userHasSchedule(authorId,
-                        getNotificationDefinition(), NotificationScheduleTypes.IMMEDIATE)) {
+        if (readAccess) {
             usersToNotify.add(author);
         } else {
             usersNoReadAccess.add(authorId);
         }
-    }
-
-    @Override
-    protected boolean isSendNotifications(Note note, NoteStoringTO noteStoringTO,
-            Map<String, String> properties, NoteNotificationDetails resendDetails) {
-        // TODO do not notify participating authors if resendDetails is not null (and thus editing
-        // with disabled resend flag)?
-        return note.getParent() != null && !note.isDirect();
     }
 }

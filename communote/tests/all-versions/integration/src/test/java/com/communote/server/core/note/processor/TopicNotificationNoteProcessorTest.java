@@ -50,7 +50,10 @@ public class TopicNotificationNoteProcessorTest extends CommunoteIntegrationTest
 
     private class TestNotificationService extends NotificationService {
 
-        Set<Long> notifiedUsers = new HashSet<>();;
+        Set<Long> notifiedUsers = new HashSet<>();
+        public TestNotificationService() {
+            super(null, null, null, null, null);
+        }
 
         @Override
         public void sendMessage(Long noteId, Long userToNotify,

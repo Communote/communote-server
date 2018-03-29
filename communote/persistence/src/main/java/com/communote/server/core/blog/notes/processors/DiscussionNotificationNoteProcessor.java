@@ -23,6 +23,13 @@ import com.communote.server.model.user.User;
  */
 public class DiscussionNotificationNoteProcessor extends NotificationNoteProcessor {
 
+    /**
+     * Name of the boolean system property to control whether only the parent tree of the current
+     * note should be checked to find the authors to notify. If the property is unset or false the
+     * whole discussion is checked.
+     */
+    public static final String PROPERTY_PARENT_TREE_ONLY = "com.communote.mention.discussion.parent-tree-only";
+
     private final BlogRightsManagement topicRightsManagement;
     private final boolean parentTreeOnly;
 
@@ -69,8 +76,8 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
         Set<Note> comments = rootNote.getChildren();
         if (comments != null) {
             for (Note comment : comments) {
-                extractAuthorsFromDiscussionSubTree(comment, blogId, currentAuthorId,
-                        usersToNotify, usersNoReadAccess, userIdsToSkip);
+                extractAuthorsFromDiscussionSubTree(comment, blogId, currentAuthorId, usersToNotify,
+                        usersNoReadAccess, userIdsToSkip);
             }
         }
     }
@@ -115,8 +122,8 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
         // to get all users participating in the discussion we have to walk the discussion tree
         // upwards to the root note and than collect all children recursively and return the
         // authors, but ignore the author of this note
-        Long currentAuthorId = Boolean.getBoolean("com.communote.mention.discussion.ignore-author") ? note
-                .getUser().getId() : -1L;
+        Long currentAuthorId = Boolean.getBoolean("com.communote.mention.discussion.ignore-author")
+                ? note.getUser().getId() : -1L;
         if (this.parentTreeOnly) {
             Note parent;
             Set<Long> processedNotes = new HashSet<Long>();
@@ -168,9 +175,8 @@ public class DiscussionNotificationNoteProcessor extends NotificationNoteProcess
             // all notes with a parent note should be processed
             int maxUsers = ClientProperty.MAX_NUMBER_OF_MENTIONED_USERS
                     .getValue(ClientProperty.DEFAULT_MAX_NUMBER_OF_MENTIONED_USERS);
-            if (maxUsers > 0
-                    && maxUsers < getUsersToNotify(note, new NoteStoringPostProcessorContext(null),
-                            userIdsToSkip).size()) {
+            if (maxUsers > 0 && maxUsers < getUsersToNotify(note,
+                    new NoteStoringPostProcessorContext(null), userIdsToSkip).size()) {
                 throw new TooManyMentionedUsersNoteManagementException();
             }
             return true;
