@@ -28,11 +28,14 @@ public class UserPropertyAccessor extends ObjectPropertyAccessor<User, UserPrope
     }
 
     @Override
-    protected void assertReadAccess(User object) throws AuthorizationException {
+    protected void assertReadAccess(User user) throws AuthorizationException {
         if (SecurityHelper.isClientManager() || SecurityHelper.isInternalSystem()) {
             return;
         }
-        SecurityHelper.assertCurrentUser();
+        // TODO we should probably have a way to restrict read access to the owner of the property
+        if (SecurityHelper.getCurrentUserId() == null) {
+            throw new AuthorizationException("Anonymous access to user properties is not allowed");
+        }
     }
 
     /**
@@ -48,8 +51,7 @@ public class UserPropertyAccessor extends ObjectPropertyAccessor<User, UserPrope
         }
         if (!user.getId().equals(SecurityHelper.getCurrentUserId())) {
             throw new AuthorizationException(
-                    "The current user ("
-                            + SecurityHelper.getCurrentUserId()
+                    "The current user (" + SecurityHelper.getCurrentUserId()
                             + ") has to be a client manager, internal system user or the user to be edited ("
                             + user.getId() + ").");
         }
