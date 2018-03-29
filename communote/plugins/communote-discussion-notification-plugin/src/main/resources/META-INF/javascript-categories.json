@@ -1,0 +1,8 @@
+{
+    "extensions": {
+        "portal": [
+            "javascript/WatchActionHandler.js"
+        ]
+    }
+}
+
