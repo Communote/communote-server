@@ -7,7 +7,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 /**
- * Comparator to compare versions, which contain a major, minor and optional a revision part.<br>
+ * Comparator to compare versions in dot notation like 3.25.2 as used in semantic versioning. The
+ * last part can be interpreted as revision.<br>
  * Examples
  * <ul>
  * <li>compare(1.0, 1.0.1) returns a value &lt; 0</li>
@@ -20,23 +21,30 @@ import org.apache.commons.lang.math.NumberUtils;
  */
 public class VersionComparator implements Comparator<String> {
 
-    private boolean includesRevision;
+    private boolean versionEndsWithRevision;
+    private boolean numericIncreasingRevision;
 
     /**
-     * Default Constructor
+     * Default constructor which creates a comparator that is not revision aware.
      */
     public VersionComparator() {
         // Do nothing.
     }
 
     /**
-     * Constructor to use revisions for the version comparison
+     * Constructor to fine-tune the handling of a revision in the version string
      *
-     * @param includesRevision
-     *            If true, the last part is the revision and the version number will be normalized.
+     * @param versionEndsWithRevision
+     *            If true, the last part of the version is always interpreted as revision
+     * @param numericIncreasingRevision 
+     *            if versionEndsWithRevision is true, this parameter defines whether the revision
+     *            is a numeric value which increases with every new revision. Only in this case
+     *            the revision is compared. 
+     *            
      */
-    public VersionComparator(boolean includesRevision) {
-        this.includesRevision = includesRevision;
+    public VersionComparator(boolean versionEndsWithRevision, boolean numericIncreasingRevision) {
+        this.versionEndsWithRevision = versionEndsWithRevision;
+        this.numericIncreasingRevision = numericIncreasingRevision;
     }
 
     /**
@@ -56,7 +64,7 @@ public class VersionComparator implements Comparator<String> {
         Object[] v2 = version2.split("\\.");
         Object revisionV1 = null;
         Object revisionV2 = null;
-        if (includesRevision) {
+        if (versionEndsWithRevision) {
             revisionV1 = v1[v1.length - 1];
             revisionV2 = v2[v2.length - 1];
             v1 = ArrayUtils.remove(v1, v1.length - 1);
@@ -71,9 +79,7 @@ public class VersionComparator implements Comparator<String> {
                 v1 = ArrayUtils.addAll(v1, filler);
             }
         }
-        // KENMEI-6778 Only add revision again, if it is numeric
-        if (includesRevision && NumberUtils.isDigits(revisionV1.toString())
-                && NumberUtils.isDigits(revisionV2.toString())) {
+        if (versionEndsWithRevision && numericIncreasingRevision) {
             v1 = ArrayUtils.add(v1, revisionV1);
             v2 = ArrayUtils.add(v2, revisionV2);
         }

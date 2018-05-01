@@ -172,7 +172,7 @@ public class ApplicationInitializer {
         }
         String currentApplicationVersion = CommunoteRuntime.getInstance()
                 .getApplicationInformation().getBuildNumber();
-        VersionComparator versionComparator = new VersionComparator(true);
+        VersionComparator versionComparator = new VersionComparator(true, false);
         int versionComparison = versionComparator.compare(previousApplicationVersion,
                 currentApplicationVersion);
         if (versionComparison > 0) {
