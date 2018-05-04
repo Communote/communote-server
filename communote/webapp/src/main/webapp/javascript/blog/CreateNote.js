@@ -187,9 +187,6 @@ var CreateNoteWidget = new Class({
         this.initAutosaveHandler();
         this.components = new communote.classes.NoteEditorComponentManager(this, action,
                 this.renderStyle, this.getAllStaticParameters());
-        if (Browser.name === 'ie') {
-            this.setFilterParameter('customUpload', true);
-        }
         this.topicWriteAccessEvaluator = new communote.classes.TopicWriteAccessEvaluator(this.blogUtils);
     },
     

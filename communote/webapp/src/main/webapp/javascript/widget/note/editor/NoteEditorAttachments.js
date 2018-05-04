@@ -1,6 +1,7 @@
 (function(window) {
     const communote = window.communote;
     const i18n = communote.i18n;
+    const DROP_OVERLAY_CSS_CLASS = 'cn-note-editor-file-dropzone';
 
     function addAttachment(handler, attachmentData) {
         var idx = handler.attachmentIds.indexOf(attachmentData.id);
@@ -10,12 +11,92 @@
             handler.attachmentAdded(attachmentData);
         }
     }
+    
+    /**
+     * Click event handler which triggers a click on the file input element. Function needs to be bound to the
+     * NoteEditorAttachments instance.
+     * @param {Event} event - the click event
+     */
+    function clickFileInputElement(event) {
+        var inputElem = this.widget.domNode.querySelector('input[type=file]');
+        if (inputElem) {
+            inputElem.click();
+        }
+        event.preventDefault();
+    }
+    
+    function createDropOverlay(parentElement) {
+        var descrElement;
+        var overlayElement = parentElement.querySelector('.' + DROP_OVERLAY_CSS_CLASS);
+        if (!overlayElement) {
+            overlayElement = parentElement.ownerDocument.createElement('div');
+            overlayElement.classList.add(DROP_OVERLAY_CSS_CLASS);
+            overlayElement.innerHTML = '<div class="' + DROP_OVERLAY_CSS_CLASS + '-description-wrapper">'
+                + '<div class="' + DROP_OVERLAY_CSS_CLASS + '-description"></div></div>';
+            descrElement = overlayElement.querySelector('.' + DROP_OVERLAY_CSS_CLASS + '-description');
+            descrElement.textContent = i18n.getMessage('widget.createNote.attachments.dropzone.description');
+            parentElement.appendChild(overlayElement);
+        }
+        return overlayElement;
+    }
+    
+    /**
+     * FileDropzone callback function for drop events. Needs to be bound the NoteEditorAttachments instance.
+     *  
+     * @param {Object} dropResult - the drop result as defined by FileDropzone
+     */
+    function fileDropzoneDropCallback(dropResult) {
+        var msgKey;
+        fileDropzoneLeftCallback.call(this);
+        if (dropResult.success) {
+            this.attachmentUploader.uploadFiles(dropResult.files);
+        } else {
+            if (dropResult.error === communote.classes.FileDropzone.ERROR_DIRECTORY) {
+                msgKey = 'widget.createNote.attachments.dropzone.droperror.directory';
+            } else {
+                // expecting no other errors because multiple is allowed and mimeType is not restricted
+                if (window.console && typeof console.log === 'function') {
+                    console.log('Unexpected error while dropping file: ' + dropResult.error);
+                }
+                msgKey = 'common.error.unspecified';
+            }
+            showError(i18n.getMessage(msgKey));
+        }
+    }
+    
+    /**
+     * FileDropzone callback function which is invoked when files are dragged into the dropzone.
+     * Needs to be bound the NoteEditorAttachments instance.
+     */
+    function fileDropzoneEnteredCallback() {
+        var overlayElement = this.widget.domNode.querySelector('.' + DROP_OVERLAY_CSS_CLASS);
+        overlayElement.style.display = 'block';
+    }
+    /**
+     * FileDropzone callback function which is invoked when files are dragged out of the dropzone or DnD is canceled.
+     * Needs to be bound the NoteEditorAttachments instance.
+     */
+    function fileDropzoneLeftCallback() {
+        var overlayElement = this.widget.domNode.querySelector('.' + DROP_OVERLAY_CSS_CLASS);
+        overlayElement.style.display = 'none';
+    }
 
+    /**
+     * BinaryDataPasteListener callback function which is invoked when data is pasted.
+     * Needs to be bound the NoteEditorAttachments instance.
+     */
     function pasteHandlerCallback(blobDescriptors) {
         if (this.attachmentUploader) {
             this.attachmentUploader.uploadBlobs(blobDescriptors);
         }
     };
+    
+    function showError(errorMessage) {
+        hideNotification();
+        showNotification(NOTIFICATION_BOX_TYPES.error, '', errorMessage, {
+            duration: ''
+        });
+    }
 
     /**
      * Create a NoteEditorComponent which handles attachment uploads.
@@ -37,6 +118,7 @@
         this.canShowAttachmentSelection = initialRenderStyle === 'full';
         this.attachmentsContainerElem = null;
         this.attachmentUploader = null;
+        this.fileDropzone = null;
         // lookup for the IDs
         this.attachmentIds = [];
         // attachment data with all details. The ID of each entry can be found in attachmentIds at the same index.
@@ -45,6 +127,7 @@
         noteEditorWidget.addEventListener('noteDiscarded', this.onNoteDiscarded, this);
         noteEditorWidget.addEventListener('renderStyleChanged', this.onRenderStyleChanged, this);
         noteEditorWidget.addEventListener('editorRefreshed', this.onEditorRefreshed, this);
+        noteEditorWidget.addEventListener('widgetRefreshing', this.cleanup, this);
     }
 
     /**
@@ -64,6 +147,32 @@
             }
         } else {
             addAttachment(this, attachmentData);
+        }
+    };
+    
+    /**
+     * @protected
+     */
+    AttachmentHandler.prototype.addUploadDescription = function() {
+        var msgKey, elem, selectFilesElem;
+        var dndSupport = communote.classes.FileDropzone && communote.classes.FileDropzone.isDragAndDropSupported();
+        var pasteSupport = communote.classes.BinaryDataPasteListener
+            && communote.classes.BinaryDataPasteListener.isPasteSupported();
+        if (dndSupport && pasteSupport) {
+            msgKey = 'widget.createNote.attachments.description.select_dnd_paste';
+        } else if (dndSupport) {
+            msgKey = 'widget.createNote.attachments.description.select_dnd';
+        } else if (pasteSupport) {
+            msgKey = 'widget.createNote.attachments.description.select_paste';
+        } else {
+            msgKey = 'widget.createNote.attachments.description.select';
+        }
+        elem = this.widget.domNode.querySelector('#' + this.widgetId + '-attachments-description');
+        elem.innerHTML = i18n.getMessage(msgKey);
+        selectFilesElem = elem.querySelector('a');
+        if (selectFilesElem) {
+            selectFilesElem.role = 'button';
+            selectFilesElem.addEventListener('click', clickFileInputElement.bind(this));
         }
     };
 
@@ -107,7 +216,7 @@
         this.dirty = true;
         this.modified = true;
         wrapper = this.attachmentsContainerElem.querySelector('#' + this.widgetId
-                + '-summary-attachments');
+                + '-attachments-summary');
         wrapper.classList.remove('cn-hidden');
         if (attachmentData.uploadId) {
             uploadElem = wrapper.querySelector('#' + this.widgetId + '-upload-'
@@ -168,6 +277,17 @@
         return true;
     };
 
+    /**
+     * @protected
+     */
+    AttachmentHandler.prototype.cleanup = function() {
+        // remove DnD handling while refreshing to avoid strange side effects
+        if (this.fileDropzone) {
+            this.fileDropzone.destroy();
+            this.fileDropzone = null;
+        }
+    };
+    
     /**
      * @protected
      */
@@ -256,12 +376,7 @@
      */
     AttachmentHandler.prototype.onAttachmentUploadFailed = function(uploadId, errorMessage) {
         if (errorMessage) {
-            // hide notifications
-            hideNotification();
-            // show error occurred
-            showNotification(NOTIFICATION_BOX_TYPES.error, '', errorMessage, {
-                duration: ''
-            });
+            showError(errorMessage);
         }
         this.removeAttachmentOrUploadElement('-upload-' + uploadId);
     };
@@ -284,7 +399,7 @@
         // add an element which shows that the upload is in progress
         fileName = uploadDescriptor.fileName;
         wrapper = this.attachmentsContainerElem.querySelector('#' + this.widgetId
-                + '-summary-attachments');
+                + '-attachments-summary');
         wrapper.classList.remove('cn-hidden');
 
         feedbackElem = document.createElement('div');
@@ -298,11 +413,25 @@
     };
 
     AttachmentHandler.prototype.onEditorRefreshed = function(editor) {
-        new communote.classes.BinaryDataPasteListener(editor.getInputElement(),
-                pasteHandlerCallback.bind(this), {
-            fileNamePrefix: 'image-',
-            typeRegex: /image\//
-        });
+        if (communote.classes.BinaryDataPasteListener) {
+            new communote.classes.BinaryDataPasteListener(editor.getInputElement(),
+                    pasteHandlerCallback.bind(this), {
+                fileNamePrefix: 'image-',
+                typeRegex: /image\//
+            });
+        }
+        if (communote.classes.FileDropzone && communote.classes.FileDropzone.isDragAndDropSupported()) {
+            createDropOverlay(this.widget.domNode);
+            if (this.fileDropzone) {
+                this.fileDropzone.destroy();
+            }
+            this.fileDropzone = new communote.classes.FileDropzone(this.widget.domNode, 
+                    fileDropzoneDropCallback.bind(this), {
+                attachToIframes: true,
+                dropzoneEnteredCallback: fileDropzoneEnteredCallback.bind(this),
+                dropzoneLeftCallback: fileDropzoneLeftCallback.bind(this)
+            });
+        }
     };
 
     AttachmentHandler.prototype.onNoteDiscarded = function(onlineAutosave) {
@@ -342,6 +471,7 @@
             this.attachmentUploader.addEvent('uploadFailed', this.onAttachmentUploadFailed
                     .bind(this));
             this.attachmentUploader.addEvent('uploadDone', this.onAttachmentUploadDone.bind(this));
+            this.addUploadDescription();
         }
         elem = this.getToggleElement();
         if (elem) {
@@ -373,7 +503,7 @@
     AttachmentHandler.prototype.removeAttachmentOrUploadElement = function(elemIdSuffix) {
         var elem, checkHide;
         var wrapper = this.attachmentsContainerElem.querySelector('#' + this.widgetId
-                + '-summary-attachments');
+                + '-attachments-summary');
         if (elemIdSuffix) {
             elem = wrapper.querySelector('#' + this.widgetId + elemIdSuffix);
             if (elem) {

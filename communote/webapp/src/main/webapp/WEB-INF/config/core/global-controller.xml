@@ -115,6 +115,7 @@
                         <value>/javascript/utils/image/Cropper</value>
                         <value>/javascript/utils/image/CropImageAjaxFileUpload</value>
                         <value>/javascript/utils/BinaryDataPasteListener.js</value>
+                        <value>/javascript/utils/FileDropzone.js</value>
                         <value>/javascript/linkhandler/LinkHandler</value>
                         <value>/javascript/linkhandler/ApplicationLinkHandler</value>
                         <value>/javascript/linkhandler/ActivateContextLinkHandler</value>

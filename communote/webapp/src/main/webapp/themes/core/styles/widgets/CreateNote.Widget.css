@@ -270,12 +270,13 @@
     height: 25px;
 }
 
-.cn-write-note-accessory-attachment #cn-upload-button {
+.cn-write-note-accessory-attachment .cn-attachment-description {
+	color: #888888;
     margin-top: 5px;
 }
 
-.cn-write-note-accessory-attachment.cn-custom-upload #cn-upload-button {
-    display: none;
+.cn-write-note-accessory-attachment .cn-attachment-description a {
+	cursor: pointer;
 }
 
 /* relative positioning to make ExpandingTextarea work correctly because the textarea
@@ -553,4 +554,28 @@
 
 .cn-note-editor-advanced-settings {
     max-width: 480px;
+}
+
+.cn-note-editor-file-dropzone {
+	background-color: #f8f8f8;
+	display: none;
+	height: 100%;
+	left: 0;
+	opacity: 0.8;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+
+.cn-note-editor-file-dropzone .cn-note-editor-file-dropzone-description-wrapper {
+	display: table;
+	height: 100%;
+	text-align: center;
+	width: 100%;
+}
+
+.cn-note-editor-file-dropzone .cn-note-editor-file-dropzone-description {
+	color: black;
+    display: table-cell;
+    vertical-align: middle;
 }

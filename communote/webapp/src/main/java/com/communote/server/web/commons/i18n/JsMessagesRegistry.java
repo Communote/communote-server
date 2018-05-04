@@ -217,11 +217,44 @@ public class JsMessagesRegistry implements EventListener<ResourceBundleChangedEv
         messageKeys.add("widget.mainPageVerticalNavigation.favorites.remove.missing.details.user");
         messageKeys.add("widget.mainPageVerticalNavigation.favorites.remove.missing.title");
 
+    }
+
+    private void addNoteEditorMessages(HashSet<String> messageKeys) {
+        messageKeys.add("blogpost.autosave.discard");
+        messageKeys.add("blogpost.autosave.loaded");
+        messageKeys.add("blogpost.autosave.saved");
+        messageKeys.add("blogpost.autosave.saving");
+        messageKeys.add("blogpost.create.attachments.remove.tooltip");
+        messageKeys.add("blogpost.create.attachments.uploading");
+        messageKeys.add("blogpost.create.blogs.remove.tooltip");
+        messageKeys.add("blogpost.create.crosspost.remove.tooltip");
+        messageKeys.add("blogpost.create.no.default.blog");
+        messageKeys.add("blogpost.create.no.writable.blog.selected");
+        messageKeys.add("blogpost.create.tags.remove.tooltip");
+        messageKeys.add("blogpost.create.topics.hint");
+        messageKeys.add("blogpost.create.topics.crosspost.hint");
+        messageKeys.add("blogpost.create.users.remove.tooltip");
+        messageKeys.add("blogpost.create.submit.confirm.unsaved.blog");
+        messageKeys.add("blogpost.create.submit.confirm.unsaved.user");
+        messageKeys.add("widget.createNote.unconfirmed.input.warning");
+        messageKeys.add("widget.createNote.topics.unconfirmed.input.inputName");
+        messageKeys.add("widget.createNote.mentions.unconfirmed.input.inputName");
+        messageKeys.add("widget.createNote.attachments.dropzone.description");
+        messageKeys.add("widget.createNote.attachments.dropzone.droperror.directory");
+        messageKeys.add("widget.createNote.attachments.description.select");
+        messageKeys.add("widget.createNote.attachments.description.select_dnd");
+        messageKeys.add("widget.createNote.attachments.description.select_dnd_paste");
+        messageKeys.add("widget.createNote.attachments.description.select_paste");
+        messageKeys.add("create.note.attachment.preview.title");
+        messageKeys.add("create.note.autosave.discard.title");
+        messageKeys.add("create.note.autosave.discard.question");
+        messageKeys.add("error.blogpost.create.failed");
+        messageKeys.add("error.blogpost.edit.remove-direct-user");
         messageKeys.add("widget.createNote.richTextEditor.linkDialog.link.title");
         messageKeys.add("widget.createNote.richTextEditor.linkDialog.link.url");
         messageKeys.add("widget.createNote.richTextEditor.linkDialog.title");
     }
-
+    
     /**
      * Appends the mappings for the provided message keys to their localized messages to the string
      * builder.
@@ -466,33 +499,10 @@ public class JsMessagesRegistry implements EventListener<ResourceBundleChangedEv
         messageKeys.add("blog.post.list.follow.unfollow.blog.menu");
         messageKeys.add("blog.post.list.follow.unfollow.discussion");
         messageKeys.add("blog.post.list.follow.unfollow.discussion.menu");
-        messageKeys.add("blogpost.autosave.discard");
-        messageKeys.add("blogpost.autosave.loaded");
-        messageKeys.add("blogpost.autosave.saved");
-        messageKeys.add("blogpost.autosave.saving");
-        messageKeys.add("blogpost.create.attachments.remove.tooltip");
-        messageKeys.add("blogpost.create.attachments.uploading");
-        messageKeys.add("blogpost.create.blogs.remove.tooltip");
-        messageKeys.add("blogpost.create.crosspost.remove.tooltip");
-        messageKeys.add("blogpost.create.no.default.blog");
-        messageKeys.add("blogpost.create.no.writable.blog.selected");
-        messageKeys.add("blogpost.create.tags.remove.tooltip");
-        messageKeys.add("blogpost.create.topics.hint");
-        messageKeys.add("blogpost.create.topics.crosspost.hint");
-        messageKeys.add("blogpost.create.users.remove.tooltip");
-        messageKeys.add("blogpost.create.submit.confirm.unsaved.blog");
-        messageKeys.add("blogpost.create.submit.confirm.unsaved.user");
-        messageKeys.add("widget.createNote.unconfirmed.input.warning");
-        messageKeys.add("widget.createNote.topics.unconfirmed.input.inputName");
-        messageKeys.add("widget.createNote.mentions.unconfirmed.input.inputName");
+        addNoteEditorMessages(messageKeys);
         messageKeys.add("blogpost.delete.confirmation");
         messageKeys.add("blogpost.delete.popup.title");
         messageKeys.add("blogpost.delete.with.comments.confirmation");
-        messageKeys.add("create.note.attachment.preview.title");
-        messageKeys.add("create.note.autosave.discard.title");
-        messageKeys.add("create.note.autosave.discard.question");
-        messageKeys.add("error.blogpost.create.failed");
-        messageKeys.add("error.blogpost.edit.remove-direct-user");
         messageKeys.add("javascript.calendar.day.hover.pattern");
         messageKeys.add("javascript.dialog.export.button.discussion");
         messageKeys.add("javascript.dialog.export.button.note");

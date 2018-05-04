@@ -71,6 +71,7 @@
                 "/javascript/utils/LazyTips.js",
                 "/javascript/utils/AutoRefresher.js",
                 "/javascript/utils/BinaryDataPasteListener.js",
+                "/javascript/utils/FileDropzone.js",
                 "/javascript/linkhandler/LinkHandler.js",
                 "/javascript/linkhandler/ApplicationLinkHandler.js",
                 "/javascript/linkhandler/ActivateContextLinkHandler.js",
