@@ -270,13 +270,8 @@
     height: 25px;
 }
 
-.cn-write-note-accessory-attachment .cn-attachment-description {
-	color: #888888;
+.cn-write-note-accessory-attachment .cn-button {
     margin-top: 5px;
-}
-
-.cn-write-note-accessory-attachment .cn-attachment-description a {
-	cursor: pointer;
 }
 
 /* relative positioning to make ExpandingTextarea work correctly because the textarea

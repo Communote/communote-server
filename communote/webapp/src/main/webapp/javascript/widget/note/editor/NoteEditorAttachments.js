@@ -149,27 +149,31 @@
             addAttachment(this, attachmentData);
         }
     };
-    
+
     /**
      * @protected
      */
     AttachmentHandler.prototype.addUploadDescription = function() {
-        var msgKey, elem, selectFilesElem;
+        var msgKey, tooltipElem, elem, selectFilesElem;
         var dndSupport = communote.classes.FileDropzone && communote.classes.FileDropzone.isDragAndDropSupported();
         var pasteSupport = communote.classes.BinaryDataPasteListener
             && communote.classes.BinaryDataPasteListener.isPasteSupported();
         if (dndSupport && pasteSupport) {
-            msgKey = 'widget.createNote.attachments.description.select_dnd_paste';
+            msgKey = 'widget.createNote.attachments.tooltip.dnd_paste';
         } else if (dndSupport) {
-            msgKey = 'widget.createNote.attachments.description.select_dnd';
+            msgKey = 'widget.createNote.attachments.tooltip.dnd';
         } else if (pasteSupport) {
-            msgKey = 'widget.createNote.attachments.description.select_paste';
-        } else {
-            msgKey = 'widget.createNote.attachments.description.select';
+            msgKey = 'widget.createNote.attachments.tooltip.paste';
         }
-        elem = this.widget.domNode.querySelector('#' + this.widgetId + '-attachments-description');
-        elem.innerHTML = i18n.getMessage(msgKey);
-        selectFilesElem = elem.querySelector('a');
+        if (msgKey) {
+            tooltipElem = document.createElement('span');
+            tooltipElem.classList.add('tooltip-wrapper');
+            tooltipElem.innerHTML = ' <a class="tooltip" rel="' + i18n.getMessage(msgKey) + '">[?]</a>';
+            elem = this.widget.domNode.querySelector('.cn-write-note-accessory-attachment .cn-accessory-label');
+            elem.appendChild(tooltipElem);
+            init_tips(elem);
+        }
+        selectFilesElem = this.widget.domNode.querySelector('#' + this.widgetId + '-attachments-upload-button');
         if (selectFilesElem) {
             selectFilesElem.role = 'button';
             selectFilesElem.addEventListener('click', clickFileInputElement.bind(this));

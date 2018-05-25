@@ -241,10 +241,9 @@ public class JsMessagesRegistry implements EventListener<ResourceBundleChangedEv
         messageKeys.add("widget.createNote.mentions.unconfirmed.input.inputName");
         messageKeys.add("widget.createNote.attachments.dropzone.description");
         messageKeys.add("widget.createNote.attachments.dropzone.droperror.directory");
-        messageKeys.add("widget.createNote.attachments.description.select");
-        messageKeys.add("widget.createNote.attachments.description.select_dnd");
-        messageKeys.add("widget.createNote.attachments.description.select_dnd_paste");
-        messageKeys.add("widget.createNote.attachments.description.select_paste");
+        messageKeys.add("widget.createNote.attachments.tooltip.dnd");
+        messageKeys.add("widget.createNote.attachments.tooltip.dnd_paste");
+        messageKeys.add("widget.createNote.attachments.tooltip.paste");
         messageKeys.add("create.note.attachment.preview.title");
         messageKeys.add("create.note.autosave.discard.title");
         messageKeys.add("create.note.autosave.discard.question");

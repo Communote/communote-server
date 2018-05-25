@@ -82,7 +82,7 @@
                 <div class="cn-accessory-label"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.attachment.title')</span></div>
                 <div class="cn-accessory-content">
                     <div id="${widget.WidgetId}-attachments-summary" class="cn-attachment-summary cn-border cn-hidden"></div>
-                    <div id="${widget.WidgetId}-attachments-description" class="cn-attachment-description"></div>
+                    <a href="javascript:;" class="cn-button" id="${widget.WidgetId}-attachments-upload-button">$fmtTool.message('widget.createNote.attachments.uploadButton')</a>
                     <form action="$urlTool.render('/blog/attachmentUpload.do')" method="post"
                             enctype="multipart/form-data" target="${widget.WidgetId}_iframe">
                         <input type="file" name="file" class="input-file" id="${widget.WidgetId}_upload-input" />
