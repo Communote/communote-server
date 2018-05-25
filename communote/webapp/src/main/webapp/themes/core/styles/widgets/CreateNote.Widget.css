@@ -258,18 +258,6 @@
     width: 0;
 }
 
-.cn-write-note-accessory-attachment.cn-custom-upload form {
-    display: block;
-    margin-top: 10px;
-    overflow: hidden;
-    visibility: visible;
-}
-
-.cn-write-note-accessory-attachment.cn-custom-upload form input {
-    width: auto;
-    height: 25px;
-}
-
 .cn-write-note-accessory-attachment .cn-button {
     margin-top: 5px;
 }
