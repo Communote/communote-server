@@ -89,13 +89,18 @@
         if (this.attachmentUploader) {
             this.attachmentUploader.uploadBlobs(blobDescriptors);
         }
-    };
+    }
     
     function showError(errorMessage) {
         hideNotification();
         showNotification(NOTIFICATION_BOX_TYPES.error, '', errorMessage, {
             duration: ''
         });
+    }
+    
+    function showAttachmentSelectionAndOpenFileChooser(event) {
+        this.showAttachmentSelection();
+        clickFileInputElement.call(this, event);
     }
 
     /**
@@ -479,7 +484,7 @@
         }
         elem = this.getToggleElement();
         if (elem) {
-            elem.addEventListener('click', this.showAttachmentSelection.bind(this));
+            elem.addEventListener('click', showAttachmentSelectionAndOpenFileChooser.bind(this));
         }
         this.attachmentSelectionShown = false;
     };
