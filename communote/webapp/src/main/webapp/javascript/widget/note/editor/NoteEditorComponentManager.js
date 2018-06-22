@@ -142,6 +142,7 @@
         var i, l, warning;
         var warnings = [];
         var inputNames = [];
+        // collect all warnings and names of the inputs with unconfirmed data from all components
         for (i = 0, l = this.components.length; i < l; i++) {
             warning = this.components[i].getUnconfirmedInputWarning();
             if (warning) {
@@ -154,10 +155,10 @@
         if (warnings.length === 0) {
             return null;
         }
-        if (warnings.length === 1) {
-            if (warnings[0].message) {
+        // if there is exactly one warning with a custom message prefer this, otherwise construct a
+        // message which lists the inputs with unconfirmed data
+        if (warnings.length === 1 && warnings[0].message) {
                 return warnings[0].message;
-            }
         }
         return i18n.getMessage('widget.createNote.unconfirmed.input.warning', [ inputNames
                 .join(', ') ]);

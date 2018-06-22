@@ -115,13 +115,11 @@
         targetSizeDefined: false,
 
         initialize: function(fileInput, uploadOptions, cropperOptions) {
+            uploadOptions = uploadOptions || {};
             fileInput = document.id(fileInput);
+            // disable upload of multiple files
             if (fileInput.multiple == 'true') {
                 fileInput.multiple = 'false';
-            }
-            // disable upload of multiple files
-            if (!uploadOptions) {
-                uploadOptions = {};
             }
             uploadOptions.multiple = false;
             this.parent(fileInput, uploadOptions);

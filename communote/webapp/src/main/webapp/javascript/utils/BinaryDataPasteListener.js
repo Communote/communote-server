@@ -51,30 +51,10 @@
         return suffix;
     }
     function onPaste(e) {
-        var items, i, l, item, file, files;
         var handled = false;
-        if (e.clipboardData) {
-            items = e.clipboardData.items;
-            if (items) {
-                files = [];
-                for (i = 0, l = items.length; i < l; i++) {
-                    item = items[i];
-                    if (item.kind === 'file'
-                            && isMatchingMimeType(this.options.typeRegex, item.type)) {
-                        file = item.getAsFile();
-                        // sometimes (FF esr on linux) the file is null, no idea how to reproduce,
-                        // ignore but treat as handled
-                        if (file) {
-                            files.push(createBlobDescriptor(file, this.options.fileNamePrefix,
-                                    getUniqueSuffix(this), this.options.fileNameDefaultExtension));
-                        }
-                        handled = true;
-                    }
-                }
-                if (files.length) {
-                    this.callback.call(null, files);
-                }
-            }
+        var items = e.clipboardData && e.clipboardData.items;
+        if (items) {
+            handled = processFiles.call(this, items);
         }
         if (handled) {
             if (this.options.stopPropagation) {
@@ -85,9 +65,39 @@
             }
         }
     }
-    
+    /**
+     * Check all items in the DataTransfer for being files and having the correct mime type. All
+     * found matching files will be passed to the callback function provided to the constructor of
+     * the paste listener.
+     * 
+     * @param {DataTransferItemList} clipboardDataItems - Items extracted from the DataTransfer of
+     *            the ClipboardEvent
+     * @returns true if at least one item was a file with a matching mime type
+     */
+    function processFiles(clipboardDataItems) {
+        var i, l, item, file;
+        var handled = false;
+        var files = [];
+        for (i = 0, l = clipboardDataItems.length; i < l; i++) {
+            item = clipboardDataItems[i];
+            if (item.kind === 'file' && isMatchingMimeType(this.options.typeRegex, item.type)) {
+                file = item.getAsFile();
+                // sometimes (FF esr on linux) the file is null, no idea how to reproduce,
+                // ignore but treat as handled
+                if (file) {
+                    files.push(createBlobDescriptor(file, this.options.fileNamePrefix,
+                            getUniqueSuffix(this), this.options.fileNameDefaultExtension));
+                }
+                handled = true;
+            }
+        }
+        if (files.length) {
+            this.callback.call(null, files);
+        }
+        return handled;
+    }
+
     function isMatchingMimeType(typeRegex, mimeType) {
-        var matches;
         if (typeRegex) {
             if (!typeRegex.test(mimeType)) {
                 return false;
@@ -124,9 +134,9 @@
      * @param {?boolean} options.stopPropagation - stop propagation after processing the paste
      *            event. Defaults to true.
      * @param {?RegExp} options.typeRegex - regular expression to apply on the mime type of the
-     *            pasted data to only handle binary data with a matching mime type. If not given, all
-     *            binary data is handled. If a captured paste event has no binary data matching the
-     *            regex, the propagation or default handling of the event won't be stopped or
+     *            pasted data to only handle binary data with a matching mime type. If not given,
+     *            all binary data is handled. If a captured paste event has no binary data matching
+     *            the regex, the propagation or default handling of the event won't be stopped or
      *            prevented.
      * 
      * @class

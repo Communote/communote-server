@@ -256,10 +256,10 @@ var AjaxFileUpload = new Class({
      */
     uploadBlobs: function(descriptors) {
         var formData, additionalData, i, descriptor;
-        var l = descriptors.length;
-        if (l > 0) {
+        var length = descriptors.length;
+        if (length > 0) {
             additionalData = this.collectDataOfForm();
-            for (i = 0; i < l; i++) {
+            for (i = 0; i < length; i++) {
                 descriptor = descriptors[i];
                 formData = this.buildFormData(null, this.collectDataOfForm());
                 formData.append(this.fileInputName, descriptor.blob, descriptor.fileName);
@@ -281,7 +281,7 @@ var AjaxFileUpload = new Class({
             var message;
             if (xhr && xhr.responseText) {
                 try {
-                    message = message = JSON.parse(xhr.responseText).message;
+                    message = JSON.parse(xhr.responseText).message;
                 } catch (e) {
                     // use fallback
                 }
