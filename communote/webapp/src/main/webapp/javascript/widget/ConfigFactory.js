@@ -72,11 +72,10 @@ communote.configuration.factory = {
             settings: {
                 filterWidgetGroupId: filterWidgetGroupId,
                 renderWidgetType: 'ChronologicalPostListWidget',
-                createNoteWidgetClass: 'CreateNoteDefaultWidget',
+                createNoteWidgetClass: 'CreateNoteWidget',
                 preferenceId: options.cplPreferenceId,
                 predefinedViewType: options.cplPredefinedViewType,
                 createNoteWidgetStaticParams: {
-                    renderWidgetType: 'CreateNoteWidget',
                     tagAutocompleterCategories: options.createNoteTagAutocompleterCategories
                 },
                 draftTimer: 10,

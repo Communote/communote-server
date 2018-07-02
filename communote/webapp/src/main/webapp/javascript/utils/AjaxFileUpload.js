@@ -3,6 +3,10 @@ var AjaxFileUpload = new Class({
     Implements: [ Options, Events ],
 
     options: {
+        // allow selection of multiple files if the browser supports it. If undefined, the
+        // 'multiple' attribute of the input field is evaluated. If true, the selection of
+        // multiple files is enabled. If false, the selection of multiple files is disabled.
+        multiple: undefined,
         // the URL to upload the file to, overrides the action attribute of the form if set
         uploadUrl: null,
         // set to true if the file should be uploaded when the content of the input changed.
@@ -30,6 +34,7 @@ var AjaxFileUpload = new Class({
     runningUploads: null,
 
     initialize: function(fileInput, options) {
+        var form;
         var elem = document.id(fileInput);
         if (elem.type != 'file') {
             throw new Error('This class can only be applied to inputs of type file');
@@ -58,11 +63,30 @@ var AjaxFileUpload = new Class({
         this.uploadIdBase = String.uniqueID();
         this.runningUploads = {};
     },
+    collectDataOfForm: function() {
+        var i, l, elem;
+        var data = {};
+        var inputElems = this.uploadForm.querySelectorAll('input');
+        var responseParam = this.options.htmlResponseParameter;
+        for (i = 0, l = inputElems.length; i < l; i++) {
+            elem = inputElems[i];
+            // skip file input
+            if (elem.type !== 'file' && elem.name !== responseParam) {
+                data[elem.name] = elem.value;
+            }
+        }
+        return data;
+    },
     initFormDataUpload: function(elem, form) {
         this.formDataUpload = true;
         this.fileInputName = elem.getProperty('name');
         if (!this.options.uploadUrl) {
             this.options.uploadUrl = form.getProperty('action');
+        }
+        if (this.options.multiple == undefined) {
+            this.options.multiple = !!elem.multiple;
+        } else if (elem.multiple !== undefined) {
+            elem.multiple = this.options.multiple;
         }
     },
     initIframeUpload: function(elem, form) {
@@ -197,18 +221,51 @@ var AjaxFileUpload = new Class({
         return this.uploadForm.getElement('input[type=file]');
     },
 
+    /**
+     * Upload the given files. If multiple option is false, only the first file is uploaded.
+     * 
+     * @param {(File[]|FileList)} fileList - the files to upload
+     */
     uploadFiles: function(fileList) {
-        var formData;
+        var formData, i, l;
+        var additionalData = this.collectDataOfForm();
         // TODO add support for toggling sending with no files selected from allowed to not allowed
-        // TODO support multiple files
-        formData = this.buildFormData(fileList[0]);
-        this.postFormData(formData, fileList[0].name);
+        if (!this.options.multiple) {
+            formData = this.buildFormData(fileList[0], additionalData);
+            this.postFormData(formData, fileList[0].name);
+        } else {
+            for (i = 0, l = fileList.length; i < l; i++) {
+                formData = this.buildFormData(fileList[i], additionalData);
+                this.postFormData(formData, fileList[i].name);
+            }
+        }
     },
 
     uploadBlob: function(blob, fileName) {
-        var formData = this.buildFormData(null);
+        var formData = this.buildFormData(null, this.collectDataOfForm());
         formData.append(this.fileInputName, blob, fileName);
         this.postFormData(formData, fileName);
+    },
+    
+
+    /**
+     * Upload some blobs. The multiple option is ignored.
+     * 
+     * @param {Object[]} descriptors - an array of objects where each entry needs to have a blob
+     *            and a fileName member which hold the Blob instance and the name respectively
+     */
+    uploadBlobs: function(descriptors) {
+        var formData, additionalData, i, descriptor;
+        var length = descriptors.length;
+        if (length > 0) {
+            additionalData = this.collectDataOfForm();
+            for (i = 0; i < length; i++) {
+                descriptor = descriptors[i];
+                formData = this.buildFormData(null, this.collectDataOfForm());
+                formData.append(this.fileInputName, descriptor.blob, descriptor.fileName);
+                this.postFormData(formData, descriptor.fileName);
+            } 
+        }
     },
 
     postFormData: function(formData, fileName) {
@@ -224,7 +281,7 @@ var AjaxFileUpload = new Class({
             var message;
             if (xhr && xhr.responseText) {
                 try {
-                    message = JSON.decode(xhr.responseText).message;
+                    message = JSON.parse(xhr.responseText).message;
                 } catch (e) {
                     // use fallback
                 }
@@ -239,16 +296,14 @@ var AjaxFileUpload = new Class({
         request.postFormData(formData);
     },
 
-    buildFormData: function(file) {
-        var formData, inputElems, elem, i, responseParam;
-        formData = new FormData();
-        inputElems = this.uploadForm.getElements('input');
-        responseParam = this.options.htmlResponseParameter;
-        for (i = 0; i < inputElems.length; i++) {
-            elem = inputElems[i];
-            // skip file input
-            if (elem.type != 'file' && elem.name != responseParam) {
-                formData.append(elem.name, elem.value);
+    buildFormData: function(file, additionalData) {
+        var keys, i, l, key;
+        var formData = new FormData();
+        if (additionalData) {
+            keys = Object.keys(additionalData);
+            for (i = 0, l = keys.length; i < l; i++) {
+                key = keys[i];
+                formData.append(key, additionalData[key]);
             }
         }
         if (file) {

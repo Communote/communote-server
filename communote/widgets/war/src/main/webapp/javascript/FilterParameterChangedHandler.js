@@ -8,13 +8,14 @@
         handlerFunction: null,
         currentValue: null,
         filterParameterStore: null,
+        filterGroup: null,
 
         /**
          * Creates a new instance.
          * 
-         * @param {String} [groupId] The ID of the FilterGroup to attach to.
-         * @param {String} [paramName] The name of the parameter to observe for changes.
-         * @param {Function} [handlerFunction] The function to be called when the parameter changed.
+         * @param {String} groupId The ID of the FilterGroup to attach to.
+         * @param {String} paramName The name of the parameter to observe for changes.
+         * @param {Function} handlerFunction The function to be called when the parameter changed.
          *            The function will be passed to arguments, the first is the old and the 2nd the
          *            new value.
          * @param {String} [options.filterGroupRepoName] The name of the namespace member that holds
@@ -38,9 +39,14 @@
             if (!filterGroup) {
                 throw 'FilterGroup ' + groupId + ' does not exist'
             }
+            this.filterGroup = filterGroup;
             filterGroup.addMember(this);
             this.filterParameterStore = filterGroup.getParameterStore();
             this.currentValue = this.filterParameterStore.getFilterParameter(paramName);
+        },
+        
+        destroy: function() {
+            this.filterGroup.removeMember(this);
         },
         /**
          * Implementation of the FilterParameterListener function which calls the configured handler
@@ -50,6 +56,12 @@
             var oldValue = this.currentValue;
             this.currentValue = this.filterParameterStore.getFilterParameter(this.paramName);
             this.handlerFunction.call(null, oldValue, this.currentValue);
+        },
+        getCurrentValue: function() {
+            return this.currentValue;
+        },
+        getFilterParameter: function(paramName) {
+            return this.filterParameterStore.getFilterParameter(paramName);
         },
         /**
          * Implementation of the FilterParameterListener function which returns the configured

@@ -60,7 +60,6 @@
                         #set($tagSuggestionsSearch = $communoteTool.tags.getNoteTagSuggestions(false, 'id', 'title', 'provider', $request))
                         
                         #set($widgetSettings = "{
-                        &quot;renderWidgetType&quot;:&quot;CreateNoteWidget&quot;,
                         &quot;filterWidgetGroupId&quot;:&quot;createNoteFilterGroup&quot;,
                         &quot;widgetListenerGroupId&quot;:&quot;post_create_group&quot;,
                         &quot;action&quot;:&quot;$fieldTool.get('com.communote.server.web.commons.FormAction.CREATE')&quot;,
@@ -73,7 +72,7 @@
                         &quot;targetBlogTitle&quot;:&quot;$escTool.javascriptInline($blog.getTitle())&quot,
                         #end
                         &quot;content&quot;:&quot;$!content&quot;}")
-                        <div class="TSWidget CreateNoteDefaultWidget" id="CreateNote_bookmarklet" data-cnt-widget-settings="$widgetSettings"></div>
+                        <div class="TSWidget CreateNoteWidget" id="CreateNote_bookmarklet" data-cnt-widget-settings="$widgetSettings"></div>
                     </div>
                     <div class="showOnSuccess cn-hidden">
                         <div class="notify-inline">

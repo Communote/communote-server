@@ -1,33 +1,18 @@
+// TODO rename to NoteEditorWidget and move to widget/note/editor
 var CreateNoteWidget = new Class({
     Extends: C_Widget,
 
     widgetGroup: "blog",
 
-    // the current working mode of the widget (edit, comment or create)
+    // the current working mode of the widget (edit, comment, repost or create)
     action: null,
-    addedTags: null,
     ajaxLoadingOverlay: null,
     /**
      * Object that maps the source render style to the allowed target render styles (array of
      * styles). If null all transitions are allowed.
      */
     allowedRenderStyleTransitions: null,
-    attachments: null,
-    autosaveCookie: null,
-    // whether an autosave was created
-    autosaveCreated: false,
     autosaveDisabled: false,
-    // whether an autosave was loaded
-    autosaveLoaded: false,
-    autosaveJobActiveTypes: [],
-    autosaveJobId: null,
-    autosaveNoteId: null,
-    autosaveRenderDiscardLink: false,
-    /**
-     * Default timer interval for auto-saves.
-     */
-    autosaveTimerPeriod: 10000,
-    autosaveVersion: 0,
     // local reference to the blogUtils for defaultBlog handling
     blogUtils: null,
     // defines what should happen when cancel method is called. These defaults are intended
@@ -50,17 +35,20 @@ var CreateNoteWidget = new Class({
         // can hold additional details to run the action. The allowed values depend on the action
         actionOptions: undefined
     },
-    defaultTagStoreAlias: 'DefaultNoteTagStore',
-    // whether the editor is currently dirty. Will be reset after a successful autosave.
+    // ComponentManager with all components for the current working mode/action
+    components: null,
+    // whether the editor is currently dirty. Will be reset after a successful autosave or submit.
     dirty: false,
     // the NoteTextEditor instance
     editor: null,
+    // emitter for local events, mainly for notifying the components
+    eventEmitter: null,
     /**
      * JSON object holding initial note data which will be restored when resetting the note. This
      * data is provided with the response metadata when refreshing the widget. In the edit case this
      * will be the note to edit. Additionally the content can be provided with a static parameter to
-     * overwrite the content of the initialNote. In case there is an autosave it will override the
-     * initial note when rendering the content.
+     * overwrite the content of the initialNote. In case there is an autosave, the autosave has
+     * precedence over the initial note when initializing the widget content after a refresh.
      */
     initialNote: null,
     /**
@@ -68,20 +56,18 @@ var CreateNoteWidget = new Class({
      * create mode and is used when resetting the editor.
      */
     initialTargetTopic: null,
-    /**
-     * whether a direct message should be created
-     */
-    isDirectMessage: false,
-    // if the note was modified in some way. Will be reset with clearAll after publishing or reverting
+    targetTopic: null,
+    // if the note was modified in some way. Will be reset with initContent after publishing or reverting
     modified: false,
     noTargetTopicChangeIfModifiedOrAutosaved: false,
     // an array of note property objects to be included when sending the note
     noteProperties: null,
     parentPostId: null,
-    placeholders: null,
     // css classes to be applied to the create note container (getWriteContainerElement)
     // when the editor only supports plain text
-    plainTextEditorCssClass: null,
+    plainTextEditorCssClass: 'cn-write-note-plaintext',
+    // note properties to pass along with every note. Can be set with the same-named static parameter.
+    predefinedNoteProperties: null,
     // defines what should happen after a note was published successfully and the editor was
     // cleared. If the editor is in comment or edit mode the action will default to 'remove'.
     publishSuccessBehavior: {
@@ -96,62 +82,23 @@ var CreateNoteWidget = new Class({
     renderStyle: null,
     renderStyleCssClassPrefix: 'cn-write-note-render-style-',
 
-    resendNotificationProperty: {},
-
     // css classes to be applied to the create note container (getWriteContainerElement)
     // when the editor only supports richtext
     richTextEditorCssClass: null,
-    runningAutosaveRequest: false,
-    // defines whether tags that were just typed into the tag input should be stored when sending
-    storeUncommittedTags: true,
     /**
      * Supported render styles of the widget. The first is the default.
      */
     supportedRenderStyles: [ 'full', 'minimal', 'simulate' ],
-    tagAutocompleter: null,
-    /**
-     * @type {Object[]} categories of the tag autocompleter, can provided with a static parameter of
-     *       same name. If not defined a default category definition will be used
-     */
-    tagAutocompleterCategories: null,
-    // whether the autocompleter should work in multiple mode
-    tagAutocompleterMultipleMode: true,
-    // RegEx to split the tags in the tag input field
-    tagStringSplitRegEx: /\s*,\s*/,
-    topicAutocompleter: null,
-    topics: null,
-    userAutocompleter: null,
-    usersToNotify: null,
-    // note properties to pass along with every note. Can be set with the same-named static parameter.
-    predefinedNoteProperties: null,
+    targetBlogIdChangeTracker: null,
+    topicWriteAccessEvaluator: null,
+    userInterfaceHidden: false,
 
-    setup: function() {
-        this.discardAutosaveUrl = buildRequestUrl('/blog/deletePost.do')
-                + '?action=deleteAutosave&noteId=';
-
-        // added items defined by an ordered array of ids (which might be aliases or sth) and the
-        // items in the same order
-        this.usersToNotify = {
-            ids: [],
-            items: []
-        };
-        this.attachments = {
-            ids: [],
-            items: []
-        };
-        // need to remember the order of the added topics to easily get the first crosspost topic
-        this.topics = {
-            ids: [],
-            items: []
-        };
-        this.addedTags = [];
-    },
 
     init: function() {
-        var action, targetBlogId, targetBlogTitle, parentPostId, autosaveDisabled, timerPeriod;
-        var cancelBehavior, publishSuccessBehavior, tagAutocompleterCategories;
+        var action, targetBlogId, targetBlogTitle, parentPostId, autosaveDisabled;
+        var filterGroupId, cancelBehavior, publishSuccessBehavior, renderStyle;
         this.parent();
-        this.autosaveRenderDiscardLink = !!this.getStaticParameter('autosaveRenderDiscardLink');
+        this.eventEmitter = new communote.classes.EventEmitter();
         this.noTargetTopicChangeIfModifiedOrAutosaved = !!this
                 .getStaticParameter('noTargetTopicChangeIfModifiedOrAutosaved');
         this.blogUtils = communote.utils.topicUtils;
@@ -159,10 +106,22 @@ var CreateNoteWidget = new Class({
         this.setFilterParameter('action', action);
         this.action = action;
 
-        if (action == 'create') {
+        if (action === 'create') {
             targetBlogId = this.getStaticParameter('targetBlogId');
             targetBlogTitle = this.getStaticParameter('targetBlogTitle');
             this.setInitialTargetTopic(targetBlogId, targetBlogTitle);
+            // observe targetBlogId changes when in create mode and a repo is configured
+            filterGroupId = this.staticParams.filterWidgetGroupId;
+            if (filterGroupId && communote.filterGroupRepo[filterGroupId]) {
+                this.targetBlogIdChangeTracker = new communote.classes.FilterParameterChangedHandler(
+                        filterGroupId, 'targetBlogId', this.onTargetBlogIdChanged.bind(this));
+                // check for targetBlogId which can be part of the widget settings (see above) or
+                // set in the filter store as initial parameter, but give setting preference
+                if (!this.initialTargetTopic) {
+                    this.setInitialTargetTopic(this.targetBlogIdChangeTracker
+                            .getCurrentValue(), null);
+                }
+            }
         } else {
             // set some other defaults for the cancelBehavior, mainly for backwards compatibility
             this.cancelBehavior.confirmDiscard = false;
@@ -184,13 +143,27 @@ var CreateNoteWidget = new Class({
             }
             Object.merge(this.publishSuccessBehavior, publishSuccessBehavior);
         }
+        
         this.setRenderStyle(this.getStaticParameter('renderStyle'));
-
         this.editor = this.createEditor();
         if (!this.editor.supportsHtml()) {
-            this.setFilterParameter('plaintextOnly', true);
+            if (this.renderStyle !== 'full') {
+                // check whether the editor in full render style would support HTML because the
+                // editor will switch to full if there is an autosave.
+                renderStyle = this.renderStyle;
+                this.renderStyle = 'full';
+                this.setFilterParameter('plaintextOnly', !this.createEditor().supportsHtml());
+                this.renderStyle = renderStyle;
+            } else {
+                this.setFilterParameter('plaintextOnly', true);
+            }
         }
+        
         this.copyStaticParameter('repostNoteId');
+        if (this.getFilterParameter('repostNoteId')) {
+            // change action to repost (pure client-side feature)
+            this.action = 'repost';
+        }
         this.copyStaticParameter('noteId');
         parentPostId = this.getStaticParameter('parentPostId');
         if (parentPostId) {
@@ -209,299 +182,23 @@ var CreateNoteWidget = new Class({
             // parameter
             this.setFilterParameter('autosaveDisabled', true);
         }
-        timerPeriod = this.getStaticParameter('draftTimer');
-        if (timerPeriod != null) {
-            this.autosaveTimerPeriod = timerPeriod * 1000;
-        }
-        tagAutocompleterCategories = this.getStaticParameter('tagAutocompleterCategories');
-        if (tagAutocompleterCategories) {
-            // TODO will be in serialized JSON format for create case -> should be changed when switching from comment based params
-            if (typeOf(tagAutocompleterCategories) === 'string') {
-                tagAutocompleterCategories = JSON.decode(tagAutocompleterCategories);
-            }
-            this.tagAutocompleterCategories = tagAutocompleterCategories;
-        } else {
-            // create default category definition which uses the default note tagstore
-            this.tagAutocompleterCategories = [ {
-                'id': this.defaultTagStoreAlias,
-                'provider': this.defaultTagStoreAlias,
-                'title': ''
-            } ];
-        }
         this.predefinedNoteProperties = this.getStaticParameter('predefinedNoteProperties');
 
-        this.initAutosaveCookie();
+        this.initAutosaveHandler();
+        this.components = new communote.classes.NoteEditorComponentManager(this, action,
+                this.renderStyle, this.getAllStaticParameters());
+        this.topicWriteAccessEvaluator = new communote.classes.TopicWriteAccessEvaluator(this.blogUtils);
     },
-
-    /**
-     * Adds one or more attachments described by attachment data object.
-     *
-     * @param {Object|Object[]} attachmentData A description of the attachment including the member
-     *            'id', 'fileName', 'mime'.
-     */
-    addAttachments: function(attachmentData) {
-        this.addNewItems(this.attachments, attachmentData, 'id', this.attachmentAdded);
-    },
-
-    /**
-     * Add the items from items that are not yet in the dataHolder. Will set the dirty flag if
-     * something changed.
-     *
-     * @param {Object} dataHolder the dataHolder to be extended
-     * @param {Array|Object} items an array of JSON objects or single JSON object to evaluate
-     * @param {String} idString the name of the attribute of the item object of which the value is
-     *            used as key in the dataHolder
-     * @param {Function} itemAddedCallback The function to call for each added item
-     * @return array with IDs of the items that were added. Can be empty.
-     */
-    addNewItems: function(dataHolder, items, idString, itemAddedCallback) {
-        var itemsToAdd, idsToAdd, length, i, id;
-        if (!items) {
-            return [];
-        }
-        itemsToAdd = [];
-        idsToAdd = [];
-        // first collect new items to be able to add them one by one and inform whether there are more to come
-        if (typeOf(items) == 'array') {
-            length = items.length;
-            for (i = 0; i < length; i++) {
-                id = items[i][idString];
-                if (!dataHolder.ids.contains(id)) {
-                    itemsToAdd.push(items[i]);
-                    idsToAdd.push(id);
-                }
-            }
-        } else {
-            id = items[idString];
-            if (!dataHolder.ids.contains(id)) {
-                itemsToAdd.push(items);
-                idsToAdd.push(id);
-            }
-        }
-        length = itemsToAdd.length;
-        for (i = 0; i < length; i++) {
-            dataHolder.ids.push(idsToAdd[i]);
-            dataHolder.items.push(itemsToAdd[i]);
-            itemAddedCallback.call(this, itemsToAdd[i], i < length - 1);
-        }
-        if (length > 0) {
-            this.dirty = true;
-            this.modified = true;
-        }
-        return idsToAdd;
-    },
-
-    /**
-     * Adds a tag to the addedTags array if it is not yet contained. In case the tag was added
-     * tagAdded will be called and the dirty flag will be set.
-     *
-     * @param {String|Object} tag The tag to add, can be a simple string tag or a structured tag
-     *            object
-     */
-    addTag: function(tag) {
-        // if the tag is a string build the minimal tag object
-        tag = this.convertToTagObject(tag);
-        if (this.internalAddTag(tag, this.addedTags)) {
-            this.dirty = true;
-            this.modified = true;
-            this.tagAdded(tag, false);
+    
+    activateFullEditor: function() {
+        this.setRenderStyle('full');
+        if (this.action === 'create') {
+            this.editor.focus();
         }
     },
-    /**
-     * Adds a bunch of tags to the addedTags array. Only tags that are not yet contained will be
-     * added. For each added tag the tagAdded will be called. If any tag was added the dirty flag
-     * will be set.
-     *
-     * @param {String[]|Object[]} tags The tags to add, the array can contain simple string tags or
-     *            structured tag objects
-     */
-    addTags: function(tags) {
-        var i, addedTags, tag, lastIndex;
-        if (!tags) {
-            return;
-        }
-        addedTags = [];
-        for (i = 0; i < tags.length; i++) {
-            // if the tag is a string build the minimal tag object
-            tag = this.convertToTagObject(tags[i]);
-            if (this.internalAddTag(tag, this.addedTags)) {
-                addedTags.push(tag);
-            }
-        }
-        // inform FE that tags were added
-        lastIndex = addedTags.length - 1;
-        if (lastIndex > -1) {
-            for (i = 0; i <= lastIndex; i++) {
-                this.tagAdded(addedTags[i], i < lastIndex);
-            }
-            this.dirty = true;
-            this.modified = true;
-        }
-    },
-
-    addTopics: function(topics) {
-        var targetTopicId, ids, newTargetTopic, i;
-        if (!topics) {
-            return;
-        }
-        targetTopicId = this.getTargetTopicId();
-        topics = Array.from(topics);
-        if (targetTopicId == undefined) {
-            newTargetTopic = topics.shift();
-            this.addNewItems(this.topics, newTargetTopic, 'id', this.topicAdded);
-            this.targetTopicChanged();
-        }
-        if (this.isDirectMessage) {
-            // TODO show an error message that adding crosspost blogs is not allowed in DM mode
-            return false;
-        }
-        // assert that all topics have an alias since it is required for crossposting
-        for (i = 0; i < topics.length; i++) {
-            if (!topics[i].alias) {
-                throw 'Alias of crosspost topic is missing';
-            }
-        }
-        ids = this.addNewItems(this.topics, topics, 'id', this.topicAdded);
-        return (ids.length > 0);
-    },
-
-    /**
-     * Adds users for notification.
-     *
-     * @param {Object|Object[]) users An object containing user data or an array of such objects.
-     * @return whether something was added
-     */
-    addUsers: function(users) {
-        var aliases = this.addNewItems(this.usersToNotify, users, 'alias', this.userAdded);
-        return (aliases.length > 0);
-    },
-
-    /**
-     * Called after an attachment was added. Subclasses can use this hook to update the view.
-     *
-     * @param {Object} attachmentData JSON object describing the attached attachment
-     * @param {boolean} moreToCome true if the attachment was added as part of batch update and the
-     *            current item is not the last. Can be used to optimize view updates.
-     */
-    attachmentAdded: function(attachmentData, moreToCome) {
-    },
-
-    /**
-     * Called after an attachment was removed. Subclasses can use this hook to update the view.
-     *
-     * @param {String} id identifier of the attached attachment. This parameter is null if all
-     *            attachments were removed.
-     */
-    attachmentRemoved: function(id) {
-    },
-
-    attachmentUploadDone: function(uploadId, jsonResponse) {
-        // check for error message
-        if (jsonResponse.status == 'ERROR') {
-            this.attachmentUploadFailed(uploadId, jsonResponse.message);
-        } else {
-            this.attachmentUploadSucceeded(uploadId, jsonResponse.result);
-        }
-    },
-
-    attachmentUploadFailed: function(uploadId, errorMessage) {
-        // enable send button
-        this.getSendButtonElement().removeProperty('disabled');
-        if (errorMessage) {
-            // hide notifications
-            hideNotification();
-            // show error occurred
-            showNotification(NOTIFICATION_BOX_TYPES.error, '', errorMessage, {
-                duration: ''
-            });
-        }
-    },
-
-    attachmentUploadStarted: function(uploadDescriptor) {
-        // disable send button
-        this.getSendButtonElement().disabled = 'disabled';
-    },
-
-    attachmentUploadSucceeded: function(uploadId, attachmentData) {
-        // enable send button
-        this.getSendButtonElement().removeProperty('disabled');
-        attachmentData.uploadId = uploadId;
-        this.addAttachments(attachmentData);
-    },
-
-    /**
-     * Is called periodically to do an autosave of the note if something changed.
-     */
-    autosaveJob: function() {
-        var content, skipOnlineSave;
-
-        if (this.dirty || this.editor.isDirty()) {
-            this.updateAutosaveMarker(getJSMessage('blogpost.autosave.saving'), false);
-            content = this.editor.getContent();
-            this.dirty = false;
-            // this.autosaveJobActiveTypes.empty();
-            // skip online autosaves if still running
-            skipOnlineSave = this.runningAutosaveRequest;
-            this.autosaveNoteOffline(content, skipOnlineSave);
-            if (!skipOnlineSave) {
-                this.autosaveNoteOnline(content);
-            }
-        }
-    },
-
-    autosaveNoteOffline: function(content, skipOnlineAutosave) {
-        this.autosaveJobActiveTypes.erase('offline');
-        if (this.autosaveCookie == null) {
-            return;
-        }
-        this.autosaveCookie.empty();
-        this.storeInAutosaveCookie(content);
-        // increase version if previous online autosave is still running and current online
-        // autosave is skipped -> offline autosave will be newer than previous online autosave
-        if (skipOnlineAutosave) {
-            this.autosaveCookie.set('autosaveVersion', this.autosaveVersion + 1);
-        } else {
-            this.autosaveCookie.set('autosaveVersion', this.autosaveVersion);
-        }
-        // fails if too large (>4kb)
-        if (this.autosaveCookie.save()) {
-            this.autosavingDone(false);
-        }
-    },
-
-    autosaveNoteOnline: function(content) {
-        this.autosaveJobActiveTypes.erase('online');
-        // won't succeed if empty or no topic is selected
-        if (content == null || (content.length == 0)
-                || (this.action == 'create' && this.getTargetTopicId() == null)) {
-            return;
-        }
-        this.sendNote(false, content);
-    },
-
-    autosaveNoteOnlineComplete: function(response) {
-        this.runningAutosaveRequest = false;
-        if (response && response.result) {
-            this.autosavingDone(true);
-            // TODO api returns only noteId and no details like version, can only blindly
-            // increment autosave version
-            // using REST API 3.0 whose result object is the ID of the autosave
-            this.autosaveNoteId = response.result;
-            this.autosaveVersion++;
-        }
-    },
-
-    /**
-     * Is called after an autosave has been created.
-     *
-     * @param {boolean} online true if it the autosave was created online, false if it was stored
-     *            offline in a cookie
-     */
-    autosavingDone: function(online) {
-        this.autosaveJobActiveTypes.include(online ? 'online' : 'offline');
-        this.updateAutosaveMarker(getJSMessage('blogpost.autosave.saved') + " "
-                + localizedDateFormatter.format(new Date()), this.autosaveRenderDiscardLink);
-        this.autosaveCreated = true;
+    
+    addEventListener: function(eventName, fn, context) {
+        this.eventEmitter.on(eventName, fn, context);
     },
 
     /**
@@ -510,7 +207,11 @@ var CreateNoteWidget = new Class({
     beforeRemove: function() {
         this.stopAutosaveJob();
         // TODO do autosave?
+        if (this.targetBlogIdChangeTracker) {
+            this.targetBlogIdChangeTracker.destroy();
+        }
         this.cleanup();
+        this.eventEmitter.emit('widgetRemoving');
     },
 
     /**
@@ -521,6 +222,7 @@ var CreateNoteWidget = new Class({
      */
     cancel: function(event) {
         var remove, changeRenderStyle, hasAutosave, modified, postRemoveOperation;
+        var hasOnlineAutosave;
         var behavior = this.cancelBehavior;
         if (behavior.action) {
             remove = behavior.action === 'remove';
@@ -534,7 +236,9 @@ var CreateNoteWidget = new Class({
         hasAutosave = this.hasAutosave();
         modified = this.isModified();
         if (behavior.discardAutosave && (hasAutosave || modified)) {
+            hasOnlineAutosave = this.autosaveHandler && this.autosaveHandler.hasOnlineAutosave();
             postRemoveOperation = function() {
+                this.eventEmitter.emit('noteDiscarded', hasOnlineAutosave);
                 if (!remove) {
                     this.resetToNoAutosaveState();
                     if (changeRenderStyle) {
@@ -546,20 +250,22 @@ var CreateNoteWidget = new Class({
             }.bind(this);
             if (hasAutosave) {
                 if (behavior.confirmDiscard || behavior.confirmReset) {
-                    this.discardAutosaveWithConfirm(event, postRemoveOperation);
+                    this.autosaveHandler.discardWithConfirm(event, postRemoveOperation);
                 } else {
-                    this.discardAutosave(postRemoveOperation);
+                    this.autosaveHandler.discard(postRemoveOperation);
                 }
             } else {
-                // only modified, but can call the same operations
+                // only modified. Can call the same operations but have to stop the autosave job before
+                this.stopAutosaveJob();
                 if (behavior.confirmReset) {
                     showConfirmDialog(getJSMessage('create.note.dialog.discardChanges.title'),
                             getJSMessage('create.note.dialog.discardChanges.question'),
-                            this.discardAutosave.bind(this, postRemoveOperation), {
-                                triggeringEvent: event
+                            postRemoveOperation, {
+                                triggeringEvent: event,
+                                onCloseCallback: this.startAutosaveJob.bind(this)
                             });
                 } else {
-                    this.discardAutosave(postRemoveOperation);
+                    postRemoveOperation();
                 }
             }
         } else {
@@ -570,37 +276,6 @@ var CreateNoteWidget = new Class({
                 this.setRenderStyle(behavior.actionOptions);
             }
         }
-    },
-
-    changeDirectMessageMode: function(activate) {
-        if (this.isDirectMessage === activate) {
-            return;
-        }
-        if (activate) {
-            // activate only possible if crosspost blogs are empty and at least one user was
-            // added
-            // TODO show an error if not activatable?
-            if (this.getCrosspostTopicsCount() == 0 && this.usersToNotify.ids.length > 0) {
-                this.isDirectMessage = true;
-            }
-        } else {
-            this.isDirectMessage = false;
-        }
-        if (this.isDirectMessage === activate) {
-            this.directMessageModeChanged();
-        }
-    },
-
-    /**
-     * Define if already notified user should receive notifications again
-     */
-    changeResendNotificationMode: function(activate) {
-      this.resendNotificationProperty = {
-        'key': 'editNote.resendNotification',
-        'keyGroup': 'com.communote',
-        'value': activate
-      };
-      communoteLocalStorage.setItem('com.communote.editNote.resendNotification', activate);
     },
 
     /**
@@ -615,7 +290,7 @@ var CreateNoteWidget = new Class({
         }
         // @@discussion should only be matched when in a discussion context: create note or edit
         // a note that is not part of a discussion with more than one note
-        if (this.action == 'create'
+        if (this.action === 'create' || this.action === 'repost'
                 || (this.action == 'edit' && this.initialNote.numberOfDiscussionNotes == 1)) {
             return false;
         }
@@ -627,121 +302,14 @@ var CreateNoteWidget = new Class({
      */
     cleanup: function() {
         this.editor.cleanup();
-        // remove attached autocompleter
-        if (this.userAutocompleter) {
-            this.userAutocompleter.destroy();
-        }
-        if (this.topicAutocompleter) {
-            this.topicAutocompleter.destroy();
-        }
-        if (this.tagAutocompleter) {
-            this.tagAutocompleter.destroy();
-        }
-        if (this.placeholders) {
-            this.placeholders.destroy();
-        }
-    },
-
-    clearAll: function() {
-        var elem;
-        if (this.action == 'create') {
-            this.resetTargetTopic();
-        } else {
-            this.removeTopic(null);
-        }
-        this.removeTag(null);
-        this.removeAttachment(null);
-        this.removeUser(null);
-        this.editor.resetContent(null);
-        this.autosaveNoteId = null;
-        this.autosaveVersion = 0;
-        this.updateAutosaveMarker(null);
-        this.changeDirectMessageMode(false);
-        // empty inputs
-        elem = this.getTagSearchElement();
-        if (elem) {
-            elem.value = '';
-        }
-        elem = this.getTopicSearchElement();
-        if (elem) {
-            elem.value = '';
-        }
-        elem = this.getUserSearchElement();
-        if (elem) {
-            elem.value = '';
-        }
-        this.dirty = false;
-        this.modified = false;
-        this.autosaveLoaded = false;
-        this.autosaveCreated = false;
-        this.noteProperties = null;
     },
 
     /**
      * Called after the content of the widget has been initialized after a refresh.
      *
-     * @param {boolean} fromOnlineAutosave If true, there was an autosave that was loaded from the
-     *            server
-     * @param {boolean} fromOfflineAutosave If true, there was an autosave that was loaded from the
-     *            cookie
+     * @param {boolean} fromAutosave If true, the widget was initialized with an autosave
      */
-    contentInitialized: function(fromOnlineAutosave, fromOfflineAutosave) {
-        if (fromOfflineAutosave || fromOnlineAutosave) {
-            this.autosaveLoaded = true;
-            this.updateAutosaveMarker(getJSMessage('blogpost.autosave.loaded'),
-                    this.autosaveRenderDiscardLink);
-        }
-    },
-
-    convertAutosaveCookieToJson: function() {
-        var blogs, tags, autosaveNoteId, i;
-        var note = {};
-        note.content = this.autosaveCookie.get('content');
-        note.attachments = this.autosaveCookie.get('attachs');
-        note.usersToNotify = this.autosaveCookie.get('users');
-        note.targetBlog = this.autosaveCookie.get('targetBlog');
-        note.properties = this.autosaveCookie.get('properties');
-        blogs = this.autosaveCookie.get('blogs');
-        if (blogs) {
-            // TODO remove this compatibility code in a future release (port 3.0)
-            // convert old nameId member to alias
-            for (i = 0; i < blogs.length; i++) {
-                if (blogs[i].nameId) {
-                    blogs[i].alias = blogs[i].nameId;
-                    delete blogs[i].nameId;
-                }
-            }
-            note.crosspostBlogs = blogs;
-        }
-        tags = this.autosaveCookie.get('tags');
-        // old tags where a string, ignore them
-        if (typeOf(tags) === 'array') {
-            note.tags = tags;
-        }
-        note.isAutosave = true;
-        // decrement version because init code increments it again and it should not grow when doing
-        // an offline autosave because online autosave should be treated as newer
-        note.autosaveVersion = this.autosaveCookie.get('autosaveVersion').toInt() - 1;
-        autosaveNoteId = this.autosaveCookie.get('autosaveNoteId');
-        if (autosaveNoteId) {
-            note.autosaveNoteId = autosaveNoteId.toInt();
-        }
-        return note;
-    },
-
-    /**
-     * Convert a tag string to a valid tag object containing the minimum required members if it is
-     * not already one.
-     *
-     * @param {String|Object} tag The tag to process
-     */
-    convertToTagObject: function(tag) {
-        if (typeof (tag) === 'string') {
-            tag = {
-                defaultName: tag
-            };
-        }
-        return tag;
+    contentInitializedAfterRefresh: function(fromAutosave) {
     },
 
     /**
@@ -750,21 +318,139 @@ var CreateNoteWidget = new Class({
      * @return {NoteTextEditor} the editor
      */
     createEditor: function() {
-        // create the dummy editor
-        return new NoteTextEditor();
+        var minimal, options;
+        if (!this.editorRefreshCompleteCallback) {
+            this.editorRefreshCompleteCallback = this.emitEvent.bind(this, 'editorRefreshed');
+        }
+        minimal = this.renderStyle === 'minimal';
+        options = {
+            autoresizeMinHeight: Math.floor(46200 / this.domNode.clientWidth),
+            useExpander: true,
+            focusOnRefresh: this.action === 'comment',
+            expanderOptions: {
+                additionalLines: 0,
+                minLines: minimal ? 1 : 0
+            },
+            keyboardShortcuts: {
+                ctrlKey: true,
+                keyCode: 13,
+                callback: this.publishNote.bind(this),
+                cancelEvent: true
+            },
+            storeEditorSize: this.action === 'create'
+        };
+        if (minimal) {
+            return NoteTextEditorFactory.createPlainTextEditor(null, options);
+        } else {
+            options.tagAutocompleterOptions = this.prepareAutocompleterOptions(
+                    this.setCurrentTopicBeforeRequestCallback.bind(this));
+            options.userAutocompleterOptions = this.prepareAutocompleterOptions(
+                    this.setCurrentTopicBeforeRequestCallback.bind(this));
+            options.userAutocompleterOptions.staticDataSourceOptions = {};
+            options.userAutocompleterOptions.staticDataSourceOptions.approveMatchCallback = this.checkDiscussionContextApproveMatchCallback
+                    .bind(this);
+            return NoteTextEditorFactory.createSupportedEditor(null, options);
+        }
     },
 
     /**
-     * Creates an object that holds all the information to be submitted when sending the note.
+     * Emit an event and notify all NoteEditorComponents or any other listener which registered for the
+     * event with addEventListener.
+     * 
+     * @param {String} eventName The name of the event to emit.
+     * @param {*} [eventData] Any data to pass to the listener.
+     */
+    emitEvent: function(eventName, eventData) {
+    	this.eventEmitter.emit(eventName, eventData);
+    },
+    extractInitData: function(responseMetadata) {
+        var targetTopic, autosave, initObject, initialNote, autosaveLoaded, content;
+        if (responseMetadata) {
+            initObject = responseMetadata.initialNote;
+        }
+        if (initObject) {
+            targetTopic = initObject.targetBlog;
+        } else {
+            targetTopic = this.getTargetTopicForCreate();
+            initObject = {};
+        }
+        // use provided content
+        content = this.getStaticParameter('content');
+        if (content) {
+            content = content.replace(/<br\s*\/?>/ig, '\n');
+            initObject.content = unescapeXML(content);
+        }
+        // save initial note object as copy
+        initialNote = Object.clone(initObject);
+        // force invocation of resetTargetTopic when initializing with initialNote and no topic is
+        // set in 'create' mode 
+        if (!initialNote.targetBlog && this.action === 'create') {
+            initialNote.forceResetTargetTopic = true;
+        }
+        // check for autosave and if available replace initObject with it to init with autosave
+        if (this.autosaveHandler) {
+            autosave = this.autosaveHandler.load(responseMetadata);
+            if (autosave) {
+                autosaveLoaded = true;
+                initObject = autosave.noteData;
+            }
+        }
+        // force the target topic of the parent or edited note, or in case of create of the autosave
+        if (this.action !== 'create' || !autosaveLoaded
+                || (this.initialTargetTopic && !this.noTargetTopicChangeIfModifiedOrAutosaved)) {
+            initObject.targetBlog = targetTopic;
+        }
+        return {
+            initObject: initObject,
+            initialNote: initialNote,
+            isAutosave: autosaveLoaded
+        };
+    },
+
+    getListeningEvents: function() {
+        return [];
+    },
+    
+    getNoteData: function(resetDirtyFlag) {
+        var data = {};
+        data.content = this.editor.getContent();
+        data.targetTopic = this.targetTopic;
+        data.isHtml = this.editor.supportsHtml();
+        data.noteId = this.getFilterParameter('noteId');
+        if (this.action != 'edit') {
+            data.parentNoteId = this.parentPostId;
+        }
+
+        data.properties = [];
+        // add properties extracted from init object. Components can overwrite them.
+        if (this.noteProperties) {
+        	communote.utils.propertyUtils.mergeProperties(data.properties, this.noteProperties);
+        }
+        this.components.appendNoteData(data, resetDirtyFlag);
+
+        // add predefined properties and let them overwrite properties added by components
+        if (this.predefinedNoteProperties) {
+        	communote.utils.propertyUtils.merge(data.properties, this.predefinedNoteProperties); 
+        }
+        if (data.properties.length === 0) {
+            delete data.properties;
+        }
+        if (resetDirtyFlag) {
+            this.dirty = false;
+        }
+        return data;
+    },
+    /**
+     * Creates an object that holds all the information to be submitted when sending the note via
+     * REST API.
      *
      * @param {boolean} publish whether the note will be published or stored as an autosave
      * @param {String} content the content of the note
      * @return {Object} an object with all information for storing the note
      */
-    createPostData: function(publish, content) {
-        var i, name, properties;
+    getNoteDataForRestRequest: function(publish, content) {
+        var i, name;
         var data = {};
-        data.text = content;
         var writeContainerElem = this.getWriteContainerElement();
         var hiddenInputs = writeContainerElem.getElements('input[type=hidden]');
         for (i = 0; i < hiddenInputs.length; i++) {
@@ -773,269 +459,36 @@ var CreateNoteWidget = new Class({
                 data[name] = hiddenInputs[i].value;
             }
         }
+        data.properties = [];
+        // add properties extracted from init object. Components can overwrite them.
+        if (this.noteProperties) {
+            communote.utils.propertyUtils.mergeProperties(data.properties, this.noteProperties);
+        }
+        data.text = content;
         data.isHtml = this.editor.supportsHtml();
         data.topicId = this.getTargetTopicId();
         data.noteId = this.getFilterParameter('noteId');
         if (this.action != 'edit') {
             data.parentNoteId = this.parentPostId;
-            data.isDirectMessage = this.isDirectMessage;
         }
-        data.tags = this.createTagsPostData(publish);
-        data.usersToNotify = this.usersToNotify.ids;
-        data.crossPostTopicAliases = this.getCrosspostTopics(true);
-        data.attachmentIds = this.attachments.ids;
+        this.components.appendNoteDataForRestRequest(data, publish, false);
         data.publish = publish === true ? true : false;
-        data.autosaveNoteId = this.autosaveNoteId;
-        data.noteVersion = this.autosaveVersion;
-
-        if(this.action === 'edit') {
-          if (this.noteProperties === null) {
-            this.noteProperties = [];
-          }
-          this.noteProperties.push(this.resendNotificationProperty);
+        if (this.autosaveHandler) {
+            data.autosaveNoteId = this.autosaveHandler.getNoteId();
+            data.noteVersion = this.autosaveHandler.getVersion();
         }
-
-        properties = this.createPropertiesPostData(publish);
-        if (properties) {
-            data.properties = properties;
+        // add predefined properties and let them overwrite properties added by components
+        if (this.predefinedNoteProperties) {
+            communote.utils.propertyUtils.merge(data.properties, this.predefinedNoteProperties); 
+        }
+        if (data.properties.length === 0) {
+            delete data.properties;
         }
         return data;
-    },
-    /**
-     * @return {Object[]} array with all note properties or null if no properties were set
-     */
-    createPropertiesPostData: function(publish) {
-        var properties;
-        if (this.noteProperties) {
-            properties = this.noteProperties.slice(0);
-        } else {
-            properties = [];
-        }
-        if (this.predefinedNoteProperties) {
-            if (typeOf(this.predefinedNoteProperties) === 'array') {
-                communote.utils.propertyUtils.mergeProperties(properties,
-                        this.predefinedNoteProperties);
-            } else {
-                communote.utils.propertyUtils.mergeProperty(properties,
-                        this.predefinedNoteProperties);
-            }
-        }
-        if (properties.length == 0) {
-            properties = null;
-        }
-        return properties;
-    },
-
-    /**
-     * @returns {Array} an array of objects representing the tags to attach when saving the note
-     */
-    createTagsPostData: function(publish) {
-        var finalTags, uncommittedTags, i;
-        finalTags = this.addedTags.clone();
-        // do not save tags from input when doing an autosave and the user is still
-        // typing in the tag field, because we would add incomplete tags to the DB
-        if (this.storeUncommittedTags
-                && (publish || (this.tagAutocompleter && !this.tagAutocompleter
-                        .isInputElementFocused()))) {
-            uncommittedTags = this.extractTagsFromInput();
-            for (i = 0; i < uncommittedTags.length; i++) {
-                this.internalAddTag(uncommittedTags[i], finalTags);
-            }
-        }
-        return finalTags;
-    },
-
-    /**
-     * Called to delete the offline autosave cookie, for instance if the user discarded the autosave
-     * or the note was published. Will even be called if there is no cookie. There won't be a cookie
-     * if autosave feature or the cookies are disabled.
-     */
-    deleteAutosaveCookie: function() {
-        if (this.autosaveCookie) {
-            Cookie.dispose(this.autosaveCookie.key);
-            this.autosaveCookie.empty();
-        }
-    },
-
-    /**
-     * Called by changeDirectMessageMode if the new mode could be set.
-     */
-    directMessageModeChanged: function() {
-    },
-
-    /**
-     * Discard the autosave if there is one.
-     *
-     * @param {Function} [postRemoveOperation] A function to run after successfully removing the
-     *            autosave. If null the editor will be reset. If no operation should be executed
-     *            pass false.
-     */
-    discardAutosave: function(postRemoveOperation) {
-        var url, request, i, utils;
-        // default post remove operation: reset editor
-        if (postRemoveOperation == null) {
-            postRemoveOperation = this.resetToNoAutosaveState.bind(this);
-        }
-        if (this.autosaveDisabled) {
-            if (postRemoveOperation) {
-                postRemoveOperation.call();
-            }
-            return;
-        }
-        // TODO block if there are running uploads?
-        this.stopAutosaveJob();
-        this.deleteAutosaveCookie();
-        if (this.autosaveNoteId != null) {
-            url = this.discardAutosaveUrl + this.autosaveNoteId;
-            request = new Request.JSON({
-                url: url,
-                method: 'get',
-                noCache: true
-            });
-            request.addEvent('complete', this.discardAutosaveOnlineComplete.bind(this,
-                    postRemoveOperation));
-            request.send();
-        } else {
-            utils = noteUtils;
-            for (i = 0; i < this.attachments.ids.length; i++) {
-                // not really interested in the server response as the job
-                // will clean-up the attachments that could not be deleted
-                utils.deleteAttachment(this.attachments.ids[i]);
-            }
-            if (postRemoveOperation) {
-                postRemoveOperation.call();
-            }
-        }
-    },
-
-    discardAutosaveOnlineComplete: function(postRemoveOperation, jsonObj) {
-        if (jsonObj && jsonObj.status == 'ERROR') {
-            this.updateAutosaveMarker(jsonObj.message, false);
-        } else if (postRemoveOperation) {
-            postRemoveOperation.call();
-        }
-    },
-
-    discardAutosaveWithConfirm: function(event, postRemoveOperation) {
-        var title = getJSMessage('create.note.autosave.discard.title');
-        var message = getJSMessage('create.note.autosave.discard.question');
-        showConfirmDialog(title, message, this.discardAutosave.bind(this, postRemoveOperation), {
-            triggeringEvent: event
-        });
-    },
-
-    /**
-     * @returns {String[]} an array of tag strings the user typed into the tag input field. The
-     *          array is empty there is no tag input or no tags were added
-     */
-    extractTagsFromInput: function() {
-        var tagString, splitted, i;
-        var tags = [];
-        var field = this.getTagSearchElement();
-        if (field) {
-            tagString = field.value.trim();
-            if (tagString.length > 0) {
-                splitted = tagString.split(this.tagStringSplitRegEx);
-                // remove blank
-                for (i = 0; i < splitted.length; i++) {
-                    if (splitted[i].length > 0) {
-                        tags.push(this.convertToTagObject(splitted[i]));
-                    }
-                }
-            }
-        }
-        return tags;
-    },
-
-    getAttachmentSearchElement: function() {
-        return this.domNode.getElement('input[type=file]');
-    },
-
-    /**
-     * Returns the element to be updated with autosave status data.
-     */
-    getAutosaveMarkerElement: function() {
-    },
-
-    getCrosspostTopicsCount: function() {
-        var count = this.topics.ids.length;
-        if (count > 0) {
-            // first topic is the target topic
-            count--;
-        }
-        return count;
-    },
-
-    getCrosspostTopics: function(aliases) {
-        var i, topics, result;
-        // first topic is the target topic
-        if (!aliases) {
-            return this.topics.items.slice(1);
-        }
-        topics = this.topics.items;
-        result = [];
-        for (i = 1; i < topics.length; i++) {
-            result.push(topics[i].alias);
-        }
-        return result;
-    },
-
-    /**
-     * Returns the index of a tag within the tagStore array.
-     *
-     * @param {Object} tag The tag to find, can be a simple unpersisted tag which just has the
-     *            defaultName set or a persisted tag with tagId
-     * @param {Object[]} tagStore Array that holds tags which can be persisted tags with tagId or
-     *            tags that are not yet persisted
-     * @returns {Number} the index of the tag or -1 if not contained
-     */
-    getIndexOfTag: function(tag, tagStore) {
-        var i, index, simpleTag, addedTag;
-        index = -1;
-        // check if tag is just a string or a structured tag with tagId
-        simpleTag = tag.tagId == undefined;
-        for (i = 0; i < tagStore.length; i++) {
-            addedTag = tagStore[i];
-            if (simpleTag) {
-                // compare by value: equal if default name matches the input and tagstore is not
-                // set or the defaultTagStore
-                if (!addedTag.tagStoreAlias || addedTag.tagStoreAlias === tag.tagStoreAlias) {
-                    if (addedTag.defaultName === tag.defaultName) {
-                        index = i;
-                        break;
-                    }
-                }
-            } else if (addedTag.tagId === tag.tagId) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    },
-
-    getListeningEvents: function() {
-        return [];
     },
 
     getSendButtonElement: function() {
         return this.domNode.getElementById(this.widgetId + '-send-button');
-    },
-
-    /**
-     * Returns the element to be used as positionSource element for the tag autocompleter.
-     *
-     * @return {Element} the element or null if not required
-     */
-    getTagAutocompleterPositionSource: function() {
-        return null;
-    },
-    /**
-     * Returns the tag search element.
-     *
-     * @return {Element} the element if it exists
-     */
-    getTagSearchElement: function() {
-        return this.domNode.getElementById(this.widgetId + '-tag-search');
     },
 
     getTargetTopicForCreate: function() {
@@ -1056,41 +509,7 @@ var CreateNoteWidget = new Class({
     },
 
     getTargetTopicId: function() {
-        return this.topics.ids[0];
-    },
-
-    /**
-     * Returns the element to be used as positionSource element for the topic autocompleter.
-     *
-     * @return {Element} the element or null if not required
-     */
-    getTopicAutocompleterPositionSource: function() {
-        return null;
-    },
-    /**
-     * Returns the topic search element.
-     *
-     * @return {Element} the element if it exists
-     */
-    getTopicSearchElement: function() {
-        return this.domNode.getElementById(this.widgetId + '-topic-search');
-    },
-
-    /**
-     * Returns the element to be used as positionSource element for the user autocompleter.
-     *
-     * @return {Element} the element or null if not required
-     */
-    getUserAutocompleterPositionSource: function() {
-        return null;
-    },
-    /**
-     * Returns the user search element.
-     *
-     * @return {Element} the element if it exists
-     */
-    getUserSearchElement: function() {
-        return this.domNode.getElementById(this.widgetId + '-user-search');
+        return this.targetTopic && this.targetTopic.id;
     },
 
     /**
@@ -1108,10 +527,9 @@ var CreateNoteWidget = new Class({
     /**
      * Return the element that contains the input element for the post data and some (optional)
      * additional hidden inputs that provide data to be sent to the server when sending the note.
-     * This method looks for a FORM element by default.
      */
     getWriteContainerElement: function() {
-        return this.domNode.getElement('form');
+        return this.domNode.getElement('.cn-write-note-editor');
     },
 
     /**
@@ -1119,133 +537,84 @@ var CreateNoteWidget = new Class({
      *         on
      */
     hasAutosave: function() {
-        return this.autosaveLoaded || this.autosaveCreated;
+        if (this.autosaveHandler) {
+            return this.autosaveHandler.hasAutosave();
+        }
+        return false;
+    },
+    
+    hideUserInterface: function(errorMsg) {
+        var errorContainer = this.domNode.getElement('.cn-write-note-no-editor-content');
+        errorContainer.set('text', errorMsg);
+        if (!this.userInterfaceHidden) {
+            this.domNode.getElement('.cn-write-note').addClass('cn-hidden');
+            this.domNode.getElement('.cn-write-note-no-editor').removeClass('cn-hidden');
+            this.userInterfaceHidden = true;
+            this.eventEmitter.emit('userInterfaceHidden');
+        }
     },
 
-    initAutosaveCookie: function() {
-        var cookieName, action;
+    initAutosaveHandler: function() {
+        var action, noteId, options, autosaveTimeout;
         if (this.autosaveDisabled) {
             return;
         }
         action = this.action;
-        if (this.getFilterParameter('repostNoteId')) {
-            action = 'repost';
+        if (action === 'edit') {
+            noteId = this.getFilterParameter('noteId');
+        } else if (action === 'comment') {
+            noteId = this.parentPostId;
+        } else if (action === 'repost') {
+            noteId = this.getFilterParameter('repostNoteId');
         }
-        // make cookie user-unique
-        cookieName = 'autosave_' + action + '_u' + communote.currentUser.id;
-        if (action == 'edit') {
-            cookieName = cookieName + '_' + this.getFilterParameter('noteId');
-        } else if (action == 'comment') {
-            cookieName = cookieName + '_' + this.parentPostId;
-        } else if (action == 'repost') {
-            cookieName = cookieName + '_' + this.getFilterParameter('repostNoteId');
+        options = this.getStaticParameter('autosaveOptions') || {};
+        if (!options.defaultDiscardCompleteCallback) {
+            options.defaultDiscardCompleteCallback = this.resetToNoAutosaveState.bind(this);
         }
-        // cookie is set to be valid for 7 days
-        var cookie = new Hash.Cookie(cookieName, {
-            duration: 7,
-            autoSave: false
-        });
-        cookie.load();
-        this.autosaveCookie = cookie;
+        // prefer new option
+        if (!options.autosaveTimeout) {
+            // check old option (value is in seconds)
+            autosaveTimeout = this.getStaticParameter('draftTimer');
+            if (autosaveTimeout != null) {
+                options.autosaveTimeout = autosaveTimeout * 1000;
+            }
+        }
+        this.autosaveHandler = new communote.classes.NoteEditorAutosaveHandler(this, action, noteId,
+                options);
     },
 
-    initContent: function(responseMetadata) {
-        var targetTopic, offlineAutosaveVersion, onlineAutosave, initObject, autosaveLoaded, content;
-        if (this.autosaveCookie) {
-            offlineAutosaveVersion = this.autosaveCookie.get('autosaveVersion');
-        }
-        if (responseMetadata) {
-            onlineAutosave = responseMetadata.autosave;
-            initObject = responseMetadata.initialNote;
-        }
-        if (initObject) {
-            targetTopic = initObject.targetBlog;
+    initContent: function(note) {
+        if (!note) {
+            // clearAll
+            this.resetTargetTopic();
+            this.components.initContent(null);
+            this.editor.resetContent(null);
+            this.noteProperties = null;
         } else {
-            targetTopic = this.getTargetTopicForCreate();
-            initObject = {};
-        }
-        // use provided content
-        content = this.getStaticParameter('content');
-        if (content) {
-            content = content.replace(/<br\s*\/?>/ig, '\n');
-            initObject.content = unescapeXML(content);
-        }
-        // save initial note object as copy
-        this.initialNote = Object.clone(initObject);
-        // check for autosave and if available replace initObject with it to init with autosave
-        if (onlineAutosave) {
-            autosaveLoaded = true;
-            if (offlineAutosaveVersion > onlineAutosave.autosaveVersion) {
-                // offline autosave is newer
-                initObject = this.convertAutosaveCookieToJson();
-                onlineAutosave = false;
+            if (note.forceResetTargetTopic) {
+                this.resetTargetTopic();
             } else {
-                initObject = onlineAutosave
+                this.setTargetTopic(note.targetBlog);
             }
-        } else if (offlineAutosaveVersion != null) {
-            initObject = this.convertAutosaveCookieToJson();
-            autosaveLoaded = true;
-        }
-        // force the target topic of the parent or edited note, or in case of create of the autosave
-        if (this.action != 'create' || !autosaveLoaded
-                || (this.initialTargetTopic && !this.noTargetTopicChangeIfModifiedOrAutosaved)) {
-            initObject.targetBlog = targetTopic;
-        }
-
-        this.initContentFromJsonObject(initObject);
-        this.contentInitialized(autosaveLoaded && !!onlineAutosave, autosaveLoaded
-                && !onlineAutosave);
-    },
-
-    initContentFromJsonObject: function(note) {
-        var topics;
-        this.editor.resetContent(note.content);
-        this.addAttachments(note.attachments);
-        this.addUsers(note.usersToNotify);
-        this.addTags(note.tags);
-        if (note.isAutosave) {
-            this.autosaveNoteId = note.autosaveNoteId;
-            // increment autosave version so that new autosaves are newer
-            this.autosaveVersion = note.autosaveVersion + 1;
-        }
-        // no crosspost topics when targetBlog is not set or replying
-        if (note.targetBlog) {
-            topics = [ note.targetBlog ];
-            if (this.action != 'comment' && note.crosspostBlogs) {
-                topics.append(note.crosspostBlogs);
-            }
-            this.addTopics(topics);
-        }
-        if (note.properties) {
+            this.components.initContent(note);
+            this.editor.resetContent(note.content);
             this.noteProperties = note.properties;
         }
-        this.changeDirectMessageMode(note.isDirectMessage);
+        this.dirty = false;
         this.modified = false;
     },
 
-    /**
-     * Helper that adds a tag to the tagStore array if it is not yet contained.
-     *
-     * @param {Object} tag The tag to add
-     * @param {Object[]} tagStore Array that holds tags which can be persisted tags with tagId or
-     *            tags that are not yet persisted
-     * @returns {Boolean} True if the tag was added, false if it was already contained
-     */
-    internalAddTag: function(tag, tagStore) {
-        if (this.getIndexOfTag(tag, tagStore) === -1) {
-            tagStore.push(tag);
-            return true;
-        }
-        return false;
+    isDirty: function() {
+        return this.dirty || this.editor.isDirty() || this.components.isDirty();
     },
-
+    
     isModified: function() {
         if (!this.modified) {
             if (this.editor.isDirty()) {
                 this.modified = true;
             }
         }
-        return this.modified;
+        return this.modified || this.components.isModified();
     },
 
     /**
@@ -1259,6 +628,13 @@ var CreateNoteWidget = new Class({
             delete this.initialTargetTopic.loadingTitle;
             if (response.httpStatusCode == 404) {
                 this.initialTargetTopic.notFound = true;
+                // don't know which request (refresh, topic-info GET or topic-rights) is faster -> 
+                // don't hide the interface while still loading, the topic-rights check callback will do it
+                if (this.firstDOMLoadDone) {
+                    this.hideUserInterface(response.message);
+                } else {
+                    this.initialTargetTopic.notFoundErrorMessage = response.message;
+                }
             } else if (response.httpStatusCode == 403) {
                 this.initialTargetTopic.noReadAccess = true;
             } else {
@@ -1277,9 +653,9 @@ var CreateNoteWidget = new Class({
             if (this.initialTargetTopic.loadingTitleAsync) {
                 delete this.initialTargetTopic.loadingTitleAsync;
                 delete this.initialTargetTopic.loadingTitle;
-                // if the topic is currently selected notify subclasses
-                if (this.topics.ids.length > 0 && this.topics.items[0] == this.initialTargetTopic) {
-                    this.selectedTopicTitleChanged(this.initialTargetTopic);
+                // if the topic is current targetTopic notify subclasses
+                if (this.targetTopic == this.initialTargetTopic) {
+                    this.targetTopicTitleChanged(this.initialTargetTopic);
                 }
             }
         }
@@ -1301,10 +677,10 @@ var CreateNoteWidget = new Class({
                 // show success message
                 showNotification(NOTIFICATION_BOX_TYPES.success, '', resultObj.message);
             }
-            // inform widgets and also provide the action
+            // inform widgets and also provide the action, but treat repost like create
             if (noteId) {
                 noteChangedDescr = {
-                    action: this.action,
+                    action: this.action === 'repost' ? 'create' : this.action,
                     noteId: noteId,
                     topicId: topicId
                 };
@@ -1314,10 +690,13 @@ var CreateNoteWidget = new Class({
                 }
                 E('onNotesChanged', noteChangedDescr);
             }
-            this.deleteAutosaveCookie();
+            // TODO fire internal event?
+            if (this.autosaveHandler) {
+                this.autosaveHandler.notePublished();
+            }
             // no need to clean up if removing it anyway
             if (this.publishSuccessBehavior.action != 'remove') {
-                this.clearAll();
+                this.initContent(null);
                 this.startAutosaveJob();
                 if (this.publishSuccessBehavior.action == 'renderStyle') {
                     this.setRenderStyle(this.publishSuccessBehavior.actionOptions);
@@ -1327,47 +706,56 @@ var CreateNoteWidget = new Class({
             }
         }
     },
+    
+    /**
+     * Callback of the targetBlogIdChangeTracker which observes the filter parameter store for
+     * changes of the parameter targetBlogId.
+     */
+    onTargetBlogIdChanged: function(oldTopicId, newTopicId) {
+        // update the initialTargetTopic so it will be set the next time an autosave is discarded or note was sent
+        this.setInitialTargetTopic(newTopicId, null);
+        // update the target topic, but not if modified or there is an autosave, also do nothing
+        // if not yet refreshed since the responseMetadata might contain autosave data
+        // TODO also check whether content is empty?
+        if (this.firstDOMLoadDone) {
+            if (!this.noTargetTopicChangeIfModifiedOrAutosaved) {
+                // CNT pre 3 behavior: change topic even if modified but not if the default topic
+                // fallback would be set
+                if (this.initialTargetTopic || !this.hasAutosave()) {
+                    this.resetTargetTopic();
+                } else {
+                    // if there is an autosave and user switched to a context where there is no
+                    // topic force an access check as if there would be no autosave by passing null
+                    // and not the topic of the autosave. This will ensure the editor is shown
+                    // and we have same behavior as when the widget is refreshed under same conditions.
+                    this.showOrHideUserInterfaceForTopic(null);
+                }
+            } else if (!this.isModified() && !this.hasAutosave()) {
+                this.resetTargetTopic();
+            }
+        }
+    },
 
     /**
      * Prepares the options for an autocompleter.
      *
-     * @param {String} positionSourceGetter Name of a local getter function that returns the
-     *            position source element for the autocompleter
-     * @param {Boolean} emptyOnSelection True if the autocompleter should clear the input when a
-     *            suggestion was selected
-     * @param {Boolean} unfocusOnSelection True if the autocompleter should remove the focus from
-     *            the input when a suggestion was selected
-     * @param {Function} beforeRequestCallback A callback function to be passed to the DataSource
+     * @param {Function} [beforeRequestCallback] A callback function to be passed to the DataSource
      * @returns {Object} the prepared options object
      */
-    prepareAutocompleterOptions: function(positionSourceGetter, emptyOnSelection,
-            unfocusOnSelection, beforeRequestCallback) {
-        var positionSource;
+    prepareAutocompleterOptions: function(beforeRequestCallback) {
         var preparedOptions = {};
         preparedOptions.autocompleterOptions = {};
-        if (positionSourceGetter) {
-            positionSource = this[positionSourceGetter]();
-            if (positionSource) {
-                preparedOptions.inputFieldOptions = {
-                    positionSource: positionSource
-                };
-            }
-        }
-        if (emptyOnSelection) {
-            preparedOptions.autocompleterOptions.clearInputOnSelection = true;
-        }
         if (beforeRequestCallback) {
             preparedOptions.dataSourceOptions = {};
             preparedOptions.dataSourceOptions.beforeRequestCallback = beforeRequestCallback;
         }
-        preparedOptions.autocompleterOptions.unfocusInputOnSelection = unfocusOnSelection;
         return preparedOptions;
     },
 
     publishNote: function() {
         // do nothing if there are still running uploads
         if (this.getSendButtonElement().disabled
-                || (this.attachmentUploader && this.attachmentUploader.hasRunningUploads())) {
+                || !this.components.canPublishNote()) {
             // TODO show an error message?
             return false;
         }
@@ -1379,71 +767,51 @@ var CreateNoteWidget = new Class({
 
     publishNoteWhenAutosaveDone: function() {
         var content;
-        if (this.runningAutosaveRequest) {
+        // TODO maybe have a more generic solution like letting the autosaveHandler disable publishing temporarily?
+        if (this.autosaveHandler && this.autosaveHandler.isAutosaveInProgress()) {
             // wait for end of autosave
             this.publishNoteWhenAutosaveDone.delay(1000, this);
         } else {
             content = this.editor.getContent();
-            this.sendNote(true, content);
+            this.sendNote(content);
         }
     },
 
     refresh: function() {
         this.cleanup();
+        this.eventEmitter.emit('widgetRefreshing');
         this.parent();
     },
 
-    refreshAttachmentSelection: function() {
-        var field = this.getAttachmentSearchElement();
-        if (field) {
-            this.attachmentUploader = new AjaxFileUpload(field, {
-                uploadOnChange: true
-            });
-            this.attachmentUploader.addEvent('uploadStarting', this.attachmentUploadStarted
-                    .bind(this));
-            this.attachmentUploader.addEvent('uploadFileNotFound', this.attachmentUploadFailed
-                    .bind(this));
-            this.attachmentUploader
-                    .addEvent('uploadFailed', this.attachmentUploadFailed.bind(this));
-            this.attachmentUploader.addEvent('uploadDone', this.attachmentUploadDone.bind(this));
-        }
-    },
-
     refreshComplete: function(responseMetadata) {
-        var isAutosave, resendNotification;
-        isAutosave = (this.autosaveCookie && this.autosaveCookie.get('autosaveVersion') != null)
-                || (responseMetadata && responseMetadata.autosave);
+        var initData;
+        // set a marker flag to be able to react depending on the current working context (pre & post init)  
+        this.initializingAfterRefresh = true;
+        initData = this.extractInitData(responseMetadata);
+        this.initialNote = initData.initialNote;
+
         // TODO better name
-        this.refreshView(isAutosave);
+        this.refreshView(initData.isAutosave);
         this.refreshEditor();
-
-        // attach autocompleters
-        if (this.useTopicSelection()) {
-            this.refreshTopicSelection(this.getTopicSearchElement());
+        this.eventEmitter.emit('widgetRefreshed');
+        
+        this.initContent(initData.initObject);
+        this.contentInitializedAfterRefresh(initData.isAutosave);
+        // TODO maybe let autosaveHandler.editorInitialized start job 
+        if (this.autosaveHandler) {
+            this.autosaveHandler.editorInitialized();
+            this.startAutosaveJob();
         }
-        if (this.useTagSelection()) {
-            this.refreshTagSelection(this.getTagSearchElement());
-        }
-        if (this.useUserSelection()) {
-            this.refreshUserSelection(this.getUserSearchElement());
-        }
-
-        if (this.useAttachmentSelection()) {
-            this.refreshAttachmentSelection();
-        }
-
-        if (this.action === 'edit') {
-          // Load the latest setting for the resend notification option via Local Storage
-          resendNotification = communoteLocalStorage.getItem('com.communote.editNote.resendNotification');
-          if(resendNotification === 'true') {
-            $(this.widgetId + '-resend-notification').set('checked', true);
-          }
-          this.changeResendNotificationMode(resendNotification);
-        }
-
-        this.initContent(responseMetadata);
-        this.startAutosaveJob();
         init_tips(this.domNode);
+        // check access rights but not if an autosave is loaded as we might get stuck. The latter can
+        // only happen if the topic isn't overridden by the current initial topic (override option
+        // false or no topic set and default topic fallback would take effect)
+        if (this.action == 'create'
+                && (!this.hasAutosave() || this.initialTargetTopic
+                        && !this.noTargetTopicChangeIfModifiedOrAutosaved)) {
+            this.showOrHideUserInterfaceForTopic(this.getTargetTopicId());
+        }
+        this.initializingAfterRefresh = false;
     },
 
     refreshEditor: function() {
@@ -1454,9 +822,13 @@ var CreateNoteWidget = new Class({
         if (this.editor.supportsHtml()) {
             classToAdd = this.richTextEditorCssClass;
             classToRemove = this.plainTextEditorCssClass;
+            this.domNode.getElement('.cn-write-note-editor-fields').removeClass('cn-border');
         } else {
             classToAdd = this.plainTextEditorCssClass;
             classToRemove = this.richTextEditorCssClass;
+            // if using plain text editor add 'cn-border' class to textarea wrapper to
+            // get correct look
+            this.domNode.getElement('.cn-write-note-editor-fields').addClass('cn-border');
         }
         if (classToAdd) {
             writeContainerElem.addClass(classToAdd);
@@ -1465,225 +837,83 @@ var CreateNoteWidget = new Class({
             writeContainerElem.removeClass(classToRemove);
         }
 
-        this.editor.refresh(writeContainerElem);
-    },
-
-    /**
-     * Attaches a tag autocompleter if a tag search element exists.
-     *
-     * @param {Element} searchElement The input element to attach the autocompleter to
-     */
-    refreshTagSelection: function(searchElement) {
-        var acOptions;
-        if (searchElement) {
-            acOptions = this.prepareAutocompleterOptions('getTagAutocompleterPositionSource', true,
-                    false, this.setCurrentTopicBeforeRequestCallback.bind(this));
-            if (!acOptions.suggestionsOptions) {
-                acOptions.suggestionsOptions = {};
-            }
-            acOptions.suggestionsOptions['categories'] = this.tagAutocompleterCategories;
-            this.tagAutocompleter = autocompleterFactory.createTagAutocompleter(searchElement,
-                    acOptions, null, 'NOTE', false, this.tagAutocompleterMultipleMode);
-            this.tagAutocompleter.addEvent('onChoiceSelected', this.tagChoiceSelected.bind(this));
-        }
-    },
-
-    /**
-     * Called after refresh if useTopicSelection returned true. Default implementation attaches a
-     * topic autocompleter to the input field.
-     *
-     * @param {Element} searchElement The input element to attach the autocompleter to
-     */
-    refreshTopicSelection: function(searchElement) {
-        var acOptions;
-        if (searchElement) {
-            acOptions = this.prepareAutocompleterOptions('getTopicAutocompleterPositionSource',
-                    true, false);
-            this.topicAutocompleter = autocompleterFactory.createTopicAutocompleter(searchElement,
-                    acOptions, null, false, 'write');
-            this.topicAutocompleter.addEvent('onChoiceSelected', this.topicChoiceSelected
-                    .bind(this));
-        }
-    },
-
-    /**
-     * Called after refresh if useUserSelection returned true. Default implementation attaches a
-     * user autocompleter to it.
-     *
-     * @param {Element} searchElement The input element to attach the autocompleter to
-     */
-    refreshUserSelection: function(searchElement) {
-        var acOptions;
-        if (searchElement) {
-            // do not remove focus when selecting because the user will usually add more than one user
-            acOptions = this.prepareAutocompleterOptions('getUserAutocompleterPositionSource',
-                    true, false, this.setCurrentTopicBeforeRequestCallback.bind(this));
-            acOptions.staticDataSourceOptions = {};
-            acOptions.staticDataSourceOptions.approveMatchCallback = this.checkDiscussionContextApproveMatchCallback
-                    .bind(this);
-            this.userAutocompleter = autocompleterFactory.createMentionAutocompleter(searchElement,
-                    acOptions, null, true);
-            this.userAutocompleter.addEvent('onChoiceSelected', this.userChoiceSelected.bind(this));
-        }
+        this.editor.refresh(writeContainerElem, this.editorRefreshCompleteCallback);
     },
 
     refreshView: function(autosaveLoaded) {
         this.ajaxLoadingOverlay = this.widgetController.createAjaxLoadingOverlay(this.domNode,
                 false);
-        this.placeholders = communote.utils.attachPlaceholders(null, this.domNode);
+        if (autosaveLoaded && this.renderStyle !== 'full') {
+            this.setRenderStyle('full');
+        }
     },
-
+    
     remove: function(deleteAutosave) {
+        var hasOnlineAutosave;
         if (deleteAutosave) {
             if (this.action != 'create') {
-                this.discardAutosave(true);
+                hasOnlineAutosave = this.autosaveHandler && this.autosaveHandler.hasOnlineAutosave();
+                this.eventEmitter.emit('noteDiscarded', hasOnlineAutosave);
+                if (this.autosaveHandler) {
+                    this.autosaveHandler.discard(false);
+                }
             }
         }
         this.widgetController.removeWidget(this);
     },
-
-    removeAttachment: function(id) {
-        if (this.removeItemFromDataHolder(this.attachments, id)) {
-            this.attachmentRemoved(id);
-        }
-    },
-
-    /**
-     * Removes the item from the data holder
-     *
-     * @param {Object} dataHolder The data holder to update
-     * @param {String} id identifier of the item to remove, if null remove all items
-     * @return {boolean} whether the dataHolder was changed
-     */
-    removeItemFromDataHolder: function(dataHolder, id) {
-        var idx;
-        var changed = false;
-        if (id != null) {
-            idx = dataHolder.ids.indexOf(id);
-            if (idx > -1) {
-                dataHolder.ids.splice(idx, 1);
-                dataHolder.items.splice(idx, 1);
-                changed = true;
-            }
-        } else {
-            // clear if it is not empty yet
-            if (dataHolder.ids.length) {
-                dataHolder.ids = [];
-                dataHolder.items = [];
-                changed = true;
-            }
-        }
-        if (changed) {
-            this.dirty = true;
-            this.modified = true;
-        }
-        return changed;
-    },
-
-    /**
-     * Remove one or all tags from the addedTags array. If the array was changed tagRemoved will be
-     * called.
-     *
-     * @param {Object|String} tag The tag to remove or null to remove all tags
-     */
-    removeTag: function(tag) {
-        var modified = false, index;
-        if (tag == null) {
-            if (this.addedTags.length > 0) {
-                this.addedTags.empty();
-                modified = true;
-            }
-        } else {
-            tag = this.convertToTagObject(tag);
-            index = this.getIndexOfTag(tag, this.addedTags);
-            if (index > -1) {
-                modified = true;
-                this.addedTags.splice(index, 1);
-            }
-        }
-        if (modified) {
-            this.dirty = true;
-            this.modified = true;
-            this.tagRemoved(tag);
-        }
-        return false;
-    },
-
-    removeTopic: function(topicData) {
-        var crosspostTopics, i, oldTargetTopicId, oldDirty;
-        var id = topicData && topicData.id;
-        var createAction = (this.action == 'create');
-        if (id != undefined) {
-            // assert the first topic (target topic) is not removed when not in create mode
-            if (!createAction && this.getTargetTopicId() == id) {
-                return;
-            }
-        } else if (!createAction) {
-            // when not in create mode only remove the crosspost topics
-            crosspostTopics = this.getCrosspostTopics(false);
-            for (i = 0; i < crosspostTopics.length; i++) {
-                topicData = crosspostTopics[i];
-                this.removeItemFromDataHolder(this.topics, topicData.id);
-                this.topicRemoved(topicData);
-            }
-            return;
-        }
-        oldTargetTopicId = this.getTargetTopicId();
-        oldDirty = this.dirty;
-        if (this.removeItemFromDataHolder(this.topics, id)) {
-            // do not create an autosave if no topic is selected
-            if (createAction && this.topics.items.length == 0) {
-                this.dirty = oldDirty;
-            }
-            this.topicRemoved(topicData);
-            if (oldTargetTopicId != this.getTargetTopicId()) {
-                this.targetTopicChanged();
-            }
-        }
-    },
-
-    /**
-     * Removes an previously added user from the users to notify.
-     *
-     * @param {Object} [userData] the object holding the details of the user to remove, if not
-     *            specified all users are removed
-     */
-    removeUser: function(userData) {
-        var alias = userData && userData.alias;
-        if (alias && this.isDirectMessage && this.usersToNotify.ids.contains(alias)
-                && this.usersToNotify.ids.length == 1) {
-            // do not allow removing the last user if we are in DM mode
-            showNotification(NOTIFICATION_BOX_TYPES.failure, '',
-                    getJSMessage('error.blogpost.edit.remove-direct-user'), null);
-            return;
-        }
-        if (this.removeItemFromDataHolder(this.usersToNotify, alias)) {
-            this.userRemoved(userData);
-        }
+    
+    removeEventListener: function(eventName, fn, context) {
+        this.eventEmitter.off(eventName, fn, context);
     },
 
     renderStyleChanged: function(oldStyle, newStyle) {
+        var oldEditor, content;
+        this.eventEmitter.emit('renderStyleChanged', {
+            oldStyle: oldStyle,
+            newStyle: newStyle
+        });
+        // ignore any style changes before the editor is set (e.g. during init)
+        if (newStyle === 'full' && this.editor) {
+            if (!instanceOf(this.editor, NoteTextEditorFactory.getSupportedEditorType())) {
+                oldEditor = this.editor;
+                this.editor = this.createEditor();
+                if (this.firstDOMLoadDone) {
+                    content = oldEditor.getContent();
+                    oldEditor.resetContent(null);
+                    this.refreshEditor();
+                    if (!oldEditor.supportsHtml()) {
+                        this.editor.resetContentFromPlaintext(content);
+                    } else {
+                        this.editor.resetContent(content);
+                    }
+                }
+                oldEditor.cleanup();
+            }
+        } else if (newStyle === 'simulate' && this.editor) {
+            this.editor.unFocus();
+        }
+    },
+    
+    /**
+     * Reset the cache of an autocompleter.
+     * 
+     * @param {Autocompleter} autocompleter The autocompleter whose cache should be reset. If null
+     *            nothing will happen.
+     */
+    resetAutocompleterCache: function(autocompleter) {
+        if (autocompleter) {
+            autocompleter.resetQuery(false);
+        }
     },
 
     /**
      * Helper which replaces the target topic in 'create' mode with the topic returned by
-     * getTargetTopicForCreate. In contrast to calling removeTopic(null) and addTopics(newTopic)
-     * this method will invoke targetTopicChanged only once, which is more suitable and performant
-     * when the targetTopicChanged needs to update the view. Also the dirty and modified flags won't
-     * change.
+     * getTargetTopicForCreate.
      */
     resetTargetTopic: function() {
-        var oldDirty, oldModified;
-        if (this.action == 'create') {
-            // remember old flags and restore them
-            oldDirty = this.dirty;
-            oldModified = this.modified;
-            // remove all
-            this.removeItemFromDataHolder(this.topics, null);
-            this.topicRemoved(null);
-            this.addNewItems(this.topics, this.getTargetTopicForCreate(), 'id', this.topicAdded);
-            this.dirty = oldDirty;
-            this.modified = oldModified;
+        if (this.action === 'create') {
+            this.targetTopic = this.getTargetTopicForCreate();
+            this.eventEmitter.emit('targetTopicReset', this.targetTopic);
             this.targetTopicChanged();
         }
     },
@@ -1693,39 +923,52 @@ var CreateNoteWidget = new Class({
      * autosave was removed.
      */
     resetToNoAutosaveState: function() {
-        this.clearAll();
-        if (this.initialNote && Object.getLength(this.initialNote)) {
-            // restore original note
-            this.initContentFromJsonObject(this.initialNote);
-        }
+        // restore original note
+        this.initContent(this.initialNote);
         this.startAutosaveJob();
     },
 
     /**
-     * Called when the title of a topic in the topics member is changed. Default implementation does
-     * nothing.
+     * Send the note.
+     * @param {String} content The text/HTML content of the note
+     * @param {boolean} [ignoreUncommittedOptions] if false a popup will warn the user when he
+     *            publishes a note and there are uncommitted inputs in the blog and user input
+     *            fields. If true there will be no warning.
      */
-    selectedTopicTitleChanged: function(topicItem) {
-    },
-
-    sendNote: function(publish, content) {
-        var successCallback, errorCallback;
-        var data = this.createPostData(publish, content);
-        var options = {};
-
-        if (publish) {
-            options.defaultErrorMessage = getJSMessage('error.blogpost.create.failed');
-            // can use note published callback for success and error since state is evaluated there
-            successCallback = this.notePublished.bind(this, data.topicId);
-            errorCallback = successCallback;
-        } else {
-            this.runningAutosaveRequest = true;
-            successCallback = this.autosaveNoteOnlineComplete.bind(this);
-            errorCallback = function(resultObj) {
-                this.runningAutosaveRequest = false;
-                // TODO anything to be done?
-            }.bind(this);
+    sendNote: function(content, ignoreUncommittedOptions) {
+        var warningMsg, cancelFunction, buttons;
+        var successCallback, errorCallback, data, options;
+        if (!ignoreUncommittedOptions) {
+            warningMsg = this.components.getUnconfirmedInputWarning();
+            if (warningMsg) {
+                cancelFunction = function() {
+                    this.stopPublishNoteFeedback();
+                    this.startAutosaveJob();
+                }.bind(this);
+                buttons = [];
+                buttons.push({
+                    type: 'yes',
+                    action: this.sendNote.bind(this, content, true)
+                });
+                buttons.push({
+                    type: 'no',
+                    action: cancelFunction
+                });
+                showDialog(this.getSendButtonElement().value, warningMsg, buttons, {
+                    onCloseCallback: cancelFunction,
+                    width: 300
+                });
+                return;
+            }
         }
+        
+        data = this.getNoteDataForRestRequest(true, content);
+        options = {};
+
+        options.defaultErrorMessage = getJSMessage('error.blogpost.create.failed');
+        // can use note published callback for success and error since state is evaluated there
+        successCallback = this.notePublished.bind(this, data.topicId);
+        errorCallback = successCallback;
         if (this.action == 'edit') {
             noteUtils.updateNote(data.noteId, data, successCallback, errorCallback, options);
         } else {
@@ -1739,14 +982,6 @@ var CreateNoteWidget = new Class({
      */
     setCurrentTopicBeforeRequestCallback: function(request, postData, queryParam) {
         postData['blogId'] = this.getTargetTopicId();
-    },
-
-    /**
-     * AutocompleterRequestDataSource callback implementation that sets the current topic to be
-     * ignored before sending the request.
-     */
-    setIgnoreCurrentTopicBeforeRequestCallback: function(request, postData, queryParam) {
-        postData['blogIdsToExclude'] = this.getTargetTopicId();
     },
 
     setInitialTargetTopic: function(id, title) {
@@ -1797,6 +1032,20 @@ var CreateNoteWidget = new Class({
         }
         this.renderStyleChanged(oldStyle, newRenderStyle);
     },
+    
+    setTargetTopic: function(newTargetTopic) {
+        // only allow changing of target topic when in a mode where notes are created
+        if (!this.targetTopic || this.action === 'create' || this.action === 'repost') {
+            // ignore if nothing changed
+            if ((!newTargetTopic && this.targetTopic) || 
+                    (newTargetTopic && newTargetTopic.id != this.getTargetTopicId())) {
+                this.targetTopic = newTargetTopic;
+                this.targetTopicChanged();
+                this.dirty = true;
+                this.modified = true;
+            }
+        }
+    },
 
     showErrorMessage: function(errObj) {
         var message;
@@ -1812,19 +1061,40 @@ var CreateNoteWidget = new Class({
         });
     },
 
+    showOrHideUserInterfaceForTopic: function(topicId) {
+        var result = this.topicWriteAccessEvaluator.checkWriteAccess(topicId, this.initialTargetTopic);
+        if (result.writeAccess === true) {
+            // make sure the editor is shown, especially if it was hidden before
+            this.showUserInterface();
+        } else {
+            // if the user has write access to one of the subtopics show the interface but remove the topic
+            if (result.subtopicWriteAccess === true) {
+                this.setTargetTopic(null);
+                this.showUserInterface();
+            } else {
+                this.hideUserInterface(result.message || communote.i18n.getMessage('blogpost.create.no.writable.blog.selected'));
+            }
+        }
+    },
+
+    showUserInterface: function() {
+        if (this.userInterfaceHidden) {
+            this.domNode.getElement('.cn-write-note-no-editor').addClass('cn-hidden');
+            this.domNode.getElement('.cn-write-note').removeClass('cn-hidden');
+            this.userInterfaceHidden = false;
+            this.eventEmitter.emit('userInterfaceShown');
+        }
+    },
+    
     /**
      * Starts the autosave draft job.
      */
     startAutosaveJob: function() {
-        if (this.autosaveDisabled || this.autosaveJobId != null) {
-            return;
+        if (this.autosaveHandler) {
+            // TODO necessary to set dirty flag here?
+            this.dirty = false;
+            this.autosaveHandler.startAutomaticSave();
         }
-        // disable autosave functionality if interval is to small
-        if (this.autosaveTimerPeriod < 1000) {
-            return;
-        }
-        this.dirty = false;
-        this.autosaveJobId = this.autosaveJob.periodical(this.autosaveTimerPeriod, this);
     },
 
     /**
@@ -1832,7 +1102,7 @@ var CreateNoteWidget = new Class({
      */
     startPublishNoteFeedback: function() {
         // disable send button
-        this.getSendButtonElement().disabled = 'disabled';
+        this.getSendButtonElement().disabled = true;
         this.ajaxLoadingOverlay.setStyle('display', '');
     },
 
@@ -1840,14 +1110,10 @@ var CreateNoteWidget = new Class({
      * Stops the autosave job.
      */
     stopAutosaveJob: function() {
+        // TODO necessary to set dirty flag here?
         this.dirty = false;
-        if (this.autosaveDisabled) {
-            return;
-        }
-        this.autosaveJobActiveTypes.empty();
-        if (this.autosaveJobId != null) {
-            clearInterval(this.autosaveJobId);
-            this.autosaveJobId = null;
+        if (this.autosaveHandler) {
+            this.autosaveHandler.stopAutomaticSave();
         }
     },
 
@@ -1856,191 +1122,30 @@ var CreateNoteWidget = new Class({
      */
     stopPublishNoteFeedback: function() {
         this.ajaxLoadingOverlay.setStyle('display', 'none');
-        this.getSendButtonElement().removeProperty('disabled');
-    },
-
-    storeInAutosaveCookie: function(content) {
-        var targetBlog, defaultBlog, tags, crosspostTopics, properties;
-        tags = this.createTagsPostData(false);
-        if (tags.length > 0) {
-            this.autosaveCookie.set('tags', tags);
-        }
-        if (this.attachments.items.length > 0) {
-            this.autosaveCookie.set('attachs', this.attachments.items);
-        }
-        crosspostTopics = this.getCrosspostTopics(false);
-        if (crosspostTopics.length > 0) {
-            this.autosaveCookie.set('blogs', crosspostTopics);
-        }
-        if (this.usersToNotify.items.length > 0) {
-            this.autosaveCookie.set('users', this.usersToNotify.items);
-        }
-        properties = this.createPropertiesPostData(false);
-        if (properties) {
-            this.autosaveCookie.set('properties', properties);
-        }
-        this.autosaveCookie.set('content', content);
-        this.autosaveCookie.set('isDirectMessage', this.isDirectMessage);
-        if (this.autosaveNoteId != null) {
-            this.autosaveCookie.set('autosaveNoteId', this.autosaveNoteId);
-        }
-        // save targetBlog when in create mode to allow restoring it, even if unset
-        if (this.action == 'create') {
-            this.autosaveCookie.set('targetBlog', this.topics.items[0]);
-        }
+        this.getSendButtonElement().disabled = false;
     },
 
     /**
-     * Called when a tag was added for instance by selecting it from the autocompleter or submitting
-     * the tag input field. Subclasses can use this class to update a summary. This class does
-     * nothing.
-     *
-     * @param {Object|String} tag The tag that was added
-     * @param {Boolean} moreToCome Whether more tags will be added. This can be used to optimize
-     *            summary creation.
-     */
-    tagAdded: function(tag, moreToCome) {
-    },
-
-    tagChoiceSelected: function(inputElem, choiceElem, token, value) {
-        this.addTag(token);
-    },
-
-    tagRemoved: function(tag) {
-    },
-    /**
-     * Method that is invoked when the target topic was added, removed or replaced. This method is
-     * called after topicAdded and topicRemoved.
+     * Method that is invoked when the target topic was added, removed or replaced.
      */
     targetTopicChanged: function() {
-    },
-
-    /**
-     * Method that is invoked when a topic was added.
-     *
-     * @param {Object} topicData The object describing the topic that was added.
-     * @param {boolean} moreToCome Whether this add is only the first of a sequence of adds.
-     */
-    topicAdded: function(topicData, moreToCome) {
-    },
-
-    topicChoiceSelected: function(inputElem, choiceElem, token, value) {
-        this.addTopics(token);
-    },
-
-    /**
-     * Method that is invoked when one or more topics were removed.
-     *
-     * @param {Object} topicData The object describing the topic that was removed. Will be null if
-     *            all topics were removed.
-     */
-    topicRemoved: function(topicData) {
-    },
-
-    updateAutosaveMarker: function(message, renderLink) {
-        var htmlData;
-        var autosaveMarker = this.getAutosaveMarkerElement();
-        if (!autosaveMarker)
-            return;
-        if (message != null) {
-            htmlData = '<span class="cn-note-autosave-message">' + message + '</span>';
-            if (renderLink) {
-                htmlData += '<a class="cn-icon cn-cancel" href="javascript:;" onclick="widgetController.getWidget(\'';
-                htmlData += this.widgetId;
-                htmlData += '\').discardAutosaveWithConfirm(event)" title="'
-                        + getJSMessage('blogpost.autosave.discard') + '"></a>';
-            }
-            htmlData += '<span class="cn-clear"><!-- --></span>';
-
-            autosaveMarker.set('html', htmlData);
-        } else {
-            autosaveMarker.set('html', '');
+        var newId = this.getTargetTopicId();
+        // don't check for write access here while still initializing because not all information
+        // might be available yet and it is done after init anyway
+        if (!this.initializingAfterRefresh) {
+            this.showOrHideUserInterfaceForTopic(newId);
         }
-        return autosaveMarker;
-    },
-
-    useAttachmentSelection: function() {
-        return true;
-    },
-
-    /**
-     * Called after a user was added. Subclasses can use this hook to update the view.
-     *
-     * @param {Object} userData JSON object describing the added user
-     * @param {boolean} moreToCome true if the user was added as part of batch update and the
-     *            current item is not the last. Can be used to optimize view updates.
-     */
-    userAdded: function(userData, moreToCome) {
-    },
-
-    userChoiceSelected: function(inputElem, choiceElem, token, value) {
-        this.addUsers(token);
+        this.eventEmitter.emit('targetTopicChanged', this.targetTopic);
+        // invalidate caches of autocompeters to let them restart a query for the same term
+        // after topic (request parameter) changed
+        this.resetAutocompleterCache(this.editor.getUserAutocompleter());
+        this.resetAutocompleterCache(this.editor.getTagAutocompleter());
     },
 
     /**
-     * Called after a user was removed. Subclasses can use this hook to update the view.
-     *
-     * @param {Object} [userData] the object holding the details of the user that was removed. This
-     *            parameter is null if all users were removed.
+     * Called when the title of the target topic changed.
      */
-    userRemoved: function(userData) {
-    },
-
-    useTagSelection: function() {
-        return true;
-    },
-
-    useTopicSelection: function() {
-        // topics can only be selected when creating notes
-        return this.action == 'create';
-    },
-
-    useUserSelection: function() {
-        return true;
-    },
-
-    /**
-     * Can be called to invoke a direct message on the actual CreateNote Widget.
-     *
-     * @param {Object} userAlias The user alias the direct message should be send to.
-     */
-    writeDirectMessage: function(userAlias) {
-        var content = this.editor.getContent();
-        if (content.length > 0 || this.usersToNotify.ids.length > 0
-                || this.getCrosspostTopicsCount() == 0) {
-            // TODO use showDialog utility function!
-            var divContent = '<p style="padding: 5px; text-align: center;">'
-                    + getJSMessage('blog.post.dm.overwrite.existing')
-                    + '</p><div class="actionbar"><div class="button-gray button-left">'
-                    + '<input type="button" name="button" onclick="widgetController.getWidget(\''
-                    + this.widgetId
-                    + '\').writeDirectMessage_Submit(\''
-                    + userAlias
-                    + '\');closeDialog();return false;" value="'
-                    + getJSMessage('javascript.dialog.button.label.yes')
-                    + '"></div><div class="button-gray button-right">'
-                    + '<input type="button" name="b2" onclick="closeDialog();return false;" value="'
-                    + getJSMessage('javascript.dialog.button.label.no')
-                    + '"></div><span class="clear"><!-- ie --></span></div>';
-
-            var questionContainer = new Element('div', {
-                'html': divContent,
-                'class': 'popupConfirmation form_wrapper'
-            });
-
-            TB_show2(getJSMessage('blog.post.dm.overwrite.existing.title'),
-                    "TB_inline?width=300&height=200", document, questionContainer);
-        } else {
-            this.writeDirectMessage_Submit(userAlias);
-        }
-    },
-    /**
-     * This method is invoked, when the user want's to overwrite the existing message.
-     */
-    writeDirectMessage_Submit: function(userAlias) {
-        this.clearAll();
-        this.editor.setContent('d @' + userAlias + ' ');
-        this.updateDirectMessage(true);
-        window.scrollTo(0, 0);
+    targetTopicTitleChanged: function(topicData) {
+        this.eventEmitter.emit('targetTopicTitleChanged', topicData.title);
     }
 });

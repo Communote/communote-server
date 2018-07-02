@@ -147,7 +147,7 @@
                         && getConstructor(options.dataStoreClass);
             }
             if (dataStoreConstructor) {
-                this.dataStore = new dataStoreClass();
+                this.dataStore = new dataStoreConstructor();
             } else {
                 this.dataStore = new C_KeyValueStore();
             }

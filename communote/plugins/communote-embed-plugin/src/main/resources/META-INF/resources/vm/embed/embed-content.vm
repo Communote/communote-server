@@ -105,7 +105,7 @@
 	
 	#if (${edShowCreate})
 	widgetDefs.CreateNote = {
-        widgetType: 'CreateNoteDefaultWidget',
+        widgetType: 'CreateNoteWidget',
         containerSelector: '#cn-embed-create-note',
         settings: {
             action: '$fieldTool.get('com.communote.server.web.commons.FormAction.CREATE')',
@@ -113,7 +113,6 @@
             draftTimer: $communoteTool.getConfigurationProperty($fieldTool.get('com.communote.server.api.core.config.type.ClientProperty.AUTOSAVE_TIMER'), $fieldTool.get('com.communote.server.api.core.config.type.ClientProperty.DEFAULT_AUTOSAVE_TIMER')),
             publishSuccessBehavior: {action:'renderStyle', actionOptions: 'simulate'},
             renderStyle: 'simulate',
-            renderWidgetType: 'CreateNoteWidget',
             #if(${edPredefinedProperties})predefinedNoteProperties: ${edPredefinedProperties},#end
             #if(${editorTopicId})targetBlogId: ${editorTopicId},#end
             ## TODO provide title for performance

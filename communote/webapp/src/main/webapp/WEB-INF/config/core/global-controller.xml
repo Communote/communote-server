@@ -50,6 +50,7 @@
                         <value>/javascript/frameworks/mootools/mootabs-1.3</value>
                         <value>/javascript/frameworks/smoothbox/smoothbox</value>
                         <value>/javascript/frameworks/roar/roar</value>
+                        <value>/javascript/polyfill/object.assign-polyfill.js</value>
                         <value>/javascript/autocompleter/Autocompleter</value>
                         <value>/javascript/autocompleter/Suggestions</value>
                         <value>/javascript/autocompleter/InputField</value>
@@ -95,6 +96,7 @@
                         <value>/javascript/widget/WidgetScrollToTopHandler.js</value>
                         <value>/javascript/FollowUtils</value>
                         <value>/javascript/ExpandingTextarea</value>
+                        <value>/javascript/utils/EventEmitter.js</value>
                         <value>/javascript/utils/Cache</value>
                         <value>/javascript/utils/ScrollObserver</value>
                         <value>/javascript/utils/matchMediaPolyfill</value>
@@ -112,6 +114,8 @@
                         <value>/javascript/utils/AutoRefresher</value>
                         <value>/javascript/utils/image/Cropper</value>
                         <value>/javascript/utils/image/CropImageAjaxFileUpload</value>
+                        <value>/javascript/utils/BinaryDataPasteListener.js</value>
+                        <value>/javascript/utils/FileDropzone.js</value>
                         <value>/javascript/linkhandler/LinkHandler</value>
                         <value>/javascript/linkhandler/ApplicationLinkHandler</value>
                         <value>/javascript/linkhandler/ActivateContextLinkHandler</value>
@@ -143,9 +147,15 @@
                         <value>/javascript/blog/ChronologicalPostList.js</value>
                         <value>/javascript/blog/ChronologicalPostList_DefaultImpl.js</value>
                         <value>/javascript/widget/note/editor/TopicAccessEvaluator.js</value>
+                        <value>/javascript/widget/note/editor/NoteEditorComponentFactory.js</value>
+                        <value>/javascript/widget/note/editor/NoteEditorComponentManager.js</value>
+                        <value>/javascript/widget/note/editor/NoteEditorTopics.js</value>
+                        <value>/javascript/widget/note/editor/NoteEditorTags.js</value>
+                        <value>/javascript/widget/note/editor/NoteEditorMentions.js</value>
+                        <value>/javascript/widget/note/editor/NoteEditorAttachments.js</value>
                         <value>/javascript/widget/note/editor/NoteTextEditors.js</value>
+                        <value>/javascript/widget/note/editor/NoteEditorAutosaveHandler.js</value>
                         <value>/javascript/blog/CreateNote</value>
-                        <value>/javascript/blog/CreateNote_DefaultImpl</value>
                         <value>/javascript/blog/InviteUserToBlog.Widget</value>
                         <value>/javascript/blog/FilteredBy.Widget</value>
                         <value>/javascript/blog/BlogsAndUsersFilterEventHandler</value>

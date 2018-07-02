@@ -34,12 +34,12 @@
     <div class="cn-write-note-accessories-full">
         <div class="cn-write-note-accessory-toggles">
             <div class="cn-bar">
-                <a id="${widget.WidgetId}-accessory-user" class="accessory-user cn-link" href="javascript:;" onclick="${widgetInstance}.showAccessory('user', true)"
-                    title="$fmtTool.message('blogpost.create.tab.user.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.user.title')</span></a>
-                <a id="${widget.WidgetId}-accessory-tag" class="accessory-tag cn-link" href="javascript:;" onclick="${widgetInstance}.showAccessory('tag', true)"
-                    title="$fmtTool.message('blogpost.create.tab.tag.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.tag.title')</span></a>
-                <a id="${widget.WidgetId}-accessory-attachment" class="accessory-attachment cn-link" href="javascript:;" onclick="${widgetInstance}.showAccessory('attachment', false)"
-                    title="$fmtTool.message('blogpost.create.tab.attachment.hover')"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.attachment.title')</span></a>
+                <a id="${widget.WidgetId}-accessory-user" class="accessory-user cn-link" href="javascript:;" title="$fmtTool.message('blogpost.create.tab.user.hover')">
+                    <span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.user.title')</span></a>
+                <a id="${widget.WidgetId}-accessory-tag" class="accessory-tag cn-link" href="javascript:;" title="$fmtTool.message('blogpost.create.tab.tag.hover')"> 
+                    <span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.tag.title')</span></a>
+                <a id="${widget.WidgetId}-accessory-attachment" class="accessory-attachment cn-link" href="javascript:;" title="$fmtTool.message('blogpost.create.tab.attachment.hover')">
+                    <span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.attachment.title')</span></a>
                 <span class="cn-clear"><!-- --></span>
             </div>
             <span class="cn-clear"><!-- --></span>
@@ -60,14 +60,12 @@
                     <input id="${widget.WidgetId}-user-search" type="text" placeholder="$fmtTool.message('blogpost.create.users.hint')" />
                     <span class="cn-clear"><!-- Empty --></span>
                     <div id="${widget.WidgetId}-direct-message-wrapper" class="cn-note-option">
-                        <input type="checkbox" class="cn-check" id="${widget.WidgetId}-direct-message" disabled="disabled"
-                            onclick="${widgetInstance}.changeDirectMessageMode(this.checked)"/>
+                        <input type="checkbox" class="cn-check" id="${widget.WidgetId}-direct-message" disabled="disabled"/>
                         <label id="${widget.WidgetId}-direct-message-label" for="${widget.WidgetId}-direct-message">$fmtTool.message('blogpost.create.direct') #cnTooltip('blogpost.create.direct.hint')</label>
                     </div>
                     #if($widget.EditAction)
                       <div id="${widget.WidgetId}-resend-notification-wrapper" class="cn-note-option">
-                          <input type="checkbox" class="cn-check" id="${widget.WidgetId}-resend-notification"
-                          onclick="${widgetInstance}.changeResendNotificationMode(this.checked)"/>
+                          <input type="checkbox" class="cn-check" id="${widget.WidgetId}-resend-notification"/>
                           <label id="${widget.WidgetId}-resend-notification-label" for="${widget.WidgetId}-resend-notification">$fmtTool.message('widget.createNote.resend.notification.label') #cnTooltip('widget.createNote.resend.notification.hint')</label>
                       </div>
                     #end
@@ -80,17 +78,16 @@
                     <input id="${widget.WidgetId}-tag-search" type="text" placeholder="$fmtTool.message('blogpost.create.tags.hint')"/>
                 </div>
             </div>
-            <div class="cn-write-note-accessory-attachment cn-accessory-container#if($widget.getBooleanParameter('customUpload', false)) cn-custom-upload#end" style="display:none;">
+            <div class="cn-write-note-accessory-attachment cn-accessory-container" style="display:none;">
                 <div class="cn-accessory-label"><span class="cn-icon"><!-- Empty --></span><span class="cn-icon-label">$fmtTool.message('blogpost.create.tab.attachment.title')</span></div>
                 <div class="cn-accessory-content">
-                    <div id="${widget.WidgetId}-summary-attachments" class="cn-attachment-summary cn-border cn-hidden"></div>
-
+                    <div id="${widget.WidgetId}-attachments-summary" class="cn-attachment-summary cn-border cn-hidden"></div>
+                    <a href="javascript:;" class="cn-button" id="${widget.WidgetId}-attachments-upload-button">$fmtTool.message('widget.createNote.attachments.uploadButton')</a>
                     <form action="$urlTool.render('/blog/attachmentUpload.do')" method="post"
                             enctype="multipart/form-data" target="${widget.WidgetId}_iframe">
                         <input type="file" name="file" class="input-file" id="${widget.WidgetId}_upload-input" />
                         <input type="hidden" name="${widget.AttachmentsSessionAttributeName}" value="${widget.AttachmentsSessionAttributeValue}" />
                     </form>
-                    <a href="javascript:;" class="cn-button" id="cn-upload-button" onclick="document.id('${widget.WidgetId}_upload-input').click();">$fmtTool.message('blogpost.create.attachments.upload.button')</a>
                 </div>
             </div>
             <span class="cn-clear"><!-- --></span>
