@@ -6,9 +6,11 @@
     <name>Communote installation packages</name>
     <description>This project builds the installation packages for Communote</description>
     <properties>
-        <tomcatVersion>8.0.36</tomcatVersion>
+        <tomcatVersion>8.5.32</tomcatVersion>
         <tomcatVersionMajor>8</tomcatVersionMajor>
         <tomcatDownloadMirror>http://artfiles.org/apache.org</tomcatDownloadMirror>
+        <tomcatWinX86SHA1>2eda306281be528ae4175b0128a9838d9f54b3cb</tomcatWinX86SHA1>
+        <tomcatWinX64SHA1>3d9824d1bd6f28465c1f0f016cba968888ef7527</tomcatWinX64SHA1>
         <formatWindows>dir</formatWindows>
         <formatLinux>dir</formatLinux>
         <!-- skip install and package phase because no deployable package is created -->
@@ -65,7 +67,7 @@
                                 <configuration>
                                     <url>${tomcatDownloadMirror}/tomcat/tomcat-${tomcatVersionMajor}/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}-windows-x86.zip</url>
                                     <outputDirectory>${project.build.directory}/dependency/tomcat-windows-x86</outputDirectory>
-                                    <sha1>f2524f908b73e6dad6aa81d5c98421c7ad1c630e</sha1>
+                                    <sha1>${tomcatWinX86SHA1}</sha1>
                                     <retries>1</retries>
                                     <unpack>true</unpack>
                                 </configuration>
@@ -79,7 +81,7 @@
                                 <configuration>
                                     <url>${tomcatDownloadMirror}/tomcat/tomcat-${tomcatVersionMajor}/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}-windows-x64.zip</url>
                                     <outputDirectory>${project.build.directory}/dependency/tomcat-windows-x64</outputDirectory>
-                                    <sha1>b9561e5e6315af633022893d168f43413d30655f</sha1>
+                                    <sha1>${tomcatWinX64SHA1}</sha1>
                                     <retries>1</retries>
                                     <unpack>true</unpack>
                                 </configuration>
@@ -170,7 +172,7 @@
                         <configuration>
                             <url>${tomcatDownloadMirror}/tomcat/tomcat-${tomcatVersionMajor}/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}-windows-x86.zip</url>
                             <outputDirectory>${project.build.directory}/dependency/tomcat-windows-x86</outputDirectory>
-                            <sha1>f2524f908b73e6dad6aa81d5c98421c7ad1c630e</sha1>
+                            <sha1>${tomcatWinX86SHA1}</sha1>
                         </configuration>
                     </execution>
                     <execution>
@@ -182,7 +184,7 @@
                         <configuration>
                             <url>${tomcatDownloadMirror}/tomcat/tomcat-${tomcatVersionMajor}/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}-windows-x64.zip</url>
                             <outputDirectory>${project.build.directory}/dependency/tomcat-windows-x64</outputDirectory>
-                            <sha1>b9561e5e6315af633022893d168f43413d30655f</sha1>
+                            <sha1>${tomcatWinX64SHA1}</sha1>
                         </configuration>
                     </execution>
                 </executions>
