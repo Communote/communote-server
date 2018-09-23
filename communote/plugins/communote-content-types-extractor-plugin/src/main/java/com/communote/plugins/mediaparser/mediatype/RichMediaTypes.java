@@ -20,10 +20,10 @@ public enum RichMediaTypes implements RichMediaType {
     YOUTUBE("communote.plugins.contentTypes.richmedia.youtube",
             "youtube.com.+(?:v=|embed/)([^?&]+)", "youtu.be/([a-zA-Z0-9_-]+)"),
 
-            /** vimeo videos */
-            VIMEO("communote.plugins.contentTypes.richmedia.vimeo", "vimeo.com/?([0-9]+)",
-                    "player.vimeo.com/video/?([0-9]+)", "vimeo.com/groups/(?:\\w+)/videos/(\\d+)",
-                    "vimeo.com/channels/(?:\\w+)#(\\d+)");
+    /** vimeo videos */
+    VIMEO("communote.plugins.contentTypes.richmedia.vimeo", "vimeo.com/?([0-9]+)",
+            "player.vimeo.com/video/?([0-9]+)", "vimeo.com/groups/(?:\\w+)/videos/(\\d+)",
+            "vimeo.com/channels/(?:\\w+)/(\\d+)");
 
     private final Collection<Pattern> patterns = new ArrayList<Pattern>();
     private final String template;
@@ -34,7 +34,8 @@ public enum RichMediaTypes implements RichMediaType {
      * @param template
      *            The template to use.
      * @param patterns
-     *            The patterns this media type works for.
+     *            The patterns this media type works for. The pattern needs to have one capturing
+     *            group which extracts the ID of the media
      */
     RichMediaTypes(String template, String... patterns) {
         this.template = template;
