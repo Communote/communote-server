@@ -80,7 +80,8 @@ var RichMedia = new Class({
             'src': params.protocol + mediaUrl + params.mediaId + mediaQueryString,
             'class': params.cssClass,
             'title': params.frameTitle,
-            'type': 'text/html'
+            'type': 'text/html',
+            'allowfullscreen': 'allowfullscreen'
         });
         
         content.replaces(element);
@@ -101,7 +102,8 @@ var RichMedia = new Class({
             'src': params.protocol + mediaUrl + params.mediaId,
             'class': params.cssClass,
             'title': params.title,
-            'type': 'text/html'
+            'type': 'text/html',
+            'allowfullscreen': 'allowfullscreen'
         });
         
         content.replaces(element);
