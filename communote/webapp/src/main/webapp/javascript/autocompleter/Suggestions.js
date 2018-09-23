@@ -1129,7 +1129,7 @@ var AutocompleterSuggestions = new Class({
      * should usually call this method from your custom injectChoiceContentCallback function.
      * 
      * @param {String} str The string in which the query will be marked
-     * @param {String} [queryValue] The the query to marked. If undefined the the current query will
+     * @param {String} [queryValue] The query to be marked. If undefined then the current query will
      *            be used.
      * @returns {String} The modified string
      */
@@ -1139,7 +1139,9 @@ var AutocompleterSuggestions = new Class({
             queryValue = this.queryValue;
         }
         //remove whitespaces before and after the queryValue
-        queryValue = queryValue.trim();
+        if (queryValue) {
+            queryValue = queryValue.trim();
+        }
 
         // encode XML entities
         if (this.options.markQueryEncode) {
