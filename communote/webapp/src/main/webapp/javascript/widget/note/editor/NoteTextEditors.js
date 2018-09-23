@@ -93,13 +93,14 @@ NoteTextEditor = new Class({
      * keyboard shortcut. This method should be called when the editor caught a key event.
      * 
      * @param {KeyboardEvent} kbdEvent The DOM keyboard event to handle
+     * @param {*} metadata - Optional NoteTextEditor specific additional metadata which is forwarded to the callback
      */
-    callKeyboardShortcut: function(kbdEvent) {
+    callKeyboardShortcut: function(kbdEvent, metadata) {
         var i, shortcutDescr;
         for (i = 0; i < this.kbdShortcuts.length; i++) {
             shortcutDescr = this.kbdShortcuts[i];
             if (this.attributesMatch(kbdEvent, shortcutDescr, shortcutDescr.requiredAttributes)) {
-                shortcutDescr.callback.call(null);
+                shortcutDescr.callback.call(null, metadata);
                 if (shortcutDescr.cancelEvent) {
                     kbdEvent.cancelBubble = true;
                     kbdEvent.returnValue = false;
@@ -310,6 +311,10 @@ NoteTextEditor = new Class({
         }
         return settingsDialogContentElem;
     }
+    
+    function executeTinyMceCommand(commandName, tinyMceInstance) {
+        tinyMceInstance.execCommand(commandName, false, null);
+    }
 
     /**
      * Note text editor using TinyMCE.
@@ -391,7 +396,7 @@ NoteTextEditor = new Class({
 
         /**
          * Callback to be invoked when the fullscreen mode of the editor was activated or
-         * deactivated
+         * deactivated. When fullscreen mode is activated a new tinymce editor is created.
          * 
          * @param {Boolean} activated True if the editor is now in fullscreen, false otherwise
          */
@@ -411,6 +416,12 @@ NoteTextEditor = new Class({
                     }
                     return true;
                 });
+                // register keyDown handler for keyboard shortcuts in full screen editor instance, but only
+                // if non-fullscreen editor has this listener attached because this is only the case if
+                // there are shortcuts
+                if (this.keydownListenerAttached) {
+                    tinyMCEInstance.onKeyDown.addToTop(this.onTinyMCEKeyDown, this);
+                }
             } else {
                 this.fullscreenActivated = false;
             }
@@ -423,7 +434,7 @@ NoteTextEditor = new Class({
          * @param {Event} event The keyboard event
          */
         onTinyMCEKeyDown: function(editor, event) {
-            return this.callKeyboardShortcut(event);
+            return this.callKeyboardShortcut(event, editor);
         },
 
         /**
@@ -721,6 +732,25 @@ NoteTextEditor = new Class({
             }
             return defs;
         },
+        
+        enableTabKeyIndentation: function() {
+            // hidden config option to disable tab-key indent/outdent
+            if (this.getPreferenceAsBoolean('tabKeyIndentationDisabled')) {
+                return;
+            }
+            this.addKeyboardShortcut({
+                callback: executeTinyMceCommand.bind(null, 'Indent'),
+                cancelEvent: true,
+                keyCode: 9,
+                shiftKey: false
+            });
+            this.addKeyboardShortcut({
+                callback: executeTinyMceCommand.bind(null, 'Outdent'),
+                cancelEvent: true,
+                keyCode: 9,
+                shiftKey: true
+            });
+        },
 
         saveAdvancedSettings: function(settingsDialogElem) {
             var checkBoxElem;
@@ -798,6 +828,7 @@ NoteTextEditor = new Class({
                 this.tinyMCEInCreation = true;
                 // attach callback which shows the editor when rendering and init is done
                 tinyMCEInstance.onInit.add(this.onTinyMCEInit, this);
+                this.enableTabKeyIndentation();
                 tinyMCEInstance.render();
                 if (autoresize) {
                     // add special marker class for custom styling when autoresize is enabled
