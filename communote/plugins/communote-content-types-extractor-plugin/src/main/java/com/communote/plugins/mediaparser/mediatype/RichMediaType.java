@@ -21,13 +21,6 @@ public interface RichMediaType {
     public RichMediaDescription extractRichMediaDescription(String link);
 
     /**
-     * The name of the template for rendering the rich media source.
-     *
-     * @return the name of the velocity template
-     */
-    public String getTemplate();
-
-    /**
      * @return the typeId
      */
     public String getTypeId();

@@ -16,18 +16,14 @@ public class RichMediaDescription {
 
     private boolean useHttps;
 
-    private final String template;
-
     /**
      * @param mediaId
      *            the media ID as string
      * @param mediaTypeId
      *            the media type
-     * @param template
-     *            The template to use.
      */
-    public RichMediaDescription(String mediaId, String mediaTypeId, String template) {
-        this(mediaId, mediaTypeId, template, false);
+    public RichMediaDescription(String mediaId, String mediaTypeId) {
+        this(mediaId, mediaTypeId, false);
     }
 
     /**
@@ -35,17 +31,13 @@ public class RichMediaDescription {
      *            the media ID as string
      * @param mediaTypeId
      *            the media type
-     * @param template
-     *            The template to use.
      * @param useHttps
      *            Renders the link with https, if set to true.
      *
      */
-    public RichMediaDescription(String mediaId, String mediaTypeId, String template,
-            boolean useHttps) {
+    public RichMediaDescription(String mediaId, String mediaTypeId, boolean useHttps) {
         this.mediaId = mediaId;
         this.mediaTypeId = mediaTypeId;
-        this.template = template;
         this.useHttps = useHttps;
     }
 
@@ -61,13 +53,6 @@ public class RichMediaDescription {
      */
     public String getMediaTypeId() {
         return mediaTypeId;
-    }
-
-    /**
-     * @return the name of the velocity template of the rich media type
-     */
-    public String getTemplate() {
-        return template;
     }
 
     /**

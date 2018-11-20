@@ -17,28 +17,23 @@ import com.communote.plugins.mediaparser.RichMediaDescription;
  */
 public enum RichMediaTypes implements RichMediaType {
     /** YouTube videos */
-    YOUTUBE("communote.plugins.contentTypes.richmedia.youtube",
-            "youtube.com.+(?:v=|embed/)([^?&]+)", "youtu.be/([a-zA-Z0-9_-]+)"),
+    YOUTUBE("youtube.com.+(?:v=|embed/)([^?&]+)", "youtu.be/([a-zA-Z0-9_-]+)"),
 
     /** vimeo videos */
-    VIMEO("communote.plugins.contentTypes.richmedia.vimeo", "vimeo.com/?([0-9]+)",
+    VIMEO("vimeo.com/?([0-9]+)",
             "player.vimeo.com/video/?([0-9]+)", "vimeo.com/groups/(?:\\w+)/videos/(\\d+)",
             "vimeo.com/channels/(?:\\w+)/(\\d+)");
 
     private final Collection<Pattern> patterns = new ArrayList<Pattern>();
-    private final String template;
 
     /**
      * Constructor.
      *
-     * @param template
-     *            The template to use.
      * @param patterns
      *            The patterns this media type works for. The pattern needs to have one capturing
      *            group which extracts the ID of the media
      */
-    RichMediaTypes(String template, String... patterns) {
-        this.template = template;
+    RichMediaTypes(String... patterns) {
         for (String pattern : patterns) {
             this.patterns.add(Pattern.compile(pattern, Pattern.CASE_INSENSITIVE));
         }
@@ -53,7 +48,7 @@ public enum RichMediaTypes implements RichMediaType {
             Matcher matcher = pattern.matcher(link);
             while (matcher.find()) {
                 String mediaId = matcher.group(1);
-                return new RichMediaDescription(mediaId, this.toString(), this.getTemplate(),
+                return new RichMediaDescription(mediaId, this.toString(),
                         StringUtils.startsWithIgnoreCase(link, "https"));
             }
         }
@@ -65,14 +60,6 @@ public enum RichMediaTypes implements RichMediaType {
      */
     public Collection<Pattern> getPatterns() {
         return patterns;
-    }
-
-    /**
-     * @return the template
-     */
-    @Override
-    public String getTemplate() {
-        return template;
     }
 
     /**

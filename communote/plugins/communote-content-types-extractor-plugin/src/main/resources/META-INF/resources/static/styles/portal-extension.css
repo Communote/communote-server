@@ -82,3 +82,15 @@
 .cn-filter-applied .content-type-document:hover .cn-icon {
     background-position: -261px -165px;
 }
+
+/* ChronologicalPostListWidget extension */
+.cn-list-overview-blog-entry .cn-media-video ul {
+    margin-left: -10px;
+}
+.cn-list-overview-blog-entry .cn-media-video li {
+    display: inline-block;
+    margin-left: 10px;
+}
+.cn-list-overview-blog-entry .cn-media-list iframe.cnt-embedmedia {
+    border: 0 none;
+}
