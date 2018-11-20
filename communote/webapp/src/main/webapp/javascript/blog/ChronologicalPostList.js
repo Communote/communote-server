@@ -42,6 +42,10 @@ var ChronologicalPostListWidget = new Class({
             'selectedNoteId', 'tagIds', 'minRank' ],
 
     currentCreateNoteWidgets: [],
+    
+    // TODO maybe Widget parent class should have the eventEmitter
+    // for widget specific events
+    eventEmitter: undefined,
 
     init: function() {
         this.parent();
@@ -60,6 +64,7 @@ var ChronologicalPostListWidget = new Class({
         } else {
             this.createNoteWidgetStaticParams = {};
         }
+        this.eventEmitter = new communote.classes.EventEmitter();
         this.autoRefresher = new communote.classes.ChronologicalPostListAutoRefresher(this);
         this.noteActionHandler = new communote.classes.NoteActionHandler(this);
         this.noteInteractionControlRenderer = new communote.classes.NoteInteractionControlRenderer(this, this
@@ -68,6 +73,10 @@ var ChronologicalPostListWidget = new Class({
         this.scrollToTopHandler = new communote.classes.WidgetScrollToTopHandler(this, {
             selector: '.control-cpl-scroll-top'
         });
+    },
+
+    addEventListener: function(eventName, fn, context) {
+        this.eventEmitter.on(eventName, fn, context);
     },
 
     /**
@@ -149,6 +158,7 @@ var ChronologicalPostListWidget = new Class({
             this.noteInteractionControlRenderer.widgetAfterShow(isDirty);
             this.scrollToTopHandler.widgetAfterShow(isDirty);
         }
+        this.eventEmitter.emit('widgetShown', {initPhase: initPhase, isDirty: isDirty});
     },
 
     /**
@@ -1000,6 +1010,7 @@ var ChronologicalPostListWidget = new Class({
             // for performance: save serialized JSON and deserialize lazily on access
             this.noteMetaData['n' + noteId] = noteContainer.getAttribute('data-cnt-note-meta-data');
             this.noteInteractionControlRenderer.prepareNote(noteId, noteContainer);
+            this.eventEmitter.emit('noteContainerPrepared', {id: noteId, container: noteContainer});
         }
     },
 
@@ -1037,8 +1048,13 @@ var ChronologicalPostListWidget = new Class({
         this.cleanup();
         this.autoRefresher.widgetRefreshStart();
         this.loadMoreRefreshStart(null);
+        this.eventEmitter.emit('widgetRefreshing');
     },
 
+    removeEventListener: function(eventName, fn, context) {
+        this.eventEmitter.off(eventName, fn, context);
+    },
+    
     removeNoteMetaData: function(noteIds) {
         var i;
         noteIds = Array.from(noteIds);
