@@ -22,7 +22,17 @@ public enum RichMediaTypes implements RichMediaType {
     /** vimeo videos */
     VIMEO("vimeo.com/?([0-9]+)",
             "player.vimeo.com/video/?([0-9]+)", "vimeo.com/groups/(?:\\w+)/videos/(\\d+)",
-            "vimeo.com/channels/(?:\\w+)/(\\d+)");
+            "vimeo.com/channels/(?:\\w+)/(\\d+)"),
+    
+    /** Microsoft Stream videos */
+    /*
+     * note: according to https://docs.microsoft.com/en-us/stream/embed-video-oembed one should
+     * actually ask a Microsoft web service to get the embed code, but this endpoint is not
+     * opened to CORS which means we would have to this in Java code, quite cumbersome. However,
+     * no tested video so far returned another embed URL than the one defined in EmbedMediaUtils.js
+     * So for now we go the simple way and see if it fails for someone.
+     */ 
+    MICROSOFT_STREAM("web.microsoftstream.com/video/([0-9a-f-]+)");
 
     private final Collection<Pattern> patterns = new ArrayList<Pattern>();
 

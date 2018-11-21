@@ -25,6 +25,7 @@ public class ContentTypeExtractorJsMessages implements JsMessagesExtension {
         messageKeys.add("plugins.contenttypesextractor.embedmedia.action.more.sg");
         messageKeys.add("plugins.contenttypesextractor.embedmedia.iframe.title.YOUTUBE");
         messageKeys.add("plugins.contenttypesextractor.embedmedia.iframe.title.VIMEO");
+        messageKeys.add("plugins.contenttypesextractor.embedmedia.iframe.title.MICROSOFT_STREAM");
         
         HashMap<String, Set<String>> mapping = new HashMap<String, Set<String>>();
         mapping.put(JsMessagesRegistry.CATEGORY_PORTAL, messageKeys);

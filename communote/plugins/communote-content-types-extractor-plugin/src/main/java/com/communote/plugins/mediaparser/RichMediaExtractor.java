@@ -23,6 +23,7 @@ public class RichMediaExtractor {
     {
         supportedRichMediaSources.add(RichMediaTypes.YOUTUBE);
         supportedRichMediaSources.add(RichMediaTypes.VIMEO);
+        supportedRichMediaSources.add(RichMediaTypes.MICROSOFT_STREAM);
     }
 
     /**
