@@ -6,7 +6,7 @@
     const i18n = communote.i18n;
 
     const urlMappings = {
-        'YOUTUBE': 'https://www.youtube.com/embed/$MEDIA_ID$?wmode=transparent&rel=0',
+        'YOUTUBE': 'https://www.youtube-nocookie.com/embed/$MEDIA_ID$?wmode=transparent&rel=0',
         'VIMEO': 'https://player.vimeo.com/video/$MEDIA_ID$'
     };
     const idSeed = 'a' + Math.random().toString(16).substring(2);
