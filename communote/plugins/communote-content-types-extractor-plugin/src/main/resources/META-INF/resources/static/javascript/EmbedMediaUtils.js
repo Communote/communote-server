@@ -7,7 +7,8 @@
 
     const urlMappings = {
         'YOUTUBE': 'https://www.youtube-nocookie.com/embed/$MEDIA_ID$?wmode=transparent&rel=0',
-        'VIMEO': 'https://player.vimeo.com/video/$MEDIA_ID$'
+        'VIMEO': 'https://player.vimeo.com/video/$MEDIA_ID$',
+        'MICROSOFT_STREAM': 'https://web.microsoftstream.com/embed/video/$MEDIA_ID$'
     };
     const idSeed = 'a' + Math.random().toString(16).substring(2);
     var idCount = 0;
