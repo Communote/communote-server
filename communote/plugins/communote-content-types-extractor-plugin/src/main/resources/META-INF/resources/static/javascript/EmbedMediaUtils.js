@@ -6,9 +6,9 @@
     const i18n = communote.i18n;
 
     const urlMappings = {
-        'YOUTUBE': '//www.youtube.com/embed/$MEDIA_ID$?wmode=transparent&rel=0',
-        'VIMEO': '//player.vimeo.com/video/$MEDIA_ID$',
-        'MICROSOFT_STREAM': '//web.microsoftstream.com/embed/video/$MEDIA_ID$'
+        'YOUTUBE': 'https://www.youtube-nocookie.com/embed/$MEDIA_ID$?wmode=transparent&rel=0',
+        'VIMEO': 'https://player.vimeo.com/video/$MEDIA_ID$',
+        'MICROSOFT_STREAM': 'https://web.microsoftstream.com/embed/video/$MEDIA_ID$'
     };
     const idSeed = 'a' + Math.random().toString(16).substring(2);
     var idCount = 0;
@@ -58,8 +58,6 @@
 
     function renderIFrame(mediaDefinition, size, parentElem) {
         var iframeElem = document.createElement('iframe');
-        // use protocol of current page to avoid injecting insecure content when using HTTPS
-        var protocol = mediaDefinition.https ? 'https:' : window.location.protocol;
         iframeElem.id = createUniqueId();
         iframeElem.title = i18n.getMessage('plugins.contenttypesextractor.embedmedia.iframe.title.' + mediaDefinition.type);
         iframeElem.setAttribute('allowfullscreen', 'allowfullscreen');
@@ -67,7 +65,8 @@
         iframeElem.classList.add('cnt-embedmedia-' + mediaDefinition.type);
         iframeElem.width = size.width;
         iframeElem.height = size.height;
-        iframeElem.src = protocol + urlMappings[mediaDefinition.type].replace('$MEDIA_ID$', mediaDefinition.id);
+        iframeElem.src = urlMappings[mediaDefinition.type].replace('$MEDIA_ID$', mediaDefinition.id);
+        iframeElem.referrerPolicy = 'no-referrer';
         parentElem.appendChild(iframeElem);
         return iframeElem.id;
     }

@@ -31,10 +31,9 @@ public class EmbedMediaMetadataProvider extends CPLNoteMetaDataProvider {
             Map<String, Object>[] mediaEntries = new HashMap[descriptors.size()];
             int i = 0;
             for (RichMediaDescription descriptor : descriptors) {
-                HashMap<String, Object> mediaEntry = new HashMap<>();
+                Map<String, Object> mediaEntry = new HashMap<>();
                 mediaEntry.put("type", descriptor.getMediaTypeId());
                 mediaEntry.put("id", descriptor.getMediaId());
-                mediaEntry.put("https", descriptor.isUseHttps());
                 mediaEntries[i] = mediaEntry;
                 i++;
             }

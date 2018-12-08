@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.communote.plugins.mediaparser.RichMediaDescription;
 
 /**
@@ -58,8 +56,7 @@ public enum RichMediaTypes implements RichMediaType {
             Matcher matcher = pattern.matcher(link);
             while (matcher.find()) {
                 String mediaId = matcher.group(1);
-                return new RichMediaDescription(mediaId, this.toString(),
-                        StringUtils.startsWithIgnoreCase(link, "https"));
+                return new RichMediaDescription(mediaId, this.toString());
             }
         }
         return null;

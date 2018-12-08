@@ -14,8 +14,6 @@ public class RichMediaDescription {
     /** the media type */
     private final String mediaTypeId;
 
-    private boolean useHttps;
-
     /**
      * @param mediaId
      *            the media ID as string
@@ -23,22 +21,8 @@ public class RichMediaDescription {
      *            the media type
      */
     public RichMediaDescription(String mediaId, String mediaTypeId) {
-        this(mediaId, mediaTypeId, false);
-    }
-
-    /**
-     * @param mediaId
-     *            the media ID as string
-     * @param mediaTypeId
-     *            the media type
-     * @param useHttps
-     *            Renders the link with https, if set to true.
-     *
-     */
-    public RichMediaDescription(String mediaId, String mediaTypeId, boolean useHttps) {
         this.mediaId = mediaId;
         this.mediaTypeId = mediaTypeId;
-        this.useHttps = useHttps;
     }
 
     /**
@@ -56,26 +40,10 @@ public class RichMediaDescription {
     }
 
     /**
-     * @return the useHttps
-     */
-    public boolean isUseHttps() {
-        return useHttps;
-    }
-
-    /**
      * @param mediaId
      *            the mediaId to set
      */
     public void setMediaId(String mediaId) {
         this.mediaId = mediaId;
     }
-
-    /**
-     * @param useHttps
-     *            the useHttps to set
-     */
-    public void setUseHttps(boolean useHttps) {
-        this.useHttps = useHttps;
-    }
-
 }
