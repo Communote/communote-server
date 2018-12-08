@@ -605,6 +605,9 @@
      */
     localNamespace.removeDebouncedResizeEventHandler = function(handler) {
         var i, l;
+        if (!debouncedResizeHandlers) {
+            return;
+        }
         for (i = 0, l = debouncedResizeHandlers.length; i < l; i++) {
             if (debouncedResizeHandlers[i] === handler) {
                 debouncedResizeHandlers.splice(i, 1);

@@ -99,38 +99,8 @@
 	                    $fmtTool.message("blog.post.list.note.modification.hint", $modificationDate)
 	                </div>
 	            #end
-	            
-	            #set( $mediaList = false)
-	            #set( $mediaList = $note.getProperty('richmedia-content') )
-	            #if( $mediaList && !$mediaList.isEmpty() )
-	            <div class="cn-media-list cn-media-video">
-	                <ul>
-	                    #set( $mediaCounter = 0 )
-	                    #foreach( $media in $mediaList )
-	                        #set( $mediaCounter = $mediaCounter + 1 )
-	                        ## set values for plugin template
-	                        #set( $richMediaDescription = $media )
-	                        <li class="cn-media-item-$mediaCounter cn-hidden">
-                            
-	                            #parse( $renderTool.getVelocityTemplateLocation(${media.Template}) )
-	                        </li>
-	                    #end
-	                    #set( $hiddenMedia = $mediaCounter - 1 )
-	                    #if($hiddenMedia == 1)
-	                        <li class="cn-media-action">
-	                            <a class="cn-show-more" onclick="${widgetInstance}.showMoreMediaLinkClicked(this, true)">$fmtTool.message("blog.post.list.note.media.more.sg", ${hiddenMedia})</a>
-	                            <a class="cn-show-less" style="display:none;" onclick="${widgetInstance}.showMoreMediaLinkClicked(this, false)">$fmtTool.message("blog.post.list.note.media.less")</a>
-	                        </li>
-	                    #elseif($hiddenMedia > 1) 
-	                        <li class="cn-media-action">
-	                            <a class="cn-show-more" onclick="${widgetInstance}.showMoreMediaLinkClicked(this, true)">$fmtTool.message("blog.post.list.note.media.more.pl", ${hiddenMedia})</a>
-	                            <a class="cn-show-less" style="display:none;" onclick="${widgetInstance}.showMoreMediaLinkClicked(this, false)">$fmtTool.message("blog.post.list.note.media.less")</a>
-	                        </li>
-	                    #end
-	                </ul>
-	            </div>
-	            #end
-	    
+	            <div class="cn-note-media">
+
 	            #if($request.isRequestedSessionIdFromCookie())
 	                #set( $imageList = $note.getAttachments('^(?:.*(gif|jpg|jpeg|png).*)$') )
 	                #if( !$imageList.isEmpty() )
@@ -184,6 +154,7 @@
 	                </ul>
 	            </div>
 	            #end
+	            </div>
 	            <div class="cn-content-meta cn-hidden #if( !$note.tags.isEmpty() || !$note.notifiedUsers.isEmpty() || $note.mentionTopicReaders || $note.mentionTopicAuthors || $note.mentionTopicManagers || $note.mentionDiscussionAuthors || ${repostOriginalNote}) cn-expanded #end">
 	                #if(${repostOriginalNote})
 	                   <div class="cn-repost-bar">

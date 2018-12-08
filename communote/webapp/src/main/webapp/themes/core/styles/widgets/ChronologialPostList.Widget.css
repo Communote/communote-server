@@ -856,10 +856,7 @@
 }
 
 .cn-list-overview-blog-entry .cn-media-list li {
-    float: left;
     font-size: 13px;
-    /*margin: 0 10px 10px 0;*/
-    margin: 0 10px 0 0;
     padding: 0;
 }
 
@@ -868,23 +865,10 @@
     cursor: pointer;
 }
 
-.cn-list-overview-blog-entry .cn-media-list iframe.cono-youtube-player,
-.cn-list-overview-blog-entry .cn-media-list iframe.cono-vimeo-player {
-    width: 320px;
-    min-height: 210px;
-    border: 0 none;
-}
-
-.cn-list-overview-blog-entry .cn-media-list iframe.cono-youtube-player {
-    min-height: 211px;
-}
-
-.cn-list-overview-blog-entry .cn-media-video li.cn-media-action a {
-    margin-top: 198px;
-}
-
 .cn-list-overview-blog-entry .cn-media-pic li {
     display: none;
+    float: left;
+    margin: 0 10px 0 0;
 }
 
 .cn-list-overview-blog-entry .cn-media-pic li.cn-media-item-1,
@@ -904,7 +888,6 @@
 }
 
 .cn-list-overview-blog-entry .cn-media-attachment li {
-    float: none;
     margin: 5px 0;
     line-height: 32px;
 }
