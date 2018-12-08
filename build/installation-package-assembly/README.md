@@ -25,7 +25,7 @@ If the Windows Tomcat distributions cannot be downloaded from the configured mir
 # Update Tomcat Version
 If the Tomcat version should be updated you have to
 - modify the value of the `tomcatVersion` property (and the value of the `tomcatVersionMajor` property if the a new major version should be used)
-- correct the sha1 hash-sums to the values of the new Windows packages
+- correct the sha512 hash-sums to the values of the new Windows packages
 - test whether the download of the Tomcat distributions is possible
 
 Additionally you should check whether the context.xml and server.xml files in src/main/resources/ subdirectories need to be modified because of changes in new Tomcat version.
