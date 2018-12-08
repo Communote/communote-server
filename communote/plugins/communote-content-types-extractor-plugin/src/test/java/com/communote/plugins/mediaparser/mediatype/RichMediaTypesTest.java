@@ -28,7 +28,7 @@ public class RichMediaTypesTest {
                         "http://vimeo.com/groups/electronika/videos/12345678")
                         .getMediaId(), "12345678");
         Assert.assertNotNull(VIMEO
-                .extractRichMediaDescription("http://vimeo.com/channels/quinzaine#23916731"));
+                .extractRichMediaDescription("http://vimeo.com/channels/quinzaine/23916731"));
         Assert.assertNull(VIMEO.extractRichMediaDescription("http://vimeo.com/video/12345678"));
         Assert.assertNull(VIMEO.extractRichMediaDescription("http://vimeo.com/mohazima"));
         Assert.assertNull(VIMEO.extractRichMediaDescription("anything"));

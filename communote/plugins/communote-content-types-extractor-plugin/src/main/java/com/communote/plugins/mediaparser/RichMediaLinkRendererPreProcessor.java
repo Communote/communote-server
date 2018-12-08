@@ -17,7 +17,7 @@ import com.communote.server.api.core.note.processor.NoteMetadataRenderingPreProc
  */
 public class RichMediaLinkRendererPreProcessor implements NoteMetadataRenderingPreProcessor {
 
-    private static final String PROPERTY_RICHMEDIA = "richmedia-content";
+    public static final String PROPERTY_RICHMEDIA = "richmedia-content";
 
     private final static RichMediaExtractor EXTRACTOR = new RichMediaExtractor();
 

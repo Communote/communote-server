@@ -393,7 +393,6 @@ var ChronologicalPostListDefaultWidget = new Class({
         this.parent(responseMetadata);
         this.containsNoNotes = this.domNode.getElement('.control-empty-list') != null;
         this.noteRefererTooltips.attach();
-        this.showRichMedia(this.domNode);
         this.showInlineImages(this.domNode);
         this.inlineComments = {};
     },
@@ -419,23 +418,6 @@ var ChronologicalPostListDefaultWidget = new Class({
                 this.noteInteractionControlRenderer.noteContainerStateChanged(noteId,
                         noteContainer, 'expanded', true);
             }
-        }
-    },
-
-    showRichMedia: function(startNode) {
-        var richMedia, items, i;
-        if (!window.RichMedia) {
-            return;
-        }
-        // scan for inline videos and show the first
-        richMedia = new RichMedia({
-            context: startNode,
-            elements: 'li.cn-media-item-1 span.richmedia-source'
-        });
-        richMedia.renderElements();
-        items = startNode.getElements('li.cn-media-item-1');
-        for (i = 0; i < items.length; i++) {
-            items[i].removeClass('cn-hidden');
         }
     },
 
@@ -977,7 +959,6 @@ var ChronologicalPostListDefaultWidget = new Class({
             this.noteRefererTooltips.noteChanged(context.noteId);
         }
         this.noteRefererTooltips.attach(domNode);
-        this.showRichMedia(domNode);
         this.showInlineImages(domNode);
         if (context.discussionId && !context.insertNote) {
             discussionDetails = context.selectedViewType == 'THREAD' ? this.inlineDiscussions[context.discussionId]
@@ -1084,30 +1065,6 @@ var ChronologicalPostListDefaultWidget = new Class({
                 }
             }
         }
-    },
-
-    showMoreMediaLinkClicked: function(linkNode, showMore) {
-        linkNode = $(linkNode);
-        var links = linkNode.getSiblings('a');
-        var list = linkNode.getParents('ul')[0];
-        var item = list.getChildren();
-        var i;
-
-        if (showMore) {
-            var richMedia = new RichMedia({
-                context: list
-            });
-            richMedia.renderElements();
-            for (i = 0; i < item.length; i++) {
-                item[i].removeClass('cn-hidden');
-            }
-        } else {
-            for (i = 1; i < (item.length - 1); i++) {
-                item[i].addClass('cn-hidden');
-            }
-        }
-        links[0].setStyle('display', 'block');
-        linkNode.setStyle('display', 'none');
     },
 
     /**
