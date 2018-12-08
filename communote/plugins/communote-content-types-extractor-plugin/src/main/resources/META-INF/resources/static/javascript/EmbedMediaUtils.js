@@ -65,6 +65,7 @@
         iframeElem.width = size.width;
         iframeElem.height = size.height;
         iframeElem.src = urlMappings[mediaDefinition.type].replace('$MEDIA_ID$', mediaDefinition.id);
+        iframeElem.referrerPolicy = 'no-referrer';
         parentElem.appendChild(iframeElem);
         return iframeElem.id;
     }
