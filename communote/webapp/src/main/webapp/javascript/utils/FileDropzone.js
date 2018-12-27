@@ -365,10 +365,5 @@
         clearDropzoneLeftTimeout(this);
         this.validData = false;
     };
-    // TODO remove
-    Dropzone.createTestElement = function() {
-        var div = document.body.appendChild(document.createElement('div'));
-        div.innerHTML = '<div id="wrapper-el" style="margin: 20px;border: 1px solid;"><div id="outer" style="background-color: greenyellow;"><div id="first-child" style="padding: 5px;background-color: aliceblue;"><div id="second-child" style="background-color: beige;padding: 5px;"><div id="inner" style="height: 80px;background-color: burlywood;">blah blubbber</div></div></div></div></div>';
-    };
     communote.classes.FileDropzone = Dropzone;
 })();
