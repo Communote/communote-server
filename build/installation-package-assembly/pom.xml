@@ -6,11 +6,11 @@
     <name>Communote installation packages</name>
     <description>This project builds the installation packages for Communote</description>
     <properties>
-        <tomcatVersion>8.5.35</tomcatVersion>
+        <tomcatVersion>8.5.37</tomcatVersion>
         <tomcatVersionMajor>8</tomcatVersionMajor>
         <tomcatDownloadMirror>http://artfiles.org/apache.org</tomcatDownloadMirror>
-        <tomcatWinX86SHA512>63f82c815cee83b2eae1026ce3f21f2d90b2d01a6b82134c2b4116c20f000966022d2bae501f322b7e24644636cfbe9df6d46fcf037f09d92006b5c67022d33c</tomcatWinX86SHA512>
-        <tomcatWinX64SHA512>7676e4b7f154259e1393594ec98f56f8544322f38724607fc9dc1f74dc052e0c4b09e2961b6cd39b322133f22ebfbab1a372f258845b3ad47dcd67355343fe2f</tomcatWinX64SHA512>
+        <tomcatWinX86SHA512>b1d50cd7ee4426f79934a27f1257daa5ad9fa00fc4ac6f9cce7cfe9469f4645eb8acf6aa9eed0e7feb6ea184b6490c17586a15091cd94edbc3e5dd40fa1b8e23</tomcatWinX86SHA512>
+        <tomcatWinX64SHA512>fbed3e848d43808cd45232210029ebbdd57c571b5b169c29176ba1f3afa8adf0bcaa82b0aa4603ffdcce6390ddc0604650bc2c3a0163ce52becefb37ef9dbbb2</tomcatWinX64SHA512>
         <formatWindows>dir</formatWindows>
         <formatLinux>dir</formatLinux>
         <!-- skip install and package phase because no deployable package is created -->
