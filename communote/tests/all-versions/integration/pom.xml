@@ -5,7 +5,7 @@
 	<parent>
         <artifactId>communote-server-parent</artifactId>
         <groupId>com.communote.server</groupId>
-        <version>3.5-SNAPSHOT</version>
+        <version>3.5</version>
         <relativePath></relativePath>
     </parent>
 	<artifactId>tests-all-versions-integration</artifactId>

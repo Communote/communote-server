@@ -6,7 +6,7 @@
     <artifactId>communote-server-parent</artifactId>
     <packaging>pom</packaging>
     <name>Communote Parent</name>
-    <version>3.5-SNAPSHOT</version>
+    <version>3.5</version>
     <description>Communote - Parent</description>
     <url>https://communote.github.io/</url>
     <organization>

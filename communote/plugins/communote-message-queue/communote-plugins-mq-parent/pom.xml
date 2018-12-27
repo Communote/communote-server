@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.communote.plugins</groupId>
 		<artifactId>communote-plugins-parent</artifactId>
-        <version>3.5-SNAPSHOT</version>
+        <version>3.5</version>
         <relativePath></relativePath>
     </parent>
     <artifactId>communote-plugins-mq-parent</artifactId>
