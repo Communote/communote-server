@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,7 +169,14 @@ public abstract class AttachmentTO extends AbstractTransferObject implements Ser
             contentType = "application/octet-stream";
         }
         response.setContentType(contentType);
-        response.setCharacterEncoding(characterEncoding);
+        // TODO setting the encoding here is not that useful because we are using the stream and not
+        // the writer. Moreover, binary types have no character encoding and for text types the
+        // attachment should tell us the encoding of the content.
+        // can't set 'no encoding' with null (to overwrite value set by EncodingFilter), null is
+        // ignored. Empty string causes a warning.
+        if (StringUtils.isNotBlank(characterEncoding)) {
+            response.setCharacterEncoding(characterEncoding);
+        }
         long contentLength = this.getContentLength();
         // RFC 2183 --> http://www.ietf.org/rfc/rfc2183.txt
         String dispositionType = dipositionTypeAsAttachment ? "attachment" : "inline";
