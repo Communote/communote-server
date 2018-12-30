@@ -6,9 +6,11 @@
     <name>Communote installation packages</name>
     <description>This project builds the installation packages for Communote</description>
     <properties>
-        <tomcatVersion>8.0.36</tomcatVersion>
+        <tomcatVersion>8.5.37</tomcatVersion>
         <tomcatVersionMajor>8</tomcatVersionMajor>
         <tomcatDownloadMirror>http://artfiles.org/apache.org</tomcatDownloadMirror>
+        <tomcatWinX86SHA512>b1d50cd7ee4426f79934a27f1257daa5ad9fa00fc4ac6f9cce7cfe9469f4645eb8acf6aa9eed0e7feb6ea184b6490c17586a15091cd94edbc3e5dd40fa1b8e23</tomcatWinX86SHA512>
+        <tomcatWinX64SHA512>fbed3e848d43808cd45232210029ebbdd57c571b5b169c29176ba1f3afa8adf0bcaa82b0aa4603ffdcce6390ddc0604650bc2c3a0163ce52becefb37ef9dbbb2</tomcatWinX64SHA512>
         <formatWindows>dir</formatWindows>
         <formatLinux>dir</formatLinux>
         <!-- skip install and package phase because no deployable package is created -->
@@ -42,7 +44,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.3-1102-jdbc4</version>
+            <version>42.2.5</version>
         </dependency>
     </dependencies>
     <profiles>
@@ -54,7 +56,7 @@
                     <plugin>
                         <groupId>com.googlecode.maven-download-plugin</groupId>
                         <artifactId>download-maven-plugin</artifactId>
-                        <version>1.3.0</version>
+                        <version>1.4.1</version>
                         <executions>
                             <execution>
                                 <id>fetch-x86-tomcat</id>
@@ -65,7 +67,7 @@
                                 <configuration>
                                     <url>${tomcatDownloadMirror}/tomcat/tomcat-${tomcatVersionMajor}/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}-windows-x86.zip</url>
                                     <outputDirectory>${project.build.directory}/dependency/tomcat-windows-x86</outputDirectory>
-                                    <sha1>f2524f908b73e6dad6aa81d5c98421c7ad1c630e</sha1>
+                                    <sha512>${tomcatWinX86SHA512}</sha512>
                                     <retries>1</retries>
                                     <unpack>true</unpack>
                                 </configuration>
@@ -79,7 +81,7 @@
                                 <configuration>
                                     <url>${tomcatDownloadMirror}/tomcat/tomcat-${tomcatVersionMajor}/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}-windows-x64.zip</url>
                                     <outputDirectory>${project.build.directory}/dependency/tomcat-windows-x64</outputDirectory>
-                                    <sha1>b9561e5e6315af633022893d168f43413d30655f</sha1>
+                                    <sha512>${tomcatWinX64SHA512}</sha512>
                                     <retries>1</retries>
                                     <unpack>true</unpack>
                                 </configuration>
@@ -155,7 +157,7 @@
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
-                <version>1.3.0</version>
+                <version>1.4.1</version>
                 <configuration>
                     <retries>1</retries>
                     <unpack>true</unpack>
@@ -170,7 +172,7 @@
                         <configuration>
                             <url>${tomcatDownloadMirror}/tomcat/tomcat-${tomcatVersionMajor}/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}-windows-x86.zip</url>
                             <outputDirectory>${project.build.directory}/dependency/tomcat-windows-x86</outputDirectory>
-                            <sha1>f2524f908b73e6dad6aa81d5c98421c7ad1c630e</sha1>
+                            <sha512>${tomcatWinX86SHA512}</sha512>
                         </configuration>
                     </execution>
                     <execution>
@@ -182,7 +184,7 @@
                         <configuration>
                             <url>${tomcatDownloadMirror}/tomcat/tomcat-${tomcatVersionMajor}/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}-windows-x64.zip</url>
                             <outputDirectory>${project.build.directory}/dependency/tomcat-windows-x64</outputDirectory>
-                            <sha1>b9561e5e6315af633022893d168f43413d30655f</sha1>
+                            <sha512>${tomcatWinX64SHA512}</sha512>
                         </configuration>
                     </execution>
                 </executions>

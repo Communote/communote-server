@@ -22,7 +22,7 @@
         <!-- little trick because extensions are not allowed in profiles -->
         <jdbc.groupId>org.postgresql</jdbc.groupId>
         <jdbc.artifactId>postgresql</jdbc.artifactId>
-        <jdbc.version>9.3-1102-jdbc4</jdbc.version>
+        <jdbc.version>42.2.5</jdbc.version>
 	</properties>
 	<build>
 		<outputDirectory>target/classes</outputDirectory>
