@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.communote.server</groupId>
         <artifactId>communote-server-widgets</artifactId>
-        <version>3.5</version>
+        <version>3.6-SNAPSHOT</version>
     </parent>
     <artifactId>communote-server-widgets-jar</artifactId>
     <packaging>jar</packaging>

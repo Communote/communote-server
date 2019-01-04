@@ -81,7 +81,7 @@ public abstract class CommunoteIntegrationTest {
      * and read the bundles from there. No need to configure directory here then.
      */
     // TODO How to improve this resolution
-    public static final String COMMUNOTE_VERSION = System.getProperty("project.version", "3.5");
+    public static final String COMMUNOTE_VERSION = System.getProperty("project.version", "3.6");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunoteIntegrationTest.class);
 
