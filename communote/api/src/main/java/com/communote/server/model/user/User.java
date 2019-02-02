@@ -300,6 +300,7 @@ public class User extends CommunoteEntity {
      * @param externalSystemId
      *            the ID of the external system
      * @return true if the user has an external authentication with the given ID
+     * @since 3.5
      */
     public boolean hasExternalAuthentication(String externalSystemId) {
         for (ExternalUserAuthentication externalAuthentication : externalAuthentications) {

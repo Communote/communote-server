@@ -32,6 +32,7 @@ public interface AuthenticationManagement {
      *             in case the user account is not active
      * @throws AuthAgainstInternalDBWhileExternalUserAccountException
      *             in case the user was provided by the active primary external user repository
+     * @since 3.5
      */
     UserDetails checkLocalUserPasswordOnLogin(String username, String password)
             throws UserNotFoundException, AccountNotActivatedException,

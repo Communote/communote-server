@@ -11,6 +11,7 @@ import com.communote.server.persistence.common.security.SecurityCodeNotFoundExce
  * Manage the passwords of users stored in the database.
  *
  * @author Communote Team - <a href="https://github.com/Communote">https://github.com/Communote</a>
+ * @since 3.5
  */
 public interface UserPasswordManagement {
 

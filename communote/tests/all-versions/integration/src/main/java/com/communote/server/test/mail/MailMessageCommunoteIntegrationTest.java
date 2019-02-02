@@ -24,6 +24,7 @@ public abstract class MailMessageCommunoteIntegrationTest extends CommunoteInteg
      *            list of recipients
      * @throws Exception
      *             Exception.
+     * @since 3.5
      */
     public abstract void sendMail(MailSender mailSender, User... recipients)
             throws Exception;

@@ -125,6 +125,7 @@ public class ApplicationConfigurationProperties extends
      * @return the decrypted value or null if the property was not set
      * @throws EncryptionException
      *             in case decryption failed
+     * @since 3.5
      */
     public String getPropertyDecrypted(ApplicationConfigurationPropertyConstant key)
             throws EncryptionException {

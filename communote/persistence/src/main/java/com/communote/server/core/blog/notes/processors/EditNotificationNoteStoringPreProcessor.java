@@ -10,6 +10,11 @@ import com.communote.server.api.core.property.StringPropertyTO;
 import com.communote.server.model.note.Note;
 import com.communote.server.model.user.User;
 
+/**
+ * 
+ * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
+ * @since 3.5
+ */
 public class EditNotificationNoteStoringPreProcessor implements
         NoteStoringImmutableContentPreProcessor {
     public static final String PROPERTY_KEY_RESEND_NOTIFICATION = "editNote.resendNotification";

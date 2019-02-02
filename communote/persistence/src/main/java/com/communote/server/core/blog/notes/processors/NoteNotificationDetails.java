@@ -8,6 +8,7 @@ import java.util.Set;
  * notified about a note.
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
+ * @since 3.5
  */
 public class NoteNotificationDetails {
 

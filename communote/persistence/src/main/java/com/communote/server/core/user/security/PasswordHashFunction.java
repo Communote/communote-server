@@ -3,6 +3,7 @@ package com.communote.server.core.user.security;
 /**
  *
  * @author Communote Team - <a href="https://github.com/Communote">https://github.com/Communote</a>
+ * @since 3.5
  */
 public interface PasswordHashFunction {
 

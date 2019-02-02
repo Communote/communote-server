@@ -29,6 +29,7 @@ import com.communote.server.api.core.config.type.ApplicationPropertyMailing;
  * data directory. Mainly useful for development and tests.
  * 
  * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
+ * @since 3.5
  */
 public class FileSystemMimeMessageSender implements MimeMessageSender {
 

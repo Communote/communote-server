@@ -122,6 +122,7 @@ public abstract class MailMessage {
      * @param recipients
      *            A list of recipients of this message. The email addresses will be added to the TO
      *            header.
+     * @since 3.5
      */
     public MailMessage(String messageKey, Map<String, String> templatePlaceholderMessageKeys,
             Locale locale, User... recipients) {
@@ -148,6 +149,7 @@ public abstract class MailMessage {
      * @param recipients
      *            A list of recipients of this message. The email addresses will be added to the TO
      *            header.
+     * @since 3.5
      */
     public MailMessage(String messageKey, Map<String, String> templatePlaceholderMessageKeys,
             Locale locale, Collection<User> recipients) {
@@ -191,6 +193,7 @@ public abstract class MailMessage {
      * 
      * @param user
      *            the user to send the mail to
+     * @since 3.5
      */
     public void addBcc(User user) {
         this.bccRecipients.add(user);
@@ -201,6 +204,7 @@ public abstract class MailMessage {
      * 
      * @param user
      *            the user to send the mail to
+     * @since 3.5
      */
     public void addCc(User user) {
         this.ccRecipients.add(user);
@@ -211,6 +215,7 @@ public abstract class MailMessage {
      * 
      * @param user
      *            the user to send the mail to
+     * @since 3.5
      */
     public void addTo(User user) {
         this.toRecipients.add(user);
@@ -221,6 +226,7 @@ public abstract class MailMessage {
      * 
      * @param emailAddress
      *            the email address of the recipient
+     * @since 3.5
      */
     public void addTo(String emailAddress) {
         this.toRecipientEmailAddresses.add(emailAddress);
@@ -234,6 +240,7 @@ public abstract class MailMessage {
      * @param personalName
      *            the personal name to add to the TO header.
      * 
+     * @since 3.5
      */
     public void addTo(String emailAddress, String personalName) {
         this.addTo(emailAddress);
@@ -245,6 +252,7 @@ public abstract class MailMessage {
     /**
      * @return a possibly empty collection of all users whose email addresses should be added to the
      *         BCC header
+     * @since 3.5
      */
     public Collection<User> getBcc() {
         return bccRecipients;
@@ -253,6 +261,7 @@ public abstract class MailMessage {
     /**
      * @return a possibly empty collection of all users whose email addresses should be added to the
      *         CC header
+     * @since 3.5
      */
     public Collection<User> getCc() {
         return ccRecipients;
@@ -260,6 +269,7 @@ public abstract class MailMessage {
 
     /**
      * @return the template for rendering the content of the mail message
+     * @since 3.5
      */
     public String getContentTemplate() {
         return messageTemplate;
@@ -267,6 +277,7 @@ public abstract class MailMessage {
 
     /**
      * @return an ID of the content template
+     * @since 3.5
      */
     public String getContentTemplateId() {
         return messageKey;
@@ -373,6 +384,7 @@ public abstract class MailMessage {
 
     /**
      * @return the template for rendering the subject of the mail message
+     * @since 3.5
      */
     public String getSubjectTemplate() {
         return subjectTemplate;
@@ -380,6 +392,7 @@ public abstract class MailMessage {
 
     /**
      * @return an ID of the subject template
+     * @since 3.5
      */
     public String getSubjectTemplateId() {
         return subjectKey;
@@ -388,6 +401,7 @@ public abstract class MailMessage {
     /**
      * @return a possibly empty collection of all users whose email addresses should be added to the
      *         TO header
+     * @since 3.5
      */
     public Collection<User> getTo() {
         return toRecipients;
@@ -398,6 +412,7 @@ public abstract class MailMessage {
      *         header. This doesn't include the email addresses of the users returned by
      *         {@link #getTo()}, instead only the addresses added with {@link #addTo(String)} or
      *         {@link #addTo(String, String)} are returned.
+     * @since 3.5
      */
     public Collection<String> getToAddresses() {
         return toRecipientEmailAddresses;
@@ -411,6 +426,7 @@ public abstract class MailMessage {
      *            the email address for which the personal name should be returned
      * @return the personal name added with the email address or null if no personal name was added
      *         or the email address wasn't added
+     * @since 3.5
      */
     public String getToAddressPersonalName(String emailAddress) {
         return toRecipientPersonalNames.get(emailAddress);
@@ -429,6 +445,7 @@ public abstract class MailMessage {
      * @return whether to insert the personal name (first name, last name and salutation if
      *         available) of a recipient to the TO, CC or BCC header. By default the personal name
      *         is not added.
+     * @since 3.5
      */
     public boolean isInsertRecipientPersonalName() {
         return insertRecipientPersonalName;
@@ -452,6 +469,7 @@ public abstract class MailMessage {
      * 
      * @param fromAddress
      *            the email address to be used in From header
+     * @since 3.5
      */
     public void setFromAddress(String fromAddress) {
         this.fromAddress = fromAddress;
@@ -462,6 +480,7 @@ public abstract class MailMessage {
      * 
      * @param fromAddressName
      *            the name of the sender to be used in the From header
+     * @since 3.5
      */
     public void setFromAddressName(String fromAddressName) {
         this.fromAddressName = fromAddressName;
@@ -473,6 +492,7 @@ public abstract class MailMessage {
      * 
      * @param insertRecipientPersonalName
      *            true to insert the personal name, false otherwise
+     * @since 3.5
      */
     public void setInsertRecipientPersonalName(boolean insertRecipientPersonalName) {
         this.insertRecipientPersonalName = insertRecipientPersonalName;

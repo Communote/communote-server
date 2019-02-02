@@ -25,6 +25,7 @@ public interface NoteStoringPostProcessorManager {
      * @param processor
      *            the processor to register
      * @return true if the processor was registered, false if there is already one with the same ID
+     * @since 3.5
      */
     boolean addProcessor(NoteStoringPostProcessor processor);
 
@@ -52,6 +53,7 @@ public interface NoteStoringPostProcessorManager {
      *            the context with details to be passed to the processors
      * @throws IllegalArgumentException
      *             in case the context did not contain a note ID
+     * @since 3.5
      */
     void processAsynchronously(NoteStoringPostProcessorContext context);
 
@@ -61,6 +63,7 @@ public interface NoteStoringPostProcessorManager {
      * @param processor
      *            the processor to unregister
      * @return true if the processor was registered, false otherwise
+     * @since 3.5
      */
     boolean removeProcessor(NoteStoringPostProcessor processor);
 
@@ -70,6 +73,7 @@ public interface NoteStoringPostProcessorManager {
      * @param processorId
      *            the ID of the processor to unregister
      * @return true if the processor was registered, false otherwise
+     * @since 3.5
      */
     boolean removeProcessor(String processorId);
 }

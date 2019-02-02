@@ -40,7 +40,7 @@ public class VersionComparator implements Comparator<String> {
      *            if versionEndsWithRevision is true, this parameter defines whether the revision
      *            is a numeric value which increases with every new revision. Only in this case
      *            the revision is compared. 
-     *            
+     * @since 3.5
      */
     public VersionComparator(boolean versionEndsWithRevision, boolean numericIncreasingRevision) {
         this.versionEndsWithRevision = versionEndsWithRevision;

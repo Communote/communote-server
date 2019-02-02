@@ -7,6 +7,7 @@ import java.util.Map;
  * 
  * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
  *
+ * @since 3.5
  */
 public class MapUtils {
 

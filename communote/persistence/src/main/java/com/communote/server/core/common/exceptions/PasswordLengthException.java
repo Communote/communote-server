@@ -19,6 +19,7 @@ public class PasswordLengthException extends PasswordValidationException {
      *            the required minimum length the password needs to have
      * @param actualLength
      *            the length the password had
+     * @since 3.5
      */
     public PasswordLengthException(int requiredMinLength, int actualLength) {
         this("Password has less than " + requiredMinLength + " characters", requiredMinLength,
@@ -34,6 +35,7 @@ public class PasswordLengthException extends PasswordValidationException {
      *            the required minimum length the password needs to have
      * @param actualLength
      *            the length the password had
+     * @since 3.5
      */
     public PasswordLengthException(String message, int requiredMinLength, int actualLength) {
         super(message);
@@ -43,14 +45,15 @@ public class PasswordLengthException extends PasswordValidationException {
 
     /**
      * @return the length the password had
+     * @since 3.5
      */
     public int getActualLength() {
         return actualLength;
     }
 
     /**
-     *
      * @return the required minimum length the password needs to have
+     * @since 3.5
      */
     public int getRequiredMinLength() {
         return requiredMinLength;

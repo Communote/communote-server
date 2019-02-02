@@ -179,6 +179,7 @@ public class ValidationHelper {
      * @param errors
      *            Errors.
      * @return {@code true} if the password is valid otherwise {@code false}
+     * @since 3.5
      */
     public static boolean validatePasswords(UserPasswordManagement userPasswordManagement,
             String passwordField, String passwordInput, String passwordConfirmField,

@@ -28,7 +28,7 @@ import com.communote.server.model.user.User;
  * templates.
  * 
  * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
- *
+ * @since 3.5
  */
 public class VelocityMimeMessagePreparator implements MimeMessagePreparator {
 

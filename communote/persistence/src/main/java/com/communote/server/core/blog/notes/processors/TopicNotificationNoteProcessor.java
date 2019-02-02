@@ -217,9 +217,6 @@ public class TopicNotificationNoteProcessor extends NotificationNoteProcessor {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Collection<User> getUsersToNotify(Note note, NoteStoringPostProcessorContext context,
             Set<Long> userIdsToSkip) {

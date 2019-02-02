@@ -118,9 +118,6 @@ public class DiscussionParticipationNotificationNoteProcessor extends Notificati
         return 50;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Collection<User> getUsersToNotify(Note note, NoteStoringPostProcessorContext context,
             Set<Long> userIdsToSkip) {

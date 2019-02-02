@@ -14,6 +14,7 @@ public class EncryptionException extends Exception {
      * 
      * @param message
      *            detail message
+     * @since 3.5
      */
     public EncryptionException(String message) {
         super(message);

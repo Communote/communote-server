@@ -19,6 +19,7 @@ public interface NoteStoringPostProcessor extends Orderable {
     /**
      * @return a string which uniquely identifies this processor. The string should not contain
      *         spaces.
+     * @since 3.5
      */
     String getId();
 

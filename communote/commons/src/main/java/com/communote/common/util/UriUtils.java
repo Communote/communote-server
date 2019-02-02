@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
  * Utilities for working with URIs.
  *
  * @author Communote Team - <a href="https://github.com/Communote">https://github.com/Communote</a>
+ * 
+ * @since 3.5
  */
 public class UriUtils {
 

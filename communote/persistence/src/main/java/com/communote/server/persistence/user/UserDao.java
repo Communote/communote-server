@@ -303,6 +303,7 @@ public interface UserDao {
     /**
      * Copies the fields of the VO to the corresponding fields of the entity. Null values and the
      * password are not copied.
+     * @since 3.5
      */
     public void userVOToEntity(UserVO source, User target);
 

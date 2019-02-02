@@ -17,6 +17,7 @@ import com.communote.server.api.core.config.ApplicationConfigurationProperties;
  * Note: not using PHC string format as there is no definition for ID and parameters.
  *
  * @author Communote Team - <a href="https://github.com/Communote">https://github.com/Communote</a>
+ * @since 3.5
  */
 public class BcryptPasswordHashFunction implements PasswordHashFunction {
 

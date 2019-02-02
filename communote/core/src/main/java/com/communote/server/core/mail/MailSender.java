@@ -11,6 +11,7 @@ import com.communote.server.core.mail.messages.MailMessage;
  * uses a {@link MimeMessageSender} to transport them.
  * 
  * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
+ * @since 3.5
  */
 public interface MailSender {
 

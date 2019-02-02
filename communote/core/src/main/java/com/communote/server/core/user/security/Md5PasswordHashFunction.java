@@ -7,6 +7,7 @@ import com.communote.common.encryption.HashCodeGenerator;
  * compatibility.
  *
  * @author Communote Team - <a href="https://github.com/Communote">https://github.com/Communote</a>
+ * @since 3.5
  */
 public class Md5PasswordHashFunction implements PasswordHashFunction {
 

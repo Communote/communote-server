@@ -83,6 +83,7 @@ public class DevelopmentProperties {
      * @param key
      *            the key
      * @return the property value or null if there is no property for the key
+     * @since 3.5
      */
     public String getProperty(String key) {
         return developmentProperties.getProperty(key);
@@ -99,6 +100,7 @@ public class DevelopmentProperties {
      *            the fallback to return if there is no property for the key
      * @return the property value or the fallback if there is no property for the key or it cannot
      *         be converted into a boolean
+     * @since 3.5
      */
     public boolean getProperty(String key, boolean fallback) {
         Boolean result = BooleanUtils.toBooleanObject(getProperty(key));
@@ -117,6 +119,7 @@ public class DevelopmentProperties {
      *            the fallback to return if there is no property for the key
      * @return the property value or the fallback if there is no property for the key or it cannot
      *         be converted into an integer
+     * @since 3.5
      */
     public int getProperty(String key, int fallback) {
         String value = getProperty(key);
@@ -141,6 +144,7 @@ public class DevelopmentProperties {
      *            the fallback to return if there is no property for the key
      * @return the property value or the fallback if there is no property for the key or it cannot
      *         be converted into a long
+     * @since 3.5
      */
     public long getProperty(String key, long fallback) {
         String value = getProperty(key);
@@ -163,6 +167,7 @@ public class DevelopmentProperties {
      * @param fallback
      *            the fallback to return if there is no property for the key
      * @return the property value or the fallback if there is no property for the key
+     * @since 3.5
      */
     public String getProperty(String key, String fallback) {
         String prop = getProperty(key);

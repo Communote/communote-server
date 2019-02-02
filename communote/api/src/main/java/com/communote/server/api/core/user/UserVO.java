@@ -33,12 +33,20 @@ public class UserVO implements java.io.Serializable {
         this.roles = null;
     }
 
+    /**
+     * 
+     * @since 3.5
+     */
     public UserVO(java.util.Locale language, String email, UserRole[] roles) {
         this.language = language;
         this.email = email;
         this.roles = roles;
     }
 
+    /**
+     * 
+     * @since 3.5
+     */
     public UserVO(String password, java.util.Locale language, String email, UserRole[] roles,
             String alias, String firstName, String lastName, String timeZoneId) {
         this.password = password;

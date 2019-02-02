@@ -60,6 +60,7 @@ public interface NoteStoringPreProcessorManager {
      *             in case any of the preprocessors failed
      * @throws NoteManagementAuthorizationException
      *             thrown to indicate that the note cannot be created because of access restrictions
+     * @since 3.5
      */
     void processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
             throws NoteStoringPreProcessorException, NoteManagementAuthorizationException;

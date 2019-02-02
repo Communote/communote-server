@@ -4,6 +4,7 @@ package com.communote.server.core.mail;
  * Thrown when an email address of a recipient is not valid.
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
+ * @since 3.5
  */
 public class InvalidRecipientMailAddressException extends MailingException {
 

@@ -189,6 +189,7 @@ public interface UserManagement {
      * Confirms a registered or invited user, sets user data and change status to active or
      * confirmed.
      * </p>
+     * @since 3.5
      */
     public User confirmUser(String securitycode, UserVO user)
             throws SecurityCodeNotFoundException, EmailValidationException,
@@ -246,6 +247,7 @@ public interface UserManagement {
      *             in case the provided user alias already exists
      * @throws PasswordValidationException
      *             in case the provided password does not meet the minimum security requirements
+     * @since 3.5
      */
     public User createUser(UserVO user, boolean emailConfirmationRequired,
             boolean managerConfirmationRequired) throws EmailAlreadyExistsException,
@@ -413,6 +415,7 @@ public interface UserManagement {
      * @param externalSystemId
      *            ID of an external system
      * @return true if the user has an external authentication with the given ID
+     * @since 3.5
      */
     @Transactional(readOnly = true)
     public boolean hasExternalAuthentication(long userId, String externalSystemId);

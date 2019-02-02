@@ -2,6 +2,11 @@ package com.communote.server.core.user.security;
 
 import com.communote.server.api.core.config.ApplicationConfigurationPropertyConstant;
 
+/**
+ * 
+ * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
+ * @since 3.5
+ */
 public enum ApplicationPropertyUserPassword implements ApplicationConfigurationPropertyConstant {
 
     /**

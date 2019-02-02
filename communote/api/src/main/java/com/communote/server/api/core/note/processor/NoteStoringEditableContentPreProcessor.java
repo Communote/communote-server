@@ -59,6 +59,7 @@ public interface NoteStoringEditableContentPreProcessor extends Orderable {
      *             thrown to indicate that the pre-processing failed and the note cannot be created
      * @throws NoteManagementAuthorizationException
      *             thrown to indicate that the note cannot be created because of access restrictions
+     * @since 3.5
      */
     public NoteStoringTO processEdit(Note noteToEdit, NoteStoringTO noteStoringTO)
             throws NoteStoringPreProcessorException, NoteManagementAuthorizationException;

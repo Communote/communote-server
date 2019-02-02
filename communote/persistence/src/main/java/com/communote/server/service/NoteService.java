@@ -407,6 +407,7 @@ public class NoteService {
      *             in case one of the pre processors failed
      * @throws MovingOfNonRootNotesNotAllowedException
      *             Thrown, when the user tries to move a note, which is not a parent root.
+     * @since 3.5
      */
     public NoteModificationResult updateNote(NoteStoringTO noteStoringTO, Long noteId,
             Set<String> additionalBlogNameIds) throws BlogNotFoundException, NoteNotFoundException,

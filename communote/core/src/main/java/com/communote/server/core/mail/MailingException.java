@@ -5,6 +5,7 @@ package com.communote.server.core.mail;
  * Thrown to indicate that there was a problem while sending or trying to send an email.
  *
  * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
+ * @since 3.5
  */
 public class MailingException extends RuntimeException {
     /**

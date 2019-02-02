@@ -59,6 +59,7 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
      *            object will contain details about notifications send for the note before the
      *            update. Will be null in all other cases.
      * @return true if this processor wants to send notifications, false otherwise
+     * @since 3.5
      */
     protected abstract boolean isSendNotifications(Note note, NoteStoringTO orginalNoteStoringTO,
             Map<String, String> properties, NoteNotificationDetails resendDetails);
@@ -70,6 +71,7 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
      * @param context
      *            the post processing context
      * @return the IDs of the users to not notify
+     * @since 3.5
      */
     protected Set<Long> extractUserIdsToSkip(NoteStoringPostProcessorContext context) {
         Object attributeValue = context.getAttributes().get(ATTRIBUTE_KEY_USER_IDS_TO_SKIP);
@@ -127,6 +129,7 @@ public abstract class NotificationNoteProcessor implements NoteStoringPostProces
      * @param userIdsToSkip
      *            the IDs of the users that should not be notified
      * @return the users to notify, can be null
+     * @since 3.5
      */
     protected abstract Collection<User> getUsersToNotify(Note note,
             NoteStoringPostProcessorContext context, Set<Long> userIdsToSkip);

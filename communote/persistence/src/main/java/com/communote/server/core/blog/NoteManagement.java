@@ -303,6 +303,7 @@ public interface NoteManagement {
      *             write access to the blog or is not the author of the note
      * @throws NoteStoringPreProcessorException
      *             in case one of the pre processors failed
+     * @since 3.5
      */
     public NoteModificationResult updateNote(NoteStoringTO noteStoringTO, Long noteId,
             java.util.Set<String> additionalBlogNameIds) throws BlogNotFoundException,

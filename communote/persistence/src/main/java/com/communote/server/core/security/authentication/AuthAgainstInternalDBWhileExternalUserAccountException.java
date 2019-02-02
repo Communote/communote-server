@@ -1,11 +1,11 @@
 package com.communote.server.core.security.authentication;
 
 /**
- * Indicates that a user was trying to authenticate against the internal DB, while having a config
- * for an activated external system.
+ * Should be thrown in authentication attempt against the internal database of a user who has an
+ * account for an active external system.
  *
- * @author Communote GmbH - <a href="http://www.communote.com/">http://www.communote.com/</a>
- *
+ * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
+ * @since 3.5
  */
 public class AuthAgainstInternalDBWhileExternalUserAccountException extends Exception {
 

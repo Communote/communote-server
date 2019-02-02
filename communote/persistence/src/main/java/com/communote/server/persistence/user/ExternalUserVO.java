@@ -128,6 +128,7 @@ public class ExternalUserVO extends UserVO implements Serializable {
      * Whether to clear the password of the local user.
      *
      * @return true if the password should be cleared
+     * @since 3.5
      */
     public boolean isClearPassword() {
         return this.clearPassword;
@@ -194,6 +195,7 @@ public class ExternalUserVO extends UserVO implements Serializable {
      *
      * @param clearPassword
      *            true to clear the password
+     * @since 3.5
      */
     public void setClearPassword(boolean clearPassword) {
         this.clearPassword = clearPassword;

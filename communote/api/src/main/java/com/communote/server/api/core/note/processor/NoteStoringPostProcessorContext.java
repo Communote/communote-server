@@ -19,6 +19,7 @@ public class NoteStoringPostProcessorContext {
      * @param properties
      *            the properties which were added by NoteStoringPostProcessors during synchronous
      *            processing
+     * @since 3.5
      */
     public NoteStoringPostProcessorContext(Map<String, String> properties) {
         this.properties = new HashMap<>();
@@ -37,6 +38,7 @@ public class NoteStoringPostProcessorContext {
     /**
      * @return the properties which were added by NoteStoringPostProcessors during synchronous
      *         processing
+     * @since 3.5
      */
     public Map<String, String> getProperties() {
         return properties;

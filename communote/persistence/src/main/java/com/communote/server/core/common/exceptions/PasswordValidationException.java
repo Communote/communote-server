@@ -2,6 +2,7 @@ package com.communote.server.core.common.exceptions;
 
 /**
  * @author Communote Team - <a href="https://github.com/Communote">https://github.com/Communote</a>
+ * @since 3.5
  */
 public class PasswordValidationException extends Exception {
 

@@ -19,7 +19,7 @@ import com.communote.server.api.core.config.type.ApplicationPropertyMailing;
  * MimeMessageSender which uses SMTP to send the message.
  * 
  * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
- *
+ * @since 3.5
  */
 public class SmtpMimeMessageSender implements MimeMessageSender {
 

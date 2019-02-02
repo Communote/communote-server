@@ -162,6 +162,7 @@ public class EncryptionUtils {
      * @param saltSize
      *            the length for the salt in bytes
      * @return a secure random salt
+     * @since 3.5
      */
     public static byte[] generateSalt(int saltSize) {
 

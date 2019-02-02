@@ -27,7 +27,7 @@ import com.communote.server.model.user.User;
 /**
  * 
  * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
- *
+ * @since 3.5
  */
 @Service("mailSender")
 public class MailSenderImpl implements MailSender {

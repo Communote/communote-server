@@ -10,6 +10,7 @@ import com.communote.server.api.core.config.type.ApplicationPropertyMailing;
  * Send a mime message.
  * 
  * @author Communote team - <a href="http://communote.github.io/">http://communote.github.io/</a>
+ * @since 3.5
  */
 public interface MimeMessageSender {
 

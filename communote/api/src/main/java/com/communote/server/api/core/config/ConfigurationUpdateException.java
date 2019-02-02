@@ -32,6 +32,7 @@ public class ConfigurationUpdateException extends Exception {
      *            optional message key for referencing a localized message
      * @param cause
      *            the cause of the exception
+     * @since 3.5
      */
     public ConfigurationUpdateException(String message, String messageKey, Throwable cause) {
         super(message, cause);
