@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Defines beans of the WebApplicationContext of the DispatcherServlet which is only used when Communote is not yet installed
+     and the installation controller should be run. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:sec="http://www.springframework.org/schema/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/tx 
+                        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/security 
+                        http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <bean id="messageSource" class="com.communote.server.web.commons.i18n.ResourceBundleManagerMessageSource">
+        <!-- also defined in include.jsp for the fmt tag -->
+        <property name="resourceBundleManager">
+            <bean id="resourceBundleManager" class="com.communote.server.persistence.common.messages.ResourceBundleManager" factory-method="instance" />
+        </property>
+    </bean>
+
+    <bean id="localeResolver" class="com.communote.server.web.commons.i18n.SessionHandlerLocaleResolver">
+    </bean>
+
+    <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles.TilesConfigurer">
+        <property name="definitions">
+            <list>
+                <value>/WEB-INF/config/installer/tiles-def-installer.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- View resolvers can also be configured with ResourceBundles or XML files. If you need different view resolving based on Locale, you have to use the resource bundle resolver. -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- <property name="viewClass"><value>org.springframework.web.servlet.view.JstlView</value></property> -->
+        <property name="order" value="1" />
+        <property name="viewClass" value="org.springframework.web.servlet.view.tiles.TilesView" />
+        <property name="requestContextAttribute" value="requestContext" />
+    </bean>
+
+    <import resource="installer/installer-controller.xml"/>
+    
+    <bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
+        <constructor-arg>
+            <list>
+                <sec:filter-chain pattern="/**" filters="none" />
+            </list>
+        </constructor-arg>
+    </bean>
+    
+</beans>

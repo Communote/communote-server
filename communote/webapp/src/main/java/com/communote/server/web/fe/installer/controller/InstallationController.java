@@ -547,7 +547,9 @@ public class InstallationController extends AbstractWizardFormController {
             // and load its data. If user switched back to DB setup after entering application
             // details his previous input will be preserved if there is no existing data in the
             // database.
-            checkForExistingApplication(request, (InstallerForm) command);
+            if (isDatabaseInitialized()) {
+                checkForExistingApplication(request, (InstallerForm) command);
+            }
             break;
         case 3:
             handleApplicationDetails(request, command, errors);

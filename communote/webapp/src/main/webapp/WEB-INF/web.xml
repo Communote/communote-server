@@ -4,7 +4,11 @@
     <context-param>
         <param-name>communoteWebContextConfigLocation</param-name>
         <param-value>/WEB-INF/config/communote-web-context.xml</param-value>
-        </context-param>
+    </context-param>
+    <context-param>
+        <param-name>communoteInstallerWebContextConfigLocation</param-name>
+        <param-value>/WEB-INF/config/communote-installer-web-context.xml</param-value>
+    </context-param>
     <context-param>    
         <param-name>communoteServletUrlPattern</param-name>
         <param-value>/microblog/*</param-value>
@@ -78,7 +82,7 @@
 
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <filter-class>com.communote.server.web.external.spring.security.RefreshAwareDelegatingFilterProxy</filter-class>
         <init-param>
             <param-name>targetClass</param-name>
             <param-value>org.springframework.security.web.FilterChainProxy</param-value>

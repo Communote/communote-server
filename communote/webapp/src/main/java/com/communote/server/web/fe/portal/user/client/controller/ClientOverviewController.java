@@ -3,9 +3,9 @@ package com.communote.server.web.fe.portal.user.client.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.communote.server.api.ServiceLocator;
 import com.communote.server.api.core.blog.BlogManagement;
 import com.communote.server.core.blog.helper.BlogManagementHelper;
 import com.communote.server.core.common.LimitHelper;
@@ -26,10 +26,23 @@ import com.communote.server.web.commons.controller.SimpleViewController;
  */
 public class ClientOverviewController extends SimpleViewController {
 
+    private UserManagement userManagement;
+    private NoteService noteService;
+    private BlogManagement blogManagement;
+    private RepositoryConnectorDelegate repoConnectorDelegate;
+
+    @Autowired
+    public ClientOverviewController(UserManagement userManagement, NoteService noteService,
+            BlogManagement blogManagement, RepositoryConnectorDelegate repoConnectorDelegate) {
+        this.userManagement = userManagement;
+        this.noteService = noteService;
+        this.blogManagement = blogManagement;
+        this.repoConnectorDelegate = repoConnectorDelegate;
+    }
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        long userCount = ServiceLocator.findService(UserManagement.class).getActiveUserCount();
+        long userCount = userManagement.getActiveUserCount();
         long userLimit = UserManagementHelper.getCountLimit();
         request.setAttribute("userCount", userCount);
         request.setAttribute("userCountLimit", LimitHelper.getCountLimitAsString(userLimit));
@@ -42,7 +55,7 @@ public class ClientOverviewController extends SimpleViewController {
 
         prepareFileRepositorySizeDetails(request);
 
-        long userTaggedCount = ServiceLocator.findService(NoteService.class).getNoteCount();
+        long userTaggedCount = noteService.getNoteCount();
         long userTaggedLimit = ResourceStoringHelper.getCountLimit();
         request.setAttribute("userTaggedSize", userTaggedCount);
         request.setAttribute("userTaggedLimit", LimitHelper.getCountLimitAsString(userTaggedLimit));
@@ -53,7 +66,7 @@ public class ClientOverviewController extends SimpleViewController {
         request.setAttribute("userTaggedLimitReached",
                 LimitHelper.isCountLimitReached(userTaggedCount, userTaggedLimit));
 
-        long blogCount = ServiceLocator.findService(BlogManagement.class).getBlogCount();
+        long blogCount = blogManagement.getBlogCount();
         long blogLimit = BlogManagementHelper.getCountLimit();
         request.setAttribute("blogSize", blogCount);
         request.setAttribute("blogLimit", LimitHelper.getCountLimitAsString(blogLimit));
@@ -75,8 +88,7 @@ public class ClientOverviewController extends SimpleViewController {
     private void prepareFileRepositorySizeDetails(HttpServletRequest request) {
         long repoSize = -1;
         try {
-            RepositoryConnector connector = ServiceLocator.findService(
-                    RepositoryConnectorDelegate.class).getDefaultRepositoryConnector();
+            RepositoryConnector connector = repoConnectorDelegate.getDefaultRepositoryConnector();
             if (connector instanceof FilesystemConnector) {
                 repoSize = connector.getRepositorySize();
             }
