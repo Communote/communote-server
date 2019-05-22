@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+
+  app:
+    build: docker/app
+    environment:
+       - VIRTUAL_HOST=communote.de
+       - VIRTUAL_PORT=8080
+    networks:
+      - communote
+      - public
+    depends_on:
+      - db
+
+  db:
+     image: postgres:9.1.23
+     expose:
+       - 3306
+     volumes:
+       - ./docker/pgsql/data:/var/lib/mysql:rw
+     environment:
+       - POSTGRES_PASSWORD=1234
+       - POSTGRES_DB=communote
+     networks:
+       - communote
+
+networks:
+  communote:
+    driver: bridge
+  public:
+    external:
+      name: public
